@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MyPetStore | 我的订单</title>
+  <link rel="stylesheet" href="css/jpetstore.css" />
+</head>
+<body class="orders-page">
+  <div class="mpa-shell orders-shell">
+    <header class="site-header home-header orders-header">
+      <div class="site-header__top">
+        <a class="brand" href="Main.html">
+          <span class="brand__badge"><img src="images/logo.png" alt="MyPetStore Logo" /></span>
+          <span><b>MyPetStore</b><small>陪它好好生活</small></span>
+        </a>
+        <nav class="top-actions" aria-label="主导航">
+          <a class="nav-link" href="Main.html">首页</a>
+          <a class="nav-link" href="Category.html">选购</a>
+          <a class="nav-link is-active" href="ListOrders.html">订单</a>
+          <a class="nav-link" href="EditProfile.html">我的</a>
+          <a class="cart-link" href="Cart.html"><span>购物车</span><b>3</b></a>
+        </nav>
+      </div>
+      <div class="search-row home-search orders-search">
+        <form action="ListOrders.html" method="get">
+          <span class="search-icon" aria-hidden="true"></span>
+          <input type="text" name="orderNo" placeholder="搜索订单号、商品名称" />
+          <input type="submit" value="查询" />
+        </form>
+        <a class="member-link" href="Category.html">继续购物 <span>→</span></a>
+      </div>
+    </header>
+
+    <main class="orders-main">
+      <section class="orders-intro">
+        <div>
+          <span>MY ORDERS</span>
+          <h1>我的订单</h1>
+          <p>查看每一份陪伴的支付、配送与售后进度。</p>
+        </div>
+        <div class="orders-overview">
+          <span><b>3</b><small>全部订单</small></span>
+          <span><b>1</b><small>待付款</small></span>
+          <span><b>1</b><small>配送中</small></span>
+        </div>
+      </section>
+
+      <nav class="orders-tabs" aria-label="订单状态">
+        <a class="is-active" href="ListOrders.html">全部 <b>3</b></a>
+        <a href="ListOrders.html?status=unpaid">待付款 <b>1</b></a>
+        <a href="ListOrders.html?status=processing">待发货 <b>0</b></a>
+        <a href="ListOrders.html?status=shipping">待收货 <b>1</b></a>
+        <a href="ListOrders.html?status=completed">已完成 <b>1</b></a>
+      </nav>
+
+      <section class="orders-content">
+        <div class="orders-list">
+          <article class="order-card" data-status="shipping">
+            <header>
+              <div><span>订单编号</span><b>#1000</b><small>2026-03-31 10:46</small></div>
+              <strong class="order-status order-status--shipping">配送中</strong>
+            </header>
+            <div class="order-card__body">
+              <a class="order-card__image" href="ViewOrder.html?orderNo=1000&status=shipping">
+                <img src="images/products/FL-DLH-02/1.jpg" alt="Adult Female Persian" />
+                <span>共 3 件</span>
+              </a>
+              <div class="order-card__product">
+                <small>CATS · 猫咪</small>
+                <h2><a href="ViewOrder.html?orderNo=1000&status=shipping">Adult Female Persian</a></h2>
+                <p>另含 Spotted Koi × 2</p>
+                <span>基础保障 · 标准配送</span>
+              </div>
+              <div class="order-card__price"><small>实付金额</small><strong>$133.50</strong></div>
+            </div>
+            <footer>
+              <p><b>物流更新：</b>商品已离开配送中心，预计明日送达。</p>
+              <div><a class="order-secondary" href="ViewOrder.html?orderNo=1000&status=shipping">查看物流</a><a class="order-primary" href="ViewOrder.html?orderNo=1000&status=shipping">查看详情</a></div>
+            </footer>
+          </article>
+
+          <article class="order-card" data-status="unpaid">
+            <header>
+              <div><span>订单编号</span><b>#1002</b><small>2026-04-02 18:20</small></div>
+              <strong class="order-status order-status--unpaid">待付款</strong>
+            </header>
+            <div class="order-card__body">
+              <a class="order-card__image" href="ViewOrder.html?orderNo=1002&status=unpaid">
+                <img src="images/products/CT-SIA-05/1.jpg" alt="Siamese Care Bundle" />
+                <span>共 1 件</span>
+              </a>
+              <div class="order-card__product">
+                <small>CATS · 猫咪</small>
+                <h2><a href="ViewOrder.html?orderNo=1002&status=unpaid">Siamese Care Bundle</a></h2>
+                <p>暹罗猫护理组合，含主粮与玩具</p>
+                <span>安心护理 · 标准配送</span>
+              </div>
+              <div class="order-card__price"><small>应付金额</small><strong>$80.40</strong></div>
+            </div>
+            <footer>
+              <p><b>温馨提示：</b>订单将在 23 小时后自动关闭。</p>
+              <div><button class="order-secondary" type="button">取消订单</button><a class="order-primary order-primary--pay" href="ViewOrder.html?orderNo=1002&status=unpaid">去付款</a></div>
+            </footer>
+          </article>
+
+          <article class="order-card" data-status="completed">
+            <header>
+              <div><span>订单编号</span><b>#0998</b><small>2026-03-29 20:16</small></div>
+              <strong class="order-status order-status--completed">已完成</strong>
+            </header>
+            <div class="order-card__body">
+              <a class="order-card__image" href="ViewOrder.html?orderNo=0998&status=completed">
+                <img src="images/products/AQ-KOI-04/1.jpg" alt="Spotted Koi" />
+                <span>共 1 件</span>
+              </a>
+              <div class="order-card__product">
+                <small>FISH · 水族</small>
+                <h2><a href="ViewOrder.html?orderNo=0998&status=completed">Spotted Koi 观赏锦鲤</a></h2>
+                <p>活力良好，适合家庭鱼缸</p>
+                <span>健康保障 · 冷链配送</span>
+              </div>
+              <div class="order-card__price"><small>实付金额</small><strong>$26.50</strong></div>
+            </div>
+            <footer>
+              <p><b>订单完成：</b>感谢你的信任，期待下一次相遇。</p>
+              <div><a class="order-secondary" href="ViewOrder.html?orderNo=0998&status=completed">申请售后</a><a class="order-primary" href="Product.html?sku=AQ-KOI-04">再次购买</a></div>
+            </footer>
+          </article>
+
+          <div id="ordersEmpty" class="orders-empty" hidden>
+            <span>♡</span><h2>暂时没有相关订单</h2><p>换个状态看看，或者去挑选新的伙伴。</p><a href="Category.html">去逛逛</a>
+          </div>
+        </div>
+
+        <aside class="orders-side">
+          <div class="orders-side__card">
+            <span>ORDER SERVICE</span>
+            <h2>订单服务</h2>
+            <a href="ListOrders.html?status=shipping"><b>⌁</b><span>物流查询<small>查看最新配送进度</small></span><i>→</i></a>
+            <a href="EditProfile.html"><b>⌂</b><span>收货地址<small>管理常用配送地址</small></span><i>→</i></a>
+            <a href="ViewOrder.html?orderNo=0998&status=completed"><b>↺</b><span>售后服务<small>退换与养护支持</small></span><i>→</i></a>
+          </div>
+          <div class="orders-help">
+            <span>需要帮助？</span><h3>订单有疑问</h3><p>支付、配送和售后问题，我们都愿意协助。</p><a href="Main.html">查看服务说明 →</a>
+          </div>
+        </aside>
+      </section>
+    </main>
+
+    <footer class="site-footer home-footer orders-footer">
+      <a class="brand" href="Main.html"><span class="brand__badge"><img src="images/logo.png" alt="" /></span>MyPetStore</a>
+      <p>认真挑选每一份陪伴。</p><span>© 2026 MyPetStore</span>
+    </footer>
+  </div>
+  <script>
+    (function () {
+      var status = new URLSearchParams(window.location.search).get("status");
+      var cards = Array.prototype.slice.call(document.querySelectorAll(".order-card"));
+      var tabs = Array.prototype.slice.call(document.querySelectorAll(".orders-tabs a"));
+      if (status) {
+        cards.forEach(function (card) {
+          card.hidden = card.getAttribute("data-status") !== status;
+        });
+        tabs.forEach(function (tab) {
+          tab.classList.toggle("is-active", tab.href.indexOf("status=" + status) !== -1);
+        });
+      }
+      document.getElementById("ordersEmpty").hidden = cards.some(function (card) { return !card.hidden; });
+    })();
+  </script>
+</body>
+</html>

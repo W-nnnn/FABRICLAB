@@ -1,0 +1,23 @@
+# 构建产物
+target/
+**/target/
+out/
+*.class
+
+# IntelliJ IDEA（根目录旧项目配置整体忽略；fabriclab/.idea 共享配置单独保留）
+/.idea/
+*.iml
+
+# 工作区记录
+.workbuddy/
+
+# macOS 归档元数据
+__MACOSX/
+.DS_Store
+
+# 本机配置与日志
+application-local.yml
+*.log
+
+# Office 打开文档时的临时锁文件
+~$*

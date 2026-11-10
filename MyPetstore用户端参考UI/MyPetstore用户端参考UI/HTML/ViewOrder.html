@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MyPetStore | 订单详情</title>
+  <link rel="stylesheet" href="css/jpetstore.css" />
+</head>
+<body class="order-detail-page">
+  <div class="mpa-shell order-detail-shell">
+    <header class="site-header home-header order-detail-header">
+      <div class="site-header__top">
+        <a class="brand" href="Main.html">
+          <span class="brand__badge"><img src="images/logo.png" alt="MyPetStore Logo" /></span>
+          <span><b>MyPetStore</b><small>陪它好好生活</small></span>
+        </a>
+        <nav class="top-actions" aria-label="主导航">
+          <a class="nav-link" href="Main.html">首页</a><a class="nav-link" href="Category.html">选购</a>
+          <a class="nav-link is-active" href="ListOrders.html">订单</a><a class="nav-link" href="EditProfile.html">我的</a>
+          <a class="cart-link" href="Cart.html"><span>购物车</span><b>3</b></a>
+        </nav>
+      </div>
+      <div class="search-row home-search order-detail-search">
+        <form action="ListOrders.html" method="get">
+          <span class="search-icon" aria-hidden="true"></span>
+          <input id="orderSearch" type="text" name="orderNo" value="1000" placeholder="输入订单号查询" />
+          <input type="submit" value="查询" />
+        </form>
+        <a class="member-link" href="ListOrders.html">返回订单列表 <span>→</span></a>
+      </div>
+    </header>
+
+    <main class="order-detail-main">
+      <nav class="order-detail-breadcrumb"><a href="ListOrders.html">我的订单</a><span>›</span><b>订单详情</b></nav>
+
+      <section class="order-state-banner">
+        <div>
+          <span id="stateEnglish">IN TRANSIT</span>
+          <h1 id="stateTitle">商品正在配送途中</h1>
+          <p id="stateDesc">预计明日送达，请保持电话畅通。</p>
+        </div>
+        <strong id="detailStatus" class="order-status order-status--shipping">配送中</strong>
+      </section>
+
+      <section class="order-progress" id="orderProgress">
+        <span class="is-complete"><b>✓</b><i>提交订单</i><small>03-31 10:46</small></span>
+        <em></em><span class="is-complete"><b>✓</b><i>支付成功</i><small>03-31 10:48</small></span>
+        <em></em><span class="is-active"><b>3</b><i>商品配送</i><small>04-01 09:20</small></span>
+        <em></em><span><b>4</b><i>确认收货</i><small>等待完成</small></span>
+      </section>
+
+      <section class="order-detail-layout">
+        <div class="order-detail-content">
+          <article class="order-address-card">
+            <div class="order-address-icon">⌖</div>
+            <div><span>收货信息</span><h2>ABC XYX · 555-555-5555</h2><p>901 San Antonio Road, MS UCUP02-206, Palo Alto, CA 94303, USA</p></div>
+            <a href="EditProfile.html">管理地址 →</a>
+          </article>
+
+          <article class="order-logistics">
+            <header><div><span>LOGISTICS</span><h2>物流信息</h2></div><a href="ListOrders.html?status=shipping">查看全部 →</a></header>
+            <div class="order-timeline">
+              <span class="is-current"><b></b><i>今天 09:20</i><p>商品已离开 Palo Alto 配送中心，正在前往收货地址。</p></span>
+              <span><b></b><i>昨天 18:42</i><p>配送包裹已完成分拣并装车。</p></span>
+              <span><b></b><i>03-31 15:10</i><p>商家已发货，物流单号 UPS-202603311000。</p></span>
+            </div>
+          </article>
+
+          <article class="order-products">
+            <header><span>商品清单</span><small>共 3 件商品</small></header>
+            <div class="order-product-row">
+              <a href="Product.html?sku=FL-DLH-02"><img src="images/products/FL-DLH-02/1.jpg" alt="Adult Female Persian" /></a>
+              <div><small>CATS · 猫咪</small><h2><a href="Product.html?sku=FL-DLH-02">Adult Female Persian</a></h2><p>基础保障 · 标准配送</p></div>
+              <span><strong>$93.50</strong><small>× 1</small></span>
+            </div>
+            <div class="order-product-row">
+              <a href="Product.html?sku=AQ-KOI-04"><img src="images/products/AQ-KOI-04/1.jpg" alt="Spotted Koi" /></a>
+              <div><small>FISH · 水族</small><h2><a href="Product.html?sku=AQ-KOI-04">Spotted Koi 观赏锦鲤</a></h2><p>健康保障 · 冷链配送</p></div>
+              <span><strong>$18.50</strong><small>× 2</small></span>
+            </div>
+          </article>
+        </div>
+
+        <aside class="order-detail-side">
+          <section class="order-info-card">
+            <span>ORDER INFO</span><h2>订单信息</h2>
+            <dl><div><dt>订单编号</dt><dd id="detailOrderNo">#1000</dd></div><div><dt>下单时间</dt><dd>2026-03-31 10:46</dd></div><div><dt>支付方式</dt><dd>MasterCard · 9999</dd></div><div><dt>配送方式</dt><dd>UPS Express</dd></div></dl>
+          </section>
+          <section class="order-cost-card">
+            <h2>费用汇总</h2>
+            <ul><li><span>商品金额</span><b>$130.50</b></li><li><span>配送费用</span><b>$8.00</b></li><li><span>优惠金额</span><b class="is-discount">-$5.00</b></li></ul>
+            <div><span>实付总额<small>已含优惠与配送</small></span><strong>$133.50</strong></div>
+          </section>
+          <div class="order-detail-actions" id="detailActions">
+            <a class="order-action-secondary" href="Main.html">申请售后</a>
+            <button class="order-action-primary" type="button">确认收货</button>
+          </div>
+          <p class="order-detail-safe">✓ 7 天健康保障 · 专业配送 · 售后养护支持</p>
+        </aside>
+      </section>
+    </main>
+
+    <footer class="site-footer home-footer order-detail-footer">
+      <a class="brand" href="Main.html"><span class="brand__badge"><img src="images/logo.png" alt="" /></span>MyPetStore</a>
+      <p>认真挑选每一份陪伴。</p><span>© 2026 MyPetStore</span>
+    </footer>
+  </div>
+  <script>
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var orderNo = params.get("orderNo") || "1000";
+      var status = params.get("status") || "shipping";
+      var configs = {
+        shipping: { english: "IN TRANSIT", title: "商品正在配送途中", desc: "预计明日送达，请保持电话畅通。", label: "配送中", cls: "order-status--shipping", primary: "确认收货", secondary: "申请售后" },
+        unpaid: { english: "AWAITING PAYMENT", title: "订单等待付款", desc: "请在 23 小时内完成支付，超时订单将自动关闭。", label: "待付款", cls: "order-status--unpaid", primary: "立即付款", secondary: "取消订单" },
+        completed: { english: "COMPLETED", title: "订单已完成", desc: "感谢你的信任，期待下一次温暖相遇。", label: "已完成", cls: "order-status--completed", primary: "再次购买", secondary: "申请售后" }
+      };
+      var data = configs[status] || configs.shipping;
+      document.title = "MyPetStore | 订单 #" + orderNo;
+      document.getElementById("orderSearch").value = orderNo;
+      document.getElementById("detailOrderNo").textContent = "#" + orderNo;
+      document.getElementById("stateEnglish").textContent = data.english;
+      document.getElementById("stateTitle").textContent = data.title;
+      document.getElementById("stateDesc").textContent = data.desc;
+      var badge = document.getElementById("detailStatus");
+      badge.textContent = data.label;
+      badge.className = "order-status " + data.cls;
+      var actions = document.getElementById("detailActions");
+      actions.querySelector(".order-action-primary").textContent = data.primary;
+      actions.querySelector(".order-action-secondary").textContent = data.secondary;
+      document.body.setAttribute("data-order-status", status);
+    })();
+  </script>
+</body>
+</html>

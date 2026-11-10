@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MyPetStore | 商品详情</title>
+  <link rel="stylesheet" href="css/jpetstore.css" />
+</head>
+<body class="product-page">
+  <div class="mpa-shell product-shell">
+    <header class="site-header home-header product-header">
+      <div class="site-header__top">
+        <a class="brand" href="Main.html">
+          <span class="brand__badge"><img src="images/logo.png" alt="MyPetStore Logo" /></span>
+          <span><b>MyPetStore</b><small>陪它好好生活</small></span>
+        </a>
+        <nav class="top-actions" aria-label="主导航">
+          <a class="nav-link" href="Main.html">首页</a>
+          <a class="nav-link is-active" href="Category.html">选购</a>
+          <a class="nav-link" href="ListOrders.html">订单</a>
+          <a class="nav-link" href="EditProfile.html">我的</a>
+          <a class="cart-link" href="Cart.html"><span>购物车</span><b>1</b></a>
+        </nav>
+      </div>
+      <div class="search-row home-search product-search">
+        <form action="Category.html" method="get">
+          <span class="search-icon" aria-hidden="true"></span>
+          <input type="text" name="keyword" placeholder="搜索宠物、用品或 SKU" />
+          <input type="submit" value="搜索" />
+        </form>
+        <a class="member-link" href="SignonForm.html">会员登录 <span>→</span></a>
+      </div>
+    </header>
+
+    <main class="product-main">
+      <nav class="product-breadcrumb" aria-label="面包屑">
+        <a href="Main.html">首页</a><span>›</span>
+        <a href="Category.html">全部商品</a><span>›</span>
+        <b id="productCategoryTrail">商品详情</b>
+      </nav>
+
+      <section class="product-overview">
+        <div class="product-gallery product-gallery--store">
+          <div class="detail-media product-main-media">
+            <img id="productImage" src="images/fish1.gif" alt="商品图片" />
+            <span class="product-media-badge">SELECTED · 严选</span>
+            <button class="product-favorite" type="button" aria-label="收藏商品">♡</button>
+          </div>
+          <div id="productThumbs" class="detail-thumbs product-thumbs" aria-label="商品图片列表"></div>
+        </div>
+
+        <aside class="product-purchase">
+          <div class="product-title-row">
+            <span id="productCategory" class="product-category">CATEGORY</span>
+            <span id="stockBadge" class="badge badge--ok">充足</span>
+          </div>
+          <h1 id="productName">商品详情</h1>
+          <p id="productSub" class="product-sku">SKU: -</p>
+          <p id="productDesc" class="product-lead">-</p>
+
+          <div class="product-price-line">
+            <span class="buy-price" id="productPrice">$0.00</span>
+            <small>会员价 · 已含健康保障</small>
+          </div>
+
+          <div class="product-benefits">
+            <span><b>✓</b> 7 天健康保障</span>
+            <span><b>✓</b> 专业运输包装</span>
+            <span><b>✓</b> 售后养护指导</span>
+          </div>
+
+          <div class="product-option">
+            <div class="product-option__head"><b>服务方案</b><span>请选择</span></div>
+            <div class="product-choice-row">
+              <button class="is-selected" type="button">基础保障</button>
+              <button type="button">安心护理</button>
+              <button type="button">全年陪伴</button>
+            </div>
+          </div>
+
+          <div class="product-option">
+            <div class="product-option__head"><b>配送方式</b><span id="productDelivery">-</span></div>
+            <div class="product-choice-row">
+              <button class="is-selected" type="button">标准配送</button>
+              <button type="button">到店自提</button>
+            </div>
+          </div>
+
+          <div class="product-quantity">
+            <div><b>购买数量</b><span>库存 <strong id="productStock">-</strong> 件</span></div>
+            <div class="inline-qty product-qty-control">
+              <button type="button" id="qtyMinus" aria-label="减少数量">−</button>
+              <input id="qty" type="text" value="1" inputmode="numeric" aria-label="购买数量" />
+              <button type="button" id="qtyPlus" aria-label="增加数量">＋</button>
+            </div>
+          </div>
+
+          <div class="product-actions">
+            <a id="productAddCart" class="product-add-cart" href="Cart.html">加入购物车</a>
+            <a id="productBuyNow" class="product-buy-now" href="Cart.html">立即购买</a>
+          </div>
+          <a class="product-back" href="Category.html">← 返回商品列表</a>
+        </aside>
+      </section>
+
+      <section class="product-service-strip">
+        <span><i>✓</i><b>健康检查</b><small>基础记录透明可查</small></span>
+        <span><i>⌂</i><b>安心到家</b><small>专业包装与配送</small></span>
+        <span><i>♙</i><b>养护指导</b><small>新手也能轻松上手</small></span>
+        <span><i>↺</i><b>售后服务</b><small>持续解答养护问题</small></span>
+      </section>
+
+      <section class="product-detail-section">
+        <div class="product-section-heading">
+          <div>
+            <span>PRODUCT DETAILS</span>
+            <h2>商品详情</h2>
+          </div>
+          <p>认真了解，才能更好地陪伴。</p>
+        </div>
+
+        <div class="product-detail-layout">
+          <div class="product-story">
+            <div class="product-story__image">
+              <img id="productStoryImage" src="images/products/FL-DLH-02/2.jpg" alt="商品生活场景" />
+            </div>
+            <div class="product-story__copy">
+              <span>CAREFULLY SELECTED</span>
+              <h3>用心挑选，让陪伴更安心</h3>
+              <p>我们关注健康状态、生活习性与真实家庭场景，不只提供一件商品，也提供一份更从容的养护体验。</p>
+              <div class="product-story__stats">
+                <span><b id="productScene">-</b><small>适用场景</small></span>
+                <span><b>7 DAYS</b><small>健康保障</small></span>
+                <span><b>1 ON 1</b><small>养护指导</small></span>
+              </div>
+            </div>
+          </div>
+
+          <aside class="product-highlights">
+            <span>HIGHLIGHTS</span>
+            <h3>商品亮点</h3>
+            <ul id="featureList">
+              <li>已通过基础健康检查。</li>
+            </ul>
+            <div class="product-delivery-card">
+              <small>预计送达</small>
+              <b id="productDeliveryDetail">以结算页面为准</b>
+              <p>偏远地区与特殊活体商品可能需要额外配送时间。</p>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="product-recommend-section">
+        <div class="product-section-heading">
+          <div><span>YOU MAY ALSO LIKE</span><h2>你可能还喜欢</h2></div>
+          <a href="Category.html">查看更多 <b>→</b></a>
+        </div>
+        <div class="product-recommend-grid">
+          <article>
+            <a href="Product.html?sku=K9-BGL-03"><img src="images/products/K9-BGL-03/1.jpg" alt="Beagle Daily Care Box" /></a>
+            <small>DOGS · 热卖</small>
+            <h3><a href="Product.html?sku=K9-BGL-03">Beagle Daily Care Box</a></h3>
+            <div><strong>$59.90</strong><a href="Cart.html">＋</a></div>
+          </article>
+          <article>
+            <a href="Product.html?sku=CT-SIA-05"><img src="images/products/CT-SIA-05/1.jpg" alt="Siamese Care Bundle" /></a>
+            <small>CATS · 新品</small>
+            <h3><a href="Product.html?sku=CT-SIA-05">Siamese Care Bundle</a></h3>
+            <div><strong>$72.40</strong><a href="Cart.html">＋</a></div>
+          </article>
+          <article>
+            <a href="Product.html?sku=AQ-CRF-12"><img src="images/products/AQ-CRF-12/1.jpg" alt="Coral Reef Fish Set" /></a>
+            <small>FISH · 严选</small>
+            <h3><a href="Product.html?sku=AQ-CRF-12">Coral Reef Fish Set</a></h3>
+            <div><strong>$48.90</strong><a href="Cart.html">＋</a></div>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer home-footer product-footer">
+      <a class="brand" href="Main.html"><span class="brand__badge"><img src="images/logo.png" alt="" /></span>MyPetStore</a>
+      <p>认真挑选每一份陪伴。</p>
+      <span>© 2026 MyPetStore</span>
+    </footer>
+  </div>
+
+  <script>
+    (function () {
+            var products = {
+        "FL-DLH-02": {
+          name: "Adult Female Persian",
+          category: "CATS",
+          fallbackImage: "images/cat1.gif",
+          price: "$93.50",
+          desc: "SKU: FL-DLH-02 · 亲人温顺，适合室内陪伴。",
+          scene: "室内陪伴",
+          stock: "26",
+          delivery: "明日达（同城）",
+          statusText: "充足",
+          statusClass: "badge--ok",
+          features: ["毛发蓬松，性格安静", "基础疫苗与体检记录齐全", "适合首次养猫家庭"]
+        },
+        "K9-RTV-11": {
+          name: "Golden Retriever Premium Pack",
+          category: "DOGS",
+          fallbackImage: "images/dog3.gif",
+          price: "$118.00",
+          desc: "SKU: K9-RTV-11 · 高人气犬类套餐，库存较少。",
+          scene: "户外陪伴",
+          stock: "8",
+          delivery: "48 小时内发货",
+          statusText: "紧张",
+          statusClass: "badge--warn",
+          features: ["训练友好，亲人稳定", "适合家庭和儿童环境", "附带基础护理包"]
+        },
+        "AQ-KOI-04": {
+          name: "Spotted Koi",
+          category: "FISH",
+          fallbackImage: "images/fish1.gif",
+          price: "$18.50",
+          desc: "SKU: AQ-KOI-04 · 观赏级锦鲤，适合家庭鱼缸。",
+          scene: "观赏鱼缸",
+          stock: "64",
+          delivery: "冷链包装，次日发货",
+          statusText: "充足",
+          statusClass: "badge--ok",
+          features: ["体色清晰，活力良好", "适合中型家庭鱼缸", "饲养难度低"]
+        },
+        "BRD-MAC-07": {
+          name: "Macaw Care Kit",
+          category: "BIRDS",
+          fallbackImage: "images/bird1.gif",
+          price: "$68.90",
+          desc: "SKU: BRD-MAC-07 · 金刚鹦鹉护理用品套装。",
+          scene: "鸟类护理",
+          stock: "0",
+          delivery: "到货后短信通知",
+          statusText: "缺货",
+          statusClass: "badge--danger",
+          features: ["适配常见金刚鹦鹉用品", "含营养补充与清洁用品", "可订阅到货提醒"]
+        },
+        "RP-IGU-09": {
+          name: "Green Iguana Starter Set",
+          category: "REPTILES",
+          fallbackImage: "images/lizard1.gif",
+          price: "$76.00",
+          desc: "SKU: RP-IGU-09 · 绿鬣蜥新手友好套装，含基础饲养包。",
+          scene: "爬宠入门",
+          stock: "19",
+          delivery: "24 小时内发货",
+          statusText: "充足",
+          statusClass: "badge--ok",
+          features: ["入门配套齐全", "附饲养温湿度建议", "维护成本友好"]
+        },
+        "K9-BGL-03": {
+          name: "Beagle Daily Care Box",
+          category: "DOGS",
+          fallbackImage: "images/dog1.gif",
+          price: "$59.90",
+          desc: "SKU: K9-BGL-03 · 比格犬日常护理组合，热销补货中。",
+          scene: "日常护理",
+          stock: "11",
+          delivery: "次日发货",
+          statusText: "紧张",
+          statusClass: "badge--warn",
+          features: ["包含日常护理核心用品", "适合中小型犬", "高复购热销单品"]
+        },
+        "CT-SIA-05": {
+          name: "Siamese Care Bundle",
+          category: "CATS",
+          fallbackImage: "images/cat1.gif",
+          price: "$72.40",
+          desc: "SKU: CT-SIA-05 · 暹罗猫护理组合，含主粮与玩具。",
+          scene: "成猫护理",
+          stock: "33",
+          delivery: "明日达（部分城市）",
+          statusText: "充足",
+          statusClass: "badge--ok",
+          features: ["主粮+玩具一站式组合", "适配活跃型猫咪", "性价比高"]
+        },
+        "AQ-CRF-12": {
+          name: "Coral Reef Fish Set",
+          category: "FISH",
+          fallbackImage: "images/fish2.gif",
+          price: "$48.90",
+          desc: "SKU: AQ-CRF-12 · 珊瑚缸观赏鱼套装，色彩丰富。",
+          scene: "珊瑚缸观赏",
+          stock: "22",
+          delivery: "冷链包装，48 小时送达",
+          statusText: "充足",
+          statusClass: "badge--ok",
+          features: ["色彩层次丰富", "适配珊瑚缸环境", "活体运输保障"]
+        },
+        "BR-CNR-08": {
+          name: "Canary Health Pack",
+          category: "BIRDS",
+          fallbackImage: "images/bird2.gif",
+          price: "$36.80",
+          desc: "SKU: BR-CNR-08 · 金丝雀健康包，含饲料和营养补充。",
+          scene: "日常喂养",
+          stock: "29",
+          delivery: "48 小时内发货",
+          statusText: "充足",
+          statusClass: "badge--ok",
+          features: ["营养均衡，适口性好", "适合常规家庭喂养", "包含维生素补充建议"]
+        },
+        "RP-SNK-02": {
+          name: "Corn Snake Starter Kit",
+          category: "REPTILES",
+          fallbackImage: "images/snake1.gif",
+          price: "$88.00",
+          desc: "SKU: RP-SNK-02 · 玉米蛇入门饲养套件，库存有限。",
+          scene: "爬宠进阶",
+          stock: "7",
+          delivery: "24 小时内发货",
+          statusText: "紧张",
+          statusClass: "badge--warn",
+          features: ["入门到进阶都可用", "含喂养与温控建议", "库存较少，建议尽快下单"]
+        }
+      };
+
+      var sku = new URLSearchParams(window.location.search).get("sku") || "FL-DLH-02";
+      var data = products[sku] || products["FL-DLH-02"];
+      var gallery = [
+        "images/products/" + sku + "/1.jpg",
+        "images/products/" + sku + "/2.jpg",
+        "images/products/" + sku + "/3.jpg",
+        "images/products/" + sku + "/4.jpg"
+      ];
+
+      document.title = "MyPetStore | " + data.name;
+      document.getElementById("productName").textContent = data.name;
+      document.getElementById("productSub").textContent = "SKU: " + sku;
+      document.getElementById("productDesc").textContent = data.desc;
+      document.getElementById("productCategory").textContent = data.category;
+      document.getElementById("productScene").textContent = data.scene;
+      document.getElementById("productStock").textContent = data.stock;
+      document.getElementById("productDelivery").textContent = data.delivery;
+      document.getElementById("productDeliveryDetail").textContent = data.delivery;
+      document.getElementById("productPrice").textContent = data.price;
+      document.getElementById("productCategoryTrail").textContent = data.category;
+
+      var badge = document.getElementById("stockBadge");
+      badge.textContent = data.statusText;
+      badge.className = "badge " + data.statusClass;
+
+      if (parseInt(data.stock, 10) === 0) {
+        var addCart = document.getElementById("productAddCart");
+        var buyNow = document.getElementById("productBuyNow");
+        addCart.textContent = "到货提醒";
+        addCart.href = "Category.html";
+        buyNow.textContent = "暂不可购买";
+        buyNow.href = "Category.html";
+        buyNow.classList.add("is-disabled");
+      }
+
+      var featureList = document.getElementById("featureList");
+      featureList.innerHTML = "";
+      data.features.forEach(function (text) {
+        var li = document.createElement("li");
+        li.textContent = text;
+        featureList.appendChild(li);
+      });
+
+      var mainImage = document.getElementById("productImage");
+      var storyImage = document.getElementById("productStoryImage");
+      var thumbs = document.getElementById("productThumbs");
+      var activeIndex = 0;
+
+      function setActive(index) {
+        activeIndex = index;
+        mainImage.src = gallery[index];
+        mainImage.alt = data.name + " 图" + (index + 1);
+
+        Array.prototype.forEach.call(thumbs.querySelectorAll(".thumb-btn"), function (node, idx) {
+          node.classList.toggle("is-active", idx === index);
+        });
+      }
+
+      storyImage.src = gallery[1];
+      storyImage.alt = data.name + " 生活场景";
+      storyImage.onerror = function () {
+        storyImage.src = data.fallbackImage;
+      };
+
+      mainImage.onerror = function () {
+        mainImage.src = data.fallbackImage;
+      };
+
+      thumbs.innerHTML = "";
+      gallery.forEach(function (url, index) {
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "thumb-btn";
+        btn.setAttribute("aria-label", data.name + " 缩略图 " + (index + 1));
+
+        var img = document.createElement("img");
+        img.src = url;
+        img.alt = data.name + " 缩略图 " + (index + 1);
+        img.loading = "lazy";
+        img.onerror = function () {
+          img.src = data.fallbackImage;
+        };
+
+        btn.appendChild(img);
+        btn.addEventListener("click", function () {
+          setActive(index);
+        });
+        thumbs.appendChild(btn);
+      });
+
+      if (!gallery.length) {
+        gallery = [data.fallbackImage];
+      }
+      setActive(activeIndex);
+
+      var qtyInput = document.getElementById("qty");
+      var qtyMinus = document.getElementById("qtyMinus");
+      var qtyPlus = document.getElementById("qtyPlus");
+
+      function normalizeQty(value) {
+        var n = parseInt(String(value).replace(/[^\d]/g, ""), 10);
+        if (Number.isNaN(n) || n < 1) n = 1;
+        if (n > 99) n = 99;
+        return n;
+      }
+
+      function setQty(value) {
+        qtyInput.value = String(normalizeQty(value));
+      }
+
+      qtyMinus.addEventListener("click", function () {
+        setQty(normalizeQty(qtyInput.value) - 1);
+      });
+
+      qtyPlus.addEventListener("click", function () {
+        setQty(normalizeQty(qtyInput.value) + 1);
+      });
+
+      qtyInput.addEventListener("input", function () {
+        this.value = this.value.replace(/[^\d]/g, "");
+      });
+
+      qtyInput.addEventListener("blur", function () {
+        setQty(this.value);
+      });
+
+      Array.prototype.forEach.call(document.querySelectorAll(".product-choice-row"), function (row) {
+        row.addEventListener("click", function (event) {
+          var button = event.target.closest("button");
+          if (!button || !row.contains(button)) return;
+          Array.prototype.forEach.call(row.querySelectorAll("button"), function (node) {
+            node.classList.toggle("is-selected", node === button);
+          });
+        });
+      });
+
+      var favorite = document.querySelector(".product-favorite");
+      favorite.addEventListener("click", function () {
+        var selected = favorite.classList.toggle("is-selected");
+        favorite.textContent = selected ? "♥" : "♡";
+        favorite.setAttribute("aria-label", selected ? "取消收藏" : "收藏商品");
+      });
+    })();
+  </script>
+</body>
+</html>

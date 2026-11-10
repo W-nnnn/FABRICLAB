@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MyPetStore | 首页</title>
+  <link rel="stylesheet" href="css/jpetstore.css" />
+</head>
+<body class="home-page">
+  <div class="mpa-shell home-shell">
+    <header class="site-header home-header">
+      <div class="site-header__top">
+        <a class="brand" href="Main.html">
+          <span class="brand__badge"><img src="images/logo.png" alt="MyPetStore Logo" /></span>
+          <span><b>MyPetStore</b><small>陪它好好生活</small></span>
+        </a>
+        <nav class="top-actions" aria-label="主导航">
+          <a class="nav-link is-active" href="Main.html">首页</a>
+          <a class="nav-link" href="Category.html">选购</a>
+          <a class="nav-link" href="ListOrders.html">订单</a>
+          <a class="nav-link" href="EditProfile.html">我的</a>
+          <a class="cart-link" href="Cart.html"><span>购物车</span><b>1</b></a>
+        </nav>
+      </div>
+      <div class="search-row home-search">
+        <form action="Category.html" method="get">
+          <span class="search-icon" aria-hidden="true"></span>
+          <input type="text" name="keyword" placeholder="搜索宠物、用品或 SKU" />
+          <input type="submit" value="搜索" />
+        </form>
+        <a class="member-link" href="SignonForm.html">会员登录 <span>→</span></a>
+      </div>
+    </header>
+
+    <main class="home-main">
+      <section class="home-hero">
+        <img src="images/products/K9-RTV-11/1.jpg" alt="温暖灯光下的比格犬" />
+        <div class="home-hero__veil"></div>
+        <div class="home-hero__content">
+          <span class="eyebrow">WEEKLY PICK · 本周严选</span>
+          <h1>给毛孩子的生活，<br />多一点认真。</h1>
+          <p>从健康宠物到日常护理，我们替你认真挑选每一件陪伴。</p>
+          <div class="home-hero__actions">
+            <a class="home-primary" href="Category.html">立即选购 <span>→</span></a>
+            <a class="home-ghost" href="#recommend">看看推荐</a>
+          </div>
+        </div>
+        <div class="home-hero__note">
+          <strong>7 DAYS</strong>
+          <span>健康保障</span>
+        </div>
+      </section>
+
+      <section class="category-strip" aria-label="宠物分类">
+        <a href="Category.html">
+          <span class="category-icon">🐕</span>
+          <b>犬类</b><small>DOGS</small>
+        </a>
+        <a href="Category.html">
+          <span class="category-icon">🐈</span>
+          <b>猫咪</b><small>CATS</small>
+        </a>
+        <a href="Category.html">
+          <span class="category-icon">🐠</span>
+          <b>水族</b><small>FISH</small>
+        </a>
+        <a href="Category.html">
+          <span class="category-icon">🦜</span>
+          <b>鸟类</b><small>BIRDS</small>
+        </a>
+        <a href="Category.html">
+          <span class="category-icon">🦎</span>
+          <b>爬宠</b><small>REPTILES</small>
+        </a>
+      </section>
+
+      <section class="home-section">
+        <div class="home-section__head">
+          <div><span>NEW ARRIVAL</span><h2>本周新品</h2></div>
+          <a href="Category.html">更多新品 <span>→</span></a>
+        </div>
+        <div class="new-grid">
+          <a class="feature-product" href="Product.html?sku=CT-SIA-05">
+            <img src="images/products/CT-SIA-05/1.jpg" alt="白色猫咪" />
+            <span class="feature-product__tag">NEW</span>
+            <div class="feature-product__info">
+              <small>猫咪 · 新成员</small>
+              <h3>暹罗猫护理组合</h3>
+              <p>主粮、护理与玩具，一次配齐。</p>
+              <strong>$72.40</strong>
+            </div>
+          </a>
+          <div class="new-list">
+            <a href="Product.html?sku=AQ-KOI-04">
+              <img src="images/products/AQ-KOI-04/1.jpg" alt="珊瑚观赏鱼" />
+              <span><small>水族新品</small><b>观赏级锦鲤</b><strong>$18.50</strong></span>
+            </a>
+            <a href="Product.html?sku=RP-IGU-09">
+              <img src="images/products/RP-IGU-09/1.jpg" alt="绿鬣蜥" />
+              <span><small>爬宠入门</small><b>绿鬣蜥新手套装</b><strong>$76.00</strong></span>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section class="quality-banner">
+        <img src="images/products/FL-DLH-02/2.jpg" alt="猫咪居家生活" />
+        <div class="quality-banner__shade"></div>
+        <div class="quality-seal"><span>✦</span><b>好物<br />严选</b><small>SELECTED</small></div>
+        <div class="quality-copy">
+          <span>MY PETSTORE SELECTED</span>
+          <h2>用心选好物，专业控品质</h2>
+          <p>每一件商品都经过真实场景筛选，让陪伴更轻松。</p>
+          <a href="Category.html">立即选购 <span>→</span></a>
+        </div>
+      </section>
+
+      <section class="home-section">
+        <div class="home-section__head">
+          <div><span>TOP SELLING</span><h2>本周热卖</h2></div>
+          <a href="Category.html">查看榜单 <span>→</span></a>
+        </div>
+        <div class="hot-grid">
+          <a href="Product.html?sku=K9-BGL-03">
+            <img src="images/products/K9-BGL-03/1.jpg" alt="比格犬" />
+            <span class="rank">01</span>
+            <div><small>高人气陪伴犬</small><h3>Beagle 比格犬</h3><strong>$59.90</strong></div>
+          </a>
+          <a href="Product.html?sku=FL-DLH-02">
+            <img src="images/products/FL-DLH-02/1.jpg" alt="波斯猫" />
+            <span class="rank">02</span>
+            <div><small>温柔室内伙伴</small><h3>Persian 波斯猫</h3><strong>$93.50</strong></div>
+          </a>
+          <a href="Product.html?sku=AQ-CRF-12">
+            <img src="images/products/AQ-CRF-12/1.jpg" alt="珊瑚礁观赏鱼" />
+            <span class="rank">03</span>
+            <div><small>水族精选</small><h3>珊瑚礁观赏鱼</h3><strong>$48.90</strong></div>
+          </a>
+        </div>
+      </section>
+
+      <section class="expert-banner">
+        <div>
+          <span>PET GUIDE</span>
+          <h2>宠物达人</h2>
+          <p>新手养宠的第一课：怎样准备一个安心的新家？</p>
+          <a href="Category.html">点击查看 <span>→</span></a>
+        </div>
+        <div class="expert-banner__line"><i></i><i></i><i></i><i></i><i></i></div>
+      </section>
+
+      <section class="home-section" id="recommend">
+        <div class="home-section__head">
+          <div><span>FOR YOU</span><h2>为您推荐</h2></div>
+          <a href="Category.html">全部商品 <span>→</span></a>
+        </div>
+        <div class="recommend-grid">
+          <article>
+            <a class="recommend-media" href="Product.html?sku=K9-RTV-11"><img src="images/products/K9-RTV-11/3.jpg" alt="金毛犬" /><span>热卖</span></a>
+            <small>DOGS · 健康保障</small>
+            <h3><a href="Product.html?sku=K9-RTV-11">金毛犬精品陪伴套餐</a></h3>
+            <p>亲人稳定，附基础护理包</p>
+            <div><strong>$118.00</strong><a href="Cart.html" aria-label="加入购物车">＋</a></div>
+          </article>
+          <article>
+            <a class="recommend-media" href="Product.html?sku=CT-SIA-05"><img src="images/products/CT-SIA-05/3.jpg" alt="暹罗猫" /></a>
+            <small>CATS · 7天保障</small>
+            <h3><a href="Product.html?sku=CT-SIA-05">暹罗猫日常护理组合</a></h3>
+            <p>主粮与互动玩具组合</p>
+            <div><strong>$72.40</strong><a href="Cart.html" aria-label="加入购物车">＋</a></div>
+          </article>
+          <article>
+            <a class="recommend-media" href="Product.html?sku=BR-CNR-08"><img src="images/products/BR-CNR-08/1.jpg" alt="金丝雀" /><span>新品</span></a>
+            <small>BIRDS · 营养精选</small>
+            <h3><a href="Product.html?sku=BR-CNR-08">金丝雀健康养护包</a></h3>
+            <p>日常饲料与营养补充</p>
+            <div><strong>$36.80</strong><a href="Cart.html" aria-label="加入购物车">＋</a></div>
+          </article>
+          <article>
+            <a class="recommend-media" href="Product.html?sku=RP-SNK-02"><img src="images/products/RP-SNK-02/2.jpg" alt="玉米蛇" /></a>
+            <small>REPTILES · 入门友好</small>
+            <h3><a href="Product.html?sku=RP-SNK-02">玉米蛇入门饲养套件</a></h3>
+            <p>环境用品与饲养指南</p>
+            <div><strong>$88.00</strong><a href="Cart.html" aria-label="加入购物车">＋</a></div>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer home-footer">
+      <a class="brand" href="Main.html"><span class="brand__badge"><img src="images/logo.png" alt="" /></span>MyPetStore</a>
+      <p>认真挑选每一份陪伴。</p>
+      <span>© 2026 MyPetStore</span>
+    </footer>
+  </div>
+</body>
+</html>

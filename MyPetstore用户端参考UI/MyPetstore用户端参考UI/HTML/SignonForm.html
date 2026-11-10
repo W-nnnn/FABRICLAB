@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MyPetStore | 登录</title>
+  <link rel="stylesheet" href="css/jpetstore.css" />
+</head>
+<body class="account-login-page">
+  <main class="account-login-shell">
+    <section class="account-login-visual">
+      <img src="images/products/K9-BGL-03/1.jpg" alt="温暖灯光下的比格犬" />
+      <div class="account-login-shade"></div>
+      <a class="account-login-brand" href="index.html"><img src="images/logo.png" alt="" /><b>MyPetStore</b></a>
+      <div class="account-login-copy">
+        <span>WELCOME BACK</span>
+        <h1>回来看看，<br />它正在等你。</h1>
+        <p>登录后继续查看订单、收藏与专属养宠推荐。</p>
+      </div>
+      <div class="account-login-promise"><span><b>7 DAYS</b>健康保障</span><span><b>24H</b>贴心服务</span></div>
+    </section>
+
+    <section class="account-login-panel">
+      <div class="account-login-form">
+        <a class="account-login-mobile-brand" href="index.html"><img src="images/logo.png" alt="" /><span><b>MyPetStore</b><small>陪它好好生活</small></span></a>
+        <div class="account-login-heading"><span>ACCOUNT LOGIN</span><h2>账号登录</h2><p>欢迎回来，请登录你的账户。</p></div>
+
+        <form action="Main.html" method="post">
+          <label class="account-field" for="username"><span>用户名</span><input id="username" type="text" name="username" placeholder="请输入用户名" autocomplete="username" required /></label>
+          <label class="account-field" for="password"><span>密码</span><input id="password" type="password" name="password" placeholder="请输入密码" autocomplete="current-password" required /></label>
+          <div class="account-field"><span>验证码</span><div class="account-captcha"><input id="validationCode" type="text" name="validationCode" placeholder="输入验证码" required /><img id="captchaImage" alt="验证码" /><button type="button" onclick="refreshCaptcha()">换一张</button></div></div>
+          <div class="account-login-options"><label><input type="checkbox" checked /> 记住登录状态</label><a href="ChangePassword.html">忘记密码？</a></div>
+          <button class="account-submit" type="submit">登录并进入商城 <span>→</span></button>
+        </form>
+
+        <div class="account-oauth-title"><span>其他登录方式</span></div>
+        <div class="account-oauth">
+          <button type="button"><img src="images/logo-wechat.png" alt="" />微信</button>
+          <button type="button"><img src="images/logo-github.png" alt="" />GitHub</button>
+          <button type="button"><img src="images/logo-weibo.png" alt="" />微博</button>
+        </div>
+        <p class="account-agreement">登录即代表同意 <a href="#">《用户协议》</a> 和 <a href="#">《隐私政策》</a></p>
+        <a class="account-guest-link" href="Main.html">暂不登录，先逛逛商城 →</a>
+      </div>
+      <footer>© 2026 MyPetStore · 认真挑选每一份陪伴</footer>
+    </section>
+  </main>
+  <script>
+    function randomCode(len) {
+      var chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789", code = "";
+      for (var i = 0; i < len; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
+      return code;
+    }
+    function refreshCaptcha() {
+      var code = randomCode(4);
+      var svg = "<svg xmlns='http://www.w3.org/2000/svg' width='116' height='46'><rect width='116' height='46' fill='#edf3f9'/><line x1='5' y1='8' x2='110' y2='37' stroke='#b7c9df'/><line x1='9' y1='39' x2='108' y2='9' stroke='#cfdae7'/><text x='58' y='31' text-anchor='middle' font-size='21' letter-spacing='3' font-family='Arial' fill='#17589c' font-weight='700'>" + code + "</text></svg>";
+      document.getElementById("captchaImage").src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+    }
+    refreshCaptcha();
+  </script>
+</body>
+</html>

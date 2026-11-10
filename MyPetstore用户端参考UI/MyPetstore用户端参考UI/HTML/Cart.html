@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MyPetStore | 购物车</title>
+  <link rel="stylesheet" href="css/jpetstore.css" />
+</head>
+<body class="cart-page">
+  <div class="mpa-shell cart-shell">
+    <header class="site-header home-header cart-header">
+      <div class="site-header__top">
+        <a class="brand" href="Main.html">
+          <span class="brand__badge"><img src="images/logo.png" alt="MyPetStore Logo" /></span>
+          <span><b>MyPetStore</b><small>陪它好好生活</small></span>
+        </a>
+        <nav class="top-actions" aria-label="主导航">
+          <a class="nav-link" href="Main.html">首页</a>
+          <a class="nav-link" href="Category.html">选购</a>
+          <a class="nav-link" href="ListOrders.html">订单</a>
+          <a class="nav-link" href="EditProfile.html">我的</a>
+          <a class="cart-link is-current" href="Cart.html"><span>购物车</span><b id="headerCartCount">3</b></a>
+        </nav>
+      </div>
+      <div class="search-row home-search cart-search">
+        <form action="Category.html" method="get">
+          <span class="search-icon" aria-hidden="true"></span>
+          <input type="text" name="keyword" placeholder="继续搜索想买的宠物或用品" />
+          <input type="submit" value="搜索" />
+        </form>
+        <a class="member-link" href="ListOrders.html">查看订单 <span>→</span></a>
+      </div>
+    </header>
+
+    <main class="cart-main">
+      <section class="cart-intro">
+        <div>
+          <span>MY SHOPPING CART</span>
+          <h1>购物车</h1>
+          <p>确认商品与数量，让新的陪伴安心到家。</p>
+        </div>
+        <div class="cart-steps" aria-label="结算步骤">
+          <span class="is-active"><b>01</b>购物车</span>
+          <i></i>
+          <span><b>02</b>确认订单</span>
+          <i></i>
+          <span><b>03</b>完成支付</span>
+        </div>
+      </section>
+
+      <section class="cart-layout">
+        <article class="cart-items-panel">
+          <div class="cart-panel-heading">
+            <label class="cart-select-all">
+              <input id="selectAll" type="checkbox" checked />
+              <span>已选商品</span>
+            </label>
+            <span>价格</span>
+            <span>数量</span>
+            <span>小计</span>
+          </div>
+
+          <div class="cart-table-wrap">
+            <table id="cartTable" class="cart-table">
+              <thead>
+                <tr>
+                  <th>商品</th><th>价格</th><th>数量</th><th>小计</th><th>操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr data-price="93.50">
+                  <td>
+                    <div class="cart-product">
+                      <label class="cart-check"><input type="checkbox" checked data-role="select-item" aria-label="选择 Adult Female Persian" /></label>
+                      <a class="cart-product__image" href="Product.html?sku=FL-DLH-02">
+                        <img src="images/products/FL-DLH-02/1.jpg" alt="Adult Female Persian" />
+                        <span>严选</span>
+                      </a>
+                      <div class="cart-product__info">
+                        <small>CATS · 猫咪</small>
+                        <h2><a href="Product.html?sku=FL-DLH-02">Adult Female Persian</a></h2>
+                        <p>亲人温顺，适合室内陪伴</p>
+                        <span class="cart-spec">基础保障 · 标准配送</span>
+                        <b class="cart-stock">✓ 库存充足</b>
+                      </div>
+                    </div>
+                  </td>
+                  <td data-label="单价"><span class="cart-unit-price">$93.50</span></td>
+                  <td data-label="数量">
+                    <div class="inline-qty cart-qty">
+                      <button type="button" data-action="minus" aria-label="减少 Adult Female Persian 数量">−</button>
+                      <input type="text" value="1" data-role="qty" aria-label="Adult Female Persian 数量" />
+                      <button type="button" data-action="plus" aria-label="增加 Adult Female Persian 数量">＋</button>
+                    </div>
+                  </td>
+                  <td data-label="小计"><strong class="cart-line-total" data-role="lineTotal">$93.50</strong></td>
+                  <td><button type="button" class="cart-remove" data-action="remove" aria-label="移除 Adult Female Persian">×</button></td>
+                </tr>
+
+                <tr data-price="18.50">
+                  <td>
+                    <div class="cart-product">
+                      <label class="cart-check"><input type="checkbox" checked data-role="select-item" aria-label="选择 Spotted Koi" /></label>
+                      <a class="cart-product__image" href="Product.html?sku=AQ-KOI-04">
+                        <img src="images/products/AQ-KOI-04/1.jpg" alt="Spotted Koi" />
+                        <span>新品</span>
+                      </a>
+                      <div class="cart-product__info">
+                        <small>FISH · 水族</small>
+                        <h2><a href="Product.html?sku=AQ-KOI-04">Spotted Koi 观赏锦鲤</a></h2>
+                        <p>活力良好，适合家庭鱼缸</p>
+                        <span class="cart-spec">健康保障 · 冷链配送</span>
+                        <b class="cart-stock">✓ 库存充足</b>
+                      </div>
+                    </div>
+                  </td>
+                  <td data-label="单价"><span class="cart-unit-price">$18.50</span></td>
+                  <td data-label="数量">
+                    <div class="inline-qty cart-qty">
+                      <button type="button" data-action="minus" aria-label="减少 Spotted Koi 数量">−</button>
+                      <input type="text" value="2" data-role="qty" aria-label="Spotted Koi 数量" />
+                      <button type="button" data-action="plus" aria-label="增加 Spotted Koi 数量">＋</button>
+                    </div>
+                  </td>
+                  <td data-label="小计"><strong class="cart-line-total" data-role="lineTotal">$37.00</strong></td>
+                  <td><button type="button" class="cart-remove" data-action="remove" aria-label="移除 Spotted Koi">×</button></td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div id="cartEmpty" class="cart-empty" hidden>
+              <span>♡</span>
+              <h2>购物车还是空的</h2>
+              <p>去挑选一位新伙伴，或补充它喜欢的日常用品吧。</p>
+              <a href="Category.html">去逛逛</a>
+            </div>
+          </div>
+
+          <div class="cart-items-footer">
+            <a href="Category.html">← 继续购物</a>
+            <span>满 3 件自动优惠 $5.00</span>
+          </div>
+        </article>
+
+        <aside class="cart-summary">
+          <div class="cart-summary__title">
+            <span>ORDER SUMMARY</span>
+            <h2>订单金额</h2>
+          </div>
+
+          <div class="cart-coupon">
+            <div>
+              <span>优惠券</span>
+              <small>满 $100 减 $5</small>
+            </div>
+            <b id="couponStatus">已使用</b>
+          </div>
+
+          <ul class="cart-summary-list">
+            <li><span>商品数量</span><strong><b id="itemCount">3</b> 件</strong></li>
+            <li><span>商品金额</span><strong id="itemsTotal">$130.50</strong></li>
+            <li><span>配送费用</span><strong id="shippingTotal">$8.00</strong></li>
+            <li class="cart-discount"><span>优惠金额</span><strong id="discountTotal">-$5.00</strong></li>
+          </ul>
+
+          <div class="cart-grand-total">
+            <span>应付总额<small>已含配送与优惠</small></span>
+            <strong id="grandTotal">$133.50</strong>
+          </div>
+
+          <a id="checkoutButton" class="cart-checkout" href="ListOrders.html">去结算 <span>→</span></a>
+          <p class="cart-secure">✓ 安全结算 · 7 天健康保障 · 售后养护支持</p>
+
+          <div class="cart-help">
+            <span>需要帮助？</span>
+            <p>配送、健康保障或商品选择问题，我们都愿意帮忙。</p>
+            <a href="Main.html">查看服务说明</a>
+          </div>
+        </aside>
+      </section>
+
+      <section class="cart-promise-strip">
+        <span><b>✓</b><i>健康检查</i><small>基础记录透明可查</small></span>
+        <span><b>⌂</b><i>专业配送</i><small>安心包装送达</small></span>
+        <span><b>♙</b><i>养护指导</i><small>新手也能轻松上手</small></span>
+      </section>
+    </main>
+
+    <footer class="site-footer home-footer cart-footer">
+      <a class="brand" href="Main.html"><span class="brand__badge"><img src="images/logo.png" alt="" /></span>MyPetStore</a>
+      <p>认真挑选每一份陪伴。</p>
+      <span>© 2026 MyPetStore</span>
+    </footer>
+  </div>
+  <script src="js/store.js"></script>
+</body>
+</html>

@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MyPetStore | 商品列表</title>
+  <link rel="stylesheet" href="css/jpetstore.css" />
+</head>
+<body class="catalog-page">
+  <div class="mpa-shell catalog-shell">
+    <header class="site-header home-header catalog-header">
+      <div class="site-header__top">
+        <a class="brand" href="Main.html">
+          <span class="brand__badge"><img src="images/logo.png" alt="MyPetStore Logo" /></span>
+          <span><b>MyPetStore</b><small>陪它好好生活</small></span>
+        </a>
+        <nav class="top-actions" aria-label="主导航">
+          <a class="nav-link" href="Main.html">首页</a>
+          <a class="nav-link is-active" href="Category.html">选购</a>
+          <a class="nav-link" href="ListOrders.html">订单</a>
+          <a class="nav-link" href="EditProfile.html">我的</a>
+          <a class="cart-link" href="Cart.html"><span>购物车</span><b>1</b></a>
+        </nav>
+      </div>
+      <div class="search-row home-search catalog-search">
+        <form action="Category.html" method="get">
+          <span class="search-icon" aria-hidden="true"></span>
+          <input type="text" name="keyword" placeholder="搜索宠物、用品或 SKU" />
+          <input type="submit" value="搜索" />
+        </form>
+        <a class="member-link" href="SignonForm.html">会员登录 <span>→</span></a>
+      </div>
+    </header>
+
+    <main class="catalog-main">
+      <section class="catalog-intro">
+        <div>
+          <span>SHOP · ALL PRODUCTS</span>
+          <h1>找到适合它的那一份</h1>
+          <p>健康宠物、日常护理与专业用品，均经过认真筛选。</p>
+        </div>
+        <span class="catalog-count"><b>10</b> 件严选商品</span>
+      </section>
+
+      <nav class="catalog-mobile-categories" aria-label="商品分类">
+        <a class="is-active" href="Category.html">全部</a>
+        <a href="Category.html?category=dogs">犬类</a>
+        <a href="Category.html?category=cats">猫咪</a>
+        <a href="Category.html?category=fish">水族</a>
+        <a href="Category.html?category=birds">鸟类</a>
+        <a href="Category.html?category=reptiles">爬宠</a>
+      </nav>
+
+      <div class="catalog-layout">
+        <aside class="catalog-sidebar">
+          <div class="catalog-sidebar__title">
+            <span>CATALOG</span>
+            <h2>商品分类</h2>
+          </div>
+          <nav class="catalog-category-list">
+            <a class="is-active" href="Category.html"><span>全部商品</span><b>10</b></a>
+            <a href="Category.html?category=dogs"><span><i>🐕</i>犬类</span><b>2</b></a>
+            <a href="Category.html?category=cats"><span><i>🐈</i>猫咪</span><b>2</b></a>
+            <a href="Category.html?category=fish"><span><i>🐠</i>水族</span><b>2</b></a>
+            <a href="Category.html?category=birds"><span><i>🦜</i>鸟类</span><b>2</b></a>
+            <a href="Category.html?category=reptiles"><span><i>🦎</i>爬宠</span><b>2</b></a>
+          </nav>
+
+          <div class="catalog-promise">
+            <span>7 DAYS</span>
+            <h3>安心保障</h3>
+            <p>健康检查、专业包装与售后陪伴。</p>
+            <a href="Main.html">了解服务 <b>→</b></a>
+          </div>
+        </aside>
+
+        <section class="catalog-results">
+          <div class="catalog-toolbar">
+            <div>
+              <b>全部商品</b>
+              <span>显示 1–6，共 10 件</span>
+            </div>
+            <div class="catalog-filters">
+              <label>
+                <span>分类</span>
+                <select>
+                  <option>全部分类</option>
+                  <option>犬类</option>
+                  <option>猫咪</option>
+                  <option>水族</option>
+                  <option>鸟类</option>
+                  <option>爬宠</option>
+                </select>
+              </label>
+              <label>
+                <span>排序</span>
+                <select>
+                  <option>综合推荐</option>
+                  <option>价格从低到高</option>
+                  <option>销量优先</option>
+                  <option>新品优先</option>
+                </select>
+              </label>
+            </div>
+          </div>
+
+          <div class="catalog-product-grid">
+            <article class="catalog-product-card">
+              <a class="catalog-product-card__media" href="Product.html?sku=FL-DLH-02">
+                <img src="images/products/FL-DLH-02/1.jpg" alt="Adult Female Persian 波斯猫" />
+                <span class="catalog-label">严选</span>
+              </a>
+              <div class="catalog-product-card__body">
+                <div class="catalog-product-card__meta"><span>CATS · 猫咪</span><b class="stock-ok">库存充足</b></div>
+                <h3><a href="Product.html?sku=FL-DLH-02">Adult Female Persian</a></h3>
+                <p>亲人温顺，适合室内陪伴。</p>
+                <div class="catalog-product-card__bottom">
+                  <strong>$93.50</strong>
+                  <span><a href="Product.html?sku=FL-DLH-02">查看详情</a><a class="catalog-buy" href="Cart.html">立即购买</a></span>
+                </div>
+              </div>
+            </article>
+
+            <article class="catalog-product-card">
+              <a class="catalog-product-card__media" href="Product.html?sku=K9-RTV-11">
+                <img src="images/products/K9-RTV-11/1.jpg" alt="Golden Retriever Premium Pack" />
+                <span class="catalog-label catalog-label--hot">热卖</span>
+              </a>
+              <div class="catalog-product-card__body">
+                <div class="catalog-product-card__meta"><span>DOGS · 犬类</span><b class="stock-low">仅剩 8 件</b></div>
+                <h3><a href="Product.html?sku=K9-RTV-11">Golden Retriever Premium Pack</a></h3>
+                <p>高人气陪伴犬，附基础护理包。</p>
+                <div class="catalog-product-card__bottom">
+                  <strong>$118.00</strong>
+                  <span><a href="Product.html?sku=K9-RTV-11">查看详情</a><a class="catalog-buy" href="Cart.html">立即购买</a></span>
+                </div>
+              </div>
+            </article>
+
+            <article class="catalog-product-card">
+              <a class="catalog-product-card__media" href="Product.html?sku=AQ-KOI-04">
+                <img src="images/products/AQ-KOI-04/1.jpg" alt="Spotted Koi 观赏锦鲤" />
+                <span class="catalog-label">新品</span>
+              </a>
+              <div class="catalog-product-card__body">
+                <div class="catalog-product-card__meta"><span>FISH · 水族</span><b class="stock-ok">库存充足</b></div>
+                <h3><a href="Product.html?sku=AQ-KOI-04">Spotted Koi 观赏锦鲤</a></h3>
+                <p>观赏级锦鲤，适合家庭鱼缸。</p>
+                <div class="catalog-product-card__bottom">
+                  <strong>$18.50</strong>
+                  <span><a href="Product.html?sku=AQ-KOI-04">查看详情</a><a class="catalog-buy" href="Cart.html">立即购买</a></span>
+                </div>
+              </div>
+            </article>
+
+            <article class="catalog-product-card">
+              <a class="catalog-product-card__media" href="Product.html?sku=BRD-MAC-07">
+                <img src="images/products/BRD-MAC-07/1.jpg" alt="Macaw Care Kit 金刚鹦鹉" />
+                <span class="catalog-label catalog-label--muted">缺货</span>
+              </a>
+              <div class="catalog-product-card__body">
+                <div class="catalog-product-card__meta"><span>BIRDS · 鸟类</span><b class="stock-out">暂时缺货</b></div>
+                <h3><a href="Product.html?sku=BRD-MAC-07">Macaw Care Kit</a></h3>
+                <p>金刚鹦鹉护理用品套装。</p>
+                <div class="catalog-product-card__bottom">
+                  <strong>$68.90</strong>
+                  <span><a href="Product.html?sku=BRD-MAC-07">查看详情</a><a class="catalog-buy is-muted" href="Category.html">到货提醒</a></span>
+                </div>
+              </div>
+            </article>
+
+            <article class="catalog-product-card">
+              <a class="catalog-product-card__media" href="Product.html?sku=RP-IGU-09">
+                <img src="images/products/RP-IGU-09/1.jpg" alt="Green Iguana 绿鬣蜥" />
+                <span class="catalog-label">入门</span>
+              </a>
+              <div class="catalog-product-card__body">
+                <div class="catalog-product-card__meta"><span>REPTILES · 爬宠</span><b class="stock-ok">库存充足</b></div>
+                <h3><a href="Product.html?sku=RP-IGU-09">Green Iguana Starter Set</a></h3>
+                <p>绿鬣蜥新手友好套装。</p>
+                <div class="catalog-product-card__bottom">
+                  <strong>$76.00</strong>
+                  <span><a href="Product.html?sku=RP-IGU-09">查看详情</a><a class="catalog-buy" href="Cart.html">立即购买</a></span>
+                </div>
+              </div>
+            </article>
+
+            <article class="catalog-product-card">
+              <a class="catalog-product-card__media" href="Product.html?sku=K9-BGL-03">
+                <img src="images/products/K9-BGL-03/1.jpg" alt="Beagle 比格犬" />
+                <span class="catalog-label catalog-label--hot">热卖</span>
+              </a>
+              <div class="catalog-product-card__body">
+                <div class="catalog-product-card__meta"><span>DOGS · 犬类</span><b class="stock-low">仅剩 11 件</b></div>
+                <h3><a href="Product.html?sku=K9-BGL-03">Beagle Daily Care Box</a></h3>
+                <p>比格犬日常护理组合。</p>
+                <div class="catalog-product-card__bottom">
+                  <strong>$59.90</strong>
+                  <span><a href="Product.html?sku=K9-BGL-03">查看详情</a><a class="catalog-buy" href="Cart.html">立即购买</a></span>
+                </div>
+              </div>
+            </article>
+
+            <article class="catalog-product-card">
+              <a class="catalog-product-card__media" href="Product.html?sku=CT-SIA-05">
+                <img src="images/products/CT-SIA-05/1.jpg" alt="Siamese Care Bundle 暹罗猫" />
+                <span class="catalog-label">新品</span>
+              </a>
+              <div class="catalog-product-card__body">
+                <div class="catalog-product-card__meta"><span>CATS · 猫咪</span><b class="stock-ok">库存充足</b></div>
+                <h3><a href="Product.html?sku=CT-SIA-05">Siamese Care Bundle</a></h3>
+                <p>暹罗猫护理组合，含主粮与玩具。</p>
+                <div class="catalog-product-card__bottom">
+                  <strong>$72.40</strong>
+                  <span><a href="Product.html?sku=CT-SIA-05">查看详情</a><a class="catalog-buy" href="Cart.html">立即购买</a></span>
+                </div>
+              </div>
+            </article>
+
+            <article class="catalog-product-card">
+              <a class="catalog-product-card__media" href="Product.html?sku=AQ-CRF-12">
+                <img src="images/products/AQ-CRF-12/1.jpg" alt="Coral Reef Fish Set" />
+              </a>
+              <div class="catalog-product-card__body">
+                <div class="catalog-product-card__meta"><span>FISH · 水族</span><b class="stock-ok">库存充足</b></div>
+                <h3><a href="Product.html?sku=AQ-CRF-12">Coral Reef Fish Set</a></h3>
+                <p>珊瑚缸观赏鱼套装，色彩丰富。</p>
+                <div class="catalog-product-card__bottom">
+                  <strong>$48.90</strong>
+                  <span><a href="Product.html?sku=AQ-CRF-12">查看详情</a><a class="catalog-buy" href="Cart.html">立即购买</a></span>
+                </div>
+              </div>
+            </article>
+
+            <article class="catalog-product-card">
+              <a class="catalog-product-card__media" href="Product.html?sku=BR-CNR-08">
+                <img src="images/products/BR-CNR-08/1.jpg" alt="Canary Health Pack 金丝雀" />
+                <span class="catalog-label">严选</span>
+              </a>
+              <div class="catalog-product-card__body">
+                <div class="catalog-product-card__meta"><span>BIRDS · 鸟类</span><b class="stock-ok">库存充足</b></div>
+                <h3><a href="Product.html?sku=BR-CNR-08">Canary Health Pack</a></h3>
+                <p>金丝雀健康包与营养补充。</p>
+                <div class="catalog-product-card__bottom">
+                  <strong>$36.80</strong>
+                  <span><a href="Product.html?sku=BR-CNR-08">查看详情</a><a class="catalog-buy" href="Cart.html">立即购买</a></span>
+                </div>
+              </div>
+            </article>
+
+            <article class="catalog-product-card">
+              <a class="catalog-product-card__media" href="Product.html?sku=RP-SNK-02">
+                <img src="images/products/RP-SNK-02/2.jpg" alt="Corn Snake 玉米蛇" />
+              </a>
+              <div class="catalog-product-card__body">
+                <div class="catalog-product-card__meta"><span>REPTILES · 爬宠</span><b class="stock-low">库存有限</b></div>
+                <h3><a href="Product.html?sku=RP-SNK-02">Corn Snake Starter Kit</a></h3>
+                <p>玉米蛇入门饲养套件。</p>
+                <div class="catalog-product-card__bottom">
+                  <strong>$88.00</strong>
+                  <span><a href="Product.html?sku=RP-SNK-02">查看详情</a><a class="catalog-buy" href="Cart.html">立即购买</a></span>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <nav class="catalog-pagination" aria-label="商品分页">
+            <a id="pagePrev" href="Category.html?page=1">← 上一页</a>
+            <a id="page1" class="is-active" href="Category.html?page=1">1</a>
+            <a id="page2" href="Category.html?page=2">2</a>
+            <a id="pageNext" href="Category.html?page=2">下一页 →</a>
+          </nav>
+        </section>
+      </div>
+    </main>
+
+    <footer class="site-footer home-footer catalog-footer">
+      <a class="brand" href="Main.html"><span class="brand__badge"><img src="images/logo.png" alt="" /></span>MyPetStore</a>
+      <p>认真挑选每一份陪伴。</p>
+      <span>© 2026 MyPetStore</span>
+    </footer>
+  </div>
+
+  <script>
+    (function () {
+      var cards = Array.prototype.slice.call(document.querySelectorAll(".catalog-product-grid .catalog-product-card"));
+      var perPage = 6;
+      var totalPages = Math.max(1, Math.ceil(cards.length / perPage));
+      var params = new URLSearchParams(window.location.search);
+      var page = parseInt(params.get("page") || "1", 10);
+      if (Number.isNaN(page) || page < 1) page = 1;
+      if (page > totalPages) page = totalPages;
+
+      cards.forEach(function (card, index) {
+        var start = (page - 1) * perPage;
+        var end = start + perPage;
+        card.style.display = index >= start && index < end ? "" : "none";
+      });
+
+      var prev = document.getElementById("pagePrev");
+      var next = document.getElementById("pageNext");
+      var p1 = document.getElementById("page1");
+      var p2 = document.getElementById("page2");
+
+      if (prev) {
+        prev.href = "Category.html?page=" + Math.max(1, page - 1);
+        prev.classList.toggle("is-disabled", page === 1);
+      }
+      if (next) {
+        next.href = "Category.html?page=" + Math.min(totalPages, page + 1);
+        next.classList.toggle("is-disabled", page === totalPages);
+      }
+      if (p1) p1.classList.toggle("is-active", page === 1);
+      if (p2) p2.classList.toggle("is-active", page === 2);
+    })();
+  </script>
+</body>
+</html>
