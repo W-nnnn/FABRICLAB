@@ -23,8 +23,10 @@ Mapper 层与数据源在 T2 接入；本阶段不配置数据库、不写业务
 
 ```bash
 mvn test
-mvn spring-boot:run
+mvn spring-boot:run --server.port=8080
 ```
+
+宿主环境若注入 `SERVER__PORT`，会覆盖配置文件端口；显式指定 `--server.port=8080` 可保证落在 8080。
 
 | 地址 | 结果 |
 |---|---|
