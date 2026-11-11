@@ -10,7 +10,7 @@ class BrandServiceTest {
 
     @Test
     void brandIsClothingLabel() {
-        assertEquals("FabricLab-Atelier", service.brand());
+        assertEquals("FABRICLAB", service.brand());
     }
 
     @Test

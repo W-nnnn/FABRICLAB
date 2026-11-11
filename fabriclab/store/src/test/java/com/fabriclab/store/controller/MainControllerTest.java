@@ -22,8 +22,8 @@ class MainControllerTest {
         mockMvc.perform(get("/main"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("index"))
-                .andExpect(model().attribute("brand", "FabricLab-Atelier"))
-                .andExpect(content().string(containsString("面料实验室")));
+                .andExpect(model().attribute("brand", "FABRICLAB"))
+                .andExpect(content().string(containsString("未染")));
     }
 
     @Test

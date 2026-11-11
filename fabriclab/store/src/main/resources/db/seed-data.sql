@@ -1,4 +1,4 @@
--- FabricLab-Atelier 演示种子数据（仅业务数据写入，不含建表DDL）
+-- FABRICLAB 演示种子数据（仅业务数据写入，不含建表DDL）
 -- 前置条件：先在空库执行 01-schema.sql 建表，再整体执行本脚本。
 -- 演示口令统一为 Passw0rd!2026；BCrypt cost=10，每个账号独立盐。
 -- 仅为本地教学账号，不可作为真实部署凭据。
@@ -20,7 +20,7 @@ INSERT INTO store_user (id, username, password_hash, display_name, role, status,
     (1, 'alice', '$2a$10$AZQW9H0zzpstWCih7ev.rubTNT2spCFm8iydr01pdtiTnxJpA1A76', '林晓', 'CUSTOMER', 'ENABLED', 'alice@example.test', NULL),
     (2, 'bob', '$2a$10$CdUEndzUHDMgTMYS.s01Be42kq7BcgdKg3IsNaZ/C5SXn59kuPZh.', '陈晨', 'CUSTOMER', 'ENABLED', 'bob@example.test', NULL),
     (3, 'disabled', '$2a$10$cqgiwnULpeIWWGp9UAN1QuhMn1CSvXti4k4GFfJ6pk.frDVYVmaT.', '禁用教学账号', 'CUSTOMER', 'DISABLED', 'disabled@example.test', NULL),
-    (4, 'admin', '$2a$10$7XejrDkqfmr8TUPOmqDcrOFlMr4VNbjBKAdX4ItR4rf9F/uzkdMuu', '工坊管理员', 'ADMIN', 'ENABLED', 'admin@example.test', NULL);
+    (4, 'admin', '$2a$10$7XejrDkqfmr8TUPOmqDcrOFlMr4VNbjBKAdX4ItR4rf9F/uzkdMuu', '平台管理员', 'ADMIN', 'ENABLED', 'admin@example.test', NULL);
 
 -- 一级分类先插入，二级分类后插入；不同一级下允许同名二级。
 INSERT INTO category (id, code, parent_id, name, sort_order) VALUES
@@ -668,16 +668,16 @@ SELECT id AS locked_product_id FROM product ORDER BY id FOR UPDATE;
 SET @fl_seed_now = CURRENT_TIMESTAMP;
 
 INSERT INTO _fl_demo_orders (order_no, username, status, age_hours, receiver_name, receiver_phone, receiver_address) VALUES
-    ('DEMO-202611-AL-01', 'alice', 'PENDING_PAYMENT', 1, '林晓', '13800000001', '教学示例地址：杭州市西湖区 FabricLab 实验工坊A（非真实收货地址）'),
-    ('DEMO-202611-AL-02', 'alice', 'PAID', 25, '林晓', '13800000001', '教学示例地址：杭州市西湖区 FabricLab 实验工坊A（非真实收货地址）'),
-    ('DEMO-202611-AL-03', 'alice', 'SHIPPED', 72, '林晓', '13800000001', '教学示例地址：杭州市西湖区 FabricLab 实验工坊A（非真实收货地址）'),
-    ('DEMO-202611-AL-04', 'alice', 'COMPLETED', 168, '林晓', '13800000001', '教学示例地址：杭州市西湖区 FabricLab 实验工坊A（非真实收货地址）'),
-    ('DEMO-202611-AL-05', 'alice', 'CANCELLED', 48, '林晓', '13800000001', '教学示例地址：杭州市西湖区 FabricLab 实验工坊A（非真实收货地址）'),
-    ('DEMO-202611-BO-01', 'bob', 'PENDING_PAYMENT', 2, '陈晨', '13800000002', '教学示例地址：杭州市西湖区 FabricLab 实验工坊B（非真实收货地址）'),
-    ('DEMO-202611-BO-02', 'bob', 'PAID', 49, '陈晨', '13800000002', '教学示例地址：杭州市西湖区 FabricLab 实验工坊B（非真实收货地址）'),
-    ('DEMO-202611-BO-03', 'bob', 'SHIPPED', 96, '陈晨', '13800000002', '教学示例地址：杭州市西湖区 FabricLab 实验工坊B（非真实收货地址）'),
-    ('DEMO-202611-BO-04', 'bob', 'COMPLETED', 192, '陈晨', '13800000002', '教学示例地址：杭州市西湖区 FabricLab 实验工坊B（非真实收货地址）'),
-    ('DEMO-202611-BO-05', 'bob', 'CANCELLED', 24, '陈晨', '13800000002', '教学示例地址：杭州市西湖区 FabricLab 实验工坊B（非真实收货地址）');
+    ('DEMO-202611-AL-01', 'alice', 'PENDING_PAYMENT', 1, '林晓', '13800000001', '教学示例地址：杭州市西湖区 FABRICLAB A 座（非真实收货地址）'),
+    ('DEMO-202611-AL-02', 'alice', 'PAID', 25, '林晓', '13800000001', '教学示例地址：杭州市西湖区 FABRICLAB A 座（非真实收货地址）'),
+    ('DEMO-202611-AL-03', 'alice', 'SHIPPED', 72, '林晓', '13800000001', '教学示例地址：杭州市西湖区 FABRICLAB A 座（非真实收货地址）'),
+    ('DEMO-202611-AL-04', 'alice', 'COMPLETED', 168, '林晓', '13800000001', '教学示例地址：杭州市西湖区 FABRICLAB A 座（非真实收货地址）'),
+    ('DEMO-202611-AL-05', 'alice', 'CANCELLED', 48, '林晓', '13800000001', '教学示例地址：杭州市西湖区 FABRICLAB A 座（非真实收货地址）'),
+    ('DEMO-202611-BO-01', 'bob', 'PENDING_PAYMENT', 2, '陈晨', '13800000002', '教学示例地址：杭州市西湖区 FABRICLAB B 座（非真实收货地址）'),
+    ('DEMO-202611-BO-02', 'bob', 'PAID', 49, '陈晨', '13800000002', '教学示例地址：杭州市西湖区 FABRICLAB B 座（非真实收货地址）'),
+    ('DEMO-202611-BO-03', 'bob', 'SHIPPED', 96, '陈晨', '13800000002', '教学示例地址：杭州市西湖区 FABRICLAB B 座（非真实收货地址）'),
+    ('DEMO-202611-BO-04', 'bob', 'COMPLETED', 192, '陈晨', '13800000002', '教学示例地址：杭州市西湖区 FABRICLAB B 座（非真实收货地址）'),
+    ('DEMO-202611-BO-05', 'bob', 'CANCELLED', 24, '陈晨', '13800000002', '教学示例地址：杭州市西湖区 FABRICLAB B 座（非真实收货地址）');
 INSERT INTO _fl_demo_items (order_no, sku, quantity, unit_price) VALUES
     ('DEMO-202611-AL-01', 'FL-LS-01', 1, 189.00),
     ('DEMO-202611-AL-01', 'FL-CM-03', 1, 259.00),
