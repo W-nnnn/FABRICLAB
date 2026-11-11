@@ -14,6 +14,6 @@ public class BrandService {
     }
 
     public String stage() {
-        return "阶段 1 · 项目初始化";
+        return "阶段 2 · 数据层与服装模型";
     }
 }
