@@ -37,6 +37,6 @@ class MainControllerTest {
         mockMvc.perform(get("/health"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("UP"))
-                .andExpect(jsonPath("$.stage").value("T2"));
+                .andExpect(jsonPath("$.stage").value("T3"));
     }
 }
