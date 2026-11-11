@@ -1,0 +1,9 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: fabriclab-store
+  thymeleaf:
+    cache: false
+    encoding: UTF-8

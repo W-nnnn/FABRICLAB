@@ -21,7 +21,7 @@ Spring MVC + Thymeleaf + MyBatis-Plus，服务器端渲染；购物车存数据�
 
 | 项 | 版本 |
 |---|---|
-| JDK | 17（Microsoft OpenJDK 17.0.20.1） |
+| JDK | 25（Microsoft OpenJDK 25） |
 | Maven | 3.9.16 |
 | Spring Boot | 3.5.16 |
 | MyBatis-Plus | 3.5.18 |
