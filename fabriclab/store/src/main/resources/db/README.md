@@ -56,17 +56,19 @@ mysql -u root -p < fabriclab/store/src/main/resources/db/seed-data.sql
 
 商品图位于 `store/src/main/resources/static/images/products/<款号>/1~4.jpg`，语义依次为平铺正面、上身展示、面料细节、工艺细节。10 个款号目录各 4 张，同二级分类内商品相册复用所属线主款目录，不重复占用图片文件。
 
-| 款号目录 | 原型素材 |
-|---|---|
-| FL-CM-01 | K9-BGL-03 |
-| FL-CM-07 | K9-RTV-11 |
-| FL-LS-01 | FL-DLH-02 |
-| FL-LS-07 | CT-SIA-05 |
-| FL-OD-01 | AQ-KOI-04 |
-| FL-OD-07 | AQ-CRF-12 |
-| FL-OC-01 | BR-CNR-08 |
-| FL-OC-07 | BRD-MAC-07 |
-| FL-HM-01 | RP-SNK-02 |
-| FL-HM-07 | RP-IGU-09 |
+全部商品图取自公开网页的真实商品/面料摄影（经必应图片检索定位），**非 AI 生成**；检索与筛选过程记录于 PR 描述。图片仅用于课程作业演示，不作商用；FL-CM-07 因真实皮革特写仅寻得 2 张，其 3/4 位为同图局部裁切变体。`logo.png` 为 Python Pillow 程序自绘（双色布样 + 缝线），无第三方版权。
 
-以上图片为课程原型素材的教学复用，仅用于课程演示，不得商用；目录名已映射为 FabricLab 款号，不表示同图商品的实际品相。
+| 款号 | 商品 | 图片来源（位1 / 位2 / 位3 / 位4） |
+|---|---|---|
+| FL-CM-01 | 云感直筒西装外套 | [NOWRE 优衣库U系列](https://nowre.com/fashion/711586/uniqlo-u-2022-qiudongxilie-9-yue-23-rizhengshishishangshi/) / [优衣库中国 23SS lookbook](https://www.uniqlo.cn/htmlcode_U_23SLK.html?index=1) / [1688 面料商行](https://detail.1688.com/offer/536109821269.html) / [知乎专栏·羊绒](https://zhuanlan.zhihu.com/p/24391569) |
+| FL-CM-07 | 极简通勤托特包 | [昵图网·皮革纹理](https://www.nipic.com/show/43532007.html) / [摄图网·黑皮素材](https://www.shetu66.com/so-sucai/heisebeijing/) / 同位1裁切 / 同图2裁切 |
+| FL-LS-01 | 云朵卫衣 | [中国纺联面料图](https://www.alltextile.cn/new/new-9-418.html) / [说明书百科·毛圈布](https://www.shuomingshu.cn/baike/162007.html) / [知乎专栏·织物](https://zhuanlan.zhihu.com/p/52757598) / [知乎专栏·织纹](https://zhuanlan.zhihu.com/p/634187050) |
+| FL-LS-07 | 街拍帆布斜挎包 | [1688 帆布袋厂①](https://detail.1688.com/offer/546416363002.html) / [1688 帆布袋厂②](https://detail.1688.com/offer/572874432198.html) / [1688 帆布袋厂③](https://detail.1688.com/offer/521035570221.html) / [51lip 帆布包](http://www.51lip.com/product-68433.html) |
+| FL-OD-01 | 三层防风冲锋衣 | [素材站·冲锋衣白底](https://www.mksucai.com/png/ygljjaod.html) / [NOWRE·始祖鸟](https://nowre.com/editorial/801067/) / [什么值得买·夹克](https://post.smzdm.com/p/ad9zrqxd/) / [PNG素材·软壳](https://www.pngsucai.com/png/8911593.html) |
+| FL-OD-07 | 户外登山双肩包 | [什么值得买·登山包](https://post.smzdm.com/talk/p/a60on9eg/) / [ThePost·徒步](https://thepost.ph/travel/worlds-best-destinations-for-hiking/) / [知乎专栏·登山包](https://zhuanlan.zhihu.com/p/136630948) / [HikeMatic·徒步](https://hikematic.com/boulder-co-hiking-trails/) |
+| FL-OC-01 | 香槟缎面晚礼服 | [全球纺织网·醋酸缎](https://www.tnc.com.cn/products/detail-13596779.html) / [知乎专栏·绸缎①](https://zhuanlan.zhihu.com/p/59568944) / 同上② / [好5128·缎面](https://www.hao528.com/ss/202203/2320917.html) |
+| FL-OC-07 | 珍珠缀饰手拿包 | [百度百科·Pearl](https://baike.baidu.com/item/Pearl/23812671) ①②③④ |
+| FL-HM-01 | 素色棉质睡衣套装 | [51教习网·棉布](https://yyld.51jiaoxi.com/bixiusan/wyb_danci.html) / [Sanyu·棉织流程](https://sanyubabies.com/what-is-cotton-made-of-how-cotton-is-made-a-comprehensive-guide-from-seed-to-shelf/) / [知乎专栏·织物](https://zhuanlan.zhihu.com/p/52757598) / [知乎专栏·斜纹](https://zhuanlan.zhihu.com/p/634187050) |
+| FL-HM-07 | 香薰蜡烛助眠套装 | [什么值得买·香薰评测](https://post.smzdm.com/p/azo9204o/) ①②③ / [知乎问答·蜡烛](https://www.zhihu.com/question/296849891) |
+
+以上图片用于课程作业的教学演示，均已注明来源页；如版权方提出异议将整体替换。
