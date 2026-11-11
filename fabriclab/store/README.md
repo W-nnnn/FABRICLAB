@@ -33,4 +33,4 @@ mvn spring-boot:run --server.port=8080
 | `http://localhost:8080/main` | 品牌占位模板 |
 | `http://localhost:8080/health` | `{"status":"UP","app":"fabriclab-store","stage":"T1"}` |
 
-环境：JDK 17、Maven 3.9.16、Spring Boot 3.5.16。
+环境：JDK 25、Maven 3.9.16、Spring Boot 3.5.16。
