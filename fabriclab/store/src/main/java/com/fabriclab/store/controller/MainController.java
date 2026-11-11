@@ -28,6 +28,6 @@ public class MainController {
     @GetMapping("/health")
     @ResponseBody
     public Map<String, String> health() {
-        return Map.of("status", "UP", "app", "fabriclab-store", "stage", "T2");
+        return Map.of("status", "UP", "app", "fabriclab-store", "stage", "T3");
     }
 }

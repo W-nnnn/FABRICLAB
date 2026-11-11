@@ -14,7 +14,7 @@ class BrandServiceTest {
     }
 
     @Test
-    void stageMarksDataLayer() {
-        assertEquals("阶段 2 · 数据层与服装模型", service.stage());
+    void stageMarksCatalogModule() {
+        assertEquals("阶段 2 · 商品模块", service.stage());
     }
 }
