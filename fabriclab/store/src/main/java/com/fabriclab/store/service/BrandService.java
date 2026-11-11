@@ -6,11 +6,11 @@ import org.springframework.stereotype.Service;
 public class BrandService {
 
     public String brand() {
-        return "FabricLab-Atelier";
+        return "FABRICLAB";
     }
 
     public String tagline() {
-        return "面料实验室 · 成衣工坊";
+        return "未染";
     }
 
     public String stage() {

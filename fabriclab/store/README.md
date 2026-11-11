@@ -1,6 +1,6 @@
 # fabriclab-store
 
-FabricLab-Atelier 用户端工程，端口 8080。当前阶段：T3 分类体系与商品模型。
+FABRICLAB 用户端工程，端口 8080。当前阶段：T3 分类体系与商品模型。
 
 ## 结构
 

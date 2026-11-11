@@ -14,7 +14,7 @@
     <groupId>com.fabriclab</groupId>
     <artifactId>fabriclab-store</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>FabricLab-Atelier Store</name>
+    <name>FABRICLAB Store</name>
 
     <properties>
         <java.version>25</java.version>

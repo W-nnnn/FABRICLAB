@@ -25,7 +25,7 @@ mysql -u root -p < fabriclab/store/src/main/resources/db/seed-data.sql
 | alice | 林晓 | CUSTOMER | ENABLED | 购物车 6 项、订单 5 张（DEMO-202611-AL-01~05） |
 | bob | 陈晨 | CUSTOMER | ENABLED | 购物车 4 项、订单 5 张（DEMO-202611-BO-01~05） |
 | disabled | 禁用教学账号 | CUSTOMER | DISABLED | 登录被拒场景 |
-| admin | 工坊管理员 | ADMIN | ENABLED | 管理端登录 |
+| admin | 平台管理员 | ADMIN | ENABLED | 管理端登录 |
 
 ## 种子数据规模
 
