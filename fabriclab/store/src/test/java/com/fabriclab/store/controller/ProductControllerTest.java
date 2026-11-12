@@ -13,12 +13,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import com.fabriclab.store.mapper.StoreUserMapper;
+import com.fabriclab.store.security.CsrfService;
+import com.fabriclab.store.service.CurrentUserService;
+
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -39,8 +44,20 @@ class ProductControllerTest {
     @MockitoBean
     private DetailService detailService;
 
+
+    @MockitoBean
+    private CsrfService csrfService;
+
+    @MockitoBean
+    private CurrentUserService currentUserService;
+
+    @MockitoBean
+    private StoreUserMapper storeUserMapper;
+
     @BeforeEach
     void stubBrand() {
+        lenient().when(csrfService.token(any())).thenReturn("token-x");
+        lenient().when(currentUserService.from(any())).thenReturn(null);
         lenient().when(brandService.brand()).thenReturn("FABRICLAB");
         lenient().when(brandService.tagline()).thenReturn("未染");
     }

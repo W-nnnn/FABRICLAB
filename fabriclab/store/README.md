@@ -1,6 +1,6 @@
 # fabriclab-store
 
-FABRICLAB 用户端工程，端口 8080。当前阶段：T7 注册与服务端验证码。
+FABRICLAB 用户端工程，端口 8080。当前阶段：T8 登录、会话与访问检查。
 
 ## 结构
 
@@ -8,11 +8,17 @@ FABRICLAB 用户端工程，端口 8080。当前阶段：T7 注册与服务端�
 src/main/java/com/fabriclab/store/
 ├── StoreApplication.java            启动类
 ├── config/MybatisPlusConfig.java    分页插件（数据库 LIMIT 分页）
+├── config/WebMvcConfig.java         拦截器装配：CSRF 全 POST 校验、受保护入口访问检查
 ├── controller/MainController.java   首页（新品上架 ≤3、精选推荐 ≤4）与健康检查
 ├── controller/BrowseController.java 商品列表 /category：GET 整页刷新
 ├── controller/ProductController.java 商品详情 /product?id=：仅上架可看
 ├── controller/RegisterController.java 会员注册 /register：GET 表单、POST 提交
-├── controller/GlobalExceptionHandler.java 400 / 404 / 500 统一错误页
+├── controller/SignonController.java 登录 /signon 与退出 /signout（POST + CSRF）
+├── controller/CurrentUserAdvice.java 全局模型：CSRF 令牌与当前登录身份
+├── controller/GlobalExceptionHandler.java 400 / 403 / 404 / 500 统一错误页
+├── security/CsrfService.java        会话级 CSRF 令牌：生成与校验
+├── security/CsrfInterceptor.java    全部 POST 写请求令牌校验
+├── security/AuthInterceptor.java    受保护入口：未登录跳转、角色与启用状态每次请求查库复核
 ├── service/BrandService.java        品牌展示信息
 ├── service/CategoryService.java     两级分类：编码唯一、同级名唯一、二级必须挂一级
 ├── service/ProductService.java      单 SKU 商品：款号唯一、必归二级分类、version 递增
@@ -20,7 +26,10 @@ src/main/java/com/fabriclab/store/
 ├── service/DetailService.java       详情：ID 定位、相册升序、封面回退、分类路径
 ├── service/CaptchaService.java      服务端验证码：一次性消费、5 分钟有效、可注入时钟
 ├── service/RegistrationService.java 注册：仅 CUSTOMER/ENABLED、用户名唯一、BCrypt 存储
+├── service/AuthService.java         登录：四态统一失败、会话标识更换、站内返回页白名单
+├── service/CurrentUserService.java  会话身份读取、数据归属校验（requireOwner → 404）
 ├── model/CategoryType.java          类型三值由分类编码后缀映射（*_GAR / *_ACC / 其余 ALL）
+├── model/CurrentUser.java           登录后的最小身份（不含密码散列与角色原文）
 ├── model/BrowseQuery.java           列表参数解析：页码归一、页大小 1—50、关键字 ≤120
 ├── model/Quantity.java              购买数量：缺省 1，仅接受 1—99 整数
 ├── model/PasswordPolicy.java        注册密码：8—32 个字符且至少两类
@@ -28,6 +37,7 @@ src/main/java/com/fabriclab/store/
 ├── model/SingleSkuText.java         尺码配色并入名称、面料档案纯文本落点
 ├── exception/BusinessException.java 业务校验异常 → HTTP 400
 ├── exception/NotFoundException.java 资源不存在 → HTTP 404（标题可定制，如商品不存在或已下架）
+├── exception/CsrfViolationException.java 无效表单防护请求 → HTTP 403
 ├── entity/                          七张业务表实体
 │   StoreUser / Category / Product / ProductImage
 │   CartItem / SalesOrder / SalesOrderItem
@@ -39,6 +49,9 @@ src/test/java/com/fabriclab/store/
 ├── controller/BrowseControllerTest.java 列表 400 / 404 / 条件回显
 ├── controller/ProductControllerTest.java 详情渲染、ID 400、不可用 404、售罄展示
 ├── controller/RegisterControllerTest.java 注册渲染、成功、失败重渲、密码不回显
+├── controller/SignonControllerTest.java 登录页渲染、登录态跳转、返回页白名单、密码不回显
+├── security/AuthInterceptorTest.java    未登录跳转、禁用/改角色/删除账号拦截并失效会话
+├── security/CsrfServiceTest.java        令牌生成复用、缺失/篡改拒绝
 ├── service/BrandServiceTest.java
 ├── service/CategoryServiceTest.java 两级约束、重复编码、更新不可变字段
 ├── service/ProductServiceTest.java  款号唯一、二级归属、version 递增
@@ -46,6 +59,8 @@ src/test/java/com/fabriclab/store/
 ├── service/DetailServiceTest.java   仅上架可看、相册升序与封面回退、ID 解析
 ├── service/CaptchaServiceTest.java  一次性消费、过期、重复使用、错误、无效
 ├── service/RegistrationServiceTest.java 账号口径、唯一性、验证码先于落库、BCrypt 格式
+├── service/AuthServiceTest.java         登录四态统一失败、会话标识更换、返回页白名单
+├── service/CurrentUserServiceTest.java  会话身份读取、归属不符 404
 ├── model/BrowseQueryTest.java       页码归一、页大小白名单、关键字截断拒绝
 ├── model/QuantityTest.java          数量缺省 1、1—99 白名单
 ├── model/PasswordPolicyTest.java    密码长度与两类字符、明文不入异常信息
@@ -55,6 +70,7 @@ src/test/java/com/fabriclab/store/
 ├── BrowseIntegrationTest.java       真库首页两栏与列表验收 AC-01~03（需 MYSQL_PASSWORD）
 ├── DetailIntegrationTest.java       真库详情验收 AC-04：相册有序、封面回退、下架 404、售罄不扣库存
 ├── RegistrationIntegrationTest.java 真库注册验收：成功落库、重复用户名、非法密码、验证码错误与重复使用
+├── AuthIntegrationTest.java         真库登录会话验收 AC-05~07/31：四态统一失败、禁用拦截、退出失效、CSRF 403
 └── SchemaIntegrationTest.java        真实库连通与七表存在性（需 MYSQL_PASSWORD）
 ```
 
@@ -89,6 +105,7 @@ mvn test -Dtest=SchemaIntegrationTest
 | `http://localhost:8080/category` | 商品列表：两级分类筛选、类型按钮、名称搜索、排序四值、分页默认 6（1—50） |
 | `http://localhost:8080/product?id=1` | 商品详情：款号与 SKU、¥ 两位小数、库存或售罄、相册有序与封面回退、数量 1—99、返回列表 |
 | `http://localhost:8080/register` | 会员注册：用户名唯一、密码 8—32 两类字符、服务端验证码一次性校验、BCrypt 落库、注册后自行登录 |
+| `http://localhost:8080/signon` | 登录：仅启用 CUSTOMER、统一失败提示、用户名回显密码不回显、站内返回页白名单 |
 | `http://localhost:8080/health` | `{"status":"UP","app":"fabriclab-store","stage":"T5"}` |
 
 浏览口径：仅上架商品出现在动态区域，零库存仍展示为「暂时缺货」；搜索只匹配名称（去首尾空白、≤120，`%` `_` 按普通字符），不搜款号；非法参数 400，分类不存在 404「分类不可用」，技术异常 500 通用失败页。
@@ -96,3 +113,5 @@ mvn test -Dtest=SchemaIntegrationTest
 详情口径：仅上架商品可看，下架或不存在统一 404「商品不存在或已下架」，不渲染可购买详情；零库存可查看但不可购买；相册按 sort_order、id 升序，无相册回退封面、封面缺失再用缺省封面；简介与纯文本详情转义输出、保留换行；数量输入 1—99（`Quantity` 后端校验，购物车模块接入时共用）；浏览与刷新不扣库存；无「你可能还喜欢」推荐区。
 
 环境：JDK 25、Maven 3.9.16、Spring Boot 3.5.16、MyBatis-Plus 3.5.18、MySQL 8.4。
+
+登录与访问口径：仅启用的 CUSTOMER 可登录用户端；不存在、错误密码、禁用、角色不符四类失败共用统一提示「账号或密码错误，或账号不可用」，用户名回显、密码不回显不记日志；登录成功更换会话标识（会话固定防护），会话只存最小身份；站内返回页仅接受本应用相对路径。退出为 POST + CSRF 状态变更，使本端会话与临时确认失效，数据库购物车不删除；用户端会话 Cookie 独立命名 `STORESESSION`，与管理端（8081）隔离。受保护入口（/cart /checkout /orders /payment /account 前缀）每次请求对照数据库复核角色与启用状态，登录后被禁用或改角色即时拦截；数据归属校验 `requireOwner` 归属不符统一 404 不泄露存在性。全部 POST 写请求校验 CSRF 令牌，缺失或篡改返回 403「无效表单防护请求」；页面输出统一转义。

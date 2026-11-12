@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -44,29 +45,53 @@ class RegistrationIntegrationTest {
         return mvc.getResponse().getContentAsString(StandardCharsets.UTF_8);
     }
 
-    /** 通过 GET 拿到页面当前验证码（模型属性），返回 token 与 code。 */
-    private CaptchaService.Captcha captchaFromPage() throws Exception {
-        MvcResult mvc = mockMvc.perform(get("/register")).andExpect(status().isOk()).andReturn();
-        return (CaptchaService.Captcha) mvc.getModelAndView().getModel().get("captcha");
+    /** 页面上下文：验证码、CSRF 令牌与同一会话。 */
+    private record PageContext(CaptchaService.Captcha captcha, String csrf, MockHttpSession session) {
     }
 
+    /** GET /register 取验证码与 CSRF 令牌，并复用同一会话提交。 */
+    private PageContext pageContext() throws Exception {
+        MvcResult mvc = mockMvc.perform(get("/register")).andExpect(status().isOk()).andReturn();
+        CaptchaService.Captcha captcha =
+                (CaptchaService.Captcha) mvc.getModelAndView().getModel().get("captcha");
+        String csrf = (String) mvc.getModelAndView().getModel().get("csrfToken");
+        MockHttpSession session = (MockHttpSession) mvc.getRequest().getSession();
+        return new PageContext(captcha, csrf, session);
+    }
+
+    /** 带显式验证码输入的提交（用于验证码错误场景）。 */
     private MvcResult postRegister(String username, String password, String confirm,
-                                   String token, String code) throws Exception {
+                                   PageContext page, String captchaInput) throws Exception {
         return mockMvc.perform(post("/register")
+                        .session(page.session())
                         .param("username", username)
                         .param("password", password)
                         .param("confirm", confirm)
-                        .param("captchaToken", token)
-                        .param("captchaInput", code))
+                        .param("_csrf", page.csrf())
+                        .param("captchaToken", page.captcha().token())
+                        .param("captchaInput", captchaInput))
+                .andExpect(status().isOk()).andReturn();
+    }
+
+    private MvcResult postRegister(String username, String password, String confirm,
+                                   PageContext page) throws Exception {
+        return mockMvc.perform(post("/register")
+                        .session(page.session())
+                        .param("username", username)
+                        .param("password", password)
+                        .param("confirm", confirm)
+                        .param("_csrf", page.csrf())
+                        .param("captchaToken", page.captcha().token())
+                        .param("captchaInput", page.captcha().code()))
                 .andExpect(status().isOk()).andReturn();
     }
 
     @Test
     void successfulRegistrationCreatesCustomerAccount() throws Exception {
         String username = "regt" + Long.toString(System.currentTimeMillis() % 100000000L);
-        CaptchaService.Captcha captcha = captchaFromPage();
+        var captcha = pageContext();
 
-        MvcResult mvc = postRegister(username, "abcd1234", "abcd1234", captcha.token(), captcha.code());
+        MvcResult mvc = postRegister(username, "abcd1234", "abcd1234", captcha);
         String html = htmlOf(mvc);
         assertTrue(html.contains("注册成功"), "成功路径应展示注册成功：" + htmlOf(mvc).substring(0, Math.min(400, html.length())));
         assertTrue(html.contains(username));
@@ -83,8 +108,8 @@ class RegistrationIntegrationTest {
 
     @Test
     void duplicateUsernameRejectedWithoutNewRow() throws Exception {
-        CaptchaService.Captcha captcha = captchaFromPage();
-        MvcResult mvc = postRegister("alice", "abcd1234", "abcd1234", captcha.token(), captcha.code());
+        var captcha = pageContext();
+        MvcResult mvc = postRegister("alice", "abcd1234", "abcd1234", captcha);
 
         assertTrue(htmlOf(mvc).contains("用户名已被使用"));
         Integer count = jdbcTemplate.queryForObject(
@@ -96,16 +121,16 @@ class RegistrationIntegrationTest {
     void invalidPasswordVariantsRejected() throws Exception {
         String username = "regt" + Long.toString(System.currentTimeMillis() % 100000000L);
 
-        CaptchaService.Captcha first = captchaFromPage();
+        var first = pageContext();
         assertTrue(htmlOf(postRegister(username, "a1" + "x".repeat(5), "a1" + "x".repeat(5),
-                        first.token(), first.code())).contains("密码长度必须为 8—32 个字符"));
+                        first)).contains("密码长度必须为 8—32 个字符"));
 
-        CaptchaService.Captcha second = captchaFromPage();
-        assertTrue(htmlOf(postRegister(username, "abcdefgh", "abcdefgh", second.token(), second.code()))
+        var second = pageContext();
+        assertTrue(htmlOf(postRegister(username, "abcdefgh", "abcdefgh", second))
                 .contains("至少两类"));
 
-        CaptchaService.Captcha third = captchaFromPage();
-        assertTrue(htmlOf(postRegister(username, "abcd1234", "abcd9999", third.token(), third.code()))
+        var third = pageContext();
+        assertTrue(htmlOf(postRegister(username, "abcd1234", "abcd9999", third))
                 .contains("两次输入的密码不一致"));
 
         Integer count = jdbcTemplate.queryForObject(
@@ -116,9 +141,9 @@ class RegistrationIntegrationTest {
     @Test
     void wrongCaptchaCodeRejected() throws Exception {
         String username = "regt" + Long.toString(System.currentTimeMillis() % 100000000L);
-        CaptchaService.Captcha captcha = captchaFromPage();
+        var captcha = pageContext();
 
-        MvcResult mvc = postRegister(username, "abcd1234", "abcd1234", captcha.token(), "ZZZZ");
+        MvcResult mvc = postRegister(username, "abcd1234", "abcd1234", captcha, "ZZZZ");
         assertTrue(htmlOf(mvc).contains("验证码错误"));
         Integer count = jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM store_user WHERE username=?", Integer.class, username);
@@ -128,12 +153,12 @@ class RegistrationIntegrationTest {
     @Test
     void reusedCaptchaTokenRejected() throws Exception {
         String username = "regt" + Long.toString(System.currentTimeMillis() % 100000000L);
-        CaptchaService.Captcha captcha = captchaFromPage();
+        var captcha = pageContext();
 
         // 第一次提交验证码错误（该验证码被消费），第二次带正确验证码重复使用同一令牌
-        assertTrue(htmlOf(postRegister(username, "abcd1234", "abcd1234", captcha.token(), "ZZZZ"))
+        assertTrue(htmlOf(postRegister(username, "abcd1234", "abcd1234", captcha, "ZZZZ"))
                 .contains("验证码错误"));
-        MvcResult second = postRegister(username, "abcd1234", "abcd1234", captcha.token(), captcha.code());
+        MvcResult second = postRegister(username, "abcd1234", "abcd1234", captcha);
         assertTrue(htmlOf(second).contains("验证码已使用"), "同一令牌第二次提交必须被拒绝");
     }
 
