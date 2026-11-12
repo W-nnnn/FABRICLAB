@@ -65,14 +65,23 @@
             </p>
 
             <div class="detail-buy">
-                <label>
-                    数量
-                    <input type="number" name="quantity" value="1" min="1" max="99" step="1"
-                           th:disabled="${view.soldOut()}" aria-label="购买数量" />
-                </label>
-                <button type="button" disabled
-                        th:title="${view.soldOut() ? '零库存商品暂不可购买' : '购物车模块开放后可用'}">加入购物车</button>
-                <p class="detail-buy__note">购物车与下单功能将在后续任务开放，当前仅支持浏览。</p>
+                <p class="detail-buy__flash detail-buy__flash--ok" th:if="${cartError == null && cartAdded != null}"
+                   th:text="|已加入购物车，当前该款共 ${cartAdded} 件，可继续选购或进入购物车|">已加入购物车</p>
+                <p class="detail-buy__flash detail-buy__flash--warn" th:if="${cartError != null}"
+                   th:text="${cartError}">加入失败提示</p>
+                <form class="detail-buy__form" th:action="@{/cart/add}" method="post">
+                    <input type="hidden" name="_csrf" th:value="${csrfToken}" />
+                    <input type="hidden" name="productId" th:value="${view.product().id}" />
+                    <label>
+                        数量
+                        <input type="number" name="quantity" value="1" min="1" max="99" step="1"
+                               th:disabled="${view.soldOut()}" aria-label="购买数量" />
+                    </label>
+                    <button type="submit" th:disabled="${view.soldOut()}"
+                            th:title="${view.soldOut() ? '零库存商品暂不可购买' : '加入购物车'}">加入购物车</button>
+                </form>
+                <p class="detail-buy__note" th:if="${view.soldOut()}">该商品暂时无法购买，可先浏览其他商品。</p>
+                <a class="detail-buy__cart" th:href="@{/cart}">查看购物车</a>
             </div>
         </div>
     </section>

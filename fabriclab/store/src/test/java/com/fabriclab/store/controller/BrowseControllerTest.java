@@ -15,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import com.fabriclab.store.mapper.StoreUserMapper;
 import com.fabriclab.store.security.CsrfService;
+import com.fabriclab.store.service.CartService;
 import com.fabriclab.store.service.CurrentUserService;
 
 import org.springframework.test.web.servlet.MockMvc;
@@ -49,6 +50,9 @@ class BrowseControllerTest {
 
     @MockitoBean
     private CurrentUserService currentUserService;
+
+    @MockitoBean
+    private CartService cartService;
 
     @MockitoBean
     private StoreUserMapper storeUserMapper;

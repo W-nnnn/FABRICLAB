@@ -291,3 +291,68 @@ img { max-width: 100%; display: block; }
 }
 .signon-form button:hover { background: var(--rust); color: #FFF; }
 .signon-note { font-size: 12px; color: var(--muted); margin: 8px 0 0; }
+
+/* 购物车徽标 */
+.nav-cart { align-self: center; font-size: 14px; display: inline-flex; gap: 6px; align-items: center; }
+.nav-cart__badge {
+    display: inline-block; min-width: 20px; text-align: center;
+    background: var(--rust); color: #FFF; border-radius: 10px;
+    font-size: 12px; padding: 2px 7px;
+}
+
+/* 购物车页 */
+.cart-main { padding: 40px 0 72px; }
+.cart-main h1 { font-size: 26px; letter-spacing: 3px; margin: 0 0 20px; }
+.cart-flash {
+    padding: 10px 14px; font-size: 14px; margin: 0 0 16px;
+    border: 1px solid var(--line); background: #FFF;
+}
+.cart-flash--warn { background: #FBEDE6; color: var(--rust); border-color: #E8CDBB; }
+.cart-empty {
+    background: #FFF; border: 1px solid var(--line);
+    padding: 48px 24px; text-align: center; color: var(--muted);
+}
+.cart-empty__link {
+    display: inline-block; margin-top: 16px;
+    border: 1px solid var(--ink); padding: 10px 28px; background: #FFF;
+}
+.cart-empty__link:hover { background: var(--ink); color: var(--cream); }
+.cart-table { width: 100%; border-collapse: collapse; background: #FFF; border: 1px solid var(--line); }
+.cart-table th, .cart-table td { padding: 14px 12px; border-bottom: 1px solid var(--line); text-align: left; font-size: 14px; vertical-align: middle; }
+.cart-table th { background: var(--cream); font-weight: 600; letter-spacing: 1px; }
+.cart-row--invalid td { color: var(--muted); }
+.cart-goods { display: flex; gap: 12px; align-items: center; }
+.cart-goods__media img { width: 64px; height: 64px; object-fit: cover; display: block; }
+.cart-goods__name { display: block; font-weight: 600; }
+.cart-goods__sku { color: var(--muted); }
+.cart-qty { display: inline-flex; gap: 8px; align-items: center; }
+.cart-qty__input { width: 72px; padding: 7px 8px; border: 1px solid var(--line); font-family: inherit; }
+.cart-qty button { border: 1px solid var(--ink); background: #FFF; padding: 7px 14px; cursor: pointer; }
+.cart-qty button:hover { background: var(--ink); color: var(--cream); }
+.cart-qty--plain { color: var(--muted); }
+.cart-remove button { border: none; background: transparent; color: var(--rust); cursor: pointer; padding: 4px 0; }
+.cart-remove button:hover { text-decoration: underline; }
+.cart-summary { margin-top: 20px; background: #FFF; border: 1px solid var(--line); padding: 20px 24px; display: flex; flex-direction: column; gap: 10px; }
+.cart-summary p { margin: 0; font-size: 14px; display: flex; justify-content: space-between; }
+.cart-summary__total { color: var(--rust); font-size: 20px; }
+.cart-checkout {
+    align-self: flex-end; border: none; background: var(--ink); color: var(--cream);
+    padding: 12px 42px; letter-spacing: 3px; cursor: pointer; font-size: 15px;
+}
+.cart-checkout:disabled { background: var(--line); color: var(--muted); cursor: not-allowed; }
+.cart-summary__note { color: var(--muted); font-size: 12px !important; }
+
+/* 详情页加购反馈 */
+.detail-buy__form { display: flex; gap: 14px; align-items: flex-end; }
+.detail-buy__form label { display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
+.detail-buy__form input { width: 90px; padding: 9px 10px; border: 1px solid var(--line); font-family: inherit; }
+.detail-buy__form button {
+    border: none; background: var(--ink); color: var(--cream);
+    padding: 11px 26px; cursor: pointer; letter-spacing: 2px; font-size: 14px;
+}
+.detail-buy__form button:hover:not(:disabled) { background: var(--rust); }
+.detail-buy__form button:disabled { background: var(--line); color: var(--muted); cursor: not-allowed; }
+.detail-buy__flash { padding: 9px 12px; font-size: 13px; margin: 0 0 12px; border: 1px solid var(--line); }
+.detail-buy__flash--ok { background: #EAF3EA; color: #2E6B34; border-color: #CBE2CB; }
+.detail-buy__flash--warn { background: #FBEDE6; color: var(--rust); border-color: #E8CDBB; }
+.detail-buy__cart { display: inline-block; margin-top: 14px; font-size: 13px; color: var(--muted); text-decoration: underline; }

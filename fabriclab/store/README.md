@@ -43,13 +43,14 @@ src/main/java/com/fabriclab/store/
 │   CartItem / SalesOrder / SalesOrderItem
 └── mapper/                          对应 Mapper，继承 BaseMapper
 src/main/resources/application.yml   端口、数据源、MyBatis-Plus
-src/main/resources/templates/        index 首页 / category 列表 / error 错误 / fragments 卡片
+src/main/resources/templates/        index 首页 / category 列表 / product 详情 / cart 购物车 / signon 登录 / register 注册 / error 错误 / fragments 片段
 src/test/java/com/fabriclab/store/
 ├── controller/MainControllerTest.java   首页渲染（Mock 服务层）
 ├── controller/BrowseControllerTest.java 列表 400 / 404 / 条件回显
 ├── controller/ProductControllerTest.java 详情渲染、ID 400、不可用 404、售罄展示
 ├── controller/RegisterControllerTest.java 注册渲染、成功、失败重渲、密码不回显
 ├── controller/SignonControllerTest.java 登录页渲染、登录态跳转、返回页白名单、密码不回显
+├── controller/CartControllerTest.java   购物车页渲染、失效阻止结算、加入反馈、修改与移除重定向
 ├── security/AuthInterceptorTest.java    未登录跳转、禁用/改角色/删除账号拦截并失效会话
 ├── security/CsrfServiceTest.java        令牌生成复用、缺失/篡改拒绝
 ├── service/BrandServiceTest.java
@@ -60,6 +61,7 @@ src/test/java/com/fabriclab/store/
 ├── service/CaptchaServiceTest.java  一次性消费、过期、重复使用、错误、无效
 ├── service/RegistrationServiceTest.java 账号口径、唯一性、验证码先于落库、BCrypt 格式
 ├── service/AuthServiceTest.java         登录四态统一失败、会话标识更换、返回页白名单
+├── service/CartServiceTest.java         同款累加、1—99、20 种上限、库存与上架、版本与归属、失效判定
 ├── service/CurrentUserServiceTest.java  会话身份读取、归属不符 404
 ├── model/BrowseQueryTest.java       页码归一、页大小白名单、关键字截断拒绝
 ├── model/QuantityTest.java          数量缺省 1、1—99 白名单
@@ -71,6 +73,7 @@ src/test/java/com/fabriclab/store/
 ├── DetailIntegrationTest.java       真库详情验收 AC-04：相册有序、封面回退、下架 404、售罄不扣库存
 ├── RegistrationIntegrationTest.java 真库注册验收：成功落库、重复用户名、非法密码、验证码错误与重复使用
 ├── AuthIntegrationTest.java         真库登录会话验收 AC-05~07/31：四态统一失败、禁用拦截、退出失效、CSRF 403
+├── CartIntegrationTest.java         真库购物车验收 AC-08~11：累加合并、非法与第 21 种不写库、退出重登保留、跨账号 404、旧版本拒绝、失效保留与移除
 └── SchemaIntegrationTest.java        真实库连通与七表存在性（需 MYSQL_PASSWORD）
 ```
 
