@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FABRICLAB · 提示</title>
+    <link rel="stylesheet" th:href="@{/css/store.css}" />
+</head>
+<body class="error-page">
+<main class="shell error-main">
+    <p class="error-code"
+       th:text="${statusCode != null ? statusCode : (status != null ? status : 500)}">400</p>
+    <h1 th:text="${errorTitle != null ? errorTitle : '页面不存在'}">提示</h1>
+    <p th:text="${errorMessage != null ? errorMessage : '请求的资源不存在或暂时无法访问'}">说明</p>
+    <div class="error-actions">
+        <a th:href="@{/main}">返回首页</a>
+        <a th:href="@{/category}">返回商品列表</a>
+    </div>
+</main>
+</body>
+</html>

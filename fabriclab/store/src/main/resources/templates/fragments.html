@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<body>
+<a th:fragment="productCard(product)" class="product-card" th:href="@{/product(id=${product.id})}">
+    <span class="product-card__media">
+        <img th:src="${#strings.isEmpty(product.coverImage) ? '/images/logo.png' : '/' + product.coverImage}"
+             th:alt="${product.name}" loading="lazy" />
+    </span>
+    <span class="product-card__name" th:text="${product.name}">商品名称</span>
+    <span class="product-card__summary" th:if="${!#strings.isEmpty(product.summary)}"
+          th:text="${product.summary}">简介</span>
+    <span class="product-card__meta">
+        <strong th:text="|¥ ${#numbers.formatDecimal(product.price, 1, 2)}|">¥ 0.00</strong>
+        <b class="stock stock--ok" th:if="${product.stock > 0}">现货</b>
+        <b class="stock stock--out" th:if="${product.stock == 0}">暂时缺货</b>
+    </span>
+    <span class="product-card__link">查看详情</span>
+</a>
+</body>
+</html>
