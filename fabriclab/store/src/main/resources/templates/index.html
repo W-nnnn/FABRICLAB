@@ -2,13 +2,88 @@
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8" />
-    <title th:text="${brand}">FABRICLAB</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:text="|${brand} · 首页|">FABRICLAB · 首页</title>
+    <link rel="stylesheet" th:href="@{/css/store.css}" />
 </head>
-<body>
-<main>
-    <h1 th:text="${brand}">FABRICLAB</h1>
-    <p th:text="${tagline}">未染</p>
-    <p th:text="${stage}">阶段 1 · 项目初始化</p>
+<body class="home-page">
+<header class="site-header">
+    <div class="shell header-top">
+        <a class="brand" th:href="@{/main}">
+            <img th:src="@{/images/logo.png}" alt="FABRICLAB 标志" />
+            <span><b th:text="${brand}">FABRICLAB</b><small th:text="${tagline}">未染</small></span>
+        </a>
+        <nav class="top-nav" aria-label="主导航">
+            <a class="is-active" th:href="@{/main}">首页</a>
+            <a th:href="@{/category}">选购</a>
+        </nav>
+    </div>
+    <div class="shell search-row">
+        <form th:action="@{/category}" method="get" role="search">
+            <input type="text" name="keyword" maxlength="120" placeholder="搜索成衣或配饰名称"
+                   aria-label="搜索商品名称" />
+            <input type="submit" value="搜索" />
+        </form>
+    </div>
+</header>
+
+<main class="shell home-main">
+    <section class="hero">
+        <span class="hero__eyebrow">FABRIC FIRST · 面料先行</span>
+        <h1 th:text="|${brand} ${tagline}|">FABRICLAB 未染</h1>
+        <p>坯布先于剪裁。从通勤到居家的成衣与配饰，均以面料为起点认真筛选。</p>
+        <a class="hero__cta" th:href="@{/category}">立即选购 <span aria-hidden="true">→</span></a>
+    </section>
+
+    <section class="category-strip" aria-label="系列线分类" th:if="${!home.lines().isEmpty()}">
+        <div class="category-strip__item" th:each="branch : ${home.lines()}">
+            <a class="category-strip__line" th:href="@{/category(category=${branch.line().id})}">
+                <b th:text="${branch.line().name}">通勤出行</b>
+                <small th:text="${branch.line().code}">COMMUTE</small>
+            </a>
+            <div class="category-strip__children">
+                <a th:each="child : ${branch.children()}"
+                   th:href="@{/category(category=${child.id})}"
+                   th:text="${child.name}">通勤成衣</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="home-section" id="new-arrival">
+        <div class="home-section__head">
+            <h2>新品上架</h2>
+            <a th:href="@{/category}">更多 <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="product-grid" th:if="${!home.newArrivals().isEmpty()}">
+            <th:block th:each="p : ${home.newArrivals()}">
+                <a th:replace="~{fragments :: productCard(${p})}"></a>
+            </th:block>
+        </div>
+        <p class="empty-note" th:if="${home.newArrivals().isEmpty()}">暂无新品上架</p>
+    </section>
+
+    <section class="home-section" id="featured">
+        <div class="home-section__head">
+            <h2>精选推荐</h2>
+            <a th:href="@{/category}">更多 <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="product-grid" th:if="${!home.featured().isEmpty()}">
+            <th:block th:each="p : ${home.featured()}">
+                <a th:replace="~{fragments :: productCard(${p})}"></a>
+            </th:block>
+        </div>
+        <p class="empty-note" th:if="${home.featured().isEmpty()}">暂无精选商品</p>
+    </section>
+
+    <p class="empty-note empty-note--global"
+       th:if="${home.newArrivals().isEmpty() and home.featured().isEmpty()}">暂无上架商品</p>
 </main>
+
+<footer class="site-footer">
+    <div class="shell">
+        <span th:text="${brand}">FABRICLAB</span>
+        <span th:text="${tagline}">未染</span>
+    </div>
+</footer>
 </body>
 </html>
