@@ -16,7 +16,7 @@
         <nav class="top-nav" aria-label="主导航">
             <a class="is-active" th:href="@{/main}">首页</a>
             <a th:href="@{/category}">选购</a>
-            <a th:href="@{/register}">注册</a>
+            <th:block th:replace="~{fragments :: authZone}"></th:block>
         </nav>
     </div>
     <div class="shell search-row">

@@ -1,5 +1,12 @@
 server:
   port: 8080
+  servlet:
+    session:
+      # 用户端独立 Cookie 名，与管理端（8081）会话隔离（AC-06）。
+      cookie:
+        name: STORESESSION
+        http-only: true
+      timeout: 30m
 
 spring:
   application:
