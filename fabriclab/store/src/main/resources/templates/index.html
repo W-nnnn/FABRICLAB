@@ -1,90 +1,361 @@
 <!DOCTYPE html>
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title th:text="|${brand} · 首页|">FABRICLAB · 首页</title>
-    <link rel="stylesheet" th:href="@{/css/store.css}" />
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="|#{nav.brand} · #{home.title}|">FABRICLAB · 未染</title>
+    <link rel="stylesheet" th:href="@{/css/store.css}"/>
 </head>
-<body class="home-page">
-<header class="site-header">
-    <div class="shell header-top">
-        <a class="brand" th:href="@{/main}">
-            <img th:src="@{/images/logo.png}" alt="FABRICLAB 标志" />
-            <span><b th:text="${brand}">FABRICLAB</b><small th:text="${tagline}">未染</small></span>
-        </a>
-        <nav class="top-nav" aria-label="主导航">
-            <a class="is-active" th:href="@{/main}">首页</a>
-            <a th:href="@{/category}">选购</a>
-            <th:block th:replace="~{fragments :: authZone}"></th:block>
-        </nav>
-    </div>
-    <div class="shell search-row">
-        <form th:action="@{/category}" method="get" role="search">
-            <input type="text" name="keyword" maxlength="120" placeholder="搜索成衣或配饰名称"
-                   aria-label="搜索商品名称" />
-            <input type="submit" value="搜索" />
-        </form>
-    </div>
-</header>
+<body>
+<div class="page">
 
-<main class="shell home-main">
-    <section class="hero">
-        <span class="hero__eyebrow">FABRIC FIRST · 面料先行</span>
-        <h1 th:text="|${brand} ${tagline}|">FABRICLAB 未染</h1>
-        <p>坯布先于剪裁。从通勤到居家的成衣与配饰，均以面料为起点认真筛选。</p>
-        <a class="hero__cta" th:href="@{/category}">立即选购 <span aria-hidden="true">→</span></a>
-    </section>
+    <th:block th:replace="~{fragments :: anno}"></th:block>
+    <th:block th:replace="~{fragments :: header(null)}"></th:block>
 
-    <section class="category-strip" aria-label="系列线分类" th:if="${!home.lines().isEmpty()}">
-        <div class="category-strip__item" th:each="branch : ${home.lines()}">
-            <a class="category-strip__line" th:href="@{/category(category=${branch.line().id})}">
-                <b th:text="${branch.line().name}">通勤出行</b>
-                <small th:text="${branch.line().code}">COMMUTE</small>
-            </a>
-            <div class="category-strip__children">
-                <a th:each="child : ${branch.children()}"
-                   th:href="@{/category(category=${child.id})}"
-                   th:text="${child.name}">通勤成衣</a>
+    <!-- ======================================================= 首屏 -->
+    <div style="display:flex;min-height:792px;border-bottom:1px solid var(--line);position:relative">
+        <div style="width:712px;flex:none;padding:62px 0 40px 84px;display:flex;flex-direction:column">
+            <div class="eyebrow" th:text="#{home.eyebrow}">二〇二六 秋冬 · 第七辑</div>
+            <div class="disp" style="margin-top:44px;font-size:172px"
+                 th:utext="#{home.display}">未<br><span style=&quot;color:#B4643A&quot;>染</span></div>
+            <div class="song" style="margin-top:34px;font-size:19px;letter-spacing:.1em;color:var(--mute)"
+                 th:text="#{home.slogan}">布本无色，衣有十年。</div>
+            <div class="lead" style="margin-top:20px;width:398px" th:text="#{home.lead}">
+                一季只做七件。不追季，不追潮，只用未染的天然纤维，把版型磨到可以穿十年的程度。
+            </div>
+            <div style="margin-top:32px;display:flex;align-items:center;gap:24px">
+                <a class="btn" th:href="@{/category}">
+                    <span th:text="#{home.cta}">进入选购</span>
+                    <svg width="14" height="9" viewBox="0 0 15 9" fill="none" stroke="currentColor"
+                         stroke-width="1.2"><path d="M0 4.5h13.4M9.8 1l3.6 3.5-3.6 3.5"/></svg>
+                </a>
+                <a class="tlink" th:href="@{/category}" th:text="#{home.lookbook}">查看型录</a>
+            </div>
+
+            <!-- 当季首件：型录信息 -->
+            <div th:if="${home.featured() != null and !home.featured().isEmpty()}"
+                 th:with="lead0=${home.featured()[0]}"
+                 style="margin-top:24px;padding-top:18px;border-top:1px solid var(--line);
+                        display:flex;align-items:center;gap:14px">
+                <span class="tiny" style="letter-spacing:.18em" th:text="#{home.look}">FW26 / 型录 01</span>
+                <a style="font-size:12.5px;letter-spacing:.04em"
+                   th:href="@{/product(id=${lead0.id})}" th:text="${lead0.name}">羊毛开衫</a>
+                <span class="tiny" style="letter-spacing:.1em" th:text="${lead0.sku}">FL-OD-01</span>
+                <span class="din" style="font-size:11.5px;font-weight:500"
+                      th:text="|¥ ${#numbers.formatDecimal(lead0.price, 1, 2)}|">¥ 1,670.00</span>
+                <a style="margin-left:auto;display:flex;color:var(--rust)"
+                   th:href="@{/product(id=${lead0.id})}" aria-label="查看商品">
+                    <svg width="14" height="9" viewBox="0 0 15 9" fill="none" stroke="currentColor"
+                         stroke-width="1.2"><path d="M0 4.5h13.4M9.8 1l3.6 3.5-3.6 3.5"/></svg>
+                </a>
+            </div>
+
+            <!-- 本季三色 -->
+            <div style="margin-top:30px;display:flex;align-items:center;gap:22px">
+                <span class="tiny" style="letter-spacing:.18em" th:text="#{home.colours}">本季三色</span>
+                <span style="display:flex;align-items:center;gap:7px">
+                    <i style="width:11px;height:11px;border-radius:50%;background:#57554F;
+                              box-shadow:0 0 0 1px rgba(26,26,26,.15);display:block"></i>
+                    <em class="din" style="font-style:normal;font-size:8.5px;letter-spacing:.14em;
+                                           color:var(--mute)" th:text="#{colour.charcoal}">炭灰</em>
+                </span>
+                <span style="display:flex;align-items:center;gap:7px">
+                    <i style="width:11px;height:11px;border-radius:50%;background:#BFA98B;
+                              box-shadow:0 0 0 1px rgba(26,26,26,.15);display:block"></i>
+                    <em class="din" style="font-style:normal;font-size:8.5px;letter-spacing:.14em;
+                                           color:var(--mute)" th:text="#{colour.sand}">沙褐</em>
+                </span>
+                <span style="display:flex;align-items:center;gap:7px">
+                    <i style="width:11px;height:11px;border-radius:50%;background:#4B3B31;
+                              box-shadow:0 0 0 1px rgba(26,26,26,.15);display:block"></i>
+                    <em class="din" style="font-style:normal;font-size:8.5px;letter-spacing:.14em;
+                                           color:var(--mute)" th:text="#{colour.brown}">深栗</em>
+                </span>
+            </div>
+
+            <!-- 承诺细条 -->
+            <div style="margin-top:20px;display:flex;align-items:center;gap:18px;
+                        font-family:var(--f-body);font-size:10px;letter-spacing:.1em;color:var(--faint)">
+                <span style="display:flex;align-items:center;gap:5px">
+                    <span style="display:flex;color:var(--rust)">
+                        <svg width="11" height="9" viewBox="0 0 12 9" fill="none" stroke="currentColor"
+                             stroke-width="1.5"><path d="M1 4.6L4.3 7.8 11 1.2"/></svg></span>
+                    <span th:text="#{home.p1}">终身免费修补</span>
+                </span>
+                <span style="display:flex;align-items:center;gap:5px">
+                    <span style="display:flex;color:var(--rust)">
+                        <svg width="11" height="9" viewBox="0 0 12 9" fill="none" stroke="currentColor"
+                             stroke-width="1.5"><path d="M1 4.6L4.3 7.8 11 1.2"/></svg></span>
+                    <span th:text="#{home.p2}">四家工坊出品</span>
+                </span>
+                <span style="display:flex;align-items:center;gap:5px">
+                    <span style="display:flex;color:var(--rust)">
+                        <svg width="11" height="9" viewBox="0 0 12 9" fill="none" stroke="currentColor"
+                             stroke-width="1.5"><path d="M1 4.6L4.3 7.8 11 1.2"/></svg></span>
+                    <span th:text="#{home.p3}">纤维可追溯</span>
+                </span>
+            </div>
+
+            <!-- 四个数字 -->
+            <div style="margin-top:auto;display:flex;border-top:1px solid var(--line);padding-top:20px">
+                <div style="flex:1">
+                    <div class="din" style="font-size:22px;font-weight:500;letter-spacing:-.01em">100%</div>
+                    <div class="tiny" style="margin-top:8px" th:text="#{home.stat1}">天然纤维</div>
+                </div>
+                <div style="flex:1">
+                    <div class="din" style="font-size:22px;font-weight:500;letter-spacing:-.01em">05</div>
+                    <div class="tiny" style="margin-top:8px" th:text="#{home.stat2}">系列线</div>
+                </div>
+                <div style="flex:1">
+                    <div class="din" style="font-size:22px;font-weight:500;letter-spacing:-.01em">42</div>
+                    <div class="tiny" style="margin-top:8px" th:text="#{home.stat3}">本季款式</div>
+                </div>
+                <div style="flex:1">
+                    <div class="din" style="font-size:22px;font-weight:500;letter-spacing:-.01em">72h</div>
+                    <div class="tiny" style="margin-top:8px" th:text="#{home.stat4}">打版周期</div>
+                </div>
             </div>
         </div>
-    </section>
 
-    <section class="home-section" id="new-arrival">
-        <div class="home-section__head">
-            <h2>新品上架</h2>
-            <a th:href="@{/category}">更多 <span aria-hidden="true">→</span></a>
+        <!-- 右：主图 -->
+        <div style="flex:1;position:relative;overflow:hidden;background:var(--linen)">
+            <img th:src="@{/images/look/lb-03.jpg}" alt="FW26 型录"
+                 style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+                        object-position:50% 14%"/>
+            <div style="position:absolute;right:0;top:0;padding:15px 22px;font-family:var(--f-din);
+                        font-size:8.5px;letter-spacing:.22em;color:var(--mute)">FW26 / LOOK 01</div>
         </div>
-        <div class="product-grid" th:if="${!home.newArrivals().isEmpty()}">
-            <th:block th:each="p : ${home.newArrivals()}">
-                <a th:replace="~{fragments :: productCard(${p})}"></a>
-            </th:block>
-        </div>
-        <p class="empty-note" th:if="${home.newArrivals().isEmpty()}">暂无新品上架</p>
-    </section>
-
-    <section class="home-section" id="featured">
-        <div class="home-section__head">
-            <h2>精选推荐</h2>
-            <a th:href="@{/category}">更多 <span aria-hidden="true">→</span></a>
-        </div>
-        <div class="product-grid" th:if="${!home.featured().isEmpty()}">
-            <th:block th:each="p : ${home.featured()}">
-                <a th:replace="~{fragments :: productCard(${p})}"></a>
-            </th:block>
-        </div>
-        <p class="empty-note" th:if="${home.featured().isEmpty()}">暂无精选商品</p>
-    </section>
-
-    <p class="empty-note empty-note--global"
-       th:if="${home.newArrivals().isEmpty() and home.featured().isEmpty()}">暂无上架商品</p>
-</main>
-
-<footer class="site-footer">
-    <div class="shell">
-        <span th:text="${brand}">FABRICLAB</span>
-        <span th:text="${tagline}">未染</span>
     </div>
-</footer>
+
+    <!-- ======================================================= 五条系列线 -->
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:1px;
+                background:var(--line);border-bottom:1px solid var(--line)"
+         th:with="pics=${ {'/images/look/lb-02.jpg','/images/look/lb-04.jpg','/images/look/lb-10.jpg',
+                           '/images/look/lb-07.jpg','/images/look/lb-09.jpg'} }">
+        <a style="background:var(--wall)" th:each="branch, i : ${home.lines()}"
+           th:href="@{/category(category=${branch.line().id})}">
+            <div style="aspect-ratio:5/6;overflow:hidden;background:var(--linen)">
+                <img th:src="${pics[i.index % 5]}" alt="" loading="lazy"
+                     style="width:100%;height:100%;object-fit:cover;object-position:50% 18%"/>
+            </div>
+            <div style="padding:15px 16px 17px;display:flex;align-items:baseline;gap:10px">
+                <i class="din" style="font-style:normal;font-size:8.5px;letter-spacing:.16em;
+                                      color:var(--faint)"
+                   th:text="${#numbers.formatInteger(i.count, 2)}">01</i>
+                <b class="din" style="font-weight:500;font-size:10px;letter-spacing:.2em"
+                   th:text="${branch.line().name}">通勤</b>
+                <span style="margin-left:auto;color:var(--rust);display:flex">
+                    <svg width="14" height="9" viewBox="0 0 15 9" fill="none" stroke="currentColor"
+                         stroke-width="1.2"><path d="M0 4.5h13.4M9.8 1l3.6 3.5-3.6 3.5"/></svg>
+                </span>
+            </div>
+        </a>
+    </div>
+
+    <!-- ======================================================= 三条规矩 -->
+    <div style="padding:74px 84px 0">
+        <div class="ptitle">
+            <div>
+                <div class="eyebrow" th:text="#{home.rules.eb}">做法 / 三条规则</div>
+                <div class="h2" style="margin-top:14px" th:text="#{home.rules.title}">三条不让的规矩</div>
+            </div>
+            <div class="r"><a class="tlink mute" th:href="@{/category}" th:text="#{home.rules.more}">阅读工坊手记</a></div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);
+                    border-top:1px solid var(--line)">
+            <div style="background:var(--wall);padding:30px 30px 34px 0">
+                <div class="din" style="font-size:9px;letter-spacing:.2em;color:var(--rust)">01</div>
+                <div class="h3" style="margin-top:16px" th:text="#{home.r1.t}">纤维</div>
+                <div style="margin-top:10px;font-size:13px;letter-spacing:.02em" th:text="#{home.r1.sub}">
+                    未经染色的羊毛，和亚麻与棉
+                </div>
+                <div class="lead" style="margin-top:14px;font-size:12px;line-height:1.95;padding-right:26px"
+                     th:text="#{home.r1.body}">
+                    羊毛来自澳洲两家牧场，亚麻来自诺曼底一家织厂。不过染缸，不上整理剂。
+                </div>
+            </div>
+            <div style="background:var(--wall);padding:30px 30px 34px 30px">
+                <div class="din" style="font-size:9px;letter-spacing:.2em;color:var(--rust)">02</div>
+                <div class="h3" style="margin-top:16px" th:text="#{home.r2.t}">版型</div>
+                <div style="margin-top:10px;font-size:13px;letter-spacing:.02em" th:text="#{home.r2.sub}">
+                    第九版才上身
+                </div>
+                <div class="lead" style="margin-top:14px;font-size:12px;line-height:1.95;padding-right:26px"
+                     th:text="#{home.r2.body}">
+                    每一件的版型平均要改到第九版，才有资格进这一季的七件里。
+                </div>
+            </div>
+            <div style="background:var(--wall);padding:30px 0 34px 30px">
+                <div class="din" style="font-size:9px;letter-spacing:.2em;color:var(--rust)">03</div>
+                <div class="h3" style="margin-top:16px" th:text="#{home.r3.t}">修补</div>
+                <div style="margin-top:10px;font-size:13px;letter-spacing:.02em" th:text="#{home.r3.sub}">
+                    终身免费修补
+                </div>
+                <div class="lead" style="margin-top:14px;font-size:12px;line-height:1.95;padding-right:26px"
+                     th:text="#{home.r3.body}">
+                    随时可以送回来。静安工坊负责重织、重缝、换扣。
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================= 横贯大片 -->
+    <div style="position:relative;height:600px;overflow:hidden;margin-top:78px;background:var(--linen)">
+        <img th:src="@{/images/look/wide-02.jpg}" alt="" loading="lazy"
+             style="width:100%;height:100%;object-fit:cover;object-position:50% 30%"/>
+        <div style="position:absolute;inset:0;background:linear-gradient(to right,
+                    rgba(26,26,26,.62) 0%,rgba(26,26,26,.22) 46%,rgba(26,26,26,0) 74%)"></div>
+        <div style="position:absolute;left:84px;bottom:54px;color:var(--wall);max-width:430px">
+            <div class="din" style="font-size:9px;letter-spacing:.28em;opacity:.72"
+                 th:text="#{home.edit.eb}">特辑 / FW26</div>
+            <div class="disp" style="margin-top:16px;font-size:40px" th:utext="#{home.edit.title}">
+                穿旧了，<br>才算穿对了。
+            </div>
+            <div style="margin-top:14px;font-size:12px;letter-spacing:.04em;opacity:.8;line-height:1.9"
+                 th:text="#{home.edit.sub}">FW26 系列短片第 12 个镜头 · 上海西岸</div>
+            <div style="margin-top:22px">
+                <a class="btn ghost" style="border-color:rgba(242,239,233,.5);color:var(--wall)"
+                   th:href="@{/category}" th:text="#{home.edit.cta}">观看短片</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================= 工坊 -->
+    <div class="dark" style="display:flex">
+        <div style="width:596px;flex:none;overflow:hidden">
+            <img th:src="@{/images/look/wide-01.jpg}" alt="" loading="lazy"
+                 style="width:100%;height:100%;object-fit:cover;object-position:50% 18%;opacity:.95"/>
+        </div>
+        <div style="flex:1;padding:72px 84px 68px 66px;display:flex;flex-direction:column">
+            <div class="eyebrow" th:text="#{home.atelier.eb}">工坊 / 上海静安</div>
+            <div class="song" style="margin-top:26px;font-size:40px;line-height:1.42;letter-spacing:.06em"
+                 th:utext="#{home.atelier.title}">一间只做七件的<br>工坊</div>
+            <div class="lead" style="margin-top:24px;width:400px" th:text="#{home.atelier.lead}">
+                十八位版师，四家合作工坊，一条生产线。第九版版型通过之前，没有一件能出货。
+            </div>
+            <div style="margin-top:38px;display:flex;gap:52px">
+                <div>
+                    <div class="din" style="font-size:24px;font-weight:500">18</div>
+                    <div style="margin-top:8px;font-family:var(--f-body);font-size:9px;letter-spacing:.18em;
+                                color:rgba(242,239,233,.48)" th:text="#{home.atelier.n1}">版师</div>
+                </div>
+                <div>
+                    <div class="din" style="font-size:24px;font-weight:500">09</div>
+                    <div style="margin-top:8px;font-family:var(--f-body);font-size:9px;letter-spacing:.18em;
+                                color:rgba(242,239,233,.48)" th:text="#{home.atelier.n2}">版次</div>
+                </div>
+                <div>
+                    <div class="din" style="font-size:24px;font-weight:500">07</div>
+                    <div style="margin-top:8px;font-family:var(--f-body);font-size:9px;letter-spacing:.18em;
+                                color:rgba(242,239,233,.48)" th:text="#{home.atelier.n3}">一季件数</div>
+                </div>
+            </div>
+            <div style="margin-top:auto;padding-top:44px">
+                <a class="tlink" style="color:var(--wall);border-color:rgba(242,239,233,.4)"
+                   th:href="@{/category}" th:text="#{home.atelier.more}">阅读工坊手记 →</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================= 服务四栏 -->
+    <div style="padding:64px 84px 86px">
+        <div class="svc">
+            <div class="c">
+                <div class="no">SHIPPING</div>
+                <div class="t" th:text="#{svc.ship.t}">配送</div>
+                <div class="d" th:utext="#{svc.ship.d}">满 ¥1,500 包邮<br>2–3 个工作日送达</div>
+            </div>
+            <div class="c">
+                <div class="no">RETURNS</div>
+                <div class="t" th:text="#{svc.return.t}">退换</div>
+                <div class="d" th:utext="#{svc.return.d}">7 天无理由<br>上门取件</div>
+            </div>
+            <div class="c">
+                <div class="no">REPAIRS</div>
+                <div class="t" th:text="#{svc.repair.t}">修补</div>
+                <div class="d" th:utext="#{svc.repair.d}">终身免费<br>全国门店可收</div>
+            </div>
+            <div class="c">
+                <div class="no">FITTING</div>
+                <div class="t" th:text="#{svc.fit.t}">试穿</div>
+                <div class="d" th:utext="#{svc.fit.d}">预约 45 分钟<br>静安工坊</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================= 新品上架 -->
+    <div style="padding:78px 84px 0" th:if="${home.newArrivals() != null and !home.newArrivals().isEmpty()}">
+        <div class="ptitle">
+            <div>
+                <div class="eyebrow" th:text="#{home.new.eb}">新到 / 第七辑</div>
+                <div class="h2" style="margin-top:14px" th:text="#{home.new.title}">新品上架</div>
+            </div>
+            <div class="r"><a class="tlink mute" th:href="@{/category}" th:text="#{home.new.all}">查看全部 42 件</a></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:18px;border-top:1px solid var(--line);
+                    padding:13px 0 22px">
+            <span class="tiny" style="letter-spacing:.18em" th:text="#{home.new.meta}">FW26 第七辑 · 11.15 到店</span>
+            <span class="din" style="font-size:9px;letter-spacing:.18em;color:var(--rust)"
+                  th:text="|${#numbers.formatInteger(home.newArrivals().size(), 2)} / 07|">03 / 07</span>
+            <span class="tiny" style="margin-left:auto;color:var(--mute)" th:text="#{home.new.note}">
+                卖完不补，不再开版
+            </span>
+        </div>
+        <div class="g3">
+            <th:block th:each="p, s : ${home.newArrivals()}">
+                <a th:replace="~{fragments :: homeCard(${p}, ${#numbers.formatInteger(s.count, 2)}, ${s.first})}"></a>
+            </th:block>
+        </div>
+    </div>
+
+    <!-- ======================================================= 精选推荐 -->
+    <div style="margin-top:76px;background:var(--linen);padding:60px 84px 66px"
+         th:if="${home.featured() != null and !home.featured().isEmpty()}">
+        <div class="ptitle">
+            <div>
+                <div class="eyebrow" th:text="#{home.feat.eb}">为你而选 / 编辑精选</div>
+                <div class="h2" style="margin-top:14px" th:text="#{home.feat.title}">精选推荐</div>
+            </div>
+            <div class="r"><a class="tlink mute" th:href="@{/category}" th:text="#{home.feat.all}">查看全部 42 件</a></div>
+        </div>
+        <div class="lead" style="margin-top:-16px;margin-bottom:28px;width:440px;font-size:12px;
+                                 line-height:1.95" th:text="#{home.feat.lead}">
+            从本季四十二件里挑出四件：本季三色、四种穿法，每一件都按穿十年的版型裁。
+        </div>
+        <div class="g4">
+            <th:block th:each="p, s : ${home.featured()}">
+                <a th:replace="~{fragments :: card(${p}, ${#numbers.formatInteger(s.count, 2)})}"></a>
+            </th:block>
+        </div>
+        <div style="margin-top:30px;border-top:1px solid rgba(26,26,26,.16);padding-top:18px;
+                    display:flex;align-items:center;gap:22px">
+            <span class="tiny" style="letter-spacing:.18em" th:text="#{home.feat.colours}">本季三色</span>
+            <span style="display:flex;align-items:center;gap:7px">
+                <i style="width:11px;height:11px;border-radius:50%;background:#57554F;
+                          box-shadow:0 0 0 1px rgba(26,26,26,.15);display:block"></i>
+                <em class="din" style="font-style:normal;font-size:8.5px;letter-spacing:.14em;
+                                       color:var(--mute)" th:text="#{colour.charcoal}">炭灰</em>
+            </span>
+            <span style="display:flex;align-items:center;gap:7px">
+                <i style="width:11px;height:11px;border-radius:50%;background:#BFA98B;
+                          box-shadow:0 0 0 1px rgba(26,26,26,.15);display:block"></i>
+                <em class="din" style="font-style:normal;font-size:8.5px;letter-spacing:.14em;
+                                       color:var(--mute)" th:text="#{colour.sand}">沙褐</em>
+            </span>
+            <span style="display:flex;align-items:center;gap:7px">
+                <i style="width:11px;height:11px;border-radius:50%;background:#4B3B31;
+                          box-shadow:0 0 0 1px rgba(26,26,26,.15);display:block"></i>
+                <em class="din" style="font-style:normal;font-size:8.5px;letter-spacing:.14em;
+                                       color:var(--mute)" th:text="#{colour.brown}">深栗</em>
+            </span>
+            <span style="margin-left:auto;color:var(--rust);display:flex">
+                <svg width="14" height="9" viewBox="0 0 15 9" fill="none" stroke="currentColor"
+                     stroke-width="1.2"><path d="M0 4.5h13.4M9.8 1l3.6 3.5-3.6 3.5"/></svg>
+            </span>
+        </div>
+    </div>
+
+    <th:block th:replace="~{fragments :: footer}"></th:block>
+</div>
 </body>
 </html>

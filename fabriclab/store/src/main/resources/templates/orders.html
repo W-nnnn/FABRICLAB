@@ -1,94 +1,217 @@
 <!DOCTYPE html>
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title th:text="|${brand} · 我的订单|">FABRICLAB · 我的订单</title>
-    <link rel="stylesheet" th:href="@{/css/store.css}" />
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="|#{nav.brand} · #{orders.title}|">FABRICLAB · 我的订单</title>
+    <link rel="stylesheet" th:href="@{/css/store.css}"/>
 </head>
-<body class="orders-page">
-<header class="site-header">
-    <div class="shell header-top">
-        <a class="brand" th:href="@{/main}">
-            <img th:src="@{/images/logo.png}" alt="FABRICLAB 标志" />
-            <span><b th:text="${brand}">FABRICLAB</b><small th:text="${tagline}">未染</small></span>
-        </a>
-        <nav class="top-nav" aria-label="主导航">
-            <a th:href="@{/main}">首页</a>
-            <a th:href="@{/category}">选购</a>
-            <th:block th:replace="~{fragments :: authZone}"></th:block>
-        </nav>
+<body>
+<div class="page">
+
+    <th:block th:replace="~{fragments :: anno}"></th:block>
+    <th:block th:replace="~{fragments :: header(null)}"></th:block>
+
+    <div class="strip" th:if="${currentUser != null}">
+        <span class="who" th:text="|#{account.no} ${currentUser.displayName()}|">会员号</span>
+        <div class="r">
+            <span th:text="#{account.points}">2,480 积分 · 二级会员</span>
+            <span class="hi" th:text="|${result.total} #{account.orders}|">共 4 单</span>
+        </div>
     </div>
-</header>
 
-<main class="shell orders-main">
-    <h1>我的订单</h1>
+    <div style="padding:40px 84px 0;display:flex;align-items:flex-end">
+        <div>
+            <div class="eyebrow" th:text="#{account.eyebrow}">我的账户</div>
+            <div class="h2" style="margin-top:12px;font-size:34px" th:text="#{orders.heading}">我的订单</div>
+        </div>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:26px">
+            <span class="tiny" th:text="|${result.total} #{orders.count}|">共 4 单</span>
+        </div>
+    </div>
 
-    <nav class="order-tabs" aria-label="订单状态筛选">
-        <a th:href="@{/orders(orderNo=${query.orderNo()}, size=${query.size()})}"
-           th:classappend="${query.status() == null ? 'order-tabs__item--active' : ''}">全部</a>
-        <a th:each="status : ${statuses}"
-           th:href="@{/orders(status=${status.name()}, orderNo=${query.orderNo()}, size=${query.size()})}"
-           th:classappend="${query.status() == status ? 'order-tabs__item--active' : ''}"
-           th:text="${status.label()}">待支付</a>
-    </nav>
+    <!-- 状态筛选 -->
+    <div style="padding:28px 84px 0">
+        <div style="border-bottom:1px solid var(--line);display:flex;align-items:flex-end">
+            <a style="margin-right:42px;padding-bottom:15px;font-family:var(--f-body);font-size:12.5px;
+                      letter-spacing:.06em"
+               th:style="${query.status() == null}
+                         ? 'margin-right:42px;padding-bottom:15px;font-family:var(--f-body);font-size:12.5px;letter-spacing:.06em;border-bottom:1.5px solid var(--ink);color:var(--ink)'
+                         : 'margin-right:42px;padding-bottom:15px;font-family:var(--f-body);font-size:12.5px;letter-spacing:.06em;border-bottom:1.5px solid transparent;color:var(--mute)'"
+               th:href="@{/orders(orderNo=${query.orderNo()}, size=${query.size()})}"
+               th:text="#{orders.all}">全部</a>
+            <a th:each="status : ${statuses}"
+               th:style="${query.status() == status}
+                         ? 'margin-right:42px;padding-bottom:15px;font-family:var(--f-body);font-size:12.5px;letter-spacing:.06em;border-bottom:1.5px solid var(--ink);color:var(--ink)'
+                         : 'margin-right:42px;padding-bottom:15px;font-family:var(--f-body);font-size:12.5px;letter-spacing:.06em;border-bottom:1.5px solid transparent;color:var(--mute)'"
+               th:href="@{/orders(status=${status.name()}, orderNo=${query.orderNo()}, size=${query.size()})}"
+               th:text="${status.label()}">待支付</a>
+        </div>
+    </div>
 
-    <form class="order-search" th:action="@{/orders}" method="get">
-        <input type="hidden" name="status" th:value="${query.statusParam()}" />
-        <input type="hidden" name="size" th:value="${query.size()}" />
-        <input type="search" name="orderNo" maxlength="40" th:value="${query.orderNo()}"
-               placeholder="输入完整订单号" aria-label="完整订单号" />
-        <button type="submit">查询</button>
+    <!-- 订单号查询 -->
+    <form th:action="@{/orders}" method="get"
+          style="padding:22px 84px 0;display:flex;align-items:center;gap:16px">
+        <input type="hidden" name="status" th:value="${query.statusParam()}"/>
+        <input type="hidden" name="size" th:value="${query.size()}"/>
+        <div style="display:flex;align-items:center;border-bottom:1px solid var(--line2);padding-bottom:9px;
+                    width:360px">
+            <input type="search" name="orderNo" maxlength="40" th:value="${query.orderNo()}"
+                   th:placeholder="#{orders.search.ph}" aria-label="订单号"
+                   style="border:0;background:transparent;outline:none;flex:1;font-family:var(--f-body);
+                          font-weight:300;font-size:12.5px;letter-spacing:.06em"/>
+            <button type="submit" style="font-family:var(--f-body);font-size:11px;letter-spacing:.1em;
+                                         color:var(--rust)" th:text="#{orders.search}">查询</button>
+        </div>
+        <span class="tiny" th:text="#{orders.search.note}">输入完整订单号精确匹配</span>
     </form>
 
-    <section class="cart-empty" th:if="${result.total == 0}">
-        <p th:if="${query.orderNo() != null}">没有匹配该订单号的订单，请确认是否输入了完整订单号。</p>
-        <p th:unless="${query.orderNo() != null}">这里还没有订单，先去挑选几件成衣吧。</p>
-        <a class="cart-empty__link" th:href="@{/category}">去选购</a>
-    </section>
-
-    <th:block th:if="${result.total > 0}">
-        <table class="cart-table orders-table">
-            <thead>
-            <tr>
-                <th scope="col">订单号</th>
-                <th scope="col">下单时间</th>
-                <th scope="col">状态</th>
-                <th scope="col">金额</th>
-                <th scope="col">操作</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="row : ${rows}">
-                <td><code th:text="${row.order.orderNo}">FL20260101000000000000</code></td>
-                <td th:text="${#temporals.format(row.order.createdAt, 'yyyy-MM-dd HH:mm')}">2026-01-01 00:00</td>
-                <td><b class="order-state" th:text="${row.statusLabel}">待支付</b></td>
-                <td th:text="|¥ ${#numbers.formatDecimal(row.order.totalAmount, 1, 2)}|">¥ 0.00</td>
-                <td><a class="order-link" th:href="@{/orders/{id}(id=${row.order.id})}">查看详情</a></td>
-            </tr>
-            </tbody>
-        </table>
-
-        <nav class="pager" aria-label="分页" th:if="${result.pages > 1}">
-            <a th:if="${query.page() > 1}"
-               th:href="@{/orders(status=${query.statusParam()}, orderNo=${query.orderNo()},
-                   size=${query.size()}, page=${query.page() - 1})}">上一页</a>
-            <span th:text="|第 ${query.page()} / ${result.pages} 页|">第 1 / 1 页</span>
-            <a th:if="${query.page() < result.pages}"
-               th:href="@{/orders(status=${query.statusParam()}, orderNo=${query.orderNo()},
-                   size=${query.size()}, page=${query.page() + 1})}">下一页</a>
-        </nav>
-        <p class="orders-meta" th:if="${query.page() > result.pages}">
-            该页超出末页，已显示空结果。请返回有效页码继续浏览。
-        </p>
-    </th:block>
-</main>
-
-<footer class="site-footer">
-    <div class="shell">
-        <span th:text="${brand}">FABRICLAB</span>
-        <span th:text="${tagline}">未染</span>
+    <!-- 空结果 -->
+    <div class="empty" th:if="${result.total == 0}" style="padding:70px 84px 0">
+        <h2 th:if="${query.orderNo() != null}" th:text="#{orders.empty.search}">没有匹配该订单号的订单</h2>
+        <h2 th:unless="${query.orderNo() != null}" th:text="#{orders.empty.title}">这里还没有订单</h2>
+        <p th:text="#{orders.empty.body}">先去挑选几件成衣，下单后可在这里查看进度与支付。</p>
+        <div class="acts">
+            <a class="btn" th:href="@{/category}" th:text="#{orders.empty.cta}">去选购</a>
+        </div>
     </div>
-</footer>
+
+    <!-- 订单块 -->
+    <div style="padding:0 84px" th:if="${result.total > 0}">
+        <div th:each="row : ${rows}" style="padding:26px 0;border-bottom:1px solid var(--line)">
+            <div style="display:flex;align-items:baseline">
+                <a class="din" style="font-size:11px;letter-spacing:.14em"
+                   th:href="@{/orders/{id}(id=${row.order.id})}" th:text="${row.order.orderNo}">
+                    FL20260101000000000001</a>
+                <span class="din" style="margin-left:20px;font-size:9.5px;letter-spacing:.14em;color:var(--faint)"
+                      th:text="${#temporals.format(row.order.createdAt, 'yyyy-MM-dd HH:mm')}">2026-01-01 00:00</span>
+                <span style="margin-left:auto;display:flex;align-items:baseline;gap:10px">
+                    <span class="state" th:classappend="${row.order.status == 'PENDING_PAYMENT'} ? 'pay'
+                              : (${row.order.status == 'CANCELLED'} ? 'void'
+                              : (${row.order.status == 'SHIPPED' or row.order.status == 'COMPLETED'} ? 'done' : 'ship'))"
+                          th:text="${row.statusLabel}">待支付</span>
+                </span>
+            </div>
+
+            <div style="display:flex;align-items:center;margin-top:18px">
+                <div style="display:flex;gap:8px;flex:none">
+                    <div th:each="t : ${row.thumbs}"
+                         style="width:78px;height:100px;background:var(--linen);overflow:hidden">
+                        <img th:src="${'/' + t.image}" th:alt="${t.name}" loading="lazy"
+                             style="width:100%;height:100%;object-fit:cover"/>
+                    </div>
+                    <div th:if="${row.thumbs.isEmpty()}"
+                         style="width:78px;height:100px;background:var(--linen);display:flex;
+                                align-items:center;justify-content:center">
+                        <span class="din" style="font-size:9px;letter-spacing:.14em;color:var(--mute)">FW26</span>
+                    </div>
+                </div>
+                <div style="margin-left:20px">
+                    <div style="font-size:13px;letter-spacing:.03em">
+                        <span th:each="t, s : ${row.thumbs}"
+                              th:text="${(s.first ? '' : ' / ') + t.name}">本季单品</span>
+                        <span th:if="${row.thumbs.isEmpty()}" th:text="|#{orders.no} ${row.order.orderNo}|">
+                            订单号 FL20260101000000000001
+                        </span>
+                    </div>
+                    <div class="tiny" style="margin-top:7px;letter-spacing:.1em"
+                         th:text="|#{orders.no} ${row.order.orderNo}|">
+                        订单号 FL20260101000000000001
+                    </div>
+                    <div class="tiny" style="margin-top:6px;letter-spacing:.1em"
+                         th:text="|#{orders.placed} ${#temporals.format(row.order.createdAt, 'yyyy-MM-dd HH:mm')}|">
+                        下单时间 2026-01-01 00:00
+                    </div>
+                    <div class="tiny" style="margin-top:6px;letter-spacing:.1em" th:text="${row.statusLabel}">待支付</div>
+                </div>
+                <div style="margin-left:auto;text-align:right">
+                    <div class="din" style="font-size:15px;letter-spacing:.04em"
+                         th:text="|¥ ${#numbers.formatDecimal(row.order.totalAmount, 1, 2)}|">¥ 0.00</div>
+                    <div style="margin-top:12px;display:flex;justify-content:flex-end;gap:10px">
+                        <a class="btn sm" th:if="${row.order.status == 'PENDING_PAYMENT'}"
+                           th:href="@{/orders/{id}(id=${row.order.id})}" th:text="#{orders.pay}">去支付</a>
+                        <a class="btn ghost sm" th:if="${row.order.status != 'PENDING_PAYMENT'}"
+                           th:href="@{/orders/{id}(id=${row.order.id})}" th:text="#{orders.view}">查看详情</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="padding:36px 0 0;display:flex;align-items:center;gap:24px;
+                    font-family:var(--f-din);font-size:10px;letter-spacing:.18em">
+            <a th:if="${query.page() > 1}" style="color:var(--ink)"
+               th:href="@{/orders(status=${query.statusParam()}, orderNo=${query.orderNo()},
+                           size=${query.size()}, page=${query.page() - 1})}"
+               th:text="#{shop.prev}">上一页</a>
+            <span style="color:var(--ink)" th:text="${#numbers.formatInteger(query.page(), 2)}">01</span>
+            <span style="color:var(--faint)" th:text="${#numbers.formatInteger(result.pages, 2)}">01</span>
+            <a th:if="${query.page() < result.pages}" style="margin-left:auto;color:var(--mute)"
+               th:href="@{/orders(status=${query.statusParam()}, orderNo=${query.orderNo()},
+                           size=${query.size()}, page=${query.page() + 1})}"
+               th:text="#{shop.next}">下一页 →</a>
+        </div>
+        <p class="tiny" style="padding-top:16px" th:if="${query.page() > result.pages}"
+           th:text="#{orders.over.page}">该页超出末页，已显示空结果。</p>
+    </div>
+
+    <!-- 账户快捷 -->
+    <div style="padding:64px 84px 0">
+        <div class="ptitle">
+            <div>
+                <div class="eyebrow" th:text="#{account.shortcut.eb}">账户 / 快捷入口</div>
+                <div class="h2" style="margin-top:14px" th:text="#{account.shortcut.title}">账户里的其他</div>
+            </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);
+                    border-top:1px solid var(--line)">
+            <a style="background:var(--wall);padding:24px 24px 26px" th:href="@{/category}">
+                <div style="display:flex;align-items:baseline">
+                    <span class="din" style="font-size:8.5px;letter-spacing:.2em;color:var(--faint)">01</span>
+                    <span style="margin-left:auto;color:var(--rust);display:flex">
+                        <svg width="14" height="9" viewBox="0 0 15 9" fill="none" stroke="currentColor"
+                             stroke-width="1.2"><path d="M0 4.5h13.4M9.8 1l3.6 3.5-3.6 3.5"/></svg></span>
+                </div>
+                <div style="margin-top:16px;font-size:13.5px;letter-spacing:.04em" th:text="#{account.a1}">继续选购</div>
+                <div class="tiny" style="margin-top:8px;line-height:1.9" th:text="#{account.a1.d}">本季全部在售</div>
+            </a>
+            <a style="background:var(--wall);padding:24px 24px 26px" th:href="@{/cart}">
+                <div style="display:flex;align-items:baseline">
+                    <span class="din" style="font-size:8.5px;letter-spacing:.2em;color:var(--faint)">02</span>
+                    <span style="margin-left:auto;color:var(--rust);display:flex">
+                        <svg width="14" height="9" viewBox="0 0 15 9" fill="none" stroke="currentColor"
+                             stroke-width="1.2"><path d="M0 4.5h13.4M9.8 1l3.6 3.5-3.6 3.5"/></svg></span>
+                </div>
+                <div style="margin-top:16px;font-size:13.5px;letter-spacing:.04em" th:text="#{account.a2}">购物袋</div>
+                <div class="tiny" style="margin-top:8px;line-height:1.9"
+                     th:text="|${cartBadge == null ? 0 : cartBadge} #{account.a2.d}|">袋中件数</div>
+            </a>
+            <a style="background:var(--wall);padding:24px 24px 26px" th:href="@{/main}">
+                <div style="display:flex;align-items:baseline">
+                    <span class="din" style="font-size:8.5px;letter-spacing:.2em;color:var(--faint)">03</span>
+                    <span style="margin-left:auto;color:var(--rust);display:flex">
+                        <svg width="14" height="9" viewBox="0 0 15 9" fill="none" stroke="currentColor"
+                             stroke-width="1.2"><path d="M0 4.5h13.4M9.8 1l3.6 3.5-3.6 3.5"/></svg></span>
+                </div>
+                <div style="margin-top:16px;font-size:13.5px;letter-spacing:.04em" th:text="#{account.a3}">品牌手记</div>
+                <div class="tiny" style="margin-top:8px;line-height:1.9" th:text="#{account.a3.d}">面料与工坊</div>
+            </a>
+            <form style="background:var(--wall);padding:24px 24px 26px" th:action="@{/signout}" method="post">
+                <input type="hidden" name="_csrf" th:value="${csrfToken}"/>
+                <div style="display:flex;align-items:baseline">
+                    <span class="din" style="font-size:8.5px;letter-spacing:.2em;color:var(--faint)">04</span>
+                    <span style="margin-left:auto;color:var(--rust);display:flex">
+                        <svg width="14" height="9" viewBox="0 0 15 9" fill="none" stroke="currentColor"
+                             stroke-width="1.2"><path d="M0 4.5h13.4M9.8 1l3.6 3.5-3.6 3.5"/></svg></span>
+                </div>
+                <button type="submit" style="margin-top:16px;font-size:13.5px;letter-spacing:.04em;text-align:left"
+                        th:text="#{account.a4}">退出登录</button>
+                <div class="tiny" style="margin-top:8px;line-height:1.9" th:text="#{account.a4.d}">本次会话结束</div>
+            </form>
+        </div>
+    </div>
+
+    <div style="height:70px"></div>
+    <th:block th:replace="~{fragments :: footer}"></th:block>
+</div>
 </body>
 </html>

@@ -1,78 +1,155 @@
 <!DOCTYPE html>
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title th:text="|${brand} · 会员注册|">FABRICLAB · 会员注册</title>
-    <link rel="stylesheet" th:href="@{/css/store.css}" />
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="|#{nav.brand} · #{signup.title}|">FABRICLAB · 注册</title>
+    <link rel="stylesheet" th:href="@{/css/store.css}"/>
 </head>
-<body class="register-page">
-<header class="site-header">
-    <div class="shell header-top">
-        <a class="brand" th:href="@{/main}">
-            <img th:src="@{/images/logo.png}" alt="FABRICLAB 标志" />
-            <span><b th:text="${brand}">FABRICLAB</b><small th:text="${tagline}">未染</small></span>
-        </a>
-        <nav class="top-nav" aria-label="主导航">
-            <a th:href="@{/main}">首页</a>
-            <a th:href="@{/category}">选购</a>
-            <th:block th:replace="~{fragments :: authZone}"></th:block>
-        </nav>
-    </div>
-</header>
+<body>
+<div class="page">
 
-<main class="shell register-main">
-    <section class="register-panel">
-        <th:block th:if="${registeredUsername == null}">
-            <h1>会员注册</h1>
-            <p class="register-error" th:if="${error != null}" th:text="${error}">错误提示</p>
-            <form class="register-form" th:action="@{/register}" method="post">
-                <input type="hidden" name="_csrf" th:value="${csrfToken}" />
-                <label>
-                    用户名
-                    <input type="text" name="username" maxlength="50" required
-                           th:value="${inputUsername}" aria-label="用户名" />
-                    <small>最长 50 个字符，创建后不可修改</small>
-                </label>
-                <label>
-                    密码
-                    <input type="password" name="password" required aria-label="密码" />
-                    <small>8—32 个字符，须包含字母、数字、符号中的至少两类</small>
-                </label>
-                <label>
-                    确认密码
-                    <input type="password" name="confirm" required aria-label="确认密码" />
-                </label>
-                <input type="hidden" name="captchaToken" th:value="${captcha.token()}" />
-                <label>
-                    验证码
-                    <span class="captcha-box" th:text="${captcha.code()}">ABCD</span>
-                    <input type="text" name="captchaInput" maxlength="4" required aria-label="验证码" />
-                    <small>不区分大小写，每次提交后需重新获取</small>
-                </label>
-                <button type="submit">创建账号</button>
-            </form>
-            <p class="register-note">账号角色为顾客，注册成功后即可用于登录。</p>
-        </th:block>
-        <th:block th:if="${registeredUsername != null}">
-            <h1>注册成功</h1>
-            <p>
-                账号 <code th:text="${registeredUsername}">username</code> 已创建，
-                角色为顾客。请返回首页浏览商品，登录功能开放后即可登录选购。
-            </p>
-            <div class="register-actions">
-                <a th:href="@{/main}">返回首页</a>
-                <a th:href="@{/category}">去逛逛</a>
+    <div style="display:flex;height:1060px">
+        <!-- 左：表单 -->
+        <div style="flex:1;padding:42px 92px 44px 84px;display:flex;flex-direction:column">
+            <div style="display:flex;align-items:center">
+                <a style="display:flex;align-items:center;gap:11px" th:href="@{/main}">
+                    <img th:src="@{/images/mark.png}" alt="" style="height:26px"/>
+                    <b class="din" style="font-size:15px;letter-spacing:.22em;font-weight:700">FABRICLAB</b>
+                </a>
+                <span style="margin-left:auto">
+                    <a class="lang" th:href="${langHref + (lang == 'en' ? 'lang=zh' : 'lang=en')}">
+                        <b th:if="${lang == 'en'}">EN</b><span th:unless="${lang == 'en'}">EN</span>
+                        <i>/</i>
+                        <b th:if="${lang != 'en'}">中文</b><span th:unless="${lang != 'en'}">中文</span>
+                    </a>
+                </span>
             </div>
-        </th:block>
-    </section>
-</main>
 
-<footer class="site-footer">
-    <div class="shell">
-        <span th:text="${brand}">FABRICLAB</span>
-        <span th:text="${tagline}">未染</span>
+            <div style="margin-top:auto">
+                <!-- 已注册：结果 -->
+                <th:block th:if="${registeredUsername != null}">
+                    <div class="eyebrow" th:text="#{signup.done.eb}">注册成功</div>
+                    <div class="h2" style="margin-top:22px;font-size:36px" th:text="#{signup.done}">账号已创建</div>
+                    <div class="lead" style="margin-top:14px;width:360px;font-size:12px">
+                        <span th:text="#{signup.done.body}">账号</span>
+                        <b class="din" th:text="${registeredUsername}">username</b>
+                        <span th:text="#{signup.done.body2}">已创建，角色为顾客，可直接登录。</span>
+                    </div>
+                    <div style="margin-top:34px;display:flex;gap:12px">
+                        <a class="btn" th:href="@{/signon}" th:text="#{signup.done.signin}">前往登录</a>
+                        <a class="btn ghost" th:href="@{/category}" th:text="#{signup.done.shop}">去逛逛</a>
+                    </div>
+                </th:block>
+
+                <!-- 未注册：表单 -->
+                <th:block th:if="${registeredUsername == null}">
+                    <div class="eyebrow" th:text="#{signup.eyebrow}">注册</div>
+                    <div class="h2" style="margin-top:22px;font-size:36px" th:text="#{signup.heading}">成为会员</div>
+                    <div class="lead" style="margin-top:14px;width:340px;font-size:12px" th:text="#{signup.lead}">
+                        注册后可使用购物袋与订单，随时查看购买记录。
+                    </div>
+
+                    <p class="flash warn" style="margin:24px 0 0" th:if="${error != null}" th:text="${error}">错误提示</p>
+
+                    <form th:action="@{/register}" method="post" style="margin-top:34px">
+                        <input type="hidden" name="_csrf" th:value="${csrfToken}"/>
+
+                        <div class="field">
+                            <label class="lb" for="username" th:text="#{signup.username}">用户名</label>
+                            <input id="username" type="text" name="username" maxlength="50" required
+                                   th:value="${inputUsername}" autocomplete="username"/>
+                        </div>
+                        <div style="display:flex;gap:20px">
+                            <div class="field" style="flex:1">
+                                <label class="lb" for="password" th:text="#{signup.password}">密码</label>
+                                <input id="password" type="password" name="password" required
+                                       autocomplete="new-password"/>
+                            </div>
+                            <div class="field" style="flex:1">
+                                <label class="lb" for="confirm" th:text="#{signup.confirm}">确认密码</label>
+                                <input id="confirm" type="password" name="confirm" required
+                                       autocomplete="new-password"/>
+                            </div>
+                        </div>
+
+                        <input type="hidden" name="captchaToken" th:value="${captcha.token()}"/>
+                        <div style="display:flex;gap:20px;align-items:flex-start">
+                            <div class="field" style="flex:1">
+                                <label class="lb" for="captchaInput" th:text="#{signup.captcha}">验证码</label>
+                                <input id="captchaInput" type="text" name="captchaInput" maxlength="4" required/>
+                            </div>
+                            <div style="padding-top:26px">
+                                <span style="display:inline-flex;align-items:center;justify-content:center;
+                                             min-width:86px;height:38px;padding:0 12px;background:var(--linen);
+                                             font-family:var(--f-din);font-size:15px;letter-spacing:.24em;
+                                             color:var(--ink)" th:text="${captcha.code()}">ABCD</span>
+                            </div>
+                        </div>
+
+                        <div class="tiny" style="margin-top:-12px;margin-bottom:26px;line-height:1.9"
+                             th:text="#{signup.rules}">
+                            用户名最长 50 个字符；密码 8—32 个字符，须包含字母、数字、符号中的至少两类；验证码不区分大小写。
+                        </div>
+
+                        <button type="submit" class="btn wide" th:text="#{signup.submit}">创建账号</button>
+                    </form>
+
+                    <div style="margin-top:26px;font-size:11.5px;letter-spacing:.04em;color:var(--mute)">
+                        <span th:text="#{signup.have}">已经有账号？</span>
+                        <a style="border-bottom:1px solid var(--ink);padding-bottom:2px;margin-left:4px"
+                           th:href="@{/signon}" th:text="#{signup.gosignin}">前往登录</a>
+                    </div>
+                </th:block>
+            </div>
+
+            <div style="margin-top:auto;padding-top:44px;font-family:var(--f-body);font-size:9.5px;
+                        letter-spacing:.14em;color:var(--faint)">© 2026 FABRICLAB ATELIER</div>
+        </div>
+
+        <!-- 右：会员权益 -->
+        <div style="width:660px;flex:none;background:var(--ink);color:var(--wall);position:relative;
+                    overflow:hidden;display:flex;flex-direction:column;height:100%">
+            <div style="height:440px;flex:none;background:url('/images/look/lb-08.jpg') center 24%/cover no-repeat">
+            </div>
+            <div style="padding:36px 44px 40px">
+                <div class="din" style="font-size:9px;letter-spacing:.24em;color:rgba(242,239,233,.5)"
+                     th:text="#{signup.perks}">会员权益</div>
+                <div style="margin-top:20px">
+                    <div style="display:flex;gap:12px;padding:14px 0;border-bottom:1px solid rgba(242,239,233,.14)">
+                        <span style="color:var(--rust);display:flex;margin-top:3px">
+                            <svg width="11" height="9" viewBox="0 0 12 9" fill="none" stroke="currentColor"
+                                 stroke-width="1.5"><path d="M1 4.6L4.3 7.8 11 1.2"/></svg></span>
+                        <div>
+                            <div class="din" style="font-size:9px;letter-spacing:.2em" th:text="#{signup.p1}">会员专享</div>
+                            <div style="margin-top:6px;font-size:11.5px;color:rgba(242,239,233,.6);
+                                        letter-spacing:.03em" th:text="#{signup.p1.d}">新品与补货优先购买</div>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:12px;padding:14px 0;border-bottom:1px solid rgba(242,239,233,.14)">
+                        <span style="color:var(--rust);display:flex;margin-top:3px">
+                            <svg width="11" height="9" viewBox="0 0 12 9" fill="none" stroke="currentColor"
+                                 stroke-width="1.5"><path d="M1 4.6L4.3 7.8 11 1.2"/></svg></span>
+                        <div>
+                            <div class="din" style="font-size:9px;letter-spacing:.2em" th:text="#{signup.p2}">终身修补</div>
+                            <div style="margin-top:6px;font-size:11.5px;color:rgba(242,239,233,.6);
+                                        letter-spacing:.03em" th:text="#{signup.p2.d}">任何门店，任何年份</div>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:12px;padding:14px 0;border-bottom:1px solid rgba(242,239,233,.14)">
+                        <span style="color:var(--rust);display:flex;margin-top:3px">
+                            <svg width="11" height="9" viewBox="0 0 12 9" fill="none" stroke="currentColor"
+                                 stroke-width="1.5"><path d="M1 4.6L4.3 7.8 11 1.2"/></svg></span>
+                        <div>
+                            <div class="din" style="font-size:9px;letter-spacing:.2em" th:text="#{signup.p3}">门店预约</div>
+                            <div style="margin-top:6px;font-size:11.5px;color:rgba(242,239,233,.6);
+                                        letter-spacing:.03em" th:text="#{signup.p3.d}">静安工坊 45 分钟试穿</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-</footer>
+</div>
 </body>
 </html>

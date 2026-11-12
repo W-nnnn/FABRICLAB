@@ -1,6 +1,7 @@
 package com.fabriclab.store.controller;
 
 import com.fabriclab.store.exception.BusinessException;
+import com.fabriclab.store.mapper.ProductMapper;
 import com.fabriclab.store.mapper.StoreUserMapper;
 import com.fabriclab.store.model.CurrentUser;
 import com.fabriclab.store.security.CsrfService;
@@ -55,6 +56,10 @@ class CartControllerTest {
 
     @MockitoBean
     private StoreUserMapper storeUserMapper;
+
+    /** 购物袋页推荐位依赖商品表；本类不断言推荐内容，未打桩时按空列表渲染。 */
+    @MockitoBean
+    private ProductMapper productMapper;
 
     private MockHttpSession session;
 

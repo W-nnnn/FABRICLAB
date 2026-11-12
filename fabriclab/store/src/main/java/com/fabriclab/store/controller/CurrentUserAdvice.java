@@ -4,6 +4,7 @@ import com.fabriclab.store.model.CurrentUser;
 import com.fabriclab.store.security.CsrfService;
 import com.fabriclab.store.service.CartService;
 import com.fabriclab.store.service.CurrentUserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -28,7 +29,9 @@ public class CurrentUserAdvice {
     }
 
     @ModelAttribute
-    public void populate(Model model, HttpSession session) {
+    public void populate(Model model, HttpSession session, HttpServletRequest request) {
+        // 头部 EN / 中文 切换按钮据此高亮当前语言，取自会话语言而非请求头
+        LangLinks.fill(model, request);
         if (session != null) {
             model.addAttribute("csrfToken", csrfService.token(session));
             CurrentUser current = currentUserService.from(session);
