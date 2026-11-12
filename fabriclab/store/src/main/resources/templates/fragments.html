@@ -129,6 +129,29 @@
     </div>
 </a>
 
+<!-- 首页「新品上架」专用：角标取真实库存与首次位置，不虚构数量 -->
+<a th:fragment="homeCard(p, no, isNew)" class="card" th:href="@{/product(id=${p.id})}">
+    <div class="ph">
+        <img th:src="${#strings.isEmpty(p.coverImage) ? '/images/mark.png' : '/' + p.coverImage}"
+             th:alt="${p.name}" loading="lazy"/>
+        <span class="tag sold" th:if="${p.stock == null or p.stock == 0}"
+              th:text="#{card.soldout}">暂时缺货</span>
+        <span class="tag" th:if="${p.stock != null and p.stock > 0 and p.stock <= 2}"
+              th:text="|#{card.final} ${p.stock} #{card.pieces}|">仅剩 2 件</span>
+        <span class="tag" th:if="${p.stock != null and p.stock > 2 and isNew}"
+              th:text="#{card.new}">新到</span>
+    </div>
+    <div class="meta">
+        <span class="no" th:text="${no}">01</span>
+        <span class="nm" th:text="${p.name}">商品名称</span>
+        <span class="pr" th:text="|¥ ${#numbers.formatDecimal(p.price, 1, 2)}|">¥ 0</span>
+    </div>
+    <div class="sub">
+        <div class="dot"><span style="background:#B9AE9C"></span></div>
+        <em th:text="${p.sku}">FL-CM-01</em>
+    </div>
+</a>
+
 <!-- ============================================================ 步骤条 -->
 <div th:fragment="steps(cur)" class="steps">
     <div class="st" th:classappend="${cur == 1} ? 'on' : (${cur > 1} ? 'done')">

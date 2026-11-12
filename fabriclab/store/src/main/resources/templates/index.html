@@ -284,34 +284,74 @@
     </div>
 
     <!-- ======================================================= 新品上架 -->
-    <div style="padding:60px 84px 0" th:if="${home.newArrivals() != null and !home.newArrivals().isEmpty()}">
+    <div style="padding:78px 84px 0" th:if="${home.newArrivals() != null and !home.newArrivals().isEmpty()}">
         <div class="ptitle">
             <div>
                 <div class="eyebrow" th:text="#{home.new.eb}">新到 / 第七辑</div>
                 <div class="h2" style="margin-top:14px" th:text="#{home.new.title}">新品上架</div>
             </div>
-            <div class="r"><a class="tlink mute" th:href="@{/category}" th:text="#{home.new.more}">查看全部</a></div>
+            <div class="r"><a class="tlink mute" th:href="@{/category}" th:text="#{home.new.all}">查看全部 42 件</a></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:18px;border-top:1px solid var(--line);
+                    padding:13px 0 22px">
+            <span class="tiny" style="letter-spacing:.18em" th:text="#{home.new.meta}">FW26 第七辑 · 11.15 到店</span>
+            <span class="din" style="font-size:9px;letter-spacing:.18em;color:var(--rust)"
+                  th:text="|${#numbers.formatInteger(home.newArrivals().size(), 2)} / 07|">03 / 07</span>
+            <span class="tiny" style="margin-left:auto;color:var(--mute)" th:text="#{home.new.note}">
+                卖完不补，不再开版
+            </span>
         </div>
         <div class="g3">
             <th:block th:each="p, s : ${home.newArrivals()}">
-                <a th:replace="~{fragments :: card(${p}, ${#numbers.formatInteger(s.count, 2)})}"></a>
+                <a th:replace="~{fragments :: homeCard(${p}, ${#numbers.formatInteger(s.count, 2)}, ${s.first})}"></a>
             </th:block>
         </div>
     </div>
 
     <!-- ======================================================= 精选推荐 -->
-    <div style="padding:60px 84px 0" th:if="${home.featured() != null and !home.featured().isEmpty()}">
+    <div style="margin-top:76px;background:var(--linen);padding:60px 84px 66px"
+         th:if="${home.featured() != null and !home.featured().isEmpty()}">
         <div class="ptitle">
             <div>
-                <div class="eyebrow" th:text="#{home.feat.eb}">为你而选</div>
+                <div class="eyebrow" th:text="#{home.feat.eb}">为你而选 / 编辑精选</div>
                 <div class="h2" style="margin-top:14px" th:text="#{home.feat.title}">精选推荐</div>
             </div>
-            <div class="r"><a class="tlink mute" th:href="@{/category}" th:text="#{home.feat.more}">查看全部</a></div>
+            <div class="r"><a class="tlink mute" th:href="@{/category}" th:text="#{home.feat.all}">查看全部 42 件</a></div>
+        </div>
+        <div class="lead" style="margin-top:-16px;margin-bottom:28px;width:440px;font-size:12px;
+                                 line-height:1.95" th:text="#{home.feat.lead}">
+            从本季四十二件里挑出四件：本季三色、四种穿法，每一件都按穿十年的版型裁。
         </div>
         <div class="g4">
             <th:block th:each="p, s : ${home.featured()}">
                 <a th:replace="~{fragments :: card(${p}, ${#numbers.formatInteger(s.count, 2)})}"></a>
             </th:block>
+        </div>
+        <div style="margin-top:30px;border-top:1px solid rgba(26,26,26,.16);padding-top:18px;
+                    display:flex;align-items:center;gap:22px">
+            <span class="tiny" style="letter-spacing:.18em" th:text="#{home.feat.colours}">本季三色</span>
+            <span style="display:flex;align-items:center;gap:7px">
+                <i style="width:11px;height:11px;border-radius:50%;background:#57554F;
+                          box-shadow:0 0 0 1px rgba(26,26,26,.15);display:block"></i>
+                <em class="din" style="font-style:normal;font-size:8.5px;letter-spacing:.14em;
+                                       color:var(--mute)" th:text="#{colour.charcoal}">炭灰</em>
+            </span>
+            <span style="display:flex;align-items:center;gap:7px">
+                <i style="width:11px;height:11px;border-radius:50%;background:#BFA98B;
+                          box-shadow:0 0 0 1px rgba(26,26,26,.15);display:block"></i>
+                <em class="din" style="font-style:normal;font-size:8.5px;letter-spacing:.14em;
+                                       color:var(--mute)" th:text="#{colour.sand}">沙褐</em>
+            </span>
+            <span style="display:flex;align-items:center;gap:7px">
+                <i style="width:11px;height:11px;border-radius:50%;background:#4B3B31;
+                          box-shadow:0 0 0 1px rgba(26,26,26,.15);display:block"></i>
+                <em class="din" style="font-style:normal;font-size:8.5px;letter-spacing:.14em;
+                                       color:var(--mute)" th:text="#{colour.brown}">深栗</em>
+            </span>
+            <span style="margin-left:auto;color:var(--rust);display:flex">
+                <svg width="14" height="9" viewBox="0 0 15 9" fill="none" stroke="currentColor"
+                     stroke-width="1.2"><path d="M0 4.5h13.4M9.8 1l3.6 3.5-3.6 3.5"/></svg>
+            </span>
         </div>
     </div>
 
