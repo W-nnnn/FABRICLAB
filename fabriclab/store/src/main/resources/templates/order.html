@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:text="|${brand} · 订单详情|">FABRICLAB · 订单详情</title>
+    <link rel="stylesheet" th:href="@{/css/store.css}" />
+</head>
+<body class="order-page">
+<header class="site-header">
+    <div class="shell header-top">
+        <a class="brand" th:href="@{/main}">
+            <img th:src="@{/images/logo.png}" alt="FABRICLAB 标志" />
+            <span><b th:text="${brand}">FABRICLAB</b><small th:text="${tagline}">未染</small></span>
+        </a>
+        <nav class="top-nav" aria-label="主导航">
+            <a th:href="@{/main}">首页</a>
+            <a th:href="@{/category}">选购</a>
+            <a th:href="@{/orders}">我的订单</a>
+            <th:block th:replace="~{fragments :: authZone}"></th:block>
+        </nav>
+    </div>
+</header>
+
+<main class="shell order-main">
+    <h1>订单详情</h1>
+
+    <p class="cart-flash cart-flash--warn" th:if="${orderError != null}" th:text="${orderError}">提示</p>
+    <p class="order-flash" th:if="${orderFlash != null}" th:text="${orderFlash}">提示</p>
+
+    <section class="order-head">
+        <p>订单号 <code th:text="${detail.order.orderNo}">FL20260101000000000000</code></p>
+        <p>下单时间 <b th:text="${#temporals.format(detail.order.createdAt, 'yyyy-MM-dd HH:mm')}">2026-01-01 00:00</b></p>
+        <p>订单状态 <b class="order-state" th:text="${detail.status.label()}">待支付</b></p>
+        <p th:if="${detail.order.cancelledAt != null}">
+            取消时间 <b th:text="${#temporals.format(detail.order.cancelledAt, 'yyyy-MM-dd HH:mm')}">2026-01-01 00:00</b>
+        </p>
+        <p th:if="${detail.order.paidAt != null}">
+            模拟支付时间 <b th:text="${#temporals.format(detail.order.paidAt, 'yyyy-MM-dd HH:mm')}">2026-01-01 00:00</b>
+        </p>
+        <p th:if="${detail.order.paymentNo != null}">
+            支付凭证 <code th:text="${detail.order.paymentNo}">MOCK-000000000000</code>
+            <span class="order-tag">教学模拟支付，不涉及真实资金</span>
+        </p>
+        <p th:if="${detail.order.shippedAt != null}">
+            发货时间 <b th:text="${#temporals.format(detail.order.shippedAt, 'yyyy-MM-dd HH:mm')}">2026-01-01 00:00</b>
+        </p>
+    </section>
+
+    <section class="checkout-block">
+        <h2>收货信息</h2>
+        <ul class="order-receiver">
+            <li>收货人 <b th:text="${detail.order.receiverName}">姓名</b></li>
+            <li>联系电话 <b th:text="${detail.order.receiverPhone}">电话</b></li>
+            <li>详细地址 <b th:text="${detail.order.receiverAddress}">地址</b></li>
+        </ul>
+        <p class="checkout-note">收货信息为下单时的快照，后续修改资料不会改写历史订单。</p>
+    </section>
+
+    <section class="checkout-block">
+        <h2>商品明细</h2>
+        <table class="cart-table">
+            <thead>
+            <tr>
+                <th scope="col">商品</th>
+                <th scope="col">成交单价</th>
+                <th scope="col">数量</th>
+                <th scope="col">行金额</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item : ${detail.items}">
+                <td class="cart-goods">
+                    <span class="cart-goods__media">
+                        <img th:src="${#strings.isEmpty(item.coverImageSnapshot) ? '/images/logo.png' : '/' + item.coverImageSnapshot}"
+                             th:alt="${item.productNameSnapshot}" loading="lazy" />
+                    </span>
+                    <span class="cart-goods__text">
+                        <span class="cart-goods__name" th:text="${item.productNameSnapshot}">商品名称</span>
+                        <small class="cart-goods__sku">款号 <code th:text="${item.skuSnapshot}">FL-000-00</code></small>
+                    </span>
+                </td>
+                <td th:text="|¥ ${#numbers.formatDecimal(item.unitPrice, 1, 2)}|">¥ 0.00</td>
+                <td th:text="${item.quantity}">1</td>
+                <td th:text="|¥ ${#numbers.formatDecimal(item.lineAmount, 1, 2)}|">¥ 0.00</td>
+            </tr>
+            </tbody>
+        </table>
+        <p class="checkout-total">
+            <span th:text="${detail.status.name() == 'PENDING_PAYMENT' ? '应付' : '已模拟支付'}">应付</span>
+            <b th:text="|¥ ${#numbers.formatDecimal(detail.order.totalAmount, 1, 2)}|">¥ 0.00</b>
+        </p>
+        <p class="checkout-note">共 <b th:text="${detail.totalQuantity()}">1</b> 件。明细金额为成交时快照，商品后续改名、改价、换封面或下架不影响历史订单。</p>
+    </section>
+
+    <section class="order-actions" th:if="${detail.status.name() == 'PENDING_PAYMENT'}">
+        <button type="button" class="checkout-submit" disabled
+                title="教学模拟支付将在支付任务开放">教学模拟支付</button>
+        <form th:action="@{/orders/{id}/cancel(id=${detail.order.id})}" method="post"
+              onsubmit="return confirm('取消后将关闭订单并释放已占用的库存，确定取消吗？');">
+            <input type="hidden" name="_csrf" th:value="${csrfToken}" />
+            <button type="submit" class="order-cancel">取消订单</button>
+        </form>
+        <p class="checkout-note">待支付订单可模拟支付或取消；取消会按明细恢复库存，不自动把商品放回购物车。</p>
+    </section>
+
+    <p class="order-back"><a th:href="@{/orders}">返回我的订单</a></p>
+</main>
+
+<footer class="site-footer">
+    <div class="shell">
+        <span th:text="${brand}">FABRICLAB</span>
+        <span th:text="${tagline}">未染</span>
+    </div>
+</footer>
+</body>
+</html>

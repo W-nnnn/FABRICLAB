@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:text="|${brand} · 确认订单|">FABRICLAB · 确认订单</title>
+    <link rel="stylesheet" th:href="@{/css/store.css}" />
+</head>
+<body class="checkout-page">
+<header class="site-header">
+    <div class="shell header-top">
+        <a class="brand" th:href="@{/main}">
+            <img th:src="@{/images/logo.png}" alt="FABRICLAB 标志" />
+            <span><b th:text="${brand}">FABRICLAB</b><small th:text="${tagline}">未染</small></span>
+        </a>
+        <nav class="top-nav" aria-label="主导航">
+            <a th:href="@{/main}">首页</a>
+            <a th:href="@{/category}">选购</a>
+            <th:block th:replace="~{fragments :: authZone}"></th:block>
+        </nav>
+    </div>
+</header>
+
+<main class="shell checkout-main">
+    <h1>确认订单</h1>
+
+    <p class="cart-flash cart-flash--warn" th:if="${checkoutError != null}" th:text="${checkoutError}">提示</p>
+
+    <section class="checkout-block">
+        <h2>商品确认</h2>
+        <table class="cart-table">
+            <thead>
+            <tr>
+                <th scope="col">商品</th>
+                <th scope="col">单价</th>
+                <th scope="col">数量</th>
+                <th scope="col">小计</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="line : ${view.lines}">
+                <td class="cart-goods">
+                    <span class="cart-goods__media">
+                        <img th:src="${#strings.isEmpty(line.coverImage) ? '/images/logo.png' : '/' + line.coverImage}"
+                             th:alt="${line.name}" loading="lazy" />
+                    </span>
+                    <span class="cart-goods__text">
+                        <a class="cart-goods__name" th:href="@{/product(id=${line.productId})}" th:text="${line.name}">商品名称</a>
+                        <small class="cart-goods__sku" th:if="${line.sku != null}">
+                            款号 <code th:text="${line.sku}">FL-000-00</code>
+                        </small>
+                    </span>
+                </td>
+                <td th:text="|¥ ${#numbers.formatDecimal(line.unitPrice, 1, 2)}|">¥ 0.00</td>
+                <td th:text="${line.quantity}">1</td>
+                <td th:text="|¥ ${#numbers.formatDecimal(line.subtotal(), 1, 2)}|">¥ 0.00</td>
+            </tr>
+            </tbody>
+        </table>
+        <p class="checkout-total">
+            商品合计
+            <b th:text="|¥ ${#numbers.formatDecimal(view.payableTotal, 1, 2)}|">¥ 0.00</b>
+        </p>
+        <p class="checkout-note">整车结算，共 <b th:text="${view.lines.size()}">1</b> 款、<b th:text="${view.totalQuantity}">1</b> 件；金额由服务端按当前价格计算，页面不提交任何金额字段。</p>
+    </section>
+
+    <section class="checkout-block">
+        <h2>收货信息</h2>
+        <form class="receiver-form" th:action="@{/checkout/submit}" method="post">
+            <input type="hidden" name="_csrf" th:value="${csrfToken}" />
+            <label>
+                收货人
+                <input type="text" name="receiverName" maxlength="50" required
+                       th:value="${receiverName}" placeholder="请输入收货人姓名" />
+            </label>
+            <label>
+                联系电话
+                <input type="text" name="receiverPhone" maxlength="30" required
+                       th:value="${receiverPhone}" placeholder="例如 13800001234" />
+            </label>
+            <label class="receiver-form__wide">
+                详细地址
+                <input type="text" name="receiverAddress" maxlength="255" required
+                       th:value="${receiverAddress}" placeholder="省市区与街道门牌等完整地址" />
+            </label>
+            <div class="receiver-form__actions">
+                <button type="submit" class="checkout-submit">提交订单</button>
+                <a class="checkout-back" th:href="@{/cart}">返回购物车修改</a>
+            </div>
+        </form>
+        <p class="checkout-note">打开确认页不锁价、不预占库存；提交时若购物车、商品状态、库存或价格已变化，需重新确认后才能成交。返回购物车修改后须重新进入结算。</p>
+    </section>
+</main>
+
+<footer class="site-footer">
+    <div class="shell">
+        <span th:text="${brand}">FABRICLAB</span>
+        <span th:text="${tagline}">未染</span>
+    </div>
+</footer>
+</body>
+</html>
