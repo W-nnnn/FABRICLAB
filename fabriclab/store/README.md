@@ -1,6 +1,6 @@
 # fabriclab-store
 
-FABRICLAB 用户端工程，端口 8080。当前阶段：T5 首页与商品列表。
+FABRICLAB 用户端工程，端口 8080。当前阶段：T6 商品详情。
 
 ## 结构
 
@@ -10,17 +10,20 @@ src/main/java/com/fabriclab/store/
 ├── config/MybatisPlusConfig.java    分页插件（数据库 LIMIT 分页）
 ├── controller/MainController.java   首页（新品上架 ≤3、精选推荐 ≤4）与健康检查
 ├── controller/BrowseController.java 商品列表 /category：GET 整页刷新
+├── controller/ProductController.java 商品详情 /product?id=：仅上架可看
 ├── controller/GlobalExceptionHandler.java 400 / 404 / 500 统一错误页
 ├── service/BrandService.java        品牌展示信息
 ├── service/CategoryService.java     两级分类：编码唯一、同级名唯一、二级必须挂一级
 ├── service/ProductService.java      单 SKU 商品：款号唯一、必归二级分类、version 递增
 ├── service/BrowseService.java       浏览：分类作用域、名称包含匹配、排序白名单、分页
+├── service/DetailService.java       详情：ID 定位、相册升序、封面回退、分类路径
 ├── model/CategoryType.java          类型三值由分类编码后缀映射（*_GAR / *_ACC / 其余 ALL）
 ├── model/BrowseQuery.java           列表参数解析：页码归一、页大小 1—50、关键字 ≤120
+├── model/Quantity.java              购买数量：缺省 1，仅接受 1—99 整数
 ├── model/SortOption.java            排序四值白名单：DEFAULT / PRICE_ASC / PRICE_DESC / NEWEST
 ├── model/SingleSkuText.java         尺码配色并入名称、面料档案纯文本落点
 ├── exception/BusinessException.java 业务校验异常 → HTTP 400
-├── exception/NotFoundException.java 资源不存在 → HTTP 404（分类不可用）
+├── exception/NotFoundException.java 资源不存在 → HTTP 404（标题可定制，如商品不存在或已下架）
 ├── entity/                          七张业务表实体
 │   StoreUser / Category / Product / ProductImage
 │   CartItem / SalesOrder / SalesOrderItem
@@ -30,15 +33,19 @@ src/main/resources/templates/        index 首页 / category 列表 / error 错�
 src/test/java/com/fabriclab/store/
 ├── controller/MainControllerTest.java   首页渲染（Mock 服务层）
 ├── controller/BrowseControllerTest.java 列表 400 / 404 / 条件回显
+├── controller/ProductControllerTest.java 详情渲染、ID 400、不可用 404、售罄展示
 ├── service/BrandServiceTest.java
 ├── service/CategoryServiceTest.java 两级约束、重复编码、更新不可变字段
 ├── service/ProductServiceTest.java  款号唯一、二级归属、version 递增
 ├── service/BrowseServiceTest.java   分类作用域、类型切换升级、通配符转义、两栏上限
+├── service/DetailServiceTest.java   仅上架可看、相册升序与封面回退、ID 解析
 ├── model/BrowseQueryTest.java       页码归一、页大小白名单、关键字截断拒绝
+├── model/QuantityTest.java          数量缺省 1、1—99 白名单
 ├── model/CategoryTypeTest.java      编码后缀 → 类型三值映射
 ├── model/SingleSkuTextTest.java     变体名与面料档案
 ├── entity/EntityMappingTest.java     表名、主键、生成列、单 SKU 口径
 ├── BrowseIntegrationTest.java       真库首页两栏与列表验收 AC-01~03（需 MYSQL_PASSWORD）
+├── DetailIntegrationTest.java       真库详情验收 AC-04：相册有序、封面回退、下架 404、售罄不扣库存
 └── SchemaIntegrationTest.java        真实库连通与七表存在性（需 MYSQL_PASSWORD）
 ```
 
@@ -71,8 +78,11 @@ mvn test -Dtest=SchemaIntegrationTest
 |---|---|
 | `http://localhost:8080/main` | 品牌首页：系列线导航、新品上架 ≤3（created_at、id 倒序）、精选推荐 ≤4（sort_order、id 升序） |
 | `http://localhost:8080/category` | 商品列表：两级分类筛选、类型按钮、名称搜索、排序四值、分页默认 6（1—50） |
+| `http://localhost:8080/product?id=1` | 商品详情：款号与 SKU、¥ 两位小数、库存或售罄、相册有序与封面回退、数量 1—99、返回列表 |
 | `http://localhost:8080/health` | `{"status":"UP","app":"fabriclab-store","stage":"T5"}` |
 
 浏览口径：仅上架商品出现在动态区域，零库存仍展示为「暂时缺货」；搜索只匹配名称（去首尾空白、≤120，`%` `_` 按普通字符），不搜款号；非法参数 400，分类不存在 404「分类不可用」，技术异常 500 通用失败页。
+
+详情口径：仅上架商品可看，下架或不存在统一 404「商品不存在或已下架」，不渲染可购买详情；零库存可查看但不可购买；相册按 sort_order、id 升序，无相册回退封面、封面缺失再用缺省封面；简介与纯文本详情转义输出、保留换行；数量输入 1—99（`Quantity` 后端校验，购物车模块接入时共用）；浏览与刷新不扣库存；无「你可能还喜欢」推荐区。
 
 环境：JDK 25、Maven 3.9.16、Spring Boot 3.5.16、MyBatis-Plus 3.5.18、MySQL 8.4。
