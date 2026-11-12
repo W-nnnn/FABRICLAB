@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:text="|${brand} · ${view.product().name}|">FABRICLAB · 商品详情</title>
+    <link rel="stylesheet" th:href="@{/css/store.css}" />
+</head>
+<body class="detail-page">
+<header class="site-header">
+    <div class="shell header-top">
+        <a class="brand" th:href="@{/main}">
+            <img th:src="@{/images/logo.png}" alt="FABRICLAB 标志" />
+            <span><b th:text="${brand}">FABRICLAB</b><small th:text="${tagline}">未染</small></span>
+        </a>
+        <nav class="top-nav" aria-label="主导航">
+            <a th:href="@{/main}">首页</a>
+            <a th:href="@{/category}">选购</a>
+        </nav>
+    </div>
+</header>
+
+<main class="shell detail-main">
+    <nav class="detail-crumb" aria-label="分类路径">
+        <a th:href="@{/main}">首页</a>
+        <span class="crumb-sep">/</span>
+        <a th:href="@{/category(category=${view.line().id})}" th:text="${view.line().name}">系列线</a>
+        <span class="crumb-sep">/</span>
+        <a th:href="@{/category(category=${view.second().id})}" th:text="${view.second().name}">二级分类</a>
+        <span class="crumb-sep">/</span>
+        <span th:text="${view.product().name}">商品名称</span>
+    </nav>
+
+    <section class="detail-layout">
+        <div class="detail-gallery">
+            <div class="detail-gallery__main">
+                <img th:src="@{|/${view.gallery()[0].path()}|}"
+                     th:alt="${view.gallery()[0].alt()}" />
+            </div>
+            <ul class="detail-thumbs" th:if="${view.gallery().size() > 1}">
+                <li th:each="image : ${view.gallery()}">
+                    <img th:src="@{|/${image.path()}|}" th:alt="${image.alt()}" loading="lazy" />
+                </li>
+            </ul>
+            <p class="detail-gallery__fallback" th:if="${view.gallery().size() == 1}">该商品暂无相册，展示封面图</p>
+        </div>
+
+        <div class="detail-info">
+            <p class="detail-sku">
+                款号 <code th:text="${view.product().sku}">FL-000-00</code>
+                <span class="detail-sku__hint">（一个款号即一个可购买单位，不提供规格选项）</span>
+            </p>
+            <h1 th:text="${view.product().name}">商品名称</h1>
+            <p class="detail-summary" th:if="${!#strings.isEmpty(view.product().summary)}"
+               th:text="${view.product().summary}">简介</p>
+            <p class="detail-price" th:text="|¥ ${#numbers.formatDecimal(view.product().price, 1, 2)}|">¥ 0.00</p>
+
+            <p class="detail-stock">
+                <b class="stock stock--ok" th:if="${!view.soldOut()}">现货</b>
+                <b class="stock stock--out" th:if="${view.soldOut()}">售罄</b>
+                <span th:if="${!view.soldOut()}"
+                      th:text="|库存 ${view.product().stock} 件|">库存 0 件</span>
+                <span th:if="${view.soldOut()}">该商品暂时无法购买</span>
+            </p>
+
+            <div class="detail-buy">
+                <label>
+                    数量
+                    <input type="number" name="quantity" value="1" min="1" max="99" step="1"
+                           th:disabled="${view.soldOut()}" aria-label="购买数量" />
+                </label>
+                <button type="button" disabled
+                        th:title="${view.soldOut() ? '零库存商品暂不可购买' : '购物车模块开放后可用'}">加入购物车</button>
+                <p class="detail-buy__note">购物车与下单功能将在后续任务开放，当前仅支持浏览。</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="detail-desc" th:if="${!view.descriptionLines().isEmpty()}">
+        <h2>商品详情</h2>
+        <p th:each="paragraph : ${view.descriptionLines()}" th:text="${paragraph}">纯文本详情段落</p>
+    </section>
+
+    <nav class="detail-actions">
+        <a class="detail-back" th:href="@{/category(category=${view.second().id})}">返回商品列表</a>
+    </nav>
+</main>
+
+<footer class="site-footer">
+    <div class="shell">
+        <span th:text="${brand}">FABRICLAB</span>
+        <span th:text="${tagline}">未染</span>
+    </div>
+</footer>
+</body>
+</html>
