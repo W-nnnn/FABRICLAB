@@ -1,10 +1,14 @@
 package com.fabriclab.store.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.fabriclab.store.entity.Product;
 import com.fabriclab.store.exception.BusinessException;
+import com.fabriclab.store.mapper.ProductMapper;
 import com.fabriclab.store.model.CurrentUser;
 import com.fabriclab.store.service.BrandService;
 import com.fabriclab.store.service.CartService;
 import com.fabriclab.store.service.CurrentUserService;
+import com.fabriclab.store.service.ProductService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,6 +16,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
 
 /**
  * 购物车页与写操作（FR-C-01、FR-C-02）：本人车从服务端会话身份取得，
@@ -22,15 +28,20 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 public class CartController {
 
+    /** 购物袋页推荐位条数，取最近上架的在售商品，不参与结算。 */
+    private static final int RECOMMEND_LIMIT = 4;
+
     private final BrandService brandService;
     private final CartService cartService;
     private final CurrentUserService currentUserService;
+    private final ProductMapper productMapper;
 
     public CartController(BrandService brandService, CartService cartService,
-                          CurrentUserService currentUserService) {
+                          CurrentUserService currentUserService, ProductMapper productMapper) {
         this.brandService = brandService;
         this.cartService = cartService;
         this.currentUserService = currentUserService;
+        this.productMapper = productMapper;
     }
 
     @GetMapping("/cart")
@@ -118,5 +129,16 @@ public class CartController {
     private void fillCommon(Model model) {
         model.addAttribute("brand", brandService.brand());
         model.addAttribute("tagline", brandService.tagline());
+        model.addAttribute("recommendations", recommend());
+    }
+
+    /** 推荐位：在售且有库存的商品按上架顺序取前四条，取不到时给空列表由模板跳过。 */
+    private List<Product> recommend() {
+        List<Product> rows = productMapper.selectList(new LambdaQueryWrapper<Product>()
+                .eq(Product::getStatus, ProductService.STATUS_ON_SALE)
+                .gt(Product::getStock, 0)
+                .orderByDesc(Product::getId)
+                .last("LIMIT " + RECOMMEND_LIMIT));
+        return rows == null ? List.of() : rows;
     }
 }

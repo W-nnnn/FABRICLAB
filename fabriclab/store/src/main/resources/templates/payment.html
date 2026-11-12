@@ -1,72 +1,95 @@
 <!DOCTYPE html>
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title th:text="|${brand} · 模拟支付|">FABRICLAB · 模拟支付</title>
-    <link rel="stylesheet" th:href="@{/css/store.css}" />
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="|#{nav.brand} · #{pay.title}|">FABRICLAB · 模拟支付</title>
+    <link rel="stylesheet" th:href="@{/css/store.css}"/>
 </head>
-<body class="payment-page">
-<header class="site-header">
-    <div class="shell header-top">
-        <a class="brand" th:href="@{/main}">
-            <img th:src="@{/images/logo.png}" alt="FABRICLAB 标志" />
-            <span><b th:text="${brand}">FABRICLAB</b><small th:text="${tagline}">未染</small></span>
-        </a>
-        <nav class="top-nav" aria-label="主导航">
-            <a th:href="@{/main}">首页</a>
-            <a th:href="@{/category}">选购</a>
-            <a th:href="@{/orders}">我的订单</a>
-            <th:block th:replace="~{fragments :: authZone}"></th:block>
-        </nav>
-    </div>
-</header>
+<body>
+<div class="page">
 
-<main class="shell checkout-main">
-    <h1>模拟支付</h1>
+    <p class="flash warn" style="margin:20px 84px 0" th:if="${orderError != null}" th:text="${orderError}">提示</p>
+    <p class="flash" style="margin:20px 84px 0" th:if="${orderFlash != null}" th:text="${orderFlash}">提示</p>
 
-    <section class="checkout-block">
-        <h2>订单信息</h2>
-        <ul class="order-receiver">
-            <li>订单号 <code th:text="${view.order.orderNo}">FL20260101000000000000</code></li>
-            <li>订单状态 <b class="order-state" th:text="${view.status.label()}">待支付</b></li>
-            <li>应付金额 <b class="payment-amount" th:text="|¥ ${#numbers.formatDecimal(view.order.totalAmount, 1, 2)}|">¥ 0.00</b></li>
-        </ul>
-        <p class="checkout-note">
-            教学模拟支付，不涉及真实资金。金额只取订单总额，创建订单后的商品涨价、下架
-            不改变本单金额，也不阻止本次模拟支付；支付不会再扣减库存。
-        </p>
-    </section>
-
-    <section class="checkout-block">
-        <h2>选择结果</h2>
-        <div class="payment-actions">
-            <form th:action="@{/orders/{id}/payment(id=${view.order.id})}" method="post">
-                <input type="hidden" name="_csrf" th:value="${csrfToken}" />
-                <button type="submit" class="payment-success">模拟支付成功</button>
-            </form>
-            <form th:action="@{/orders/{id}/payment/fail(id=${view.order.id})}" method="post">
-                <input type="hidden" name="_csrf" th:value="${csrfToken}" />
-                <button type="submit" class="payment-fail">模拟支付失败</button>
-            </form>
+    <div style="display:flex;height:880px">
+        <!-- 左：大片 -->
+        <div style="width:640px;flex:none;position:relative;
+                    background:url('/images/look/lb-09.jpg') center 22%/cover no-repeat, var(--linen)">
+            <a style="position:absolute;left:44px;top:40px;display:flex;align-items:center;gap:10px"
+               th:href="@{/main}">
+                <img th:src="@{/images/mark.png}" alt="" style="height:24px"/>
+                <b class="din" style="font-size:13px;letter-spacing:.22em;font-weight:700">FABRICLAB</b>
+            </a>
+            <div style="position:absolute;left:44px;bottom:44px;right:44px;font-size:11.5px;line-height:2;
+                        letter-spacing:.05em;color:rgba(26,26,26,.7)"
+                 th:utext="#{pay.quote}">一件衣服的生命，从一块未染的布开始。<br>—— FW26 第七辑手记</div>
         </div>
-        <p class="checkout-note">
-            成功将把订单转为待发货并生成唯一支付凭证与首次成功时间；失败则订单保持待支付，
-            可再次发起或取消订单。两个结果都由服务端写入并回订单详情查证，不弹出与数据库不符的提示。
-        </p>
-    </section>
 
-    <p class="order-back">
-        <a th:href="@{/orders/{id}(id=${view.order.id})}">返回订单详情</a>
-        <a th:href="@{/orders}">我的订单</a>
-    </p>
-</main>
+        <!-- 右：支付 -->
+        <div style="flex:1;padding:56px 78px 48px 72px;display:flex;flex-direction:column">
+            <div style="display:flex;align-items:baseline">
+                <span class="eyebrow" th:text="#{pay.eyebrow}">支付</span>
+                <span class="tiny" style="margin-left:auto;letter-spacing:.2em" th:text="#{pay.secure}">
+                    SSL 加密 · 模拟环境
+                </span>
+            </div>
 
-<footer class="site-footer">
-    <div class="shell">
-        <span th:text="${brand}">FABRICLAB</span>
-        <span th:text="${tagline}">未染</span>
+            <div class="h2" style="margin-top:26px;font-size:36px" th:text="#{pay.heading}">确认支付</div>
+
+            <div class="din" style="margin-top:20px;font-size:10px;letter-spacing:.16em;color:var(--mute)">
+                <span th:text="#{pay.order}">ORDER</span>
+                <span th:text="${view.order.orderNo}">FL20260101000000000001</span>
+            </div>
+            <div style="margin-top:10px;font-size:11.5px;letter-spacing:.03em;color:var(--faint)"
+                 th:text="${view.status.label()}">待支付</div>
+
+            <div style="margin-top:34px;padding-top:28px;border-top:1px solid var(--line)">
+                <div class="tiny" style="letter-spacing:.22em" th:text="#{pay.amount}">应付金额</div>
+                <div class="din" style="margin-top:12px;font-size:52px;font-weight:500;letter-spacing:-.02em"
+                     th:text="|¥ ${#numbers.formatDecimal(view.order.totalAmount, 1, 2)}|">¥ 0.00</div>
+            </div>
+
+            <div style="margin-top:34px">
+                <div class="tiny" style="letter-spacing:.22em;margin-bottom:12px" th:text="#{pay.method}">支付方式</div>
+                <div style="display:flex;align-items:center;padding:16px 0;border-top:1px solid var(--line);
+                            border-bottom:1px solid var(--line)">
+                    <span style="width:14px;height:14px;border-radius:50%;border:1px solid var(--ink);
+                                 background:var(--ink)"></span>
+                    <span style="margin-left:14px;font-size:12.5px;letter-spacing:.03em"
+                          th:text="#{pay.wechat}">微信支付</span>
+                    <span class="din" style="margin-left:10px;font-size:8.5px;letter-spacing:.18em;
+                                             color:var(--rust)" th:text="#{pay.sandbox}">模拟环境</span>
+                </div>
+            </div>
+
+            <div style="margin-top:auto;padding-top:40px">
+                <form th:action="@{/orders/{id}/payment(id=${view.order.id})}" method="post">
+                    <input type="hidden" name="_csrf" th:value="${csrfToken}"/>
+                    <button type="submit" class="btn wide"
+                            th:text="|#{pay.success} · ¥ ${#numbers.formatDecimal(view.order.totalAmount, 1, 2)}|">
+                        模拟支付成功</button>
+                </form>
+                <form th:action="@{/orders/{id}/payment/fail(id=${view.order.id})}" method="post"
+                      style="margin-top:10px">
+                    <input type="hidden" name="_csrf" th:value="${csrfToken}"/>
+                    <button type="submit" class="btn ghost wide" th:text="#{pay.fail}">模拟支付失败</button>
+                </form>
+
+                <div class="tiny" style="margin-top:20px;line-height:2.1;letter-spacing:.04em"
+                     th:utext="#{pay.notes}">
+                    · 教学模拟支付，不涉及真实资金<br>
+                    · 金额只取订单总额，页面不提交任何金额字段
+                </div>
+                <div style="margin-top:22px">
+                    <a class="tlink mute" th:href="@{/orders/{id}(id=${view.order.id})}"
+                       th:text="#{pay.back}">返回订单详情</a>
+                </div>
+            </div>
+        </div>
     </div>
-</footer>
+
+    <th:block th:replace="~{fragments :: footer}"></th:block>
+</div>
 </body>
 </html>

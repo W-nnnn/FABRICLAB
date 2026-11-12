@@ -10,6 +10,7 @@ import com.fabriclab.store.service.BrandService;
 import com.fabriclab.store.service.CurrentUserService;
 import com.fabriclab.store.service.OrderService;
 import com.fabriclab.store.service.OrderService.OrderDetail;
+import com.fabriclab.store.service.OrderService.OrderThumb;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 我的订单（FR-O-03、FR-O-04）：列表与详情只呈现本人数据，越权统一 404；
@@ -30,10 +32,12 @@ import java.util.List;
 public class OrderController {
 
     /** 列表行：状态数据库值在服务端转界面名称，模板不做类引用。 */
-    public record OrderRow(SalesOrder order, String statusLabel) {
+    public record OrderRow(SalesOrder order, String statusLabel, List<OrderThumb> thumbs) {
 
-        static OrderRow of(SalesOrder order) {
-            return new OrderRow(order, OrderStatus.of(order.getStatus()).label());
+        static OrderRow of(SalesOrder order, Map<Long, List<OrderThumb>> thumbs) {
+            List<OrderThumb> own = thumbs == null ? List.of()
+                    : thumbs.getOrDefault(order.getId(), List.of());
+            return new OrderRow(order, OrderStatus.of(order.getStatus()).label(), own);
         }
     }
 
@@ -64,7 +68,9 @@ public class OrderController {
         fillCommon(model);
         model.addAttribute("query", query);
         model.addAttribute("result", result);
-        model.addAttribute("rows", result.getRecords().stream().map(OrderRow::of).toList());
+        Map<Long, List<OrderThumb>> thumbs = orderService.thumbnails(result.getRecords());
+        model.addAttribute("rows", result.getRecords().stream()
+                .map(order -> OrderRow.of(order, thumbs)).toList());
         model.addAttribute("statuses", List.of(OrderStatus.values()));
         return "orders";
     }

@@ -1,143 +1,247 @@
 <!DOCTYPE html>
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title th:text="|${brand} · 商品列表|">FABRICLAB · 商品列表</title>
-    <link rel="stylesheet" th:href="@{/css/store.css}" />
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="|#{nav.brand} · #{shop.title}|">FABRICLAB · 全部商品</title>
+    <link rel="stylesheet" th:href="@{/css/store.css}"/>
 </head>
-<body class="catalog-page">
-<header class="site-header">
-    <div class="shell header-top">
-        <a class="brand" th:href="@{/main}">
-            <img th:src="@{/images/logo.png}" alt="FABRICLAB 标志" />
-            <span><b th:text="${brand}">FABRICLAB</b><small th:text="${tagline}">未染</small></span>
-        </a>
-        <nav class="top-nav" aria-label="主导航">
-            <a th:href="@{/main}">首页</a>
-            <a class="is-active" th:href="@{/category}">选购</a>
-            <th:block th:replace="~{fragments :: authZone}"></th:block>
-        </nav>
-    </div>
-    <div class="shell search-row">
-        <form th:action="@{/category}" method="get" role="search">
-            <input type="text" name="keyword" maxlength="120" placeholder="搜索成衣或配饰名称"
-                   th:value="${query.keyword()}" aria-label="搜索商品名称" />
-            <input type="submit" value="搜索" />
-        </form>
-    </div>
-</header>
+<body>
+<div class="page">
 
-<main class="shell catalog-main">
-    <nav class="catalog-crumb" aria-label="当前条件">
-        <a th:href="@{/category}">全部商品</a>
-        <span th:if="${result.scope().selectedLine() != null}" class="crumb-sep">/</span>
+    <th:block th:replace="~{fragments :: anno}"></th:block>
+    <th:block th:replace="~{fragments :: header(null)}"></th:block>
+
+    <div class="crumb">
+        <a th:href="@{/main}" th:text="#{nav.home}">首页</a>
+        <span> / </span>
+        <a th:href="@{/category}" th:text="#{nav.shop}">选购</a>
+        <span> / </span>
         <a th:if="${result.scope().selectedLine() != null}"
            th:href="@{/category(category=${result.scope().selectedLine().id})}"
-           th:text="${result.scope().selectedLine().name}">通勤出行</a>
-        <span th:if="${result.scope().entryIsSecondLevel()}" class="crumb-sep">/</span>
-        <span th:if="${result.scope().entryIsSecondLevel()}">
-            <a th:href="@{/category(category=${result.scope().entry().id})}"
-               th:text="${result.scope().entry().name}">通勤成衣</a>
-        </span>
-        <span class="crumb-type" th:text="${result.scope().typeLabel()}">全部</span>
-        <span class="crumb-keyword" th:if="${query.keyword() != null}"
-              th:text="|关键字：${query.keyword()}|">关键字</span>
-    </nav>
-
-    <aside class="catalog-sidebar">
-        <h2>商品分类</h2>
-        <nav aria-label="分类导航">
-            <a th:href="@{/category}"
-               th:classappend="${result.scope().selectedLine() == null} ? 'is-active'">全部商品</a>
-            <th:block th:each="branch : ${lines}">
-                <a th:href="@{/category(category=${branch.line().id})}"
-                   th:classappend="${result.scope().selectedLine()?.id == branch.line().id} ? 'is-active'"
-                   th:text="${branch.line().name}">通勤出行</a>
-                <a class="child" th:each="child : ${branch.children()}"
-                   th:href="@{/category(category=${child.id})}"
-                   th:text="${child.name}">通勤成衣</a>
-            </th:block>
-        </nav>
-    </aside>
-
-    <section class="catalog-results">
-        <form class="catalog-filter" th:action="@{/category}" method="get">
-            <input type="hidden" name="category" th:if="${result.scope().entry() != null}"
-                   th:value="${result.scope().entry().id}" />
-            <fieldset class="filter-types">
-                <legend>类型</legend>
-                <label><input type="radio" name="productType" value="ALL"
-                              th:checked="${result.scope().selectedType().name() == 'ALL'}" /> 全部</label>
-                <label><input type="radio" name="productType" value="GARMENTS"
-                              th:checked="${result.scope().selectedType().name() == 'GARMENTS'}" /> 成衣</label>
-                <label><input type="radio" name="productType" value="ACCESSORIES"
-                              th:checked="${result.scope().selectedType().name() == 'ACCESSORIES'}" /> 配饰</label>
-            </fieldset>
-            <label class="filter-sort">排序
-                <select name="sort">
-                    <option value="DEFAULT" th:selected="${query.sort().name() == 'DEFAULT'}">默认排序</option>
-                    <option value="PRICE_ASC" th:selected="${query.sort().name() == 'PRICE_ASC'}">价格从低到高</option>
-                    <option value="PRICE_DESC" th:selected="${query.sort().name() == 'PRICE_DESC'}">价格从高到低</option>
-                    <option value="NEWEST" th:selected="${query.sort().name() == 'NEWEST'}">新品优先</option>
-                </select>
-            </label>
-            <label class="filter-keyword">关键字
-                <input type="text" name="keyword" maxlength="120" th:value="${query.keyword()}" />
-            </label>
-            <button type="submit">查询</button>
-        </form>
-
-        <div class="catalog-results-info" th:if="${result.page.total > 0}"
-             th:with="first=${(result.page.current - 1) * query.size() + 1},
-                      last=${(result.page.current - 1) * query.size() + result.page.records.size()}">
-            <b th:text="${result.scope().selectedLine() != null ? result.scope().selectedLine().name : '全部商品'}">全部商品</b>
-            <span th:text="|显示 ${first}–${last}，共 ${result.page.total} 件|">显示 1–6，共 0 件</span>
-        </div>
-
-        <div class="product-grid" th:if="${!result.page.records.isEmpty()}">
-            <th:block th:each="p : ${result.page.records}">
-                <a th:replace="~{fragments :: productCard(${p})}"></a>
-            </th:block>
-        </div>
-
-        <div class="empty-block" th:if="${result.page.records.isEmpty()}">
-            <p>未找到匹配的商品</p>
-            <p th:if="${result.page.total == 0}">
-                当前条件：<span
-                    th:text="${result.scope().selectedLine() != null ? result.scope().selectedLine().name : '全部分类'}">全部分类</span>
-                · <span th:text="${result.scope().typeLabel()}">全部</span>
-                <span th:if="${query.keyword() != null}" th:text="|· 关键字「${query.keyword()}」|"></span>
-                <a class="empty-action" th:href="@{/category}">清空筛选</a>
-            </p>
-            <p th:if="${result.page.total > 0}">
-                页码超出末页，共 <span th:text="${result.page.pages}">0</span> 页。
-                <a class="empty-action"
-                   th:href="@{/category(category=${query.categoryId()}, productType=${query.productTypeParam()},
-                       sort=${query.sort().name() == 'DEFAULT' ? null : query.sort().name()},
-                       keyword=${query.keyword()}, size=${query.size()}, page=${result.page.pages})}">返回最后一页</a>
-            </p>
-        </div>
-
-        <nav class="pager" aria-label="分页" th:if="${result.page.pages > 1 and result.page.total > 0}">
-            <a th:if="${query.page() > 1}"
-               th:href="@{/category(category=${query.categoryId()}, productType=${query.productTypeParam()},
-                   sort=${query.sort().name() == 'DEFAULT' ? null : query.sort().name()},
-                   keyword=${query.keyword()}, size=${query.size()}, page=${query.page() - 1})}">上一页</a>
-            <span th:text="|第 ${query.page()} / ${result.page.pages} 页|">第 1 / 1 页</span>
-            <a th:if="${query.page() < result.page.pages}"
-               th:href="@{/category(category=${query.categoryId()}, productType=${query.productTypeParam()},
-                   sort=${query.sort().name() == 'DEFAULT' ? null : query.sort().name()},
-                   keyword=${query.keyword()}, size=${query.size()}, page=${query.page() + 1})}">下一页</a>
-        </nav>
-    </section>
-</main>
-
-<footer class="site-footer">
-    <div class="shell">
-        <span th:text="${brand}">FABRICLAB</span>
-        <span th:text="${tagline}">未染</span>
+           th:text="${result.scope().selectedLine().name}">通勤</a>
+        <span th:if="${result.scope().entryIsSecondLevel()}"> / </span>
+        <a th:if="${result.scope().entryIsSecondLevel()}"
+           th:href="@{/category(category=${result.scope().entry().id})}"
+           th:text="${result.scope().entry().name}">通勤成衣</a>
+        <span th:if="${result.scope().selectedLine() == null}" th:text="#{shop.all}">全部商品</span>
     </div>
-</footer>
+
+    <!-- 页头 -->
+    <div style="padding:26px 84px 30px;display:flex;align-items:flex-end">
+        <div>
+            <div class="eyebrow" th:text="#{shop.eyebrow}">全部商品 / FW26</div>
+            <div class="h2" style="margin-top:12px;font-size:38px"
+                 th:text="${result.scope().selectedLine() != null
+                           ? result.scope().selectedLine().name : '全部商品'}">全部商品</div>
+        </div>
+        <div class="lead" style="margin:0 0 4px 40px;width:420px;font-size:12px"
+             th:text="#{shop.lead}">四十二件，本季新增七件。卖完不补，不再开版。</div>
+        <div style="margin-left:auto;display:flex;align-items:baseline;gap:10px">
+            <span class="din" style="font-size:40px;font-weight:700;letter-spacing:-.03em"
+                  th:text="${result.page.total}">42</span>
+            <span class="tiny" style="padding-bottom:7px" th:text="#{shop.count}">在售件数</span>
+        </div>
+    </div>
+    <div style="margin:0 84px;height:1px;background:var(--ink)"></div>
+
+    <!-- 计数 + 排序 -->
+    <div style="padding:20px 84px 0;display:flex;align-items:center;gap:14px">
+        <span class="tiny" th:text="#{shop.range}">FW26 第七辑</span>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:22px;
+                    font-family:var(--f-body);font-size:10px;letter-spacing:.14em;color:var(--mute)">
+            <span th:text="#{shop.sort}">排序</span>
+            <a th:href="@{/category(category=${result.scope().entry() != null ? result.scope().entry().id : null},
+                        productType=${query.productTypeParam()}, keyword=${query.keyword()}, size=${query.size()},
+                        sort='NEWEST')}"
+               th:style="${query.sort().name() == 'NEWEST'}
+                         ? 'color:var(--ink);border-bottom:1px solid var(--ink);padding-bottom:4px'
+                         : 'padding-bottom:4px'"
+               th:text="#{shop.sort.new}">新品优先</a>
+            <a th:href="@{/category(category=${result.scope().entry() != null ? result.scope().entry().id : null},
+                        productType=${query.productTypeParam()}, keyword=${query.keyword()}, size=${query.size()},
+                        sort='PRICE_ASC')}"
+               th:style="${query.sort().name() == 'PRICE_ASC'}
+                         ? 'color:var(--ink);border-bottom:1px solid var(--ink);padding-bottom:4px'
+                         : 'padding-bottom:4px'"
+               th:text="#{shop.sort.asc}">价格升序</a>
+            <a th:href="@{/category(category=${result.scope().entry() != null ? result.scope().entry().id : null},
+                        productType=${query.productTypeParam()}, keyword=${query.keyword()}, size=${query.size()},
+                        sort='PRICE_DESC')}"
+               th:style="${query.sort().name() == 'PRICE_DESC'}
+                         ? 'color:var(--ink);border-bottom:1px solid var(--ink);padding-bottom:4px'
+                         : 'padding-bottom:4px'"
+               th:text="#{shop.sort.desc}">价格降序</a>
+        </div>
+    </div>
+
+    <!-- 当前条件 -->
+    <div style="padding:16px 84px 0;display:flex;align-items:center;gap:8px">
+        <span class="tiny" style="letter-spacing:.18em;margin-right:8px" th:text="#{shop.filtered}">已筛选</span>
+        <span class="chip on" th:if="${result.scope().selectedLine() != null}">
+            <span th:text="${result.scope().selectedLine().name}">通勤</span>
+            <a th:href="@{/category}" style="margin-left:2px">×</a>
+        </span>
+        <span class="chip on" th:if="${result.scope().entryIsSecondLevel()}">
+            <span th:text="${result.scope().entry().name}">成衣</span>
+            <a th:href="@{/category(category=${result.scope().selectedLine().id})}" style="margin-left:2px">×</a>
+        </span>
+        <span class="chip" th:if="${result.scope().selectedType().name() != 'ALL'}"
+              th:text="${result.scope().typeLabel()}">成衣</span>
+        <span class="chip" th:if="${query.keyword() != null}" th:text="|#{shop.keyword} ${query.keyword()}|">关键字</span>
+        <a class="tlink mute plain" style="font-size:10px;color:var(--rust);margin-left:6px"
+           th:href="@{/category}" th:text="#{shop.clear}">清除</a>
+        <span class="tiny" style="margin-left:auto;letter-spacing:.16em"
+              th:text="|#{shop.showing} ${result.page.total}|">共 42 件</span>
+    </div>
+
+    <!-- 两栏 -->
+    <div style="display:flex;padding:30px 84px 0;gap:54px">
+        <div style="width:186px;flex:none;border-top:1px solid var(--ink);padding-top:20px">
+            <div style="margin-bottom:26px">
+                <div class="tiny" style="color:var(--ink);margin-bottom:10px;letter-spacing:.2em"
+                     th:text="#{shop.f.category}">系列线</div>
+                <div style="display:flex;align-items:baseline;padding:7px 0">
+                    <span class="din" style="width:12px;color:var(--rust);font-size:10px"
+                          th:text="${result.scope().selectedLine() == null} ? '—' : ''">—</span>
+                    <a style="font-size:12.5px;letter-spacing:.04em"
+                       th:style="${result.scope().selectedLine() == null}
+                                 ? 'color:var(--ink)' : 'color:rgba(26,26,26,.68)'"
+                       th:href="@{/category}" th:text="#{shop.all}">全部商品</a>
+                </div>
+                <th:block th:each="branch : ${lines}">
+                    <div style="display:flex;align-items:baseline;padding:7px 0">
+                        <span class="din" style="width:12px;color:var(--rust);font-size:10px"
+                              th:text="${result.scope().selectedLine() != null
+                                        and result.scope().selectedLine().id == branch.line().id} ? '—' : ''"></span>
+                        <a style="font-size:12.5px;letter-spacing:.04em"
+                           th:style="${result.scope().selectedLine() != null
+                                      and result.scope().selectedLine().id == branch.line().id}
+                                     ? 'color:var(--ink)' : 'color:rgba(26,26,26,.68)'"
+                           th:href="@{/category(category=${branch.line().id})}"
+                           th:text="${branch.line().name}">通勤</a>
+                    </div>
+                    <div th:each="child : ${branch.children()}" style="display:flex;align-items:baseline;padding:5px 0">
+                        <span style="width:12px"></span>
+                        <a style="font-size:11.5px;letter-spacing:.03em;color:var(--mute)"
+                           th:href="@{/category(category=${child.id})}" th:text="${child.name}">成衣</a>
+                    </div>
+                </th:block>
+            </div>
+
+            <div style="margin-bottom:26px">
+                <div class="tiny" style="color:var(--ink);margin-bottom:10px;letter-spacing:.2em"
+                     th:text="#{shop.f.type}">类型</div>
+                <div style="display:flex;align-items:baseline;padding:7px 0">
+                    <span class="din" style="width:12px;color:var(--rust);font-size:10px"
+                          th:text="${result.scope().selectedType().name() == 'ALL'} ? '—' : ''">—</span>
+                    <a style="font-size:12.5px;letter-spacing:.04em"
+                       th:href="@{/category(category=${result.scope().entry() != null ? result.scope().entry().id : null},
+                                   keyword=${query.keyword()},
+                                   sort=${query.sort().name() == 'DEFAULT' ? null : query.sort().name()},
+                                   size=${query.size()})}"
+                       th:text="#{shop.type.all}">全部</a>
+                </div>
+                <div style="display:flex;align-items:baseline;padding:7px 0">
+                    <span class="din" style="width:12px;color:var(--rust);font-size:10px"
+                          th:text="${result.scope().selectedType().name() == 'GARMENTS'} ? '—' : ''"></span>
+                    <a style="font-size:12.5px;letter-spacing:.04em"
+                       th:href="@{/category(category=${result.scope().entry() != null ? result.scope().entry().id : null},
+                                   productType='GARMENTS', keyword=${query.keyword()},
+                                   sort=${query.sort().name() == 'DEFAULT' ? null : query.sort().name()},
+                                   size=${query.size()})}"
+                       th:text="#{shop.type.garment}">成衣</a>
+                </div>
+                <div style="display:flex;align-items:baseline;padding:7px 0">
+                    <span class="din" style="width:12px;color:var(--rust);font-size:10px"
+                          th:text="${result.scope().selectedType().name() == 'ACCESSORIES'} ? '—' : ''"></span>
+                    <a style="font-size:12.5px;letter-spacing:.04em"
+                       th:href="@{/category(category=${result.scope().entry() != null ? result.scope().entry().id : null},
+                                   productType='ACCESSORIES', keyword=${query.keyword()},
+                                   sort=${query.sort().name() == 'DEFAULT' ? null : query.sort().name()},
+                                   size=${query.size()})}"
+                       th:text="#{shop.type.acc}">配饰</a>
+                </div>
+            </div>
+
+            <div style="margin-bottom:26px">
+                <div class="tiny" style="color:var(--ink);margin-bottom:10px;letter-spacing:.2em"
+                     th:text="#{shop.f.colour}">颜色</div>
+                <div style="display:flex;flex-wrap:wrap;gap:10px;width:150px">
+                    <span style="width:19px;height:19px;border-radius:50%;background:#57554F;
+                                 box-shadow:0 0 0 1px rgba(26,26,26,.16)"></span>
+                    <span style="width:19px;height:19px;border-radius:50%;background:#BFA98B;
+                                 box-shadow:0 0 0 1px rgba(26,26,26,.16)"></span>
+                    <span style="width:19px;height:19px;border-radius:50%;background:#4B3B31;
+                                 box-shadow:0 0 0 1px rgba(26,26,26,.16)"></span>
+                    <span style="width:19px;height:19px;border-radius:50%;background:#20201E;
+                                 box-shadow:0 0 0 1px rgba(26,26,26,.16)"></span>
+                    <span style="width:19px;height:19px;border-radius:50%;background:#EDE8DC;
+                                 box-shadow:0 0 0 1px rgba(26,26,26,.16)"></span>
+                    <span style="width:19px;height:19px;border-radius:50%;background:#5D7285;
+                                 box-shadow:0 0 0 1px rgba(26,26,26,.16)"></span>
+                </div>
+            </div>
+
+            <form th:action="@{/category}" method="get">
+                <input type="hidden" name="category" th:if="${result.scope().entry() != null}"
+                       th:value="${result.scope().entry().id}"/>
+                <input type="hidden" name="productType" th:value="${query.productTypeParam()}"/>
+                <div class="tiny" style="color:var(--ink);margin-bottom:10px;letter-spacing:.2em"
+                     th:text="#{shop.f.keyword}">关键字</div>
+                <div class="field" style="margin-bottom:14px;padding-bottom:8px">
+                    <input type="text" name="keyword" maxlength="120" th:value="${query.keyword()}"
+                           th:placeholder="#{nav.search}" aria-label="关键字"/>
+                </div>
+                <button type="submit" class="tlink" style="font-size:10px" th:text="#{shop.apply}">查询</button>
+            </form>
+
+            <div style="border-top:1px solid var(--line);padding-top:16px;margin-top:26px">
+                <a class="tlink mute" style="font-size:10px" th:href="@{/category}"
+                   th:text="#{shop.clear.all}">清除筛选</a>
+            </div>
+        </div>
+
+        <div style="flex:1">
+            <div class="g3" th:if="${!result.page.records.isEmpty()}">
+                <th:block th:each="p, s : ${result.page.records}">
+                    <a th:replace="~{fragments :: card(${p}, ${#numbers.formatInteger(s.count, 2)})}"></a>
+                </th:block>
+            </div>
+
+            <div class="empty" style="padding:70px 0 0" th:if="${result.page.records.isEmpty()}">
+                <h2 th:text="#{shop.empty.title}">没有找到匹配的商品</h2>
+                <p th:if="${result.page.total == 0 and query.page() == 1}" th:text="#{shop.empty.body}">
+                    当前筛选条件下没有在售商品，可以清除条件重新浏览。
+                </p>
+                <p th:if="${result.page.total > 0}" th:text="#{shop.empty.page}">该页超出末页，请返回有效页码。</p>
+                <div class="acts">
+                    <a class="btn" th:href="@{/category}" th:text="#{shop.clear.all}">清除筛选</a>
+                </div>
+            </div>
+
+            <div style="margin-top:52px;display:flex;align-items:center;gap:24px;
+                        font-family:var(--f-din);font-size:10px;letter-spacing:.18em">
+                <a th:if="${query.page() > 1}"
+                   th:href="@{/category(category=${result.scope().entry() != null ? result.scope().entry().id : null},
+                               productType=${query.productTypeParam()},
+                               sort=${query.sort().name() == 'DEFAULT' ? null : query.sort().name()},
+                               keyword=${query.keyword()}, size=${query.size()}, page=${query.page() - 1})}"
+                   style="color:var(--ink)" th:text="#{shop.prev}">上一页</a>
+                <span style="color:var(--ink)" th:text="${#numbers.formatInteger(query.page(), 2)}">01</span>
+                <span style="color:var(--faint)" th:text="${#numbers.formatInteger(result.page.pages, 2)}">01</span>
+                <a th:if="${query.page() < result.page.pages}"
+                   th:href="@{/category(category=${result.scope().entry() != null ? result.scope().entry().id : null},
+                               productType=${query.productTypeParam()},
+                               sort=${query.sort().name() == 'DEFAULT' ? null : query.sort().name()},
+                               keyword=${query.keyword()}, size=${query.size()}, page=${query.page() + 1})}"
+                   style="margin-left:auto;color:var(--mute)" th:text="#{shop.next}">下一页 →</a>
+            </div>
+        </div>
+    </div>
+
+    <div style="height:86px"></div>
+    <th:block th:replace="~{fragments :: footer}"></th:block>
+</div>
 </body>
 </html>

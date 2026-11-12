@@ -19,7 +19,10 @@ import com.fabriclab.store.model.OrderStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 本人订单查询与取消（FR-O-03、FR-O-04）。
@@ -31,6 +34,10 @@ import java.util.List;
  */
 @Service
 public class OrderService {
+
+    /** 列表缩略图：下单时的商品名与封面快照，一笔订单最多展示两件。 */
+    public record OrderThumb(String name, String image) {
+    }
 
     /** 订单详情：订单快照 + 全部明细 + 状态枚举。 */
     public record OrderDetail(SalesOrder order, List<SalesOrderItem> items, OrderStatus status) {
@@ -69,6 +76,27 @@ public class OrderService {
         }
         wrapper.orderByDesc(SalesOrder::getCreatedAt).orderByDesc(SalesOrder::getId);
         return salesOrderMapper.selectPage(new Page<>(query.page(), query.size()), wrapper);
+    }
+
+    /** 列表缩略图按订单号分组，一次查出整页明细，快照为空时不占位。 */
+    public Map<Long, List<OrderThumb>> thumbnails(List<SalesOrder> orders) {
+        if (orders == null || orders.isEmpty()) {
+            return Map.of();
+        }
+        Map<Long, List<OrderThumb>> result = new LinkedHashMap<>();
+        orders.forEach(order -> result.put(order.getId(), new ArrayList<>()));
+        List<SalesOrderItem> items = salesOrderItemMapper.selectList(
+                new LambdaQueryWrapper<SalesOrderItem>()
+                        .in(SalesOrderItem::getOrderId, result.keySet()));
+        for (SalesOrderItem item : items) {
+            List<OrderThumb> thumbs = result.get(item.getOrderId());
+            if (thumbs == null || thumbs.size() >= 2 || item.getCoverImageSnapshot() == null
+                    || item.getCoverImageSnapshot().isBlank()) {
+                continue;
+            }
+            thumbs.add(new OrderThumb(item.getProductNameSnapshot(), item.getCoverImageSnapshot()));
+        }
+        return result;
     }
 
     /** 订单详情：非本人或不存在的订单统一 404。 */

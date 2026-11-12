@@ -1,102 +1,221 @@
 <!DOCTYPE html>
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title th:text="|${brand} · 确认订单|">FABRICLAB · 确认订单</title>
-    <link rel="stylesheet" th:href="@{/css/store.css}" />
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="|#{nav.brand} · #{checkout.title}|">FABRICLAB · 确认订单</title>
+    <link rel="stylesheet" th:href="@{/css/store.css}"/>
 </head>
-<body class="checkout-page">
-<header class="site-header">
-    <div class="shell header-top">
-        <a class="brand" th:href="@{/main}">
-            <img th:src="@{/images/logo.png}" alt="FABRICLAB 标志" />
-            <span><b th:text="${brand}">FABRICLAB</b><small th:text="${tagline}">未染</small></span>
-        </a>
-        <nav class="top-nav" aria-label="主导航">
-            <a th:href="@{/main}">首页</a>
-            <a th:href="@{/category}">选购</a>
-            <th:block th:replace="~{fragments :: authZone}"></th:block>
-        </nav>
+<body>
+<div class="page">
+
+    <th:block th:replace="~{fragments :: anno}"></th:block>
+    <th:block th:replace="~{fragments :: header(null)}"></th:block>
+
+    <p class="flash warn" style="margin-top:24px" th:if="${checkoutError != null}" th:text="${checkoutError}">提示</p>
+
+    <div style="padding:34px 84px 26px;display:flex;align-items:flex-end">
+        <div>
+            <div class="eyebrow" th:text="#{checkout.eyebrow}">确认订单</div>
+            <div class="h2" style="margin-top:12px;font-size:34px" th:text="#{checkout.heading}">确认订单</div>
+        </div>
+        <div style="margin-left:auto">
+            <th:block th:replace="~{fragments :: steps(2)}"></th:block>
+        </div>
     </div>
-</header>
 
-<main class="shell checkout-main">
-    <h1>确认订单</h1>
+    <div style="display:flex;padding:14px 84px 0">
+        <!-- 左：收货与提交 -->
+        <div style="width:812px;flex:none">
+            <div class="eyebrow g" style="margin-bottom:20px" th:text="#{checkout.s1}">01 / 收货信息</div>
 
-    <p class="cart-flash cart-flash--warn" th:if="${checkoutError != null}" th:text="${checkoutError}">提示</p>
+            <form th:action="@{/checkout/submit}" method="post" id="receiver">
+                <input type="hidden" name="_csrf" th:value="${csrfToken}"/>
 
-    <section class="checkout-block">
-        <h2>商品确认</h2>
-        <table class="cart-table">
-            <thead>
-            <tr>
-                <th scope="col">商品</th>
-                <th scope="col">单价</th>
-                <th scope="col">数量</th>
-                <th scope="col">小计</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="line : ${view.lines}">
-                <td class="cart-goods">
-                    <span class="cart-goods__media">
-                        <img th:src="${#strings.isEmpty(line.coverImage) ? '/images/logo.png' : '/' + line.coverImage}"
-                             th:alt="${line.name}" loading="lazy" />
-                    </span>
-                    <span class="cart-goods__text">
-                        <a class="cart-goods__name" th:href="@{/product(id=${line.productId})}" th:text="${line.name}">商品名称</a>
-                        <small class="cart-goods__sku" th:if="${line.sku != null}">
-                            款号 <code th:text="${line.sku}">FL-000-00</code>
-                        </small>
-                    </span>
-                </td>
-                <td th:text="|¥ ${#numbers.formatDecimal(line.unitPrice, 1, 2)}|">¥ 0.00</td>
-                <td th:text="${line.quantity}">1</td>
-                <td th:text="|¥ ${#numbers.formatDecimal(line.subtotal(), 1, 2)}|">¥ 0.00</td>
-            </tr>
-            </tbody>
-        </table>
-        <p class="checkout-total">
-            商品合计
-            <b th:text="|¥ ${#numbers.formatDecimal(view.payableTotal, 1, 2)}|">¥ 0.00</b>
-        </p>
-        <p class="checkout-note">整车结算，共 <b th:text="${view.lines.size()}">1</b> 款、<b th:text="${view.totalQuantity}">1</b> 件；金额由服务端按当前价格计算，页面不提交任何金额字段。</p>
-    </section>
+                <div class="field">
+                    <label class="lb" for="receiverName" th:text="#{checkout.name}">收件人</label>
+                    <input id="receiverName" type="text" name="receiverName" maxlength="50" required
+                           th:value="${receiverName}" th:placeholder="#{checkout.name.ph}"/>
+                </div>
 
-    <section class="checkout-block">
-        <h2>收货信息</h2>
-        <form class="receiver-form" th:action="@{/checkout/submit}" method="post">
-            <input type="hidden" name="_csrf" th:value="${csrfToken}" />
-            <label>
-                收货人
-                <input type="text" name="receiverName" maxlength="50" required
-                       th:value="${receiverName}" placeholder="请输入收货人姓名" />
-            </label>
-            <label>
-                联系电话
-                <input type="text" name="receiverPhone" maxlength="30" required
-                       th:value="${receiverPhone}" placeholder="例如 13800001234" />
-            </label>
-            <label class="receiver-form__wide">
-                详细地址
-                <input type="text" name="receiverAddress" maxlength="255" required
-                       th:value="${receiverAddress}" placeholder="省市区与街道门牌等完整地址" />
-            </label>
-            <div class="receiver-form__actions">
-                <button type="submit" class="checkout-submit">提交订单</button>
-                <a class="checkout-back" th:href="@{/cart}">返回购物车修改</a>
+                <div style="display:flex;gap:26px">
+                    <div class="field" style="flex:1">
+                        <label class="lb" for="receiverPhone" th:text="#{checkout.phone}">手机</label>
+                        <input id="receiverPhone" type="text" name="receiverPhone" maxlength="30" required
+                               th:value="${receiverPhone}" th:placeholder="#{checkout.phone.ph}"/>
+                    </div>
+                    <div class="field" style="flex:1">
+                        <label class="lb" th:text="#{checkout.delivery}">配送方式</label>
+                        <input type="text" value="顺丰标快 · 2–3 个工作日" readonly tabindex="-1"
+                               th:value="#{checkout.delivery.value}"/>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label class="lb" for="receiverAddress" th:text="#{checkout.address}">详细地址</label>
+                    <input id="receiverAddress" type="text" name="receiverAddress" maxlength="255" required
+                           th:value="${receiverAddress}" th:placeholder="#{checkout.address.ph}"/>
+                </div>
+            </form>
+
+            <div class="eyebrow g" style="margin:38px 0 14px" th:text="#{checkout.s2}">02 / 配送方式</div>
+            <div style="display:flex;align-items:center;padding:17px 18px;border:1px solid var(--ink);
+                        margin-bottom:8px;background:var(--card)">
+                <span style="width:14px;height:14px;border-radius:50%;flex:none;border:1px solid var(--ink);
+                             background:var(--ink)"></span>
+                <div style="margin-left:14px">
+                    <div style="font-size:12.5px;letter-spacing:.04em" th:text="#{checkout.ship1}">顺丰标快</div>
+                    <div class="tiny" style="margin-top:5px;letter-spacing:.1em" th:text="#{checkout.ship1.d}">
+                        2–3 个工作日送达
+                    </div>
+                </div>
+                <div class="din" style="margin-left:auto;font-size:11px;letter-spacing:.06em;color:var(--mute)"
+                     th:text="#{checkout.free}">免运费</div>
             </div>
-        </form>
-        <p class="checkout-note">打开确认页不锁价、不预占库存；提交时若购物车、商品状态、库存或价格已变化，需重新确认后才能成交。返回购物车修改后须重新进入结算。</p>
-    </section>
-</main>
+            <div style="display:flex;align-items:center;padding:17px 18px;border:1px solid var(--line);
+                        margin-bottom:8px">
+                <span style="width:14px;height:14px;border-radius:50%;flex:none;border:1px solid var(--line2)">
+                </span>
+                <div style="margin-left:14px">
+                    <div style="font-size:12.5px;letter-spacing:.04em;color:var(--mute)"
+                         th:text="#{checkout.ship2}">当日达 · 内环</div>
+                    <div class="tiny" style="margin-top:5px;letter-spacing:.1em"
+                         th:text="#{checkout.ship2.d}">今日 20:00 前下单，明日送达</div>
+                </div>
+                <div class="din" style="margin-left:auto;font-size:11px;letter-spacing:.06em;color:var(--mute)">
+                    ¥ 30</div>
+            </div>
 
-<footer class="site-footer">
-    <div class="shell">
-        <span th:text="${brand}">FABRICLAB</span>
-        <span th:text="${tagline}">未染</span>
+            <div class="eyebrow g" style="margin:38px 0 14px" th:text="#{checkout.s3}">03 / 支付方式</div>
+            <div style="display:flex;align-items:center;padding:17px 18px;border:1px solid var(--ink);
+                        margin-bottom:8px;background:var(--card)">
+                <span style="width:14px;height:14px;border-radius:50%;flex:none;border:1px solid var(--ink);
+                             background:var(--ink)"></span>
+                <div style="margin-left:14px">
+                    <div style="font-size:12.5px;letter-spacing:.04em">
+                        <span th:text="#{checkout.pay1}">微信支付</span>
+                        <span class="din" style="margin-left:8px;font-size:8.5px;letter-spacing:.16em;
+                                                 color:var(--rust)" th:text="#{checkout.mock}">模拟</span>
+                    </div>
+                    <div class="tiny" style="margin-top:5px;letter-spacing:.1em" th:text="#{checkout.pay1.d}">
+                        提交后进入模拟支付页
+                    </div>
+                </div>
+                <div class="din" style="margin-left:auto;font-size:9px;letter-spacing:.16em;color:var(--mute)"
+                     th:text="#{checkout.recommend}">推荐</div>
+            </div>
+            <div style="display:flex;align-items:center;padding:17px 18px;border:1px solid var(--line);
+                        margin-bottom:8px">
+                <span style="width:14px;height:14px;border-radius:50%;flex:none;border:1px solid var(--line2)">
+                </span>
+                <div style="margin-left:14px">
+                    <div style="font-size:12.5px;letter-spacing:.04em;color:var(--mute)"
+                         th:text="#{checkout.pay2}">支付宝</div>
+                    <div class="tiny" style="margin-top:5px;letter-spacing:.1em" th:text="#{checkout.pay2.d}">
+                        课程项目暂未接入
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top:26px;display:flex;gap:12px;align-items:flex-start">
+                <span style="width:14px;height:14px;border:1px solid var(--line2);flex:none;margin-top:2px;
+                             background:var(--card)"></span>
+                <span style="font-size:11.5px;line-height:1.8;color:var(--mute)" th:text="#{checkout.terms}">
+                    提交订单即表示同意《购买条款》与《隐私政策》，金额由服务端按订单计算。
+                </span>
+            </div>
+
+            <div style="margin-top:26px;display:flex;align-items:center;gap:24px">
+                <a class="tlink mute" th:href="@{/cart}" th:text="#{checkout.back}">返回购物袋修改</a>
+            </div>
+        </div>
+
+        <!-- 右：摘要 -->
+        <div style="width:384px;flex:none;margin-left:76px">
+            <div style="background:var(--linen);padding:26px 26px 24px">
+                <div style="display:flex;align-items:baseline">
+                    <span class="tiny" style="letter-spacing:.2em;color:var(--ink)" th:text="#{checkout.summary}">订单摘要</span>
+                    <span class="tiny" style="margin-left:auto"
+                          th:text="|${view.lines.size()} #{checkout.items}|">3 件</span>
+                </div>
+
+                <div style="margin-top:12px">
+                    <div th:each="line : ${view.lines}"
+                         style="display:flex;align-items:center;gap:14px;padding:11px 0">
+                        <div style="width:54px;aspect-ratio:3/4;overflow:hidden;background:var(--card);flex:none">
+                            <img th:src="${#strings.isEmpty(line.coverImage) ? '/images/mark.png' : '/' + line.coverImage}"
+                                 th:alt="${line.name}" loading="lazy"
+                                 style="width:100%;height:100%;object-fit:cover"/>
+                        </div>
+                        <div>
+                            <div style="font-size:12px;letter-spacing:.02em" th:text="${line.name}">商品名称</div>
+                            <div class="tiny" style="margin-top:5px;letter-spacing:.1em"
+                                 th:text="|${line.sku} · × ${line.quantity}|">FL-CM-01 · × 1</div>
+                        </div>
+                        <div class="din" style="margin-left:auto;font-size:11.5px"
+                             th:text="|¥ ${#numbers.formatDecimal(line.subtotal(), 1, 2)}|">¥ 0.00</div>
+                    </div>
+                </div>
+
+                <div style="margin-top:14px;padding-top:16px;border-top:1px solid rgba(26,26,26,.16)">
+                    <div class="l" style="display:flex;justify-content:space-between;font-family:var(--f-body);
+                                          font-size:11px;letter-spacing:.1em;color:var(--mute);margin-bottom:11px">
+                        <span th:text="#{checkout.goods}">商品合计</span>
+                        <b style="color:var(--ink);font-family:var(--f-din)"
+                           th:text="|¥ ${#numbers.formatDecimal(view.payableTotal, 1, 2)}|">¥ 0.00</b>
+                    </div>
+                    <div class="l" style="display:flex;justify-content:space-between;font-family:var(--f-body);
+                                          font-size:11px;letter-spacing:.1em;color:var(--mute);margin-bottom:11px">
+                        <span th:text="#{checkout.shipping}">运费</span>
+                        <b style="color:var(--ink);font-family:var(--f-body);font-weight:400"
+                           th:text="#{checkout.free}">免运费</b>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;margin-top:16px;padding-top:14px;
+                                border-top:1px solid rgba(26,26,26,.16)">
+                        <span style="font-family:var(--f-body);font-size:12px;letter-spacing:.1em"
+                              th:text="#{checkout.due}">应付</span>
+                        <span class="din" style="font-size:19px;font-weight:500"
+                              th:text="|¥ ${#numbers.formatDecimal(view.payableTotal, 1, 2)}|">¥ 0.00</span>
+                    </div>
+                    <button type="submit" form="receiver" class="btn wide" style="margin-top:20px"
+                            th:text="#{checkout.submit}">提交订单</button>
+                </div>
+            </div>
+
+            <div style="margin-top:18px;padding:16px 18px;border:1px solid var(--line);display:flex;
+                        align-items:flex-start;gap:11px">
+                <span style="color:var(--rust);display:flex;margin-top:2px">
+                    <svg width="11" height="9" viewBox="0 0 12 9" fill="none" stroke="currentColor"
+                         stroke-width="1.5"><path d="M1 4.6L4.3 7.8 11 1.2"/></svg></span>
+                <span style="font-size:11px;line-height:1.8;color:var(--mute)" th:text="#{checkout.note}">
+                    打开确认页不锁价、不预占库存；提交时若购物车、商品状态、库存或价格已变化，需重新确认后才能成交。
+                </span>
+            </div>
+        </div>
     </div>
-</footer>
+
+    <div style="margin-top:70px;padding:0 84px">
+        <div class="svc">
+            <div class="c">
+                <div class="no">01</div>
+                <div class="t" th:text="#{checkout.svc1.t}">致电工坊</div>
+                <div class="d" th:utext="#{checkout.svc1.d}">+86 21 6258 0031<br>每日 10:00 – 22:00</div>
+            </div>
+            <div class="c">
+                <div class="no">02</div>
+                <div class="t" th:text="#{checkout.svc2.t}">门店自提</div>
+                <div class="d" th:utext="#{checkout.svc2.d}">陕西北路 688 号 2F<br>2 小时可取</div>
+            </div>
+            <div class="c">
+                <div class="no">03</div>
+                <div class="t" th:text="#{checkout.svc3.t}">配送与退换</div>
+                <div class="d" th:utext="#{checkout.svc3.d}">满 ¥1,500 包邮 · 7 天<br>上门取件</div>
+            </div>
+        </div>
+    </div>
+
+    <div style="height:70px"></div>
+    <th:block th:replace="~{fragments :: footer}"></th:block>
+</div>
 </body>
 </html>

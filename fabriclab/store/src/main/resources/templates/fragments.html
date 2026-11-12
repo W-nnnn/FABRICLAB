@@ -1,38 +1,148 @@
 <!DOCTYPE html>
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <body>
-<th:block th:fragment="authZone">
-    <a class="nav-cart" th:href="@{/cart}">
-        购物车
-        <b class="nav-cart__badge" th:text="${cartBadge == null ? 0 : cartBadge}">0</b>
-    </a>
-    <th:block th:if="${currentUser == null}">
-        <a th:href="@{/signon}">登录</a>
-        <a th:href="@{/register}">注册</a>
-    </th:block>
-    <th:block th:if="${currentUser != null}">
-        <a th:href="@{/orders}">我的订单</a>
-        <span class="nav-user" th:text="${currentUser.displayName()}">显示名</span>
-        <form class="nav-signout" th:action="@{/signout}" method="post">
-            <input type="hidden" name="_csrf" th:value="${csrfToken}" />
-            <button type="submit">退出</button>
-        </form>
-    </th:block>
+
+<!-- ============================================================ 头部 -->
+<th:block th:fragment="anno">
+    <div class="anno">
+        <span th:text="#{anno.left}">满 ¥1,500 顺丰包邮 · 终身免费修补</span>
+        <div class="r">
+            <span th:text="#{anno.mid}">秋冬第七辑 11.15 到店</span>
+            <span th:text="#{anno.right}">上海 · 静安</span>
+        </div>
+    </div>
 </th:block>
-<a th:fragment="productCard(product)" class="product-card" th:href="@{/product(id=${product.id})}">
-    <span class="product-card__media">
-        <img th:src="${#strings.isEmpty(product.coverImage) ? '/images/logo.png' : '/' + product.coverImage}"
-             th:alt="${product.name}" loading="lazy" />
-    </span>
-    <span class="product-card__name" th:text="${product.name}">商品名称</span>
-    <span class="product-card__summary" th:if="${!#strings.isEmpty(product.summary)}"
-          th:text="${product.summary}">简介</span>
-    <span class="product-card__meta">
-        <strong th:text="|¥ ${#numbers.formatDecimal(product.price, 1, 2)}|">¥ 0.00</strong>
-        <b class="stock stock--ok" th:if="${product.stock > 0}">现货</b>
-        <b class="stock stock--out" th:if="${product.stock == 0}">暂时缺货</b>
-    </span>
-    <span class="product-card__link">查看详情</span>
+
+<th:block th:fragment="header(active)">
+    <div class="hdr">
+        <a class="logo" th:href="@{/main}">
+            <img th:src="@{/images/mark.png}" alt="FABRICLAB"/>
+            <b>FABRICLAB</b>
+        </a>
+        <nav class="nav" aria-label="系列线">
+            <a class="it" th:href="@{/category(category=1)}"
+               th:classappend="${active == 'commute'} ? 'on'" th:text="#{line.commute}">通勤出行</a>
+            <a class="it" th:href="@{/category(category=2)}"
+               th:classappend="${active == 'leisure'} ? 'on'" th:text="#{line.leisure}">休闲生活</a>
+            <a class="it" th:href="@{/category(category=3)}"
+               th:classappend="${active == 'outdoor'} ? 'on'" th:text="#{line.outdoor}">户外运动</a>
+            <a class="it" th:href="@{/category(category=4)}"
+               th:classappend="${active == 'occasion'} ? 'on'" th:text="#{line.occasion}">礼服场合</a>
+            <a class="it" th:href="@{/category(category=5)}"
+               th:classappend="${active == 'home'} ? 'on'" th:text="#{line.home}">居家舒适</a>
+        </nav>
+        <div class="acts">
+            <a class="lang" th:href="${langHref + (lang == 'en' ? 'lang=zh' : 'lang=en')}"
+               th:aria-label="#{lang.switch}">
+                <b th:if="${lang == 'en'}">EN</b><span th:unless="${lang == 'en'}">EN</span>
+                <i>/</i>
+                <b th:if="${lang != 'en'}">中文</b><span th:unless="${lang != 'en'}">中文</span>
+            </a>
+            <form class="inline" th:action="@{/category}" method="get" role="search">
+                <input type="text" name="keyword" maxlength="120" th:placeholder="#{nav.search}"
+                       aria-label="搜索商品名称"/>
+                <button type="submit" class="ico plain">
+                    <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor"
+                         stroke-width="1.3"><circle cx="6.8" cy="6.8" r="4.6"/><path d="M10.3 10.3L14 14"/></svg>
+                    <span th:text="#{nav.search}">搜索</span>
+                </button>
+            </form>
+            <a class="ico" th:if="${currentUser == null}" th:href="@{/signon}">
+                <svg width="13" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor"
+                     stroke-width="1.3"><circle cx="8" cy="5" r="2.9"/>
+                    <path d="M2.6 14.2c0-2.9 2.4-4.6 5.4-4.6s5.4 1.7 5.4 4.6"/></svg>
+                <span th:text="#{nav.account}">账户</span>
+            </a>
+            <a class="ico" th:if="${currentUser != null}" th:href="@{/orders}">
+                <svg width="13" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor"
+                     stroke-width="1.3"><circle cx="8" cy="5" r="2.9"/>
+                    <path d="M2.6 14.2c0-2.9 2.4-4.6 5.4-4.6s5.4 1.7 5.4 4.6"/></svg>
+                <span th:text="${currentUser.displayName()}">沈一鸣</span>
+            </a>
+            <a class="ico" th:href="@{/cart}">
+                <svg width="13" height="15" viewBox="0 0 16 17" fill="none" stroke="currentColor"
+                     stroke-width="1.3"><path d="M2.4 5h11.2l-.9 10.6H3.3L2.4 5z"/>
+                    <path d="M5.5 5.2V3.7a2.5 2.5 0 015 0v1.5"/></svg>
+                <span th:text="#{nav.bag}">购物袋</span>
+                <span class="cartn" th:text="${cartBadge == null ? 0 : cartBadge}">0</span>
+            </a>
+        </div>
+    </div>
+</th:block>
+
+<!-- ============================================================ 页脚 -->
+<th:block th:fragment="footer">
+    <div class="foot">
+        <div class="top">
+            <div class="c">
+                <div class="mark">
+                    <img th:src="@{/images/mark.png}" alt=""/>
+                    <b>FABRICLAB</b>
+                </div>
+                <p style="max-width:250px" th:utext="#{foot.brand}">FABRICLAB 工坊<br>二〇一九年 · 上海</p>
+                <form class="subscribe" th:action="@{/main}" method="get">
+                    <input type="text" th:placeholder="#{foot.newsletter}"/>
+                    <button type="submit" th:text="#{foot.join}">订阅</button>
+                </form>
+            </div>
+            <div class="c">
+                <b class="t" th:text="#{foot.shop}">选购</b>
+                <p th:utext="#{foot.shop.list}">针织<br>衬衫<br>裤装<br>外套<br>牛仔</p>
+            </div>
+            <div class="c">
+                <b class="t" th:text="#{foot.service}">服务</b>
+                <p th:utext="#{foot.service.list}">尺码指南<br>面料养护<br>修改与修补<br>配送与退换</p>
+            </div>
+            <div class="c">
+                <b class="t" th:text="#{foot.store}">门店</b>
+                <p th:utext="#{foot.store.list}">静安区陕西北路 688 号 2F<br><br><br>HELLO@FABRICLAB.CN<br>+86 21 6258 0031</p>
+            </div>
+        </div>
+        <div class="sub">
+            <span>© 2026 FABRICLAB ATELIER</span>
+            <span style="margin-left:26px">沪 ICP 备 2026018842 号</span>
+            <div class="r">
+                <span th:text="#{foot.wechat}">微信</span>
+                <span th:text="#{foot.red}">小红书</span>
+                <span>INSTAGRAM</span>
+            </div>
+        </div>
+    </div>
+</th:block>
+
+<!-- ============================================================ 商品卡 -->
+<a th:fragment="card(p, no)" class="card" th:href="@{/product(id=${p.id})}">
+    <div class="ph">
+        <img th:src="${#strings.isEmpty(p.coverImage) ? '/images/mark.png' : '/' + p.coverImage}"
+             th:alt="${p.name}" loading="lazy"/>
+        <span class="tag sold" th:if="${p.stock == null or p.stock == 0}"
+              th:text="#{card.soldout}">暂时缺货</span>
+    </div>
+    <div class="meta">
+        <span class="no" th:text="${no}">01</span>
+        <span class="nm" th:text="${p.name}">商品名称</span>
+        <span class="pr" th:text="|¥ ${#numbers.formatDecimal(p.price, 1, 2)}|">¥ 0</span>
+    </div>
+    <div class="sub">
+        <div class="dot"><span style="background:#B9AE9C"></span></div>
+        <em th:text="${p.sku}">FL-CM-01</em>
+    </div>
 </a>
+
+<!-- ============================================================ 步骤条 -->
+<div th:fragment="steps(cur)" class="steps">
+    <div class="st" th:classappend="${cur == 1} ? 'on' : (${cur > 1} ? 'done')">
+        <span class="no">01</span><span class="nm" th:text="#{step.bag}">购物袋</span>
+    </div>
+    <span class="bar"></span>
+    <div class="st" th:classappend="${cur == 2} ? 'on' : (${cur > 2} ? 'done')">
+        <span class="no">02</span><span class="nm" th:text="#{step.checkout}">确认订单</span>
+    </div>
+    <span class="bar"></span>
+    <div class="st" th:classappend="${cur == 3} ? 'on' : (${cur > 3} ? 'done')">
+        <span class="no">03</span><span class="nm" th:text="#{step.payment}">支付</span>
+    </div>
+</div>
+
 </body>
 </html>

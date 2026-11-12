@@ -1,106 +1,241 @@
 <!DOCTYPE html>
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title th:text="|${brand} · ${view.product().name}|">FABRICLAB · 商品详情</title>
-    <link rel="stylesheet" th:href="@{/css/store.css}" />
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="|#{nav.brand} · ${view.product().name}|">FABRICLAB · 商品详情</title>
+    <link rel="stylesheet" th:href="@{/css/store.css}"/>
 </head>
-<body class="detail-page">
-<header class="site-header">
-    <div class="shell header-top">
-        <a class="brand" th:href="@{/main}">
-            <img th:src="@{/images/logo.png}" alt="FABRICLAB 标志" />
-            <span><b th:text="${brand}">FABRICLAB</b><small th:text="${tagline}">未染</small></span>
-        </a>
-        <nav class="top-nav" aria-label="主导航">
-            <a th:href="@{/main}">首页</a>
-            <a th:href="@{/category}">选购</a>
-            <th:block th:replace="~{fragments :: authZone}"></th:block>
-        </nav>
-    </div>
-</header>
+<body>
+<div class="page">
 
-<main class="shell detail-main">
-    <nav class="detail-crumb" aria-label="分类路径">
-        <a th:href="@{/main}">首页</a>
-        <span class="crumb-sep">/</span>
-        <a th:href="@{/category(category=${view.line().id})}" th:text="${view.line().name}">系列线</a>
-        <span class="crumb-sep">/</span>
-        <a th:href="@{/category(category=${view.second().id})}" th:text="${view.second().name}">二级分类</a>
-        <span class="crumb-sep">/</span>
+    <th:block th:replace="~{fragments :: anno}"></th:block>
+    <th:block th:replace="~{fragments :: header(null)}"></th:block>
+
+    <div class="crumb">
+        <a th:href="@{/main}" th:text="#{nav.home}">首页</a><span> / </span>
+        <a th:href="@{/category(category=${view.line().id})}" th:text="${view.line().name}">通勤出行</a><span> / </span>
+        <a th:href="@{/category(category=${view.second().id})}" th:text="${view.second().name}">通勤成衣</a><span> / </span>
         <span th:text="${view.product().name}">商品名称</span>
-    </nav>
-
-    <section class="detail-layout">
-        <div class="detail-gallery">
-            <div class="detail-gallery__main">
-                <img th:src="@{|/${view.gallery()[0].path()}|}"
-                     th:alt="${view.gallery()[0].alt()}" />
-            </div>
-            <ul class="detail-thumbs" th:if="${view.gallery().size() > 1}">
-                <li th:each="image : ${view.gallery()}">
-                    <img th:src="@{|/${image.path()}|}" th:alt="${image.alt()}" loading="lazy" />
-                </li>
-            </ul>
-            <p class="detail-gallery__fallback" th:if="${view.gallery().size() == 1}">该商品暂无相册，展示封面图</p>
-        </div>
-
-        <div class="detail-info">
-            <p class="detail-sku">
-                款号 <code th:text="${view.product().sku}">FL-000-00</code>
-                <span class="detail-sku__hint">（一个款号即一个可购买单位，不提供规格选项）</span>
-            </p>
-            <h1 th:text="${view.product().name}">商品名称</h1>
-            <p class="detail-summary" th:if="${!#strings.isEmpty(view.product().summary)}"
-               th:text="${view.product().summary}">简介</p>
-            <p class="detail-price" th:text="|¥ ${#numbers.formatDecimal(view.product().price, 1, 2)}|">¥ 0.00</p>
-
-            <p class="detail-stock">
-                <b class="stock stock--ok" th:if="${!view.soldOut()}">现货</b>
-                <b class="stock stock--out" th:if="${view.soldOut()}">售罄</b>
-                <span th:if="${!view.soldOut()}"
-                      th:text="|库存 ${view.product().stock} 件|">库存 0 件</span>
-                <span th:if="${view.soldOut()}">该商品暂时无法购买</span>
-            </p>
-
-            <div class="detail-buy">
-                <p class="detail-buy__flash detail-buy__flash--ok" th:if="${cartError == null && cartAdded != null}"
-                   th:text="|已加入购物车，当前该款共 ${cartAdded} 件，可继续选购或进入购物车|">已加入购物车</p>
-                <p class="detail-buy__flash detail-buy__flash--warn" th:if="${cartError != null}"
-                   th:text="${cartError}">加入失败提示</p>
-                <form class="detail-buy__form" th:action="@{/cart/add}" method="post">
-                    <input type="hidden" name="_csrf" th:value="${csrfToken}" />
-                    <input type="hidden" name="productId" th:value="${view.product().id}" />
-                    <label>
-                        数量
-                        <input type="number" name="quantity" value="1" min="1" max="99" step="1"
-                               th:disabled="${view.soldOut()}" aria-label="购买数量" />
-                    </label>
-                    <button type="submit" th:disabled="${view.soldOut()}"
-                            th:title="${view.soldOut() ? '零库存商品暂不可购买' : '加入购物车'}">加入购物车</button>
-                </form>
-                <p class="detail-buy__note" th:if="${view.soldOut()}">该商品暂时无法购买，可先浏览其他商品。</p>
-                <a class="detail-buy__cart" th:href="@{/cart}">查看购物车</a>
-            </div>
-        </div>
-    </section>
-
-    <section class="detail-desc" th:if="${!view.descriptionLines().isEmpty()}">
-        <h2>商品详情</h2>
-        <p th:each="paragraph : ${view.descriptionLines()}" th:text="${paragraph}">纯文本详情段落</p>
-    </section>
-
-    <nav class="detail-actions">
-        <a class="detail-back" th:href="@{/category(category=${view.second().id})}">返回商品列表</a>
-    </nav>
-</main>
-
-<footer class="site-footer">
-    <div class="shell">
-        <span th:text="${brand}">FABRICLAB</span>
-        <span th:text="${tagline}">未染</span>
     </div>
-</footer>
+
+    <p class="flash warn" th:if="${cartError != null}">
+        <span class="mk"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor"
+                             stroke-width="1.4"><circle cx="6" cy="6" r="5"/><path d="M6 3.4v3.2M6 8.4v.6"/></svg></span>
+        <span th:text="${cartError}">加入失败提示</span>
+    </p>
+    <p class="flash" th:if="${cartError == null and cartAdded != null}">
+        <span class="mk"><svg width="11" height="9" viewBox="0 0 12 9" fill="none" stroke="currentColor"
+                             stroke-width="1.5"><path d="M1 4.6L4.3 7.8 11 1.2"/></svg></span>
+        <span th:text="|#{product.added} ${cartAdded}|">已加入购物袋</span>
+    </p>
+
+    <div style="display:flex;padding:26px 84px 0;gap:76px">
+        <!-- 左：图 -->
+        <div style="width:700px;flex:none">
+            <div style="aspect-ratio:3/4;overflow:hidden;background:var(--linen);position:relative">
+                <img th:src="@{|/${view.gallery()[0].path()}|}" th:alt="${view.gallery()[0].alt()}"
+                     style="width:100%;height:100%;object-fit:cover"/>
+                <span class="tag" style="position:absolute;left:14px;top:14px;background:var(--wall);
+                                         font-family:var(--f-body);font-size:10px;letter-spacing:.1em;
+                                         padding:4px 8px"
+                      th:if="${!view.soldOut()}" th:text="#{product.new}">新到</span>
+                <span class="tag sold" style="position:absolute;left:14px;top:14px;background:var(--ink);
+                                              color:var(--wall);font-family:var(--f-body);font-size:10px;
+                                              letter-spacing:.1em;padding:4px 8px"
+                      th:if="${view.soldOut()}" th:text="#{product.soldout}">售罄</span>
+            </div>
+            <div style="display:flex;gap:10px;margin-top:10px" th:if="${view.gallery().size() > 1}">
+                <div th:each="image, i : ${view.gallery()}"
+                     style="flex:1;aspect-ratio:3/4;overflow:hidden;background:var(--linen)"
+                     th:style="${i.index == 0} ? 'flex:1;aspect-ratio:3/4;overflow:hidden;background:var(--linen);outline:1px solid var(--ink);outline-offset:-1px'
+                               : 'flex:1;aspect-ratio:3/4;overflow:hidden;background:var(--linen)'">
+                    <img th:src="@{|/${image.path()}|}" th:alt="${image.alt()}" loading="lazy"
+                         style="width:100%;height:100%;object-fit:cover"/>
+                </div>
+            </div>
+            <div style="margin-top:14px;display:flex;align-items:center;gap:10px">
+                <span class="tiny" th:text="${view.gallery().size()} == 1 ? #{product.one.view} : #{product.four.view}">4 张图</span>
+                <span style="flex:1;height:1px;background:var(--line)"></span>
+                <span class="tiny" th:text="#{product.enlarge}">放大 ⤢</span>
+            </div>
+        </div>
+
+        <!-- 右：信息 -->
+        <div style="flex:1;padding-top:2px">
+            <div style="display:flex;align-items:baseline">
+                <span class="tiny" style="letter-spacing:.18em" th:text="${view.product().sku}">FL-CM-01</span>
+                <span class="tiny" style="margin-left:auto;letter-spacing:.16em">
+                    <b class="din" style="color:var(--ink)" th:text="${view.product().stock}">25</b>
+                    <span th:text="#{product.stock.unit}"> 件在库</span>
+                </span>
+            </div>
+
+            <div class="h2" style="margin-top:18px;font-size:30px" th:text="${view.product().name}">商品名称</div>
+            <div class="tiny" style="margin-top:10px;letter-spacing:.2em"
+                 th:text="${view.second().name} + ' · ' + ${view.product().sku}">通勤成衣</div>
+
+            <div style="margin-top:20px;display:flex;align-items:baseline;gap:12px">
+                <span class="din" style="font-size:22px;font-weight:500;letter-spacing:.01em"
+                      th:text="|¥ ${#numbers.formatDecimal(view.product().price, 1, 2)}|">¥ 0.00</span>
+                <span class="tiny" th:text="#{product.tax}">含税</span>
+                <a class="tiny" style="margin-left:auto;color:var(--rust);letter-spacing:.12em"
+                   th:href="@{/category(category=${view.second().id})}" th:text="#{product.back.list}">返回商品列表</a>
+            </div>
+
+            <div class="lead" style="margin-top:18px;font-size:12.5px;line-height:1.95"
+                 th:text="${view.product().summary}">简介</div>
+
+            <!-- 规格提示：一个款号即一个可购买单位 -->
+            <div style="margin-top:24px;display:flex;align-items:center;gap:10px;padding:14px 16px;
+                        background:var(--linen)">
+                <span style="display:flex;color:var(--rust)">
+                    <svg width="11" height="9" viewBox="0 0 12 9" fill="none" stroke="currentColor"
+                         stroke-width="1.5"><path d="M1 4.6L4.3 7.8 11 1.2"/></svg></span>
+                <span style="font-size:11.5px;line-height:1.8;letter-spacing:.03em;color:var(--mute)"
+                      th:text="#{product.single.spec}">
+                    一个款号即一个可购买单位，尺码与配色体现在款名中，不另设规格选项。
+                </span>
+            </div>
+
+            <!-- 库存状态 -->
+            <div style="margin-top:20px;display:flex;align-items:center;gap:10px">
+                <b th:if="${!view.soldOut()}" style="font-family:var(--f-body);font-size:11px;
+                           letter-spacing:.1em;color:var(--ink)" th:text="#{product.in.stock}">现货</b>
+                <b th:if="${view.soldOut()}" style="font-family:var(--f-body);font-size:11px;
+                           letter-spacing:.1em;color:var(--rust)" th:text="#{product.soldout}">售罄</b>
+                <span class="tiny" th:if="${view.soldOut()}" th:text="#{product.soldout.note}">该商品暂时无法购买</span>
+            </div>
+
+            <!-- 加入购物袋 -->
+            <form th:action="@{/cart/add}" method="post" style="margin-top:24px">
+                <input type="hidden" name="_csrf" th:value="${csrfToken}"/>
+                <input type="hidden" name="productId" th:value="${view.product().id}"/>
+                <div style="display:flex;align-items:center;gap:14px">
+                    <span class="qbox" style="height:52px">
+                        <button type="button" tabindex="-1" aria-hidden="true">—</button>
+                        <input type="number" name="quantity" value="1" min="1" max="99" step="1"
+                               th:disabled="${view.soldOut()}" aria-label="购买数量"/>
+                        <button type="button" tabindex="-1" aria-hidden="true">+</button>
+                    </span>
+                    <button type="submit" class="btn" style="flex:1" th:disabled="${view.soldOut()}"
+                            th:text="#{product.add.bag}">加入购物袋</button>
+                </div>
+            </form>
+            <div style="margin-top:10px">
+                <a class="btn ghost wide" style="height:46px" th:href="@{/cart}"
+                   th:text="#{product.view.bag}">查看购物袋</a>
+            </div>
+
+            <!-- 服务 -->
+            <div style="margin-top:26px;padding:20px 0;border-top:1px solid var(--line);
+                        border-bottom:1px solid var(--line);display:flex;gap:12px">
+                <div style="flex:1;display:flex;flex-direction:column;gap:8px">
+                    <span style="color:var(--rust);display:flex">
+                        <svg width="12" height="9" viewBox="0 0 12 9" fill="none" stroke="currentColor"
+                             stroke-width="1.5"><path d="M1 4.6L4.3 7.8 11 1.2"/></svg></span>
+                    <span class="tiny" style="font-size:10px" th:text="#{product.svc.ship}">满 ¥1,500 包邮</span>
+                </div>
+                <div style="flex:1;display:flex;flex-direction:column;gap:8px">
+                    <span style="color:var(--rust);display:flex">
+                        <svg width="12" height="9" viewBox="0 0 12 9" fill="none" stroke="currentColor"
+                             stroke-width="1.5"><path d="M1 4.6L4.3 7.8 11 1.2"/></svg></span>
+                    <span class="tiny" style="font-size:10px" th:text="#{product.svc.return}">7 天退换</span>
+                </div>
+                <div style="flex:1;display:flex;flex-direction:column;gap:8px">
+                    <span style="color:var(--rust);display:flex">
+                        <svg width="12" height="9" viewBox="0 0 12 9" fill="none" stroke="currentColor"
+                             stroke-width="1.5"><path d="M1 4.6L4.3 7.8 11 1.2"/></svg></span>
+                    <span class="tiny" style="font-size:10px" th:text="#{product.svc.repair}">终身修补</span>
+                </div>
+                <div style="flex:1;display:flex;flex-direction:column;gap:8px">
+                    <span style="color:var(--rust);display:flex">
+                        <svg width="12" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor"
+                             stroke-width="1.3"><circle cx="8" cy="5" r="2.9"/>
+                            <path d="M2.6 14.2c0-2.9 2.4-4.6 5.4-4.6s5.4 1.7 5.4 4.6"/></svg></span>
+                    <span class="tiny" style="font-size:10px" th:text="#{product.svc.fit}">预约试穿</span>
+                </div>
+            </div>
+
+            <!-- 规格表 -->
+            <div style="margin-top:22px">
+                <div style="display:flex;padding:12px 0;border-bottom:1px solid var(--line)">
+                    <span class="tiny" style="width:88px;flex:none;letter-spacing:.18em" th:text="#{product.spec.sku}">款号</span>
+                    <span style="font-size:12px;letter-spacing:.03em;color:var(--mute)" th:text="${view.product().sku}">FL-CM-01</span>
+                </div>
+                <div style="display:flex;padding:12px 0;border-bottom:1px solid var(--line)">
+                    <span class="tiny" style="width:88px;flex:none;letter-spacing:.18em" th:text="#{product.spec.cat}">分类</span>
+                    <span style="font-size:12px;letter-spacing:.03em;color:var(--mute)"
+                          th:text="${view.line().name} + ' / ' + ${view.second().name}">通勤 / 成衣</span>
+                </div>
+                <div style="display:flex;padding:12px 0;border-bottom:1px solid var(--line)">
+                    <span class="tiny" style="width:88px;flex:none;letter-spacing:.18em" th:text="#{product.spec.stock}">库存</span>
+                    <span style="font-size:12px;letter-spacing:.03em;color:var(--mute)"
+                          th:text="|${view.product().stock} #{product.stock.unit}|">25 件</span>
+                </div>
+                <div style="display:flex;padding:12px 0;border-bottom:1px solid var(--line)">
+                    <span class="tiny" style="width:88px;flex:none;letter-spacing:.18em" th:text="#{product.spec.price}">价格</span>
+                    <span style="font-size:12px;letter-spacing:.03em;color:var(--mute)"
+                          th:text="|¥ ${#numbers.formatDecimal(view.product().price, 1, 2)} #{product.tax}|">¥ 429.00 含税</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 商品详情：纯文本逐段 -->
+    <div style="margin-top:76px;padding:0 84px" th:if="${!view.descriptionLines().isEmpty()}">
+        <div style="border-bottom:1px solid var(--line);padding-bottom:14px;display:flex;gap:36px">
+            <span style="font-family:var(--f-body);font-size:12px;letter-spacing:.12em;color:var(--ink);
+                         border-bottom:1px solid var(--ink);padding-bottom:14px;margin-bottom:-15px"
+                  th:text="#{product.tab.story}">商品详情</span>
+        </div>
+        <div style="display:flex;gap:60px;padding-top:36px">
+            <div style="width:620px;flex:none;aspect-ratio:3/2;overflow:hidden;background:var(--linen)">
+                <img th:src="@{/images/look/wide-01.jpg}" alt="" loading="lazy"
+                     style="width:100%;height:100%;object-fit:cover"/>
+            </div>
+            <div style="flex:1">
+                <div class="h3" style="font-size:16px" th:text="#{product.story.title}">面料与工艺</div>
+                <div class="lead" style="margin-top:16px;font-size:12px;line-height:1.95">
+                    <p th:each="paragraph : ${view.descriptionLines()}" th:text="${paragraph}"
+                       style="margin-bottom:10px">纯文本详情段落</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="padding:52px 84px 80px">
+        <div class="svc">
+            <div class="c">
+                <div class="no">SHIPPING</div>
+                <div class="t" th:text="#{svc.ship.t}">配送</div>
+                <div class="d" th:utext="#{svc.ship.d}">满 ¥1,500 包邮<br>2–3 个工作日送达</div>
+            </div>
+            <div class="c">
+                <div class="no">RETURNS</div>
+                <div class="t" th:text="#{svc.return.t}">退换</div>
+                <div class="d" th:utext="#{svc.return.d}">7 天无理由<br>上门取件</div>
+            </div>
+            <div class="c">
+                <div class="no">REPAIRS</div>
+                <div class="t" th:text="#{svc.repair.t}">修补</div>
+                <div class="d" th:utext="#{svc.repair.d}">终身免费<br>全国门店可收</div>
+            </div>
+            <div class="c">
+                <div class="no">FITTING</div>
+                <div class="t" th:text="#{svc.fit.t}">试穿</div>
+                <div class="d" th:utext="#{svc.fit.d}">预约 45 分钟<br>静安工坊</div>
+            </div>
+        </div>
+        <div style="margin-top:36px;display:flex;align-items:center;gap:20px">
+            <a class="tlink mute" th:href="@{/category(category=${view.second().id})}"
+               th:text="#{product.back.list}">返回商品列表</a>
+            <a class="tlink mute" th:href="@{/category(category=${view.line().id})}"
+               th:text="#{product.more.line}">看同系列其他款</a>
+        </div>
+    </div>
+
+    <th:block th:replace="~{fragments :: footer}"></th:block>
+</div>
 </body>
 </html>

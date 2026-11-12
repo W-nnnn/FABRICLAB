@@ -1,114 +1,185 @@
 <!DOCTYPE html>
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title th:text="|${brand} · 我的购物车|">FABRICLAB · 我的购物车</title>
-    <link rel="stylesheet" th:href="@{/css/store.css}" />
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="|#{nav.brand} · #{cart.title}|">FABRICLAB · 购物袋</title>
+    <link rel="stylesheet" th:href="@{/css/store.css}"/>
 </head>
-<body class="cart-page">
-<header class="site-header">
-    <div class="shell header-top">
-        <a class="brand" th:href="@{/main}">
-            <img th:src="@{/images/logo.png}" alt="FABRICLAB 标志" />
-            <span><b th:text="${brand}">FABRICLAB</b><small th:text="${tagline}">未染</small></span>
-        </a>
-        <nav class="top-nav" aria-label="主导航">
-            <a th:href="@{/main}">首页</a>
-            <a th:href="@{/category}">选购</a>
-            <th:block th:replace="~{fragments :: authZone}"></th:block>
-        </nav>
+<body>
+<div class="page">
+
+    <th:block th:replace="~{fragments :: anno}"></th:block>
+    <th:block th:replace="~{fragments :: header(null)}"></th:block>
+
+    <p class="flash warn" style="margin-top:24px" th:if="${cartError != null}" th:text="${cartError}">提示</p>
+
+    <!-- 空袋 -->
+    <div class="empty" th:if="${view.empty}">
+        <h2 th:text="#{cart.empty.title}">购物车是空的</h2>
+        <p th:text="#{cart.empty.body}">先去挑选几件喜欢的成衣吧，加入后可以随时回来结算。</p>
+        <div class="acts">
+            <a class="btn" th:href="@{/category}" th:text="#{cart.empty.cta}">去选购</a>
+        </div>
     </div>
-</header>
-
-<main class="shell cart-main">
-    <h1>我的购物车</h1>
-
-    <p class="cart-flash cart-flash--warn" th:if="${cartError != null}" th:text="${cartError}">提示</p>
-
-    <section class="cart-empty" th:if="${view.empty}">
-        <p>购物车是空的，先去挑选几件喜欢的成衣吧。</p>
-        <a class="cart-empty__link" th:href="@{/category}">去选购</a>
-    </section>
 
     <th:block th:unless="${view.empty}">
-        <p class="cart-flash cart-flash--warn" th:if="${view.hasInvalid}">购物车包含失效条目，暂时不能整车结算；失效条目仍会保留，可移除后再结算。</p>
+        <div style="padding:34px 84px 30px;display:flex;align-items:flex-end">
+            <div>
+                <div class="eyebrow" th:text="#{cart.eyebrow}">购物袋</div>
+                <div class="h2" style="margin-top:12px;font-size:34px"
+                     th:text="|#{cart.bag} （${view.lines.size()}）|">购物袋</div>
+            </div>
+            <div style="margin-left:auto;display:flex;align-items:baseline;gap:14px">
+                <span class="tiny" th:text="#{cart.total}">合计</span>
+                <span class="din" style="font-size:24px;font-weight:500"
+                      th:text="|¥ ${#numbers.formatDecimal(view.payableTotal, 1, 2)}|">¥ 0.00</span>
+            </div>
+        </div>
 
-        <table class="cart-table">
-            <thead>
-            <tr>
-                <th scope="col">商品</th>
-                <th scope="col">单价</th>
-                <th scope="col">数量</th>
-                <th scope="col">小计</th>
-                <th scope="col">状态</th>
-                <th scope="col">操作</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="line : ${view.lines}" th:classappend="${line.unavailable ? 'cart-row--invalid' : ''}">
-                <td class="cart-goods">
-                    <a class="cart-goods__media" th:href="@{/product(id=${line.productId})}">
-                        <img th:src="${#strings.isEmpty(line.coverImage) ? '/images/logo.png' : '/' + line.coverImage}"
-                             th:alt="${line.name}" loading="lazy" />
+        <div style="padding:0 84px 30px">
+            <th:block th:replace="~{fragments :: steps(1)}"></th:block>
+        </div>
+
+        <p class="flash warn" th:if="${view.hasInvalid}" th:text="#{cart.invalid}">
+            购物车包含失效条目，暂时不能整车结算；失效条目仍会保留，可移除后再结算。
+        </p>
+
+        <div style="display:flex;padding:0 84px">
+            <!-- 左：清单 -->
+            <div style="width:860px;flex:none">
+                <div style="display:flex;padding:0 0 12px;border-bottom:1px solid var(--ink);
+                            font-family:var(--f-body);font-size:10px;letter-spacing:.18em;color:var(--mute)">
+                    <span th:text="#{cart.col.item}">商品</span>
+                    <span style="margin-left:auto" th:text="#{cart.col.qty}">数量 / 金额</span>
+                </div>
+
+                <div class="row" th:each="line : ${view.lines}"
+                     th:classappend="${line.unavailable} ? 'invalid'">
+                    <a class="thumb" th:href="@{/product(id=${line.productId})}">
+                        <img th:src="${#strings.isEmpty(line.coverImage) ? '/images/mark.png' : '/' + line.coverImage}"
+                             th:alt="${line.name}" loading="lazy"/>
                     </a>
-                    <span class="cart-goods__text">
-                        <a class="cart-goods__name" th:href="@{/product(id=${line.productId})}" th:text="${line.name}">商品名称</a>
-                        <small class="cart-goods__sku" th:if="${line.sku != null}">
-                            款号 <code th:text="${line.sku}">FL-000-00</code>
-                        </small>
+                    <div class="info">
+                        <a class="nm" style="display:block" th:href="@{/product(id=${line.productId})}"
+                           th:text="${line.name}">商品名称</a>
+                        <div class="sk" th:text="${line.sku}">FL-CM-01</div>
+                        <div class="attr">
+                            <span th:text="|#{cart.unit} ¥ ${#numbers.formatDecimal(line.unitPrice, 1, 2)}|">单价</span>
+                            <span th:if="${line.unavailable}" style="color:var(--rust)" th:text="${line.reason}">商品已下架</span>
+                        </div>
+                    </div>
+                    <div class="qty">
+                        <form th:action="@{/cart/update}" method="post" th:if="${!line.unavailable}"
+                              style="display:flex;align-items:center;gap:10px">
+                            <input type="hidden" name="_csrf" th:value="${csrfToken}"/>
+                            <input type="hidden" name="itemId" th:value="${line.itemId}"/>
+                            <input type="hidden" name="version" th:value="${line.version}"/>
+                            <span class="qbox">
+                                <input class="qty-input" type="number" name="quantity"
+                                       th:value="${line.quantity}" min="1" max="99" step="1"
+                                       aria-label="购买数量"/>
+                            </span>
+                            <button type="submit" class="tlink plain" style="font-size:10px;color:var(--mute)"
+                                    th:text="#{cart.update}">更新</button>
+                        </form>
+                        <span th:if="${line.unavailable}" class="din" style="font-size:11px"
+                              th:text="${line.quantity}">1</span>
+                        <form th:action="@{/cart/remove}" method="post">
+                            <input type="hidden" name="_csrf" th:value="${csrfToken}"/>
+                            <input type="hidden" name="itemId" th:value="${line.itemId}"/>
+                            <input type="hidden" name="version" th:value="${line.version}"/>
+                            <button type="submit" class="tlink plain" style="font-size:10px;color:var(--faint)"
+                                    th:text="#{cart.remove}">移除</button>
+                        </form>
+                    </div>
+                    <div class="amt">
+                        <span th:text="|¥ ${#numbers.formatDecimal(line.subtotal(), 1, 2)}|">¥ 0.00</span>
+                        <s th:text="#{cart.each}">每件</s>
+                    </div>
+                </div>
+
+                <div style="margin-top:24px;padding:16px 20px;background:var(--linen);display:flex;
+                            align-items:center;gap:12px">
+                    <span style="color:var(--rust);display:flex">
+                        <svg width="11" height="9" viewBox="0 0 12 9" fill="none" stroke="currentColor"
+                             stroke-width="1.5"><path d="M1 4.6L4.3 7.8 11 1.2"/></svg></span>
+                    <span style="font-size:11.5px;letter-spacing:.03em;line-height:1.7;color:var(--mute)"
+                          th:text="#{cart.note}">
+                        整车结算，不提供勾选部分结算；购物车随账号保存，不预占库存。
                     </span>
-                </td>
-                <td th:text="|¥ ${#numbers.formatDecimal(line.unitPrice, 1, 2)}|">¥ 0.00</td>
-                <td>
-                    <form class="cart-qty" th:action="@{/cart/update}" method="post"
-                          th:if="${!line.unavailable}">
-                        <input type="hidden" name="_csrf" th:value="${csrfToken}" />
-                        <input type="hidden" name="itemId" th:value="${line.itemId}" />
-                        <input type="hidden" name="version" th:value="${line.version}" />
-                        <input class="cart-qty__input" type="number" name="quantity" th:value="${line.quantity}"
-                               min="1" max="99" step="1" aria-label="购买数量" />
-                        <button type="submit">更新</button>
-                    </form>
-                    <span class="cart-qty cart-qty--plain" th:if="${line.unavailable}"
-                          th:text="${line.quantity}">1</span>
-                </td>
-                <td th:text="|¥ ${#numbers.formatDecimal(line.subtotal(), 1, 2)}|">¥ 0.00</td>
-                <td class="cart-state">
-                    <b class="stock stock--ok" th:if="${!line.unavailable}">可结算</b>
-                    <b class="stock stock--out" th:if="${line.unavailable}" th:text="${line.reason}">失效</b>
-                </td>
-                <td>
-                    <form th:action="@{/cart/remove}" method="post" class="cart-remove">
-                        <input type="hidden" name="_csrf" th:value="${csrfToken}" />
-                        <input type="hidden" name="itemId" th:value="${line.itemId}" />
-                        <input type="hidden" name="version" th:value="${line.version}" />
-                        <button type="submit">移除</button>
-                    </form>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+                </div>
 
-        <section class="cart-summary">
-            <p>商品件数（含失效条目）<b th:text="${view.totalQuantity}">0</b></p>
-            <p>可结算合计 <b class="cart-summary__total" th:text="|¥ ${#numbers.formatDecimal(view.payableTotal, 1, 2)}|">¥ 0.00</b></p>
-            <a class="cart-checkout" th:if="${!view.hasInvalid}" th:href="@{/checkout}">去结算</a>
-            <button type="button" class="cart-checkout" th:if="${view.hasInvalid}"
-                    disabled th:title="'购物车包含失效条目，暂时无法整车结算'">
-                去结算
-            </button>
-            <p class="cart-summary__note" th:unless="${view.hasInvalid}">整车结算，不提供勾选部分结算；确认后进入收货信息填写。</p>
-            <p class="cart-summary__note">购物车随账号保存，退出或重启应用后重新登录仍会保留；不预占库存。</p>
-        </section>
+                <div style="margin-top:34px;display:flex;align-items:center;gap:30px">
+                    <a class="tlink" th:href="@{/category}" th:text="#{cart.continue}">← 继续选购</a>
+                    <span class="tiny" style="margin-left:auto" th:text="#{cart.tax}">价格含税</span>
+                </div>
+            </div>
+
+            <!-- 右：汇总 -->
+            <div style="width:340px;flex:none;margin-left:72px">
+                <div class="sum">
+                    <div class="l"><span th:text="#{cart.subtotal}">商品件数</span>
+                        <b th:text="|${view.totalQuantity}|">0</b></div>
+                    <div class="l"><span th:text="#{cart.payable}">可结算合计</span>
+                        <b th:text="|¥ ${#numbers.formatDecimal(view.payableTotal, 1, 2)}|">¥ 0.00</b></div>
+                    <div class="l tot"><span th:text="#{cart.total}">合计</span>
+                        <b th:text="|¥ ${#numbers.formatDecimal(view.payableTotal, 1, 2)}|">¥ 0.00</b></div>
+                </div>
+
+                <a class="btn wide" style="margin-top:22px" th:if="${!view.hasInvalid}"
+                   th:href="@{/checkout}" th:text="#{cart.checkout}">去结算 →</a>
+                <span class="btn wide disabled" style="margin-top:22px" th:if="${view.hasInvalid}"
+                      th:text="#{cart.checkout}">去结算 →</span>
+
+                <div style="margin-top:18px;display:flex;align-items:center;gap:8px;
+                            font-family:var(--f-body);font-size:9.5px;letter-spacing:.1em;color:var(--faint)">
+                    <span th:text="#{cart.accept}">支持</span>
+                    <span style="border:1px solid var(--line);padding:3px 7px">WECHAT</span>
+                    <span style="border:1px solid var(--line);padding:3px 7px">ALIPAY</span>
+                    <span style="border:1px solid var(--line);padding:3px 7px">UNIONPAY</span>
+                </div>
+
+                <div style="margin-top:22px;padding-top:18px;border-top:1px solid var(--line)">
+                    <div style="display:flex;align-items:baseline;padding:7px 0">
+                        <span class="tiny" style="width:76px" th:text="#{cart.k.ship}">配送</span>
+                        <span style="font-size:11px;color:var(--mute);letter-spacing:.02em"
+                              th:text="#{cart.v.ship}">顺丰包邮 2–3 天</span>
+                    </div>
+                    <div style="display:flex;align-items:baseline;padding:7px 0">
+                        <span class="tiny" style="width:76px" th:text="#{cart.k.return}">退换</span>
+                        <span style="font-size:11px;color:var(--mute);letter-spacing:.02em"
+                              th:text="#{cart.v.return}">7 天，上门取件</span>
+                    </div>
+                    <div style="display:flex;align-items:baseline;padding:7px 0">
+                        <span class="tiny" style="width:76px" th:text="#{cart.k.repair}">修补</span>
+                        <span style="font-size:11px;color:var(--mute);letter-spacing:.02em"
+                              th:text="#{cart.v.repair}">终身免费</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="padding:70px 84px 0">
+            <div class="ptitle">
+                <div>
+                    <div class="eyebrow" th:text="#{cart.rec.eb}">为你而选</div>
+                    <div class="h2" style="margin-top:14px" th:text="#{cart.rec.title}">和袋里的配一配</div>
+                </div>
+                <div class="r">
+                    <a class="tlink mute" th:href="@{/category}" th:text="#{cart.rec.more}">查看全部 42 件</a>
+                </div>
+            </div>
+            <div class="g4">
+                <th:block th:each="p, s : ${recommendations}">
+                    <a th:replace="~{fragments :: card(${p}, ${#numbers.formatInteger(s.count, 2)})}"></a>
+                </th:block>
+            </div>
+        </div>
     </th:block>
-</main>
 
-<footer class="site-footer">
-    <div class="shell">
-        <span th:text="${brand}">FABRICLAB</span>
-        <span th:text="${tagline}">未染</span>
-    </div>
-</footer>
+    <div style="height:80px"></div>
+    <th:block th:replace="~{fragments :: footer}"></th:block>
+</div>
 </body>
 </html>

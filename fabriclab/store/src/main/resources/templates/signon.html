@@ -1,53 +1,95 @@
 <!DOCTYPE html>
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title th:text="|${brand} · 登录|">FABRICLAB · 登录</title>
-    <link rel="stylesheet" th:href="@{/css/store.css}" />
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="|#{nav.brand} · #{signin.title}|">FABRICLAB · 登录</title>
+    <link rel="stylesheet" th:href="@{/css/store.css}"/>
 </head>
-<body class="signon-page">
-<header class="site-header">
-    <div class="shell header-top">
-        <a class="brand" th:href="@{/main}">
-            <img th:src="@{/images/logo.png}" alt="FABRICLAB 标志" />
-            <span><b th:text="${brand}">FABRICLAB</b><small th:text="${tagline}">未染</small></span>
-        </a>
-        <nav class="top-nav" aria-label="主导航">
-            <a th:href="@{/main}">首页</a>
-            <a th:href="@{/category}">选购</a>
-            <a class="is-active" th:href="@{/signon}">登录</a>
-        </nav>
-    </div>
-</header>
+<body>
+<div class="page">
 
-<main class="shell signon-main">
-    <section class="signon-panel">
-        <h1>账号登录</h1>
-        <p class="signon-error" th:if="${error != null}" th:text="${error}">错误提示</p>
-        <form class="signon-form" th:action="@{/signon}" method="post">
-            <input type="hidden" name="_csrf" th:value="${csrfToken}" />
-            <input type="hidden" name="returnTo" th:value="${returnTo}" />
-            <label>
-                用户名
-                <input type="text" name="username" maxlength="50" required
-                       th:value="${inputUsername}" aria-label="用户名" />
-            </label>
-            <label>
-                密码
-                <input type="password" name="password" required aria-label="密码" />
-            </label>
-            <button type="submit">登录</button>
-        </form>
-        <p class="signon-note">仅启用的顾客账号可登录；登录后可使用购物车与订单。</p>
-    </section>
-</main>
+    <div style="display:flex;height:1000px">
+        <!-- 左：大片 -->
+        <div style="width:700px;flex:none;position:relative;
+                    background:url('/images/look/lb-04.jpg') center 18%/cover no-repeat, var(--linen)">
+            <a style="position:absolute;left:44px;top:40px;display:flex;align-items:center;gap:10px"
+               th:href="@{/main}">
+                <img th:src="@{/images/mark.png}" alt="" style="height:24px"/>
+                <b class="din" style="font-size:13px;letter-spacing:.22em;font-weight:700">FABRICLAB</b>
+            </a>
+            <div style="position:absolute;left:44px;bottom:44px;right:44px">
+                <div class="din" style="font-size:8.5px;letter-spacing:.24em;color:rgba(26,26,26,.5)"
+                     th:text="#{signin.place}">工坊，08:40</div>
+                <div style="margin-top:10px;font-size:12px;line-height:1.95;color:rgba(26,26,26,.72);
+                            letter-spacing:.04em" th:utext="#{signin.quote}">
+                    十八位版师，四家工坊，<br>一季只做七件。
+                </div>
+            </div>
+        </div>
 
-<footer class="site-footer">
-    <div class="shell">
-        <span th:text="${brand}">FABRICLAB</span>
-        <span th:text="${tagline}">未染</span>
+        <!-- 右：表单 -->
+        <div style="flex:1;padding:42px 96px 44px;display:flex;flex-direction:column">
+            <div style="display:flex;justify-content:flex-end">
+                <a class="lang" th:href="${langHref + (lang == 'en' ? 'lang=zh' : 'lang=en')}">
+                    <b th:if="${lang == 'en'}">EN</b><span th:unless="${lang == 'en'}">EN</span>
+                    <i>/</i>
+                    <b th:if="${lang != 'en'}">中文</b><span th:unless="${lang != 'en'}">中文</span>
+                </a>
+            </div>
+
+            <div style="margin-top:auto">
+                <div class="eyebrow" th:text="#{signin.eyebrow}">会员登录</div>
+                <div class="h2" style="margin-top:22px;font-size:38px" th:text="#{signin.heading}">欢迎回来</div>
+                <div class="lead" style="margin-top:14px;width:330px;font-size:12px" th:text="#{signin.lead}">
+                    登录后可查看订单、保存购物袋，并优先预约限量发售。
+                </div>
+
+                <p class="flash warn" style="margin:24px 0 0" th:if="${error != null}" th:text="${error}">错误提示</p>
+
+                <form th:action="@{/signon}" method="post" style="margin-top:36px">
+                    <input type="hidden" name="_csrf" th:value="${csrfToken}"/>
+                    <input type="hidden" name="returnTo" th:value="${returnTo}"/>
+
+                    <div class="field">
+                        <label class="lb" for="username" th:text="#{signin.username}">用户名</label>
+                        <input id="username" type="text" name="username" maxlength="50" required
+                               th:value="${inputUsername}" autocomplete="username"/>
+                    </div>
+                    <div class="field">
+                        <label class="lb" for="password" th:text="#{signin.password}">密码</label>
+                        <input id="password" type="password" name="password" required
+                               autocomplete="current-password"/>
+                    </div>
+
+                    <button type="submit" class="btn wide" style="margin-top:16px"
+                            th:text="#{signin.submit}">登录</button>
+                </form>
+
+                <div class="divider" style="margin:28px 0 24px">
+                    <span></span><b th:text="#{signin.or}">或</b><span></span>
+                </div>
+
+                <div style="display:flex;gap:10px">
+                    <a class="btn ghost" style="flex:1" th:href="@{/register}"
+                       th:text="#{signin.register}">创建账号</a>
+                    <a class="btn ghost" style="flex:1" th:href="@{/category}"
+                       th:text="#{signin.browse}">先逛逛</a>
+                </div>
+
+                <div style="margin-top:30px;font-size:11.5px;letter-spacing:.04em;color:var(--mute)"
+                     th:text="#{signin.note}">
+                    仅启用的顾客账号可登录；登录后可使用购物袋与订单。
+                </div>
+            </div>
+
+            <div style="margin-top:auto;padding-top:50px;display:flex;align-items:center;
+                        font-family:var(--f-body);font-size:9.5px;letter-spacing:.14em;color:var(--faint)">
+                <span>© 2026 FABRICLAB ATELIER</span>
+                <span style="margin-left:auto" th:text="#{signin.foot}">隐私政策 · 会员条款</span>
+            </div>
+        </div>
     </div>
-</footer>
+</div>
 </body>
 </html>
