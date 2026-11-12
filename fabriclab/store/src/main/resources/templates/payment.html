@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:text="|${brand} · 模拟支付|">FABRICLAB · 模拟支付</title>
+    <link rel="stylesheet" th:href="@{/css/store.css}" />
+</head>
+<body class="payment-page">
+<header class="site-header">
+    <div class="shell header-top">
+        <a class="brand" th:href="@{/main}">
+            <img th:src="@{/images/logo.png}" alt="FABRICLAB 标志" />
+            <span><b th:text="${brand}">FABRICLAB</b><small th:text="${tagline}">未染</small></span>
+        </a>
+        <nav class="top-nav" aria-label="主导航">
+            <a th:href="@{/main}">首页</a>
+            <a th:href="@{/category}">选购</a>
+            <a th:href="@{/orders}">我的订单</a>
+            <th:block th:replace="~{fragments :: authZone}"></th:block>
+        </nav>
+    </div>
+</header>
+
+<main class="shell checkout-main">
+    <h1>模拟支付</h1>
+
+    <section class="checkout-block">
+        <h2>订单信息</h2>
+        <ul class="order-receiver">
+            <li>订单号 <code th:text="${view.order.orderNo}">FL20260101000000000000</code></li>
+            <li>订单状态 <b class="order-state" th:text="${view.status.label()}">待支付</b></li>
+            <li>应付金额 <b class="payment-amount" th:text="|¥ ${#numbers.formatDecimal(view.order.totalAmount, 1, 2)}|">¥ 0.00</b></li>
+        </ul>
+        <p class="checkout-note">
+            教学模拟支付，不涉及真实资金。金额只取订单总额，创建订单后的商品涨价、下架
+            不改变本单金额，也不阻止本次模拟支付；支付不会再扣减库存。
+        </p>
+    </section>
+
+    <section class="checkout-block">
+        <h2>选择结果</h2>
+        <div class="payment-actions">
+            <form th:action="@{/orders/{id}/payment(id=${view.order.id})}" method="post">
+                <input type="hidden" name="_csrf" th:value="${csrfToken}" />
+                <button type="submit" class="payment-success">模拟支付成功</button>
+            </form>
+            <form th:action="@{/orders/{id}/payment/fail(id=${view.order.id})}" method="post">
+                <input type="hidden" name="_csrf" th:value="${csrfToken}" />
+                <button type="submit" class="payment-fail">模拟支付失败</button>
+            </form>
+        </div>
+        <p class="checkout-note">
+            成功将把订单转为待发货并生成唯一支付凭证与首次成功时间；失败则订单保持待支付，
+            可再次发起或取消订单。两个结果都由服务端写入并回订单详情查证，不弹出与数据库不符的提示。
+        </p>
+    </section>
+
+    <p class="order-back">
+        <a th:href="@{/orders/{id}(id=${view.order.id})}">返回订单详情</a>
+        <a th:href="@{/orders}">我的订单</a>
+    </p>
+</main>
+
+<footer class="site-footer">
+    <div class="shell">
+        <span th:text="${brand}">FABRICLAB</span>
+        <span th:text="${tagline}">未染</span>
+    </div>
+</footer>
+</body>
+</html>

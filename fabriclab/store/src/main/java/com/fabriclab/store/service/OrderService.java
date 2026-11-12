@@ -45,13 +45,16 @@ public class OrderService {
     private final SalesOrderItemMapper salesOrderItemMapper;
     private final ProductMapper productMapper;
     private final StoreUserMapper storeUserMapper;
+    private final CancelFaultPoint cancelFaultPoint;
 
     public OrderService(SalesOrderMapper salesOrderMapper, SalesOrderItemMapper salesOrderItemMapper,
-                        ProductMapper productMapper, StoreUserMapper storeUserMapper) {
+                        ProductMapper productMapper, StoreUserMapper storeUserMapper,
+                        CancelFaultPoint cancelFaultPoint) {
         this.salesOrderMapper = salesOrderMapper;
         this.salesOrderItemMapper = salesOrderItemMapper;
         this.productMapper = productMapper;
         this.storeUserMapper = storeUserMapper;
+        this.cancelFaultPoint = cancelFaultPoint;
     }
 
     /** 本人订单分页：状态与订单号共同生效，查不到返回空结果而不是报错。 */
@@ -118,6 +121,7 @@ public class OrderService {
                     .setSql("stock = stock + " + quantity)
                     .setSql("version = version + 1")
                     .eq("id", item.getProductId()));
+            cancelFaultPoint.afterStockRestored(orderId);
         }
     }
 

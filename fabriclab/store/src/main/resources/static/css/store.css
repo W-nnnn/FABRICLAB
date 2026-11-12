@@ -430,3 +430,18 @@ img { max-width: 100%; display: block; }
 }
 .order-back { margin-top: 24px; font-size: 13px; }
 .order-back a { color: var(--muted); text-decoration: underline; }
+
+/* 教学模拟支付 */
+.payment-amount { color: var(--rust); font-size: 22px; }
+.payment-entry { display: inline-block; text-align: center; text-decoration: none; }
+.payment-actions { display: flex; gap: 18px; flex-wrap: wrap; margin-bottom: 6px; }
+.payment-actions form { margin: 0; }
+.payment-actions button {
+    padding: 12px 34px; letter-spacing: 2px; cursor: pointer;
+    font-family: inherit; font-size: 15px;
+}
+.payment-success { border: none; background: var(--ink); color: var(--cream); }
+.payment-success:hover { background: var(--rust); }
+.payment-fail { border: 1px solid var(--ink); background: #FFF; color: var(--ink); }
+.payment-fail:hover { background: var(--line); }
+.order-back a + a { margin-left: 16px; }
