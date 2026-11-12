@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:text="${title}">FABRICLAB 管理台</title>
+    <link rel="stylesheet" th:href="@{/css/admin.css}" />
+</head>
+<body>
+
+<header class="admin-header" th:fragment="header">
+    <div class="admin-header__inner">
+        <a class="admin-brand" th:href="@{/admin/console}">
+            <img th:src="@{/images/logo.png}" alt="FABRICLAB 标志" />
+            <span><b th:text="${brand}">FABRICLAB</b><small th:text="|${tagline} ${consoleName}|">未染 管理台</small></span>
+        </a>
+        <nav class="admin-session" th:if="${currentAdmin != null}">
+            <span class="admin-session__who">
+                <b th:text="${currentAdmin.displayName}">平台管理员</b>
+                <small th:text="|账号 ${currentAdmin.username} · 角色 ADMIN|">账号 admin · 角色 ADMIN</small>
+            </span>
+            <form th:action="@{/admin/signout}" method="post">
+                <input type="hidden" name="_csrf" th:value="${csrfToken}" />
+                <button type="submit" class="admin-signout">退出</button>
+            </form>
+        </nav>
+    </div>
+</header>
+
+<footer class="admin-footer" th:fragment="footer">
+    <div class="admin-footer__inner">
+        <span th:text="${brand}">FABRICLAB</span>
+        <span th:text="|${tagline} · 管理台 · 端口 8081|">未染 · 管理台</span>
+    </div>
+</footer>
+
+</body>
+</html>
