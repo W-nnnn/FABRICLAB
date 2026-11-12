@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:text="|${brand} · 我的订单|">FABRICLAB · 我的订单</title>
+    <link rel="stylesheet" th:href="@{/css/store.css}" />
+</head>
+<body class="orders-page">
+<header class="site-header">
+    <div class="shell header-top">
+        <a class="brand" th:href="@{/main}">
+            <img th:src="@{/images/logo.png}" alt="FABRICLAB 标志" />
+            <span><b th:text="${brand}">FABRICLAB</b><small th:text="${tagline}">未染</small></span>
+        </a>
+        <nav class="top-nav" aria-label="主导航">
+            <a th:href="@{/main}">首页</a>
+            <a th:href="@{/category}">选购</a>
+            <th:block th:replace="~{fragments :: authZone}"></th:block>
+        </nav>
+    </div>
+</header>
+
+<main class="shell orders-main">
+    <h1>我的订单</h1>
+
+    <nav class="order-tabs" aria-label="订单状态筛选">
+        <a th:href="@{/orders(orderNo=${query.orderNo()}, size=${query.size()})}"
+           th:classappend="${query.status() == null ? 'order-tabs__item--active' : ''}">全部</a>
+        <a th:each="status : ${statuses}"
+           th:href="@{/orders(status=${status.name()}, orderNo=${query.orderNo()}, size=${query.size()})}"
+           th:classappend="${query.status() == status ? 'order-tabs__item--active' : ''}"
+           th:text="${status.label()}">待支付</a>
+    </nav>
+
+    <form class="order-search" th:action="@{/orders}" method="get">
+        <input type="hidden" name="status" th:value="${query.statusParam()}" />
+        <input type="hidden" name="size" th:value="${query.size()}" />
+        <input type="search" name="orderNo" maxlength="40" th:value="${query.orderNo()}"
+               placeholder="输入完整订单号" aria-label="完整订单号" />
+        <button type="submit">查询</button>
+    </form>
+
+    <section class="cart-empty" th:if="${result.total == 0}">
+        <p th:if="${query.orderNo() != null}">没有匹配该订单号的订单，请确认是否输入了完整订单号。</p>
+        <p th:unless="${query.orderNo() != null}">这里还没有订单，先去挑选几件成衣吧。</p>
+        <a class="cart-empty__link" th:href="@{/category}">去选购</a>
+    </section>
+
+    <th:block th:if="${result.total > 0}">
+        <table class="cart-table orders-table">
+            <thead>
+            <tr>
+                <th scope="col">订单号</th>
+                <th scope="col">下单时间</th>
+                <th scope="col">状态</th>
+                <th scope="col">金额</th>
+                <th scope="col">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="row : ${rows}">
+                <td><code th:text="${row.order.orderNo}">FL20260101000000000000</code></td>
+                <td th:text="${#temporals.format(row.order.createdAt, 'yyyy-MM-dd HH:mm')}">2026-01-01 00:00</td>
+                <td><b class="order-state" th:text="${row.statusLabel}">待支付</b></td>
+                <td th:text="|¥ ${#numbers.formatDecimal(row.order.totalAmount, 1, 2)}|">¥ 0.00</td>
+                <td><a class="order-link" th:href="@{/orders/{id}(id=${row.order.id})}">查看详情</a></td>
+            </tr>
+            </tbody>
+        </table>
+
+        <nav class="pager" aria-label="分页" th:if="${result.pages > 1}">
+            <a th:if="${query.page() > 1}"
+               th:href="@{/orders(status=${query.statusParam()}, orderNo=${query.orderNo()},
+                   size=${query.size()}, page=${query.page() - 1})}">上一页</a>
+            <span th:text="|第 ${query.page()} / ${result.pages} 页|">第 1 / 1 页</span>
+            <a th:if="${query.page() < result.pages}"
+               th:href="@{/orders(status=${query.statusParam()}, orderNo=${query.orderNo()},
+                   size=${query.size()}, page=${query.page() + 1})}">下一页</a>
+        </nav>
+        <p class="orders-meta" th:if="${query.page() > result.pages}">
+            该页超出末页，已显示空结果。请返回有效页码继续浏览。
+        </p>
+    </th:block>
+</main>
+
+<footer class="site-footer">
+    <div class="shell">
+        <span th:text="${brand}">FABRICLAB</span>
+        <span th:text="${tagline}">未染</span>
+    </div>
+</footer>
+</body>
+</html>

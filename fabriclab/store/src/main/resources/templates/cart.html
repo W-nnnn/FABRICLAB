@@ -93,12 +93,12 @@
         <section class="cart-summary">
             <p>商品件数（含失效条目）<b th:text="${view.totalQuantity}">0</b></p>
             <p>可结算合计 <b class="cart-summary__total" th:text="|¥ ${#numbers.formatDecimal(view.payableTotal, 1, 2)}|">¥ 0.00</b></p>
-            <button type="button" class="cart-checkout"
-                    th:disabled="${view.hasInvalid}"
-                    th:title="${view.hasInvalid ? '购物车包含失效条目，暂时无法整车结算' : '结算功能将在下单任务开放'}">
+            <a class="cart-checkout" th:if="${!view.hasInvalid}" th:href="@{/checkout}">去结算</a>
+            <button type="button" class="cart-checkout" th:if="${view.hasInvalid}"
+                    disabled th:title="'购物车包含失效条目，暂时无法整车结算'">
                 去结算
             </button>
-            <p class="cart-summary__note" th:unless="${view.hasInvalid}">整车结算功能将在下单任务开放。</p>
+            <p class="cart-summary__note" th:unless="${view.hasInvalid}">整车结算，不提供勾选部分结算；确认后进入收货信息填写。</p>
             <p class="cart-summary__note">购物车随账号保存，退出或重启应用后重新登录仍会保留；不预占库存。</p>
         </section>
     </th:block>

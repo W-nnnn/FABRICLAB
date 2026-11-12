@@ -11,6 +11,7 @@
         <a th:href="@{/register}">注册</a>
     </th:block>
     <th:block th:if="${currentUser != null}">
+        <a th:href="@{/orders}">我的订单</a>
         <span class="nav-user" th:text="${currentUser.displayName()}">显示名</span>
         <form class="nav-signout" th:action="@{/signout}" method="post">
             <input type="hidden" name="_csrf" th:value="${csrfToken}" />
