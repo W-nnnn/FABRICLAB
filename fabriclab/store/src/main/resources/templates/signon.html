@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:text="|${brand} · 登录|">FABRICLAB · 登录</title>
+    <link rel="stylesheet" th:href="@{/css/store.css}" />
+</head>
+<body class="signon-page">
+<header class="site-header">
+    <div class="shell header-top">
+        <a class="brand" th:href="@{/main}">
+            <img th:src="@{/images/logo.png}" alt="FABRICLAB 标志" />
+            <span><b th:text="${brand}">FABRICLAB</b><small th:text="${tagline}">未染</small></span>
+        </a>
+        <nav class="top-nav" aria-label="主导航">
+            <a th:href="@{/main}">首页</a>
+            <a th:href="@{/category}">选购</a>
+            <a class="is-active" th:href="@{/signon}">登录</a>
+        </nav>
+    </div>
+</header>
+
+<main class="shell signon-main">
+    <section class="signon-panel">
+        <h1>账号登录</h1>
+        <p class="signon-error" th:if="${error != null}" th:text="${error}">错误提示</p>
+        <form class="signon-form" th:action="@{/signon}" method="post">
+            <input type="hidden" name="_csrf" th:value="${csrfToken}" />
+            <input type="hidden" name="returnTo" th:value="${returnTo}" />
+            <label>
+                用户名
+                <input type="text" name="username" maxlength="50" required
+                       th:value="${inputUsername}" aria-label="用户名" />
+            </label>
+            <label>
+                密码
+                <input type="password" name="password" required aria-label="密码" />
+            </label>
+            <button type="submit">登录</button>
+        </form>
+        <p class="signon-note">仅启用的顾客账号可登录；登录后可使用购物车与订单。</p>
+    </section>
+</main>
+
+<footer class="site-footer">
+    <div class="shell">
+        <span th:text="${brand}">FABRICLAB</span>
+        <span th:text="${tagline}">未染</span>
+    </div>
+</footer>
+</body>
+</html>

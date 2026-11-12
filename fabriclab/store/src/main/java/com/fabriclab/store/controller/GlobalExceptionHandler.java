@@ -1,6 +1,7 @@
 package com.fabriclab.store.controller;
 
 import com.fabriclab.store.exception.BusinessException;
+import com.fabriclab.store.exception.CsrfViolationException;
 import com.fabriclab.store.exception.NotFoundException;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.dao.DataAccessException;
@@ -23,6 +24,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NotFoundException.class)
     public String handleNotFound(NotFoundException e, Model model, HttpServletResponse response) {
         return render(model, response, 404, e.getTitle(), e.getMessage());
+    }
+
+    @ExceptionHandler(CsrfViolationException.class)
+    public String handleCsrfViolation(Model model, HttpServletResponse response) {
+        return render(model, response, 403, "无效表单防护请求", "表单校验未通过，请返回重新操作");
     }
 
     @ExceptionHandler(DataAccessException.class)
