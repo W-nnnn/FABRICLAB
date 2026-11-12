@@ -22,7 +22,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NotFoundException.class)
     public String handleNotFound(NotFoundException e, Model model, HttpServletResponse response) {
-        return render(model, response, 404, "分类不可用", e.getMessage());
+        return render(model, response, 404, e.getTitle(), e.getMessage());
     }
 
     @ExceptionHandler(DataAccessException.class)
