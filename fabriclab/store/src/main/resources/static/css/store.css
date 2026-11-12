@@ -227,3 +227,36 @@ img { max-width: 100%; display: block; }
 @media (max-width: 900px) {
     .detail-layout { grid-template-columns: 1fr; }
 }
+
+/* 注册页 */
+.register-main { display: flex; justify-content: center; padding: 40px 24px 60px; }
+.register-panel {
+    width: 100%; max-width: 460px; background: #FFF;
+    border: 1px solid var(--line); padding: 32px 36px;
+}
+.register-panel h1 { font-size: 24px; margin: 0 0 18px; letter-spacing: 2px; }
+.register-error {
+    background: #FBEDE6; color: var(--rust); border: 1px solid #E8CDBB;
+    padding: 10px 14px; font-size: 14px; margin: 0 0 14px;
+}
+.register-form { display: flex; flex-direction: column; gap: 16px; }
+.register-form label { display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
+.register-form small { color: var(--muted); font-size: 12px; }
+.register-form input[type="text"],
+.register-form input[type="password"] { padding: 10px 12px; border: 1px solid var(--line); }
+.register-form button {
+    margin-top: 6px; padding: 11px 0; background: var(--ink); color: var(--cream);
+    border: 0; cursor: pointer; letter-spacing: 4px;
+}
+.register-form button:hover { background: var(--rust); color: #FFF; }
+.captcha-box {
+    display: inline-block; align-self: flex-start;
+    background: var(--cream); border: 1px solid var(--line);
+    padding: 8px 18px; font-size: 22px; font-weight: 700;
+    letter-spacing: 10px; color: var(--ink);
+    transform: skewX(-6deg); user-select: none;
+}
+.register-note { font-size: 12px; color: var(--muted); margin: 14px 0 0; }
+.register-actions { display: flex; gap: 14px; margin-top: 20px; }
+.register-actions a { border: 1px solid var(--ink); padding: 10px 24px; background: #FFF; }
+.register-actions a:hover { background: var(--ink); color: var(--cream); }
