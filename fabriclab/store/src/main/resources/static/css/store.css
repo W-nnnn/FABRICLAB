@@ -260,3 +260,34 @@ img { max-width: 100%; display: block; }
 .register-actions { display: flex; gap: 14px; margin-top: 20px; }
 .register-actions a { border: 1px solid var(--ink); padding: 10px 24px; background: #FFF; }
 .register-actions a:hover { background: var(--ink); color: var(--cream); }
+
+/* 导航登录态 */
+.nav-user { font-size: 14px; color: var(--ink); align-self: center; }
+.nav-signout { display: inline; }
+.nav-signout button {
+    border: 1px solid var(--ink); background: transparent;
+    padding: 6px 16px; cursor: pointer; font-size: 14px;
+}
+.nav-signout button:hover { background: var(--ink); color: var(--cream); }
+
+/* 登录页 */
+.signon-main { padding: 56px 0 72px; }
+.signon-panel {
+    max-width: 420px; margin: 0 auto; background: #FFF;
+    border: 1px solid var(--line); padding: 36px 32px 28px;
+    display: flex; flex-direction: column; gap: 12px;
+}
+.signon-panel h1 { margin: 0 0 6px; font-size: 24px; }
+.signon-error { color: var(--rust); font-size: 13px; margin: 0; }
+.signon-form { display: flex; flex-direction: column; gap: 14px; }
+.signon-form label { display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
+.signon-form input {
+    border: 1px solid var(--line); padding: 10px 12px;
+    font-size: 15px; font-family: inherit;
+}
+.signon-form button {
+    border: none; background: var(--ink); color: var(--cream);
+    padding: 12px; cursor: pointer; font-size: 15px; letter-spacing: 2px;
+}
+.signon-form button:hover { background: var(--rust); color: #FFF; }
+.signon-note { font-size: 12px; color: var(--muted); margin: 8px 0 0; }

@@ -1,6 +1,19 @@
 <!DOCTYPE html>
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <body>
+<th:block th:fragment="authZone">
+    <th:block th:if="${currentUser == null}">
+        <a th:href="@{/signon}">登录</a>
+        <a th:href="@{/register}">注册</a>
+    </th:block>
+    <th:block th:if="${currentUser != null}">
+        <span class="nav-user" th:text="${currentUser.displayName()}">显示名</span>
+        <form class="nav-signout" th:action="@{/signout}" method="post">
+            <input type="hidden" name="_csrf" th:value="${csrfToken}" />
+            <button type="submit">退出</button>
+        </form>
+    </th:block>
+</th:block>
 <a th:fragment="productCard(product)" class="product-card" th:href="@{/product(id=${product.id})}">
     <span class="product-card__media">
         <img th:src="${#strings.isEmpty(product.coverImage) ? '/images/logo.png' : '/' + product.coverImage}"
