@@ -87,15 +87,15 @@
             </tbody>
         </table>
         <p class="checkout-total">
-            <span th:text="${detail.status.name() == 'PENDING_PAYMENT' ? '应付' : '已模拟支付'}">应付</span>
+            <span th:text="${detail.status.name() == 'PENDING_PAYMENT' ? '应付'
+                    : (detail.status.name() == 'CANCELLED' ? '订单金额' : '已模拟支付')}">应付</span>
             <b th:text="|¥ ${#numbers.formatDecimal(detail.order.totalAmount, 1, 2)}|">¥ 0.00</b>
         </p>
         <p class="checkout-note">共 <b th:text="${detail.totalQuantity()}">1</b> 件。明细金额为成交时快照，商品后续改名、改价、换封面或下架不影响历史订单。</p>
     </section>
 
     <section class="order-actions" th:if="${detail.status.name() == 'PENDING_PAYMENT'}">
-        <button type="button" class="checkout-submit" disabled
-                title="教学模拟支付将在支付任务开放">教学模拟支付</button>
+        <a class="checkout-submit payment-entry" th:href="@{/orders/{id}/payment(id=${detail.order.id})}">教学模拟支付</a>
         <form th:action="@{/orders/{id}/cancel(id=${detail.order.id})}" method="post"
               onsubmit="return confirm('取消后将关闭订单并释放已占用的库存，确定取消吗？');">
             <input type="hidden" name="_csrf" th:value="${csrfToken}" />

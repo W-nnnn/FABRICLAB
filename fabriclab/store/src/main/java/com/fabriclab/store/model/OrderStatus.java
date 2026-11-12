@@ -28,6 +28,11 @@ public enum OrderStatus {
         return this == PENDING_PAYMENT;
     }
 
+    /** 可发起模拟支付的状态只有待支付；已支付订单的重复提交按首次凭证处理，不在此列。 */
+    public boolean payable() {
+        return this == PENDING_PAYMENT;
+    }
+
     /** 数据库状态值转枚举；未知值按技术异常处理，不静默降级为某状态。 */
     public static OrderStatus of(String raw) {
         for (OrderStatus status : values()) {
