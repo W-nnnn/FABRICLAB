@@ -2,6 +2,10 @@
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <body>
 <th:block th:fragment="authZone">
+    <a class="nav-cart" th:href="@{/cart}">
+        购物车
+        <b class="nav-cart__badge" th:text="${cartBadge == null ? 0 : cartBadge}">0</b>
+    </a>
     <th:block th:if="${currentUser == null}">
         <a th:href="@{/signon}">登录</a>
         <a th:href="@{/register}">注册</a>
