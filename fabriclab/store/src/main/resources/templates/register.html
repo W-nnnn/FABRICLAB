@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:text="|${brand} · 会员注册|">FABRICLAB · 会员注册</title>
+    <link rel="stylesheet" th:href="@{/css/store.css}" />
+</head>
+<body class="register-page">
+<header class="site-header">
+    <div class="shell header-top">
+        <a class="brand" th:href="@{/main}">
+            <img th:src="@{/images/logo.png}" alt="FABRICLAB 标志" />
+            <span><b th:text="${brand}">FABRICLAB</b><small th:text="${tagline}">未染</small></span>
+        </a>
+        <nav class="top-nav" aria-label="主导航">
+            <a th:href="@{/main}">首页</a>
+            <a th:href="@{/category}">选购</a>
+            <a class="is-active" th:href="@{/register}">注册</a>
+        </nav>
+    </div>
+</header>
+
+<main class="shell register-main">
+    <section class="register-panel">
+        <th:block th:if="${registeredUsername == null}">
+            <h1>会员注册</h1>
+            <p class="register-error" th:if="${error != null}" th:text="${error}">错误提示</p>
+            <form class="register-form" th:action="@{/register}" method="post">
+                <label>
+                    用户名
+                    <input type="text" name="username" maxlength="50" required
+                           th:value="${inputUsername}" aria-label="用户名" />
+                    <small>最长 50 个字符，创建后不可修改</small>
+                </label>
+                <label>
+                    密码
+                    <input type="password" name="password" required aria-label="密码" />
+                    <small>8—32 个字符，须包含字母、数字、符号中的至少两类</small>
+                </label>
+                <label>
+                    确认密码
+                    <input type="password" name="confirm" required aria-label="确认密码" />
+                </label>
+                <input type="hidden" name="captchaToken" th:value="${captcha.token()}" />
+                <label>
+                    验证码
+                    <span class="captcha-box" th:text="${captcha.code()}">ABCD</span>
+                    <input type="text" name="captchaInput" maxlength="4" required aria-label="验证码" />
+                    <small>不区分大小写，每次提交后需重新获取</small>
+                </label>
+                <button type="submit">创建账号</button>
+            </form>
+            <p class="register-note">账号角色为顾客，注册成功后即可用于登录。</p>
+        </th:block>
+        <th:block th:if="${registeredUsername != null}">
+            <h1>注册成功</h1>
+            <p>
+                账号 <code th:text="${registeredUsername}">username</code> 已创建，
+                角色为顾客。请返回首页浏览商品，登录功能开放后即可登录选购。
+            </p>
+            <div class="register-actions">
+                <a th:href="@{/main}">返回首页</a>
+                <a th:href="@{/category}">去逛逛</a>
+            </div>
+        </th:block>
+    </section>
+</main>
+
+<footer class="site-footer">
+    <div class="shell">
+        <span th:text="${brand}">FABRICLAB</span>
+        <span th:text="${tagline}">未染</span>
+    </div>
+</footer>
+</body>
+</html>
