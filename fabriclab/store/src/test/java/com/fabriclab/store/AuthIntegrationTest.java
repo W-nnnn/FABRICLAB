@@ -26,7 +26,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * 仅启用 CUSTOMER 登录成功；错误密码、禁用、管理员四态统一失败且密码不回显；
  * 登录后禁用账号，受保护入口（真实购物车页 /cart）被拦截；退出后会话失效；
  * 缺 CSRF 的写请求 403；用户端 Cookie 独立命名 STORESESSION
- * （AC-06 本端证据，跨端联测随管理端完成）。
+ * （AC-06 本端证据：管理员登录用户端被拒；对侧「顾客登录后台被拒、两端 Cookie 不互相承认」
+ * 由管理端 fabriclab/admin 的 AdminAccessIntegrationTest 覆盖）。
  * 仅在提供 MYSQL_PASSWORD 时执行；无口令时跳过，不伪造通过。
  */
 @SpringBootTest
@@ -79,7 +80,7 @@ class AuthIntegrationTest {
         assertEquals(302, mvc.getResponse().getStatus());
         assertEquals("/main", mvc.getResponse().getRedirectedUrl());
         // MockMvc 不回写会话 Cookie，此处以生效配置为准：用户端 Cookie 独立命名，
-        // 与管理端（8081）隔离；跨端联测随管理端应用完成（AC-06 完整证据在 T12）。
+        // 与管理端（8081）隔离；两端互不承认由管理端 AdminAccessIntegrationTest 联测。
         assertEquals("STORESESSION", environment.getProperty("server.servlet.session.cookie.name"));
 
         MockHttpSession session = (MockHttpSession) mvc.getRequest().getSession();

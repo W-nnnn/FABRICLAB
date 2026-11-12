@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:text="|${brand} · 后台登录|">FABRICLAB · 后台登录</title>
+    <link rel="stylesheet" th:href="@{/css/admin.css}" />
+</head>
+<body class="signon-page">
+<main class="signon">
+    <section class="signon__aside">
+        <div class="signon__brand">
+            <img th:src="@{/images/logo.png}" alt="FABRICLAB 标志" />
+            <span><b th:text="${brand}">FABRICLAB</b><small th:text="${tagline}">未染</small></span>
+        </div>
+        <h1 th:text="|${brand} ${consoleName}|">FABRICLAB 管理台</h1>
+        <p>分类与商品、库存与相册、顾客账号、全站订单，均在此维护。</p>
+        <ul class="signon__rules">
+            <li>仅启用的管理员账号可登录</li>
+            <li>后台会话与用户端相互独立</li>
+            <li>每次请求复核角色与启用状态</li>
+        </ul>
+    </section>
+
+    <section class="signon__panel">
+        <h2>管理员登录</h2>
+        <p class="signon__error" th:if="${error != null}" th:text="${error}">错误提示</p>
+        <form class="signon__form" th:action="@{/admin/signon}" method="post">
+            <input type="hidden" name="_csrf" th:value="${csrfToken}" />
+            <input type="hidden" name="returnTo" th:value="${returnTo}" />
+            <label>
+                账号
+                <input type="text" name="username" maxlength="50" required autocomplete="username"
+                       th:value="${inputUsername}" aria-label="管理员账号" />
+            </label>
+            <label>
+                口令
+                <input type="password" name="password" required autocomplete="current-password"
+                       aria-label="管理员口令" />
+            </label>
+            <button type="submit">进入管理台</button>
+        </form>
+        <p class="signon__note">顾客账号请在用户端（8080）登录，不能进入后台。</p>
+    </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head(${brand + ' · 控制台'})}"></head>
+<body class="console-page">
+<header th:replace="~{fragments :: header}"></header>
+
+<main class="admin-main">
+    <section class="page-head">
+        <p class="page-head__eyebrow">控制台</p>
+        <h1 th:text="|你好，${currentAdmin != null ? currentAdmin.displayName : '管理员'}|">你好，管理员</h1>
+        <p class="page-head__note">后台维护商品、库存、顾客与订单；页面只呈现真实查询结果，不展示未经统计的经营指标。</p>
+    </section>
+
+    <section class="card-grid">
+        <article class="card">
+            <h2>登录身份</h2>
+            <dl class="facts">
+                <dt>账号</dt>
+                <dd th:text="${currentAdmin != null ? currentAdmin.username : '—'}">admin</dd>
+                <dt>显示名</dt>
+                <dd th:text="${currentAdmin != null ? currentAdmin.displayName : '—'}">平台管理员</dd>
+                <dt>角色</dt>
+                <dd>ADMIN</dd>
+                <dt>本次登录</dt>
+                <dd th:text="${signinAt != null ? signinAt : '—'}">2026-11-12 22:00:00</dd>
+            </dl>
+        </article>
+
+        <article class="card">
+            <h2>会话与访问</h2>
+            <dl class="facts">
+                <dt>会话 Cookie</dt>
+                <dd>ADMINSESSION（与用户端 STORESESSION 相互独立）</dd>
+                <dt>空闲超时</dt>
+                <dd>30 分钟</dd>
+                <dt>访问检查</dt>
+                <dd>每次请求复核角色 ADMIN 与启用状态，不符即失效会话</dd>
+                <dt>写操作防护</dt>
+                <dd>全部 POST 校验会话级表单令牌，缺失或篡改返回 403</dd>
+            </dl>
+        </article>
+    </section>
+
+    <section class="table-section">
+        <div class="table-section__head">
+            <h2>后台模块范围</h2>
+            <p>入口随对应模块任务启用；未启用的入口不提供链接，也不显示任何数量。</p>
+        </div>
+        <table class="admin-table">
+            <thead>
+            <tr>
+                <th>模块</th>
+                <th>维护内容</th>
+                <th>对应需求</th>
+                <th>状态</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="module : ${modules}">
+                <td>
+                    <a th:if="${module.implemented}" th:href="${module.path}" th:text="${module.name}">模块</a>
+                    <span th:unless="${module.implemented}" th:text="${module.name}">模块</span>
+                </td>
+                <td th:text="${module.scope}">维护内容</td>
+                <td th:text="${module.requirement}">需求编号</td>
+                <td>
+                    <span class="tag tag--live" th:if="${module.implemented}">已启用</span>
+                    <span class="tag" th:unless="${module.implemented}">未启用</span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <p class="empty-note" th:if="${#lists.isEmpty(modules)}">当前版本未交付后台模块入口。</p>
+    </section>
+</main>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>
