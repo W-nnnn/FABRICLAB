@@ -53,7 +53,8 @@ class OrderServiceTest {
         salesOrderItemMapper = mock(SalesOrderItemMapper.class);
         productMapper = mock(ProductMapper.class);
         storeUserMapper = mock(StoreUserMapper.class);
-        orderService = new OrderService(salesOrderMapper, salesOrderItemMapper, productMapper, storeUserMapper);
+        orderService = new OrderService(salesOrderMapper, salesOrderItemMapper, productMapper,
+                storeUserMapper, new CancelFaultPoint());
         when(storeUserMapper.selectList(any())).thenReturn(List.of(new StoreUser()));
     }
 

@@ -1,6 +1,6 @@
 # fabriclab-store
 
-FABRICLAB 用户端工程，端口 8080。当前阶段：T10 结算确认、整车下单与订单查询。
+FABRICLAB 用户端工程，端口 8080。当前阶段：T11 教学模拟支付。
 
 ## 结构
 
@@ -17,6 +17,7 @@ src/main/java/com/fabriclab/store/
 ├── controller/CartController.java 购物车 /cart 与加入、改量、移除
 ├── controller/CheckoutController.java 结算确认 /checkout 与提交 /checkout/submit
 ├── controller/OrderController.java 我的订单 /orders、订单详情、取消待支付订单
+├── controller/PaymentController.java 模拟支付页 /orders/{id}/payment 与成功、失败两个动作
 ├── controller/CurrentUserAdvice.java 全局模型：CSRF 令牌与当前登录身份
 ├── controller/GlobalExceptionHandler.java 400 / 403 / 404 / 500 统一错误页
 ├── security/CsrfService.java        会话级 CSRF 令牌：生成与校验
@@ -33,6 +34,8 @@ src/main/java/com/fabriclab/store/
 ├── service/CartService.java         持久购物车：存库不存 Session、同款累加、版本与归属校验、失效判定
 ├── service/CheckoutService.java     结算确认快照与整车下单事务（订单 + 明细 + 扣库存 + 清车）
 ├── service/OrderService.java        本人订单列表、详情快照与取消恢复库存
+├── service/PaymentService.java      教学模拟支付：条件更新成组写付款信息、重复成功保首次凭证、失败不写库
+├── service/CancelFaultPoint.java    取消恢复库存故障注入位（AC-23 验收用，生产为空实现）
 ├── service/CheckoutFaultPoint.java  下单故障注入位（AC-16 验收用，生产为空实现）
 ├── service/CurrentUserService.java  会话身份读取、数据归属校验（requireOwner → 404）
 ├── model/CategoryType.java          类型三值由分类编码后缀映射（*_GAR / *_ACC / 其余 ALL）
@@ -54,7 +57,7 @@ src/main/java/com/fabriclab/store/
 │   CartItem / SalesOrder / SalesOrderItem
 └── mapper/                          对应 Mapper，继承 BaseMapper
 src/main/resources/application.yml   端口、数据源、MyBatis-Plus
-src/main/resources/templates/        index 首页 / category 列表 / product 详情 / cart 购物车 / checkout 结算确认 / orders 订单列表 / order 订单详情 / signon 登录 / register 注册 / error 错误 / fragments 片段
+src/main/resources/templates/        index 首页 / category 列表 / product 详情 / cart 购物车 / checkout 结算确认 / orders 订单列表 / order 订单详情 / payment 模拟支付 / signon 登录 / register 注册 / error 错误 / fragments 片段
 src/test/java/com/fabriclab/store/
 ├── controller/MainControllerTest.java   首页渲染（Mock 服务层）
 ├── controller/BrowseControllerTest.java 列表 400 / 404 / 条件回显
@@ -64,6 +67,7 @@ src/test/java/com/fabriclab/store/
 ├── controller/CartControllerTest.java   购物车页渲染、失效阻止结算、加入反馈、修改与移除重定向
 ├── controller/CheckoutControllerTest.java 确认页渲染与确认入会话、提交成功跳详情、收货校验失败保留输入
 ├── controller/OrderControllerTest.java  列表渲染与空状态、非法参数 400、越权 404、取消回详情
+├── controller/PaymentControllerTest.java 支付页金额与两个动作、非待支付回详情、成功与重复成功提示、伪造金额无效、越权 404
 ├── security/AuthInterceptorTest.java    未登录跳转、禁用/改角色/删除账号拦截并失效会话
 ├── security/CsrfServiceTest.java        令牌生成复用、缺失/篡改拒绝
 ├── service/BrandServiceTest.java
@@ -77,6 +81,7 @@ src/test/java/com/fabriclab/store/
 ├── service/CartServiceTest.java         同款累加、1—99、20 种上限、库存与上架、版本与归属、失效判定
 ├── service/CheckoutServiceTest.java     确认只读、快照核对、状态/库存/价格变化拒绝、下单写库序列与清理校验
 ├── service/OrderServiceTest.java        归属 404、状态与订单号筛选、取消仅待支付且只恢复一次
+├── service/PaymentServiceTest.java      归属 404、仅待支付可付、成组写付款信息、重复成功保首次凭证、失败不写库、并发未命中回读
 ├── service/CurrentUserServiceTest.java  会话身份读取、归属不符 404
 ├── model/OrderQueryTest.java        状态白名单、订单号精确匹配与上限、页码与页大小归一、收货三项校验
 ├── model/BrowseQueryTest.java       页码归一、页大小白名单、关键字截断拒绝
@@ -91,6 +96,7 @@ src/test/java/com/fabriclab/store/
 ├── AuthIntegrationTest.java         真库登录会话验收 AC-05~07/31：四态统一失败、禁用拦截、退出失效、CSRF 403
 ├── CartIntegrationTest.java         真库购物车验收 AC-08~11：累加合并、非法与第 21 种不写库、退出重登保留、跨账号 404、旧版本拒绝、失效保留与移除
 ├── OrderIntegrationTest.java        真库结算下单验收 AC-12~17/19/30：收货校验、金额后端计算、两明细下单、改价与改车拒绝、异常回滚、快照不变、五状态与订单号、取消恢复库存
+├── PaymentIntegrationTest.java      真库支付验收 AC-18~24：失败后成功再重复成功保首次凭证、改价下架不影响金额与付款、两明细取消只恢复一次、下架取消后仍下架且不能付款、取消异常回滚、支付与取消并发只一种迁移
 └── SchemaIntegrationTest.java        真实库连通与七表存在性（需 MYSQL_PASSWORD）
 ```
 
