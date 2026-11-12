@@ -177,3 +177,53 @@ img { max-width: 100%; display: block; }
     .catalog-main { grid-template-columns: 1fr; }
     .hero { padding: 40px 28px; }
 }
+
+/* 商品详情 */
+.detail-crumb { font-size: 14px; color: var(--muted); margin: 20px 0 18px; }
+.detail-crumb a:hover { color: var(--rust); }
+.detail-crumb span:last-child { color: var(--ink); }
+
+.detail-layout { display: grid; grid-template-columns: 1.1fr 1fr; gap: 40px; align-items: start; }
+
+.detail-gallery__main {
+    background: #FFF; border: 1px solid var(--line); padding: 18px;
+}
+.detail-gallery__main img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; }
+.detail-thumbs { list-style: none; margin: 12px 0 0; padding: 0; display: flex; gap: 10px; flex-wrap: wrap; }
+.detail-thumbs img {
+    width: 84px; height: 84px; object-fit: cover;
+    border: 1px solid var(--line); background: #FFF;
+}
+.detail-gallery__fallback { font-size: 13px; color: var(--muted); margin: 10px 0 0; }
+
+.detail-sku { font-size: 13px; color: var(--muted); margin: 0 0 8px; }
+.detail-sku code { font-family: inherit; color: var(--ink); letter-spacing: 1px; }
+.detail-sku__hint { font-size: 12px; }
+.detail-info h1 { font-size: 28px; margin: 0 0 10px; letter-spacing: 1px; }
+.detail-summary { color: var(--muted); margin: 0 0 16px; }
+.detail-price { font-size: 30px; color: var(--rust); font-weight: 700; margin: 0 0 14px; }
+.detail-stock { display: flex; align-items: center; gap: 10px; margin: 0 0 20px; }
+
+.detail-buy {
+    border: 1px solid var(--line); background: #FFF; padding: 18px;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 14px;
+}
+.detail-buy label { display: flex; align-items: center; gap: 8px; }
+.detail-buy input[type="number"] { width: 72px; padding: 8px 10px; border: 1px solid var(--line); }
+.detail-buy button {
+    padding: 10px 26px; background: var(--rust); color: #FFF; border: 0; cursor: pointer;
+}
+.detail-buy button:disabled { background: var(--line); color: var(--muted); cursor: not-allowed; }
+.detail-buy__note { flex-basis: 100%; font-size: 12px; color: var(--muted); margin: 0; }
+
+.detail-desc { margin-top: 36px; background: #FFF; border: 1px solid var(--line); padding: 24px 28px; }
+.detail-desc h2 { font-size: 18px; margin: 0 0 14px; letter-spacing: 2px; }
+.detail-desc p { color: var(--ink); line-height: 1.8; margin: 0 0 10px; }
+
+.detail-actions { margin: 28px 0 40px; }
+.detail-back { border: 1px solid var(--ink); padding: 10px 24px; background: #FFF; display: inline-block; }
+.detail-back:hover { background: var(--ink); color: var(--cream); }
+
+@media (max-width: 900px) {
+    .detail-layout { grid-template-columns: 1fr; }
+}
