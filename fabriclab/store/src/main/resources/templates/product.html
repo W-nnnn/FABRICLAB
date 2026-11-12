@@ -54,6 +54,7 @@
                          style="width:100%;height:100%;object-fit:cover"/>
                 </div>
             </div>
+            <p class="tiny" th:if="${view.gallery().size() == 1}" th:text="#{product.album.fallback}">该商品暂无相册，展示封面图</p>
             <div style="margin-top:14px;display:flex;align-items:center;gap:10px">
                 <span class="tiny" th:text="${view.gallery().size()} == 1 ? #{product.one.view} : #{product.four.view}">4 张图</span>
                 <span style="flex:1;height:1px;background:var(--line)"></span>

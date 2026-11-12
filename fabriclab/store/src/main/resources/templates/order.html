@@ -96,8 +96,10 @@
                     </span>
                     <div>
                         <div style="font-size:12.5px;letter-spacing:.06em;color:var(--rust)" th:text="#{order.step4}">已取消</div>
-                        <div class="tiny" style="margin-top:6px;letter-spacing:.12em"
-                             th:text="${#temporals.format(detail.order.cancelledAt, 'yyyy-MM-dd HH:mm')}">时间</div>
+                        <div class="tiny" style="margin-top:6px;letter-spacing:.12em">
+                            <span th:text="#{order.cancelled.at}">取消时间</span> ·
+                            <span th:text="${#temporals.format(detail.order.cancelledAt, 'yyyy-MM-dd HH:mm')}">时间</span>
+                        </div>
                     </div>
                 </div>
             </div>
