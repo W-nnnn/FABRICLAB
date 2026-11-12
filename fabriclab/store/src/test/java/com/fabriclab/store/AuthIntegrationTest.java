@@ -5,14 +5,10 @@ import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.nio.charset.StandardCharsets;
 
@@ -28,32 +24,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * 真实库（含种子数据）下的登录、会话与访问检查验收（AC-05/06/07/31）：
  * 仅启用 CUSTOMER 登录成功；错误密码、禁用、管理员四态统一失败且密码不回显；
- * 登录后禁用账号，受保护入口被拦截；退出后会话失效；缺 CSRF 的写请求 403；
- * 用户端 Cookie 独立命名 STORESESSION（AC-06 本端证据，跨端联测随管理端完成）。
+ * 登录后禁用账号，受保护入口（真实购物车页 /cart）被拦截；退出后会话失效；
+ * 缺 CSRF 的写请求 403；用户端 Cookie 独立命名 STORESESSION
+ * （AC-06 本端证据，跨端联测随管理端完成）。
  * 仅在提供 MYSQL_PASSWORD 时执行；无口令时跳过，不伪造通过。
  */
 @SpringBootTest
 @AutoConfigureMockMvc
 @EnabledIfEnvironmentVariable(named = "MYSQL_PASSWORD", matches = ".+")
 class AuthIntegrationTest {
-
-    /** 测试专用受保护入口：真实购物车控制器由 T9 交付，此处仅验证拦截器行为。 */
-    @TestConfiguration
-    static class ProtectedStub {
-        @Bean
-        CartStubController cartStubController() {
-            return new CartStubController();
-        }
-    }
-
-    /** 桩控制器：类不被组件扫描（@TestConfiguration 内手工注册），仅映射受保护路径。 */
-    @RestController
-    static class CartStubController {
-        @GetMapping("/cart")
-        public String cart() {
-            return "cart-of-current-user";
-        }
-    }
 
     @Autowired
     private MockMvc mockMvc;

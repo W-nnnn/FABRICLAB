@@ -4,6 +4,7 @@ import com.fabriclab.store.mapper.StoreUserMapper;
 import com.fabriclab.store.model.CurrentUser;
 import com.fabriclab.store.service.AuthService;
 import com.fabriclab.store.service.BrandService;
+import com.fabriclab.store.service.CartService;
 import com.fabriclab.store.service.CurrentUserService;
 import com.fabriclab.store.security.CsrfService;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,6 +39,9 @@ class SignonControllerTest {
 
     @MockitoBean
     private CurrentUserService currentUserService;
+
+    @MockitoBean
+    private CartService cartService;
 
     @MockitoBean
     private BrandService brandService;
