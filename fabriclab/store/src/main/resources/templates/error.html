@@ -16,10 +16,10 @@
         <div style="flex:1">
             <div class="din" style="font-size:120px;font-weight:700;letter-spacing:-.04em;line-height:.86"
                  th:text="${statusCode != null ? statusCode : (status != null ? status : 500)}">404</div>
-            <div class="h2" style="margin-top:26px;font-size:34px"
-                 th:if="${errorTitle != null}" th:text="${tr.t(errorTitle)}">页面不存在</div>
-            <div class="h2" style="margin-top:26px;font-size:34px"
-                 th:unless="${errorTitle != null}" th:text="#{error.notfound.title}">页面不存在</div>
+            <h1 class="h2" style="margin-top:26px;font-size:34px"
+                 th:if="${errorTitle != null}" th:text="${tr.t(errorTitle)}">页面不存在</h1>
+            <h1 class="h2" style="margin-top:26px;font-size:34px"
+                 th:unless="${errorTitle != null}" th:text="#{error.notfound.title}">页面不存在</h1>
             <div class="lead" style="margin-top:18px;width:440px;font-size:12.5px"
                  th:if="${errorMessage != null}" th:text="${tr.t(errorMessage)}">
                 链接可能失效，或者这件已经卖完下架。

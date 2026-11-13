@@ -12,6 +12,7 @@
 
     <th:block th:replace="~{fragments :: header(null)}"></th:block>
 
+    <span id="main" tabindex="-1"></span>
     <div class="crumb">
         <a data-nav="back" th:href="@{/orders}" th:text="#{order.back}">← 返回订单列表</a>
     </div>
@@ -22,7 +23,7 @@
     <div style="padding:30px var(--gx) 34px;display:flex;align-items:flex-end">
         <div>
             <div class="eyebrow" th:text="#{order.eyebrow}">订单详情</div>
-            <div class="h2" style="margin-top:12px;font-size:34px" th:text="${tr.t(detail.status.label())}">待付款</div>
+            <h2 class="h2" style="margin-top:12px;font-size:34px" th:text="${tr.t(detail.status.label())}">待付款</h2>
             <div class="din" style="margin-top:14px;font-size:11px;letter-spacing:.16em;color:var(--mute)">
                 <span th:text="${detail.order.orderNo}">FL20260101000000000001</span>
                 <span> · </span>

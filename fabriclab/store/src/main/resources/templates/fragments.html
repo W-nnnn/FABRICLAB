@@ -4,6 +4,8 @@
 
 <!-- ============================================================ 头部（双层：品牌层 + 系列目录层，吸顶） -->
 <th:block th:fragment="header(active)">
+    <!-- 键盘用户可跳过重复导航，聚焦到主内容锚点 -->
+    <a class="skip" th:href="'#main'" th:text="#{a11y.skip}">跳到主要内容</a>
     <div class="hdw">
         <div class="hdr">
             <a class="logo" th:href="@{/main}">

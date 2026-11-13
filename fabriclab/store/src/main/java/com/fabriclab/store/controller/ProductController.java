@@ -1,5 +1,6 @@
 package com.fabriclab.store.controller;
 
+import com.fabriclab.store.model.CareGuide;
 import com.fabriclab.store.model.FitGuide;
 import com.fabriclab.store.service.BrandService;
 import com.fabriclab.store.service.DetailService;
@@ -34,6 +35,7 @@ public class ProductController {
         model.addAttribute("view", view);
         model.addAttribute("fit", FitGuide.of(view.product()));
         model.addAttribute("fitShape", FitGuide.fitOf(view.product()));
+        model.addAttribute("careKey", CareGuide.keyOf(view.product()));
         model.addAttribute("related", detailService.related(view.product(), RELATED_LIMIT));
         return "product";
     }

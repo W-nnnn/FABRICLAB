@@ -1,6 +1,7 @@
 package com.fabriclab.store;
 
 import com.fabriclab.store.entity.Product;
+import com.fabriclab.store.model.BrowseQuery;
 import com.fabriclab.store.service.BrowseService.BrowseResult;
 import com.fabriclab.store.service.BrowseService.HomeView;
 import org.junit.jupiter.api.Test;
@@ -90,13 +91,14 @@ class BrowseIntegrationTest {
         BrowseResult result = resultOf(page1);
         assertEquals(lineOneIds.size(), result.page().getTotal(),
                 "一级查询总数必须包含两个二级分类的全部上架商品");
-        assertEquals(lineOneIds.subList(0, Math.min(6, lineOneIds.size())), recordIds(result));
+        int size = BrowseQuery.DEFAULT_SIZE;
+        assertEquals(lineOneIds.subList(0, Math.min(size, lineOneIds.size())), recordIds(result));
 
         MvcResult page2 = mockMvc.perform(get("/category")
                         .queryParam("category", "1").queryParam("page", "2"))
                 .andExpect(status().isOk()).andReturn();
         List<Long> pageTwoIds = recordIds(resultOf(page2));
-        int from = 6;
+        int from = size;
         assertEquals(lineOneIds.size() > from ? lineOneIds.subList(from, lineOneIds.size()) : List.of(),
                 pageTwoIds, "翻页必须延续同一筛选条件");
     }

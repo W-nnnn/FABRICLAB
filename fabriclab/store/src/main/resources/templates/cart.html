@@ -12,6 +12,7 @@
 
     <th:block th:replace="~{fragments :: header(null)}"></th:block>
 
+    <span id="main" tabindex="-1"></span>
     <p class="flash warn" style="margin-top:24px" th:if="${cartError != null}" th:text="${tr.t(cartError)}">提示</p>
 
     <!-- 空袋 -->
@@ -106,7 +107,7 @@
                              stroke-width="1.5"><path d="M1 4.6L4.3 7.8 11 1.2"/></svg></span>
                     <span style="font-size:11.5px;letter-spacing:.03em;line-height:1.7;color:var(--mute)"
                           th:text="#{cart.note}">
-                        整车结算，不提供勾选部分结算；购物车随账号保存，不预占库存。
+                        一次结算购物袋里的全部商品；购物袋随账号保存。
                     </span>
                 </div>
 
@@ -190,7 +191,7 @@
             <div class="ptitle">
                 <div>
                     <div class="eyebrow" th:text="#{cart.rec.eb}">为你而选</div>
-                    <div class="h2" style="margin-top:14px" th:text="#{cart.rec.title}">和袋里的配一配</div>
+                    <h2 class="h2" style="margin-top:14px" th:text="#{cart.rec.title}">和袋里的配一配</h2>
                 </div>
                 <div class="r">
                     <a class="tlink mute" th:href="@{/category}" th:text="#{cart.rec.more(${onSaleTotal})}">查看全部 42 件</a>

@@ -16,20 +16,42 @@ public record ReceiverInfo(String name, String phone, String address) {
     public static final int PHONE_MAX = 30;
     public static final int ADDRESS_MAX = 255;
 
+    /** 字段名：既做提示文案前缀，也用于回填时定位出错字段。 */
+    public static final String NAME = "收货人";
+    public static final String PHONE = "联系电话";
+    public static final String ADDRESS = "详细地址";
+
     /** 允许数字、区号加号、空格与常见分隔符，以及中文「转」作为分机标记。 */
     private static final Pattern PHONE_CHARS = Pattern.compile("^[0-9+\\-\\s()转]+$");
 
     public static ReceiverInfo parse(String name, String phone, String address) {
         return new ReceiverInfo(
-                require("收货人", name, NAME_MAX),
+                require(NAME, name, NAME_MAX),
                 phone(phone),
-                require("详细地址", address, ADDRESS_MAX));
+                require(ADDRESS, address, ADDRESS_MAX));
+    }
+
+    /** 由校验消息反推字段：name / phone / address，非字段类错误返回 null。 */
+    public static String fieldOf(String message) {
+        if (message == null) {
+            return null;
+        }
+        if (message.startsWith(NAME)) {
+            return "name";
+        }
+        if (message.startsWith(PHONE)) {
+            return "phone";
+        }
+        if (message.startsWith(ADDRESS)) {
+            return "address";
+        }
+        return null;
     }
 
     private static String phone(String raw) {
-        String trimmed = require("联系电话", raw, PHONE_MAX);
+        String trimmed = require(PHONE, raw, PHONE_MAX);
         if (!PHONE_CHARS.matcher(trimmed).matches()) {
-            throw new BusinessException("联系电话格式不正确，请填写号码与区号");
+            throw new BusinessException(PHONE + "格式不正确，请填写号码与区号");
         }
         return trimmed;
     }
