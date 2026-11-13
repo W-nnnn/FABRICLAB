@@ -9,7 +9,7 @@
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
 
-    <th:block th:replace="~{fragments :: header(null)}"></th:block>
+    <th:block th:replace="~{fragments :: header('shop')}"></th:block>
 
     <div class="crumb">
         <a th:href="@{/main}" th:text="#{nav.home}">首页</a>

@@ -9,7 +9,7 @@
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
 
-    <th:block th:replace="~{fragments :: header(null)}"></th:block>
+    <th:block th:replace="~{fragments :: header('account')}"></th:block>
 
     <!-- 会员横幅 -->
     <section class="mband" th:if="${currentUser != null}">
