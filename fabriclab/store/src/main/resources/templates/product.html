@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<html lang="zh-CN" th:lang="${lang == 'en' ? 'en' : 'zh-CN'}" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
+    <link rel="icon" type="image/png" th:href="@{/images/mark.png}"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="|#{nav.brand} · ${tr.t(view.product().name)}|">FABRICLAB · 商品详情</title>
-    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113n}"/>
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261114a}"/>
 </head>
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
@@ -29,20 +30,22 @@
         <span th:text="|#{product.added} ${cartAdded}|">已加入购物袋</span>
     </p>
 
-    <div style="display:flex;padding:26px var(--gx) 0;gap:64px;align-items:flex-start">
+    <div class="cols" style="display:flex;padding:26px var(--gx) 0;gap:64px;align-items:flex-start">
         <!-- 左：图集（主图交叉淡入 + 缩略图切换 + 方向键 + 自动轮播） -->
         <div data-gallery style="flex:1.15;min-width:0;max-width:860px">
             <div class="gstage">
                 <img th:each="image, i : ${view.gallery()}"
                      th:classappend="${i.first} ? 'on'"
-                     th:src="@{|/${image.path()}|}" th:alt="${tr.t(image.alt())}"
-                     th:loading="${i.first} ? 'eager' : 'lazy'"/>
+                     th:src="@{|/${image.path()}|}"
+                     th:alt="${#strings.isEmpty(image.alt()) ? tr.t(view.product().name) : tr.t(image.alt())}"
+                     th:loading="${i.first} ? 'eager' : 'lazy'"
+                     th:attr="fetchpriority=${i.first} ? 'high' : 'low'"/>
                 <span class="tag" style="position:absolute;left:14px;top:14px;z-index:3;background:var(--wall);
-                                         font-family:var(--f-body);font-size:10px;letter-spacing:.1em;
+                                         font-family:var(--f-body);font-size:11px;letter-spacing:.1em;
                                          padding:4px 8px"
                       th:if="${!view.soldOut()}" th:text="#{product.new}">新到</span>
                 <span class="tag sold" style="position:absolute;left:14px;top:14px;z-index:3;background:var(--ink);
-                                              color:var(--wall);font-family:var(--f-body);font-size:10px;
+                                              color:var(--wall);font-family:var(--f-body);font-size:11px;
                                               letter-spacing:.1em;padding:4px 8px"
                       th:if="${view.soldOut()}" th:text="#{product.soldout}">售罄</span>
                 <button type="button" class="garrow prev" th:if="${view.gallery().size() > 1}"
@@ -68,7 +71,7 @@
                th:text="#{product.album.fallback}">该商品暂无相册，展示封面图</p>
 
             <div style="margin-top:14px;display:flex;align-items:center;gap:14px">
-                <span class="din gcount" style="font-size:10px;letter-spacing:.22em;color:var(--ink)"
+                <span class="din gcount" style="font-size:11px;letter-spacing:.22em;color:var(--ink)"
                       th:text="|${#numbers.formatInteger(1, 2)} / ${#numbers.formatInteger(view.gallery().size(), 2)}|">01 / 04</span>
                 <span style="flex:1;height:1px;background:var(--line)"></span>
                 <span class="tiny" th:text="${view.product().sku}">FL-CM-01</span>
@@ -85,7 +88,7 @@
                 </span>
             </div>
 
-            <div class="h2" style="margin-top:18px;font-size:30px" th:text="${tr.t(view.product().name)}">商品名称</div>
+            <h1 class="h2" style="margin-top:18px;font-size:30px" th:text="${tr.t(view.product().name)}">商品名称</h1>
             <div class="tiny" style="margin-top:10px;letter-spacing:.2em"
                  th:text="${tr.t(view.line().name)} + ' · ' + ${tr.t(view.second().name)} + ' · ' + ${view.product().sku}">通勤出行 · 通勤成衣</div>
 
@@ -93,7 +96,7 @@
                 <span class="din" style="font-size:22px;font-weight:500;letter-spacing:.01em"
                       th:text="|¥ ${#numbers.formatDecimal(view.product().price, 1, 2)}|">¥ 0.00</span>
                 <span class="tiny" th:text="#{product.tax}">含税</span>
-                <a class="tiny" data-nav="back" style="margin-left:auto;color:var(--rust);letter-spacing:.12em"
+                <a class="tiny" data-nav="back" style="margin-left:auto;color:var(--rust-ink);letter-spacing:.12em"
                    th:href="@{/category(category=${view.second().id})}" th:text="#{product.back.list}">返回商品列表</a>
             </div>
 
@@ -105,21 +108,21 @@
                 <div class="tiny" style="letter-spacing:.2em;color:var(--ink)" th:text="#{product.usp.t}">卖点</div>
                 <div style="margin-top:13px;display:flex;flex-direction:column;gap:10px">
                     <div style="display:flex;align-items:center;gap:10px">
-                        <span style="color:var(--rust);display:flex;flex:none">
+                        <span style="color:var(--rust-ink);display:flex;flex:none">
                             <svg width="11" height="9" viewBox="0 0 12 9" fill="none" stroke="currentColor"
                                  stroke-width="1.5"><path d="M1 4.6L4.3 7.8 11 1.2"/></svg></span>
                         <span style="font-size:12px;letter-spacing:.03em;color:var(--body)"
                               th:text="#{product.usp1}">未染天然纤维</span>
                     </div>
                     <div style="display:flex;align-items:center;gap:10px">
-                        <span style="color:var(--rust);display:flex;flex:none">
+                        <span style="color:var(--rust-ink);display:flex;flex:none">
                             <svg width="11" height="9" viewBox="0 0 12 9" fill="none" stroke="currentColor"
                                  stroke-width="1.5"><path d="M1 4.6L4.3 7.8 11 1.2"/></svg></span>
                         <span style="font-size:12px;letter-spacing:.03em;color:var(--body)"
                               th:text="#{product.usp2}">第九版版型</span>
                     </div>
                     <div style="display:flex;align-items:center;gap:10px">
-                        <span style="color:var(--rust);display:flex;flex:none">
+                        <span style="color:var(--rust-ink);display:flex;flex:none">
                             <svg width="11" height="9" viewBox="0 0 12 9" fill="none" stroke="currentColor"
                                  stroke-width="1.5"><path d="M1 4.6L4.3 7.8 11 1.2"/></svg></span>
                         <span style="font-size:12px;letter-spacing:.03em;color:var(--body)"
@@ -131,7 +134,7 @@
             <!-- 规格提示：一个款号即一个可购买单位 -->
             <div style="margin-top:24px;display:flex;align-items:center;gap:10px;padding:14px 16px;
                         background:var(--linen)">
-                <span style="display:flex;color:var(--rust)">
+                <span style="display:flex;color:var(--rust-ink)">
                     <svg width="11" height="9" viewBox="0 0 12 9" fill="none" stroke="currentColor"
                          stroke-width="1.5"><path d="M1 4.6L4.3 7.8 11 1.2"/></svg></span>
                 <span style="font-size:11.5px;line-height:1.8;letter-spacing:.03em;color:var(--mute)"
@@ -145,7 +148,7 @@
                 <b th:if="${!view.soldOut()}" style="font-family:var(--f-body);font-size:11px;
                            letter-spacing:.1em;color:var(--ink)" th:text="#{product.in.stock}">现货</b>
                 <b th:if="${view.soldOut()}" style="font-family:var(--f-body);font-size:11px;
-                           letter-spacing:.1em;color:var(--rust)" th:text="#{product.soldout}">售罄</b>
+                           letter-spacing:.1em;color:var(--rust-ink)" th:text="#{product.soldout}">售罄</b>
                 <span class="tiny" th:if="${view.soldOut()}" th:text="#{product.soldout.note}">该商品暂时无法购买</span>
             </div>
 
@@ -175,30 +178,53 @@
             <div style="margin-top:26px;padding:20px 0;border-top:1px solid var(--line);
                         border-bottom:1px solid var(--line);display:flex;gap:12px">
                 <div style="flex:1;display:flex;flex-direction:column;gap:8px">
-                    <span style="color:var(--rust);display:flex">
+                    <span style="color:var(--rust-ink);display:flex">
                         <svg width="12" height="9" viewBox="0 0 12 9" fill="none" stroke="currentColor"
                              stroke-width="1.5"><path d="M1 4.6L4.3 7.8 11 1.2"/></svg></span>
-                    <span class="tiny" style="font-size:10px" th:text="#{product.svc.ship}">满 ¥1,500 包邮</span>
+                    <span class="tiny" style="font-size:11px" th:text="#{product.svc.ship}">满 ¥1,500 包邮</span>
                 </div>
                 <div style="flex:1;display:flex;flex-direction:column;gap:8px">
-                    <span style="color:var(--rust);display:flex">
+                    <span style="color:var(--rust-ink);display:flex">
                         <svg width="12" height="9" viewBox="0 0 12 9" fill="none" stroke="currentColor"
                              stroke-width="1.5"><path d="M1 4.6L4.3 7.8 11 1.2"/></svg></span>
-                    <span class="tiny" style="font-size:10px" th:text="#{product.svc.return}">7 天退换</span>
+                    <span class="tiny" style="font-size:11px" th:text="#{product.svc.return}">7 天退换</span>
                 </div>
                 <div style="flex:1;display:flex;flex-direction:column;gap:8px">
-                    <span style="color:var(--rust);display:flex">
+                    <span style="color:var(--rust-ink);display:flex">
                         <svg width="12" height="9" viewBox="0 0 12 9" fill="none" stroke="currentColor"
                              stroke-width="1.5"><path d="M1 4.6L4.3 7.8 11 1.2"/></svg></span>
-                    <span class="tiny" style="font-size:10px" th:text="#{product.svc.repair}">终身修补</span>
+                    <span class="tiny" style="font-size:11px" th:text="#{product.svc.repair}">终身修补</span>
                 </div>
                 <div style="flex:1;display:flex;flex-direction:column;gap:8px">
-                    <span style="color:var(--rust);display:flex">
+                    <span style="color:var(--rust-ink);display:flex">
                         <svg width="12" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor"
                              stroke-width="1.3"><circle cx="8" cy="5" r="2.9"/>
                             <path d="M2.6 14.2c0-2.9 2.4-4.6 5.4-4.6s5.4 1.7 5.4 4.6"/></svg></span>
-                    <span class="tiny" style="font-size:10px" th:text="#{product.svc.fit}">预约试穿</span>
+                    <span class="tiny" style="font-size:11px" th:text="#{product.svc.fit}">预约试穿</span>
                 </div>
+            </div>
+
+            <!-- 版型与尺寸：一个款号一个规格，把成衣尺寸与模特参考摊开 -->
+            <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--line)">
+                <div class="tiny" style="letter-spacing:.2em;color:var(--ink)" th:text="#{fit.title}">版型与尺寸</div>
+                <div style="margin-top:14px;display:grid;grid-template-columns:84px 1fr;gap:10px 16px">
+                    <span class="tiny" th:text="#{fit.fit}">版型</span>
+                    <span style="font-size:12px;letter-spacing:.03em;color:var(--body)"
+                          th:text="${tr.t(fitShape)}">H 型直筒</span>
+                    <span class="tiny" th:text="#{fit.size}">规格</span>
+                    <span style="font-size:12px;letter-spacing:.03em;color:var(--body)"
+                          th:text="#{fit.size.v}">均码</span>
+                    <th:block th:each="row : ${fit}">
+                        <span class="tiny" th:text="${#messages.msg(row.labelKey())}">衣长</span>
+                        <span style="font-size:12px;letter-spacing:.03em;color:var(--body)"
+                              th:text="${row.value()}">68 cm</span>
+                    </th:block>
+                    <span class="tiny" th:text="#{fit.model}">模特</span>
+                    <span style="font-size:12px;letter-spacing:.03em;color:var(--body)"
+                          th:text="#{fit.model.v}">187 cm，穿均码</span>
+                </div>
+                <p class="tiny" style="margin-top:12px;line-height:1.9;letter-spacing:.04em"
+                   th:text="#{fit.note}">尺寸为平铺实测</p>
             </div>
 
             <!-- 规格表 -->
@@ -237,7 +263,9 @@
             <div class="sgrid" style="flex:1.15;min-width:0;max-width:760px" th:if="${view.gallery().size() > 1}">
                 <button type="button" data-jump th:each="image, i : ${view.gallery()}"
                         th:attr="data-jump=${i.index}" th:aria-label="#{product.view.aria}">
-                    <img th:src="@{|/${image.path()}|}" th:alt="${tr.t(image.alt())}" loading="lazy"/>
+                    <img th:src="@{|/${image.path()}|}"
+                         th:alt="${#strings.isEmpty(image.alt()) ? tr.t(view.product().name) : tr.t(image.alt())}"
+                         loading="lazy"/>
                     <span class="ix" th:text="${#numbers.formatInteger(i.count, 2)}">01</span>
                 </button>
             </div>
@@ -267,6 +295,25 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- 同系列搭配：取同二级分类的在售款，补齐详情页的横向浏览 -->
+    <div style="margin-top:70px;padding:0 var(--gx)" th:if="${related != null and !related.isEmpty()}">
+        <div class="ptitle">
+            <div>
+                <div class="eyebrow" th:text="${tr.t(view.second().name)}">通勤成衣</div>
+                <div class="h2" style="margin-top:14px" th:text="#{related.title}">同系列搭配</div>
+            </div>
+            <div class="r">
+                <a class="tlink mute" th:href="@{/category(category=${view.second().id})}"
+                   th:text="#{related.more}">看同系列全部</a>
+            </div>
+        </div>
+        <div class="g4">
+            <th:block th:each="p, s : ${related}">
+                <a th:replace="~{fragments :: card(${p}, ${#numbers.formatInteger(s.count, 2)})}"></a>
+            </th:block>
         </div>
     </div>
 

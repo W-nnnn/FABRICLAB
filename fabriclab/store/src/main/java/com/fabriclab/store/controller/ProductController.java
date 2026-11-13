@@ -1,5 +1,6 @@
 package com.fabriclab.store.controller;
 
+import com.fabriclab.store.model.FitGuide;
 import com.fabriclab.store.service.BrandService;
 import com.fabriclab.store.service.DetailService;
 import org.springframework.stereotype.Controller;
@@ -14,6 +15,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class ProductController {
 
+    /** 详情页搭配推荐条数。 */
+    private static final int RELATED_LIMIT = 4;
+
     private final BrandService brandService;
     private final DetailService detailService;
 
@@ -26,7 +30,11 @@ public class ProductController {
     public String detail(@RequestParam(required = false) String id, Model model) {
         model.addAttribute("brand", brandService.brand());
         model.addAttribute("tagline", brandService.tagline());
-        model.addAttribute("view", detailService.detail(id));
+        DetailService.ProductDetailView view = detailService.detail(id);
+        model.addAttribute("view", view);
+        model.addAttribute("fit", FitGuide.of(view.product()));
+        model.addAttribute("fitShape", FitGuide.fitOf(view.product()));
+        model.addAttribute("related", detailService.related(view.product(), RELATED_LIMIT));
         return "product";
     }
 }
