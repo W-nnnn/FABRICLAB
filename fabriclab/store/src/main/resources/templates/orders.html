@@ -4,7 +4,7 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="|#{nav.brand} · #{orders.title}|">FABRICLAB · 我的订单</title>
-    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113c}"/>
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113d}"/>
 </head>
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
@@ -44,7 +44,7 @@
                          ? 'margin-right:42px;padding-bottom:15px;font-family:var(--f-body);font-size:12.5px;letter-spacing:.06em;border-bottom:1.5px solid var(--ink);color:var(--ink)'
                          : 'margin-right:42px;padding-bottom:15px;font-family:var(--f-body);font-size:12.5px;letter-spacing:.06em;border-bottom:1.5px solid transparent;color:var(--mute)'"
                th:href="@{/orders(status=${status.name()}, orderNo=${query.orderNo()}, size=${query.size()})}"
-               th:text="${status.label()}">待支付</a>
+               th:text="${tr.t(status.label())}">待支付</a>
         </div>
     </div>
 
@@ -56,7 +56,7 @@
         <div style="display:flex;align-items:center;border-bottom:1px solid var(--line2);padding-bottom:9px;
                     width:360px">
             <input type="search" name="orderNo" maxlength="40" th:value="${query.orderNo()}"
-                   th:placeholder="#{orders.search.ph}" aria-label="订单号"
+                   th:placeholder="#{orders.search.ph}" th:aria-label="#{orders.no}"
                    style="border:0;background:transparent;outline:none;flex:1;font-family:var(--f-body);
                           font-weight:300;font-size:12.5px;letter-spacing:.06em"/>
             <button type="submit" style="font-family:var(--f-body);font-size:11px;letter-spacing:.1em;
@@ -88,7 +88,7 @@
                     <span class="state" th:classappend="${row.order.status == 'PENDING_PAYMENT'} ? 'pay'
                               : (${row.order.status == 'CANCELLED'} ? 'void'
                               : (${row.order.status == 'SHIPPED' or row.order.status == 'COMPLETED'} ? 'done' : 'ship'))"
-                          th:text="${row.statusLabel}">待支付</span>
+                          th:text="${tr.t(row.statusLabel)}">待支付</span>
                 </span>
             </div>
 
@@ -121,7 +121,7 @@
                          th:text="|#{orders.placed} ${#temporals.format(row.order.createdAt, 'yyyy-MM-dd HH:mm')}|">
                         下单时间 2026-01-01 00:00
                     </div>
-                    <div class="tiny" style="margin-top:6px;letter-spacing:.1em" th:text="${row.statusLabel}">待支付</div>
+                    <div class="tiny" style="margin-top:6px;letter-spacing:.1em" th:text="${tr.t(row.statusLabel)}">待支付</div>
                 </div>
                 <div style="margin-left:auto;text-align:right">
                     <div class="din" style="font-size:15px;letter-spacing:.04em"

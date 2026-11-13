@@ -50,20 +50,15 @@
         </div>
         <nav class="navbar" th:aria-label="#{shop.f.category}">
             <a class="nitem" th:href="@{/category(category=1)}"
-               th:classappend="${navActive == 'commute'} ? 'on'">
-                <span class="no">01</span><span class="nm" th:text="#{line.commute}">通勤出行</span></a>
+               th:classappend="${navActive == 'commute'} ? 'on'"><span class="nm" th:text="#{line.commute}">通勤出行</span></a>
             <a class="nitem" th:href="@{/category(category=2)}"
-               th:classappend="${navActive == 'leisure'} ? 'on'">
-                <span class="no">02</span><span class="nm" th:text="#{line.leisure}">休闲生活</span></a>
+               th:classappend="${navActive == 'leisure'} ? 'on'"><span class="nm" th:text="#{line.leisure}">休闲生活</span></a>
             <a class="nitem" th:href="@{/category(category=3)}"
-               th:classappend="${navActive == 'outdoor'} ? 'on'">
-                <span class="no">03</span><span class="nm" th:text="#{line.outdoor}">户外运动</span></a>
+               th:classappend="${navActive == 'outdoor'} ? 'on'"><span class="nm" th:text="#{line.outdoor}">户外运动</span></a>
             <a class="nitem" th:href="@{/category(category=4)}"
-               th:classappend="${navActive == 'occasion'} ? 'on'">
-                <span class="no">04</span><span class="nm" th:text="#{line.occasion}">礼服场合</span></a>
+               th:classappend="${navActive == 'occasion'} ? 'on'"><span class="nm" th:text="#{line.occasion}">礼服场合</span></a>
             <a class="nitem" th:href="@{/category(category=5)}"
-               th:classappend="${navActive == 'home'} ? 'on'">
-                <span class="no">05</span><span class="nm" th:text="#{line.home}">居家舒适</span></a>
+               th:classappend="${navActive == 'home'} ? 'on'"><span class="nm" th:text="#{line.home}">居家舒适</span></a>
         </nav>
     </div>
 </th:block>
@@ -118,7 +113,6 @@
               th:text="#{card.soldout}">暂时缺货</span>
     </div>
     <div class="meta">
-        <span class="no" th:text="${no}">01</span>
         <span class="nm" th:text="${tr.t(p.name)}">商品名称</span>
         <span class="pr" th:text="|¥ ${#numbers.formatDecimal(p.price, 1, 2)}|">¥ 0</span>
     </div>
@@ -141,7 +135,6 @@
               th:text="#{card.new}">新到</span>
     </div>
     <div class="meta">
-        <span class="no" th:text="${no}">01</span>
         <span class="nm" th:text="${tr.t(p.name)}">商品名称</span>
         <span class="pr" th:text="|¥ ${#numbers.formatDecimal(p.price, 1, 2)}|">¥ 0</span>
     </div>
@@ -153,16 +146,13 @@
 
 <!-- ============================================================ 步骤条 -->
 <div th:fragment="steps(cur)" class="steps">
-    <div class="st" th:classappend="${cur == 1} ? 'on' : (${cur > 1} ? 'done')">
-        <span class="no">01</span><span class="nm" th:text="#{step.bag}">购物袋</span>
+    <div class="st" th:classappend="${cur == 1} ? 'on' : (${cur > 1} ? 'done')"><span class="no">01</span><span class="nm" th:text="#{step.bag}">购物袋</span>
     </div>
     <span class="bar"></span>
-    <div class="st" th:classappend="${cur == 2} ? 'on' : (${cur > 2} ? 'done')">
-        <span class="no">02</span><span class="nm" th:text="#{step.checkout}">确认订单</span>
+    <div class="st" th:classappend="${cur == 2} ? 'on' : (${cur > 2} ? 'done')"><span class="no">02</span><span class="nm" th:text="#{step.checkout}">确认订单</span>
     </div>
     <span class="bar"></span>
-    <div class="st" th:classappend="${cur == 3} ? 'on' : (${cur > 3} ? 'done')">
-        <span class="no">03</span><span class="nm" th:text="#{step.payment}">支付</span>
+    <div class="st" th:classappend="${cur == 3} ? 'on' : (${cur > 3} ? 'done')"><span class="no">03</span><span class="nm" th:text="#{step.payment}">支付</span>
     </div>
 </div>
 

@@ -4,7 +4,7 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="|#{nav.brand} · #{home.title}|">FABRICLAB · 未染</title>
-    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113c}"/>
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113d}"/>
 </head>
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
@@ -116,13 +116,15 @@
             </div>
         </div>
 
-        <!-- 右：主图 -->
-        <div style="flex:1;position:relative;overflow:hidden;background:var(--linen)">
-            <img th:src="@{/images/look/lb-03.jpg}" alt="FW26 LOOKBOOK"
-                 style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
-                        object-position:50% 14%"/>
-            <div style="position:absolute;right:0;top:0;padding:15px 22px;font-family:var(--f-din);
-                        font-size:8.5px;letter-spacing:.22em;color:var(--mute)">FW26 / LOOK 01</div>
+        <!-- 右：主图（留白内嵌，不满幅） -->
+        <div style="flex:1;max-width:760px;margin-left:auto;position:relative;padding:36px 36px 36px 42px">
+            <div style="position:relative;height:100%;overflow:hidden;background:var(--linen)">
+                <img th:src="@{/images/look/lb-03.jpg}" alt="FW26 LOOKBOOK"
+                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+                            object-position:50% 14%"/>
+                <div style="position:absolute;right:0;top:0;padding:15px 22px;font-family:var(--f-din);
+                            font-size:8.5px;letter-spacing:.22em;color:var(--mute)">FW26 / LOOK 01</div>
+            </div>
         </div>
     </div>
 
