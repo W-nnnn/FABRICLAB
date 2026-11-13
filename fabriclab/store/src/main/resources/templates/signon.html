@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<html lang="zh-CN" th:lang="${lang == 'en' ? 'en' : 'zh-CN'}" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
+    <link rel="icon" type="image/png" th:href="@{/images/mark.png}"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="|#{nav.brand} · #{signin.title}|">FABRICLAB · 登录</title>
-    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113n}"/>
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261114a}"/>
 </head>
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
@@ -84,7 +85,7 @@
             </div>
 
             <div style="margin-top:auto;padding-top:50px;display:flex;align-items:center;
-                        font-family:var(--f-body);font-size:9.5px;letter-spacing:.14em;color:var(--faint)">
+                        font-family:var(--f-body);font-size:11px;letter-spacing:.14em;color:var(--faint)">
                 <span>© 2026 FABRICLAB ATELIER</span>
                 <span style="margin-left:auto" th:text="#{signin.foot}">隐私政策 · 会员条款</span>
             </div>
