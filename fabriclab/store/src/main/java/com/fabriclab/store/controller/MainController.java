@@ -26,6 +26,7 @@ public class MainController {
         model.addAttribute("brand", brandService.brand());
         model.addAttribute("tagline", brandService.tagline());
         model.addAttribute("home", browseService.homeView());
+        model.addAttribute("onSaleTotal", browseService.onSaleTotal());
         return "index";
     }
 

@@ -37,6 +37,7 @@ public class BrowseController {
         model.addAttribute("query", query);
         model.addAttribute("result", browseService.browse(query));
         model.addAttribute("lines", browseService.categoryTree());
+        model.addAttribute("onSaleTotal", browseService.onSaleTotal());
         return "category";
     }
 }

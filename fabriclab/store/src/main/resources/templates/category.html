@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<html lang="zh-CN" th:lang="${lang == 'en' ? 'en' : 'zh-CN'}" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
+    <link rel="icon" type="image/png" th:href="@{/images/mark.png}"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="|#{nav.brand} · #{shop.title}|">FABRICLAB · 全部商品</title>
-    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113n}"/>
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261114a}"/>
 </head>
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
@@ -33,18 +34,18 @@
     <div style="padding:26px var(--gx) 30px;display:flex;align-items:flex-end">
         <div>
             <div class="eyebrow" th:text="#{shop.eyebrow}">全部商品 / FW26</div>
-            <div class="h2" style="margin-top:12px;font-size:38px"
-                 th:if="${result.scope().selectedLine() != null}"
-                 th:text="${tr.t(result.scope().selectedLine().name)}">全部商品</div>
-            <div class="h2" style="margin-top:12px;font-size:38px"
-                 th:unless="${result.scope().selectedLine() != null}"
-                 th:text="#{shop.all}">全部商品</div>
+            <h1 class="h2" style="margin-top:12px;font-size:38px"
+                th:if="${result.scope().selectedLine() != null}"
+                th:text="${tr.t(result.scope().selectedLine().name)}">全部商品</h1>
+            <h1 class="h2" style="margin-top:12px;font-size:38px"
+                th:unless="${result.scope().selectedLine() != null}"
+                th:text="#{shop.all}">全部商品</h1>
         </div>
         <div class="lead" style="margin:0 0 4px 40px;width:420px;font-size:12px"
-             th:text="#{shop.lead}">四十二件，本季新增七件。卖完不补，不再开版。</div>
+             th:text="#{shop.lead(${onSaleTotal})}">四十二件，本季新增七件。卖完不补，不再开版。</div>
         <div style="margin-left:auto;display:flex;align-items:baseline;gap:10px">
             <span class="din" style="font-size:40px;font-weight:700;letter-spacing:-.03em"
-                  th:text="${result.page.total}">42</span>
+                  th:text="${onSaleTotal}">42</span>
             <span class="tiny" style="padding-bottom:7px" th:text="#{shop.count}">在售件数</span>
         </div>
     </div>
@@ -54,7 +55,7 @@
     <div style="padding:20px var(--gx) 0;display:flex;align-items:center;gap:14px">
         <span class="tiny" th:text="#{shop.range}">FW26 第七辑</span>
         <div style="margin-left:auto;display:flex;align-items:center;gap:22px;
-                    font-family:var(--f-body);font-size:10px;letter-spacing:.14em;color:var(--mute)">
+                    font-family:var(--f-body);font-size:11px;letter-spacing:.14em;color:var(--mute)">
             <span th:text="#{shop.sort}">排序</span>
             <a th:href="@{/category(category=${result.scope().entry() != null ? result.scope().entry().id : null},
                         productType=${query.productTypeParam()}, keyword=${query.keyword()}, size=${query.size()},
@@ -94,14 +95,14 @@
         <span class="chip" th:if="${result.scope().selectedType().name() != 'ALL'}"
               th:text="${tr.t(result.scope().typeLabel())}">成衣</span>
         <span class="chip" th:if="${query.keyword() != null}" th:text="|#{shop.keyword} ${query.keyword()}|">关键字</span>
-        <a class="tlink mute plain" style="font-size:10px;color:var(--rust);margin-left:6px"
+        <a class="tlink mute plain" style="font-size:11px;color:var(--rust-ink);margin-left:6px"
            th:href="@{/category}" th:text="#{shop.clear}">清除</a>
         <span class="tiny" style="margin-left:auto;letter-spacing:.16em"
               th:text="|#{shop.showing} ${result.page.total}|">共 42 件</span>
     </div>
 
     <!-- 两栏：目录面板 + 商品网格 -->
-    <div style="display:flex;padding:30px var(--gx) 0;gap:48px;align-items:flex-start">
+    <div class="cols" style="display:flex;padding:30px var(--gx) 0;gap:48px;align-items:flex-start">
         <div class="catpanel">
             <div>
                 <div class="cap" th:text="#{shop.f.category}">系列线</div>
@@ -148,24 +149,6 @@
                 </div>
             </div>
 
-            <div style="margin-top:24px">
-                <div class="cap" th:text="#{shop.f.colour}">颜色</div>
-                <div style="display:flex;flex-wrap:wrap;gap:10px">
-                    <span style="width:19px;height:19px;border-radius:50%;background:#57554F;
-                                 box-shadow:0 0 0 1px rgba(26,26,26,.16)"></span>
-                    <span style="width:19px;height:19px;border-radius:50%;background:#BFA98B;
-                                 box-shadow:0 0 0 1px rgba(26,26,26,.16)"></span>
-                    <span style="width:19px;height:19px;border-radius:50%;background:#4B3B31;
-                                 box-shadow:0 0 0 1px rgba(26,26,26,.16)"></span>
-                    <span style="width:19px;height:19px;border-radius:50%;background:#20201E;
-                                 box-shadow:0 0 0 1px rgba(26,26,26,.16)"></span>
-                    <span style="width:19px;height:19px;border-radius:50%;background:#EDE8DC;
-                                 box-shadow:0 0 0 1px rgba(26,26,26,.16)"></span>
-                    <span style="width:19px;height:19px;border-radius:50%;background:#5D7285;
-                                 box-shadow:0 0 0 1px rgba(26,26,26,.16)"></span>
-                </div>
-            </div>
-
             <form th:action="@{/category}" method="get" style="margin-top:24px">
                 <input type="hidden" name="category" th:if="${result.scope().entry() != null}"
                        th:value="${result.scope().entry().id}"/>
@@ -175,11 +158,11 @@
                     <input type="text" name="keyword" maxlength="120" th:value="${query.keyword()}"
                            th:placeholder="#{nav.search}" th:aria-label="#{shop.f.keyword}"/>
                 </div>
-                <button type="submit" class="tlink" style="font-size:10px" th:text="#{shop.apply}">查询</button>
+                <button type="submit" class="tlink" style="font-size:11px" th:text="#{shop.apply}">查询</button>
             </form>
 
             <div style="border-top:1px solid var(--line);padding-top:16px;margin-top:22px">
-                <a class="tlink mute" style="font-size:10px" th:href="@{/category}"
+                <a class="tlink mute" style="font-size:11px" th:href="@{/category}"
                    th:text="#{shop.clear.all}">清除筛选</a>
             </div>
 
@@ -195,7 +178,8 @@
                     <div class="tiny" style="margin-top:5px" th:text="#{home.stat2}">系列线</div>
                 </div>
                 <div>
-                    <div class="din" style="font-size:18px;font-weight:500;letter-spacing:-.01em">42</div>
+                    <div class="din" style="font-size:18px;font-weight:500;letter-spacing:-.01em"
+                         th:text="${onSaleTotal}">42</div>
                     <div class="tiny" style="margin-top:5px" th:text="#{home.stat3}">本季款式</div>
                 </div>
                 <div>
@@ -224,7 +208,7 @@
             </div>
 
             <div style="margin-top:52px;display:flex;align-items:center;gap:24px;
-                        font-family:var(--f-din);font-size:10px;letter-spacing:.18em">
+                        font-family:var(--f-din);font-size:11px;letter-spacing:.18em">
                 <a class="pglink" data-nav="prev" th:if="${query.page() > 1}"
                    th:href="@{/category(category=${result.scope().entry() != null ? result.scope().entry().id : null},
                                productType=${query.productTypeParam()},
