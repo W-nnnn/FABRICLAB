@@ -704,12 +704,13 @@ INSERT INTO _fl_demo_cart (username, sku, quantity) VALUES
     ('alice', 'FL-LS-02', 2),
     ('alice', 'FL-CM-07', 1),
     ('alice', 'FL-LS-03', 1),
-    ('alice', 'FL-CM-06', 1),
-    ('alice', 'FL-OD-03', 1),
+    ('alice', 'FL-CM-02', 1),
+    ('alice', 'FL-OD-04', 1),
     ('bob', 'FL-OD-01', 1),
     ('bob', 'FL-HM-01', 2),
     ('bob', 'FL-OC-11', 1),
-    ('bob', 'FL-CM-12', 1);
+    ('bob', 'FL-CM-12', 1),
+    ('bob', 'FL-OD-03', 1);
 
 -- 外键通过用户名及SKU查找，不写死数据库自增ID。
 UPDATE _fl_demo_orders d LEFT JOIN store_user u ON u.username = d.username
@@ -770,7 +771,13 @@ WHERE d.is_new = 1 ORDER BY o.id, p.id;
 UPDATE product p JOIN _fl_demo_stock s ON s.product_id = p.id
 SET p.stock = p.stock - s.quantity, p.version = p.version + 1;
 
--- 加车不扣库存；含售罄、下架失效条目与低库存条目，供购物车校验演示。
+-- 加车不扣库存。主演示账号 alice 的车整车可结算（无失效条目）；
+-- 售罄与下架条目放在 bob 的车里，用于演示购物车的失效校验。
+INSERT INTO _fl_demo_guard
+SELECT 'alice cart is checkout ready', IF(
+    NOT EXISTS (SELECT 1 FROM _fl_demo_cart c JOIN product p ON p.id = c.product_id
+                WHERE c.username = 'alice'
+                  AND (p.status <> 'ON_SALE' OR p.stock < c.quantity)), 1, 0);
 INSERT INTO cart_item (user_id, product_id, quantity, version)
 SELECT c.user_id, c.product_id, c.quantity, 0 FROM _fl_demo_cart c
 WHERE NOT EXISTS (SELECT 1 FROM cart_item x WHERE x.user_id = c.user_id AND x.product_id = c.product_id)
@@ -933,3 +940,11 @@ UPDATE product SET name='再生羊绒帽 · 沙色', summary='再生羊绒针织
 UPDATE product SET name='罗纹棉袜三双装 · 墨黑', summary='罗纹棉袜三双装，换洗方便，日常耐磨。', description='罗纹棉袜三双装 · 墨黑。面料：精梳棉\n规格：中筒 · 三双装\n版型：贴合足型\n工艺：加固脚跟\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='OUTDOOR_ACC') WHERE sku='FL-OD-12';
 
 -- 一致性修正结束
+
+-- ============================================================ 文案口径收口
+-- 商品详情末尾原为面向课程验收的说明，顾客可见；改为中性表述，
+-- 保留「演示站点」的事实，不出现课程、SKU 等工程口径。
+UPDATE product SET description = REPLACE(description,
+    '所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。',
+    '本站为品牌演示站点，商品、价格与库存仅用于展示。每个款号为一个可购买单位，尺码与配色体现在款名中。')
+WHERE description LIKE '%仅用于课程演示%';

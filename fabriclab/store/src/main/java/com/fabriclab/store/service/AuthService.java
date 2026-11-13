@@ -58,10 +58,38 @@ public class AuthService {
         if (returnTo == null || returnTo.isBlank()) {
             return "/main";
         }
-        String path = returnTo.trim();
+        String path = stripPathParameters(returnTo.trim());
         if (path.startsWith("/") && !path.startsWith("//") && !path.contains(":") && !path.contains("\\")) {
             return path;
         }
         return "/main";
+    }
+
+    /**
+     * 去掉容器写入的路径参数（形如 {@code ;STORESESSION=xxx}）。
+     * 会话标识出现在重定向地址里既无意义，也会让返回页定位失败。
+     */
+    public static String stripPathParameters(String raw) {
+        if (raw == null || raw.indexOf(';') < 0) {
+            return raw;
+        }
+        StringBuilder out = new StringBuilder(raw.length());
+        for (String segment : raw.split("(?=/)")) {
+            int semi = segment.indexOf(';');
+            if (semi < 0) {
+                out.append(segment);
+                continue;
+            }
+            int question = segment.indexOf('?');
+            if (question >= 0 && question < semi) {
+                out.append(segment);
+            } else {
+                out.append(segment.substring(0, semi));
+                if (question > semi) {
+                    out.append(segment.substring(question));
+                }
+            }
+        }
+        return out.toString();
     }
 }

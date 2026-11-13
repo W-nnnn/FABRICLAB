@@ -72,8 +72,25 @@ public class DetailService {
         return new ProductDetailView(product, line, second, galleryOf(product));
     }
 
-    /** 相册按 sort_order、id 升序；无相册回退封面，封面缺失再用缺省封面。 */
-    private List<GalleryImage> galleryOf(Product product) {
+    /**
+     * 搭配推荐：同二级分类的在售商品，按排序位与 ID 升序，排除当前款。
+     * 数量取不足时返回空列表，由模板跳过整段。
+     */
+    public List<Product> related(Product product, int limit) {
+        if (product == null || product.getCategoryId() == null) {
+            return List.of();
+        }
+        List<Product> rows = productMapper.selectList(new LambdaQueryWrapper<Product>()
+                .eq(Product::getCategoryId, product.getCategoryId())
+                .eq(Product::getStatus, ProductService.STATUS_ON_SALE)
+                .ne(Product::getId, product.getId())
+                .orderByAsc(Product::getSortOrder)
+                .orderByAsc(Product::getId)
+                .last("LIMIT " + Math.max(1, limit)));
+        return rows == null ? List.of() : rows;
+    }
+
+    /** 相册按 sort_order、id 升序；无相册回退封面，封面缺失再用缺省封面。 */    private List<GalleryImage> galleryOf(Product product) {
         List<GalleryImage> album = productImageMapper.selectList(
                         new LambdaQueryWrapper<ProductImage>()
                                 .eq(ProductImage::getProductId, product.getId())

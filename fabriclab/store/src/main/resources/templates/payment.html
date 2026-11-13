@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<html lang="zh-CN" th:lang="${lang == 'en' ? 'en' : 'zh-CN'}" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
+    <link rel="icon" type="image/png" th:href="@{/images/mark.png}"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title th:text="|#{nav.brand} · #{pay.title}|">FABRICLAB · 模拟支付</title>
-    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113n}"/>
+    <title th:text="|#{nav.brand} · #{pay.title}|">FABRICLAB · 支付</title>
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261114a}"/>
 </head>
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
@@ -31,13 +32,13 @@
             <div style="display:flex;align-items:baseline">
                 <span class="eyebrow" th:text="#{pay.eyebrow}">支付</span>
                 <span class="tiny" style="margin-left:auto;letter-spacing:.2em" th:text="#{pay.secure}">
-                    SSL 加密 · 模拟环境
+                    安全连接 · 演示站点
                 </span>
             </div>
 
-            <div class="h2" style="margin-top:26px;font-size:36px" th:text="#{pay.heading}">确认支付</div>
+            <h1 class="h2" style="margin-top:26px;font-size:36px" th:text="#{pay.heading}">确认支付</h1>
 
-            <div class="din" style="margin-top:20px;font-size:10px;letter-spacing:.16em;color:var(--mute)">
+            <div class="din" style="margin-top:20px;font-size:11px;letter-spacing:.16em;color:var(--mute)">
                 <span th:text="#{pay.order}">ORDER</span>
                 <span th:text="${view.order.orderNo}">FL20260101000000000001</span>
             </div>
@@ -59,7 +60,7 @@
                     <span style="margin-left:14px;font-size:12.5px;letter-spacing:.03em"
                           th:text="#{pay.wechat}">微信支付</span>
                     <span class="din" style="margin-left:10px;font-size:8.5px;letter-spacing:.18em;
-                                             color:var(--rust)" th:text="#{pay.sandbox}">模拟环境</span>
+                                             color:var(--rust-ink)" th:text="#{pay.sandbox}">演示</span>
                 </div>
             </div>
 
@@ -68,17 +69,17 @@
                     <input type="hidden" name="_csrf" th:value="${csrfToken}"/>
                     <button type="submit" class="btn wide"
                             th:text="|#{pay.success} · ¥ ${#numbers.formatDecimal(view.order.totalAmount, 1, 2)}|">
-                        模拟支付成功</button>
+                        确认支付</button>
                 </form>
                 <form th:action="@{/orders/{id}/payment/fail(id=${view.order.id})}" method="post"
                       style="margin-top:10px">
                     <input type="hidden" name="_csrf" th:value="${csrfToken}"/>
-                    <button type="submit" class="btn ghost wide" th:text="#{pay.fail}">模拟支付失败</button>
+                    <button type="submit" class="btn ghost wide" th:text="#{pay.fail}">支付未完成</button>
                 </form>
 
                 <div class="tiny" style="margin-top:20px;line-height:2.1;letter-spacing:.04em"
                      th:utext="#{pay.notes}">
-                    · 教学模拟支付，不涉及真实资金<br>
+                    · 本站为品牌演示站点，支付不产生真实扣款<br>
                     · 金额只取订单总额，页面不提交任何金额字段
                 </div>
                 <div style="margin-top:22px">

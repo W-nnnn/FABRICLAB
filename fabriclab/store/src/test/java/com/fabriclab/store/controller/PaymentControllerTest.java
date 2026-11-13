@@ -104,9 +104,9 @@ class PaymentControllerTest {
                 .andExpect(view().name("payment"))
                 .andExpect(content().string(containsString("FL20260101000000000001")))
                 .andExpect(content().string(containsString("¥ 456.00")))
-                .andExpect(content().string(containsString("教学模拟支付，不涉及真实资金")))
-                .andExpect(content().string(containsString("模拟支付成功")))
-                .andExpect(content().string(containsString("模拟支付失败")));
+                .andExpect(content().string(containsString("本站为品牌演示站点，支付不产生真实扣款")))
+                .andExpect(content().string(containsString("确认支付")))
+                .andExpect(content().string(containsString("支付未完成")));
     }
 
     @Test
@@ -137,7 +137,7 @@ class PaymentControllerTest {
         mockMvc.perform(post("/orders/7/payment").session(session).param("_csrf", "token"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/orders/7"))
-                .andExpect(flash().attribute("orderFlash", containsString("模拟支付成功")))
+                .andExpect(flash().attribute("orderFlash", containsString("支付成功")))
                 .andExpect(flash().attribute("orderFlash", containsString("MOCK20260101100000000AAAAAAA1")));
         verify(paymentService).pay(1L, "7");
     }
@@ -172,11 +172,11 @@ class PaymentControllerTest {
 
     @Test
     void failureActionOnPaidOrderReportsError() throws Exception {
-        org.mockito.Mockito.doThrow(new BusinessException("当前状态不能模拟支付"))
+        org.mockito.Mockito.doThrow(new BusinessException("当前状态不能发起支付"))
                 .when(paymentService).recordFailure(1L, "7");
 
         mockMvc.perform(post("/orders/7/payment/fail").session(session).param("_csrf", "token"))
                 .andExpect(redirectedUrl("/orders/7"))
-                .andExpect(flash().attribute("orderError", containsString("不能模拟支付")));
+                .andExpect(flash().attribute("orderError", containsString("不能发起支付")));
     }
 }

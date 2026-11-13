@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<html lang="zh-CN" th:lang="${lang == 'en' ? 'en' : 'zh-CN'}" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
+    <link rel="icon" type="image/png" th:href="@{/images/mark.png}"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="|#{nav.brand} · #{account.center}|">FABRICLAB · 我的账户</title>
-    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113n}"/>
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261114a}"/>
 </head>
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
@@ -89,7 +90,7 @@
                                    style="border:0;background:transparent;outline:none;flex:1;font-family:var(--f-body);
                                           font-weight:300;font-size:12.5px;letter-spacing:.06em"/>
                             <button type="submit" style="font-family:var(--f-body);font-size:11px;letter-spacing:.1em;
-                                         color:var(--rust)" th:text="#{orders.search}">查询</button>
+                                         color:var(--rust-ink)" th:text="#{orders.search}">查询</button>
                         </div>
                         <span class="tiny" th:text="#{orders.search.note}">输入完整订单号精确匹配</span>
                     </form>
@@ -134,7 +135,7 @@
                                     <div th:if="${row.thumbs.isEmpty()}"
                                          style="width:78px;height:100px;background:var(--linen);display:flex;
                                                 align-items:center;justify-content:center">
-                                        <span class="din" style="font-size:9px;letter-spacing:.14em;color:var(--mute)">FW26</span>
+                                        <span class="din" style="font-size:11px;letter-spacing:.14em;color:var(--mute)">FW26</span>
                                     </div>
                                 </div>
                                 <div style="margin-left:22px">
@@ -168,7 +169,7 @@
                         </div>
 
                         <div style="padding:32px 0 0;display:flex;align-items:center;gap:24px;
-                                    font-family:var(--f-din);font-size:10px;letter-spacing:.18em">
+                                    font-family:var(--f-din);font-size:11px;letter-spacing:.18em">
                             <a class="pglink" th:if="${query.page() > 1}"
                                th:href="@{/orders(status=${query.statusParam()}, orderNo=${query.orderNo()},
                                            size=${query.size()}, page=${query.page() - 1})}"
@@ -313,6 +314,6 @@
     <div style="height:70px"></div>
     <th:block th:replace="~{fragments :: footer}"></th:block>
 </div>
-<script th:src="@{/js/app.js?v=20261113n}"></script>
+<script th:src="@{/js/app.js?v=20261114a}"></script>
 </body>
 </html>

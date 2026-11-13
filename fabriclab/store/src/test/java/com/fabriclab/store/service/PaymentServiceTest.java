@@ -121,7 +121,7 @@ class PaymentServiceTest {
 
         BusinessException error = assertThrows(BusinessException.class,
                 () -> paymentService.pay(USER, "7"));
-        assertTrue(error.getMessage().contains("不能模拟支付"));
+        assertTrue(error.getMessage().contains("不能发起支付"));
         verify(salesOrderMapper, never()).update(any(), any());
     }
 
@@ -161,7 +161,7 @@ class PaymentServiceTest {
 
         BusinessException error = assertThrows(BusinessException.class,
                 () -> paymentService.pay(USER, "7"));
-        assertTrue(error.getMessage().contains("不能模拟支付"));
+        assertTrue(error.getMessage().contains("不能发起支付"));
     }
 
     @Test

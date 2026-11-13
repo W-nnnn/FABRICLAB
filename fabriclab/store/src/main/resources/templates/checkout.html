@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<html lang="zh-CN" th:lang="${lang == 'en' ? 'en' : 'zh-CN'}" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
+    <link rel="icon" type="image/png" th:href="@{/images/mark.png}"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="|#{nav.brand} · #{checkout.title}|">FABRICLAB · 确认订单</title>
-    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113n}"/>
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261114a}"/>
 </head>
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
@@ -16,16 +17,16 @@
     <div style="padding:34px var(--gx) 26px;display:flex;align-items:flex-end">
         <div>
             <div class="eyebrow" th:text="#{checkout.eyebrow}">确认订单</div>
-            <div class="h2" style="margin-top:12px;font-size:34px" th:text="#{checkout.heading}">确认订单</div>
+            <h1 class="h2" style="margin-top:12px;font-size:34px" th:text="#{checkout.heading}">确认订单</h1>
         </div>
         <div style="margin-left:auto">
             <th:block th:replace="~{fragments :: steps(2)}"></th:block>
         </div>
     </div>
 
-    <div style="display:flex;padding:14px var(--gx) 0">
+    <div class="cols" style="display:flex;padding:14px var(--gx) 0">
         <!-- 左：收货与提交 -->
-        <div style="width:812px;flex:none">
+        <div style="flex:1;min-width:0;max-width:812px">
             <div class="eyebrow g" style="margin-bottom:20px" th:text="#{checkout.s1}">01 / 收货信息</div>
 
             <form th:action="@{/checkout/submit}" method="post" id="receiver">
@@ -40,7 +41,8 @@
                 <div style="display:flex;gap:26px">
                     <div class="field" style="flex:1">
                         <label class="lb" for="receiverPhone" th:text="#{checkout.phone}">手机</label>
-                        <input id="receiverPhone" type="text" name="receiverPhone" maxlength="30" required
+                        <input id="receiverPhone" type="tel" name="receiverPhone" maxlength="30" required
+                               inputmode="tel" autocomplete="tel"
                                th:value="${receiverPhone}" th:placeholder="#{checkout.phone.ph}"/>
                     </div>
                     <div class="field" style="flex:1">
@@ -92,14 +94,12 @@
                 <div style="margin-left:14px">
                     <div style="font-size:12.5px;letter-spacing:.04em">
                         <span th:text="#{checkout.pay1}">微信支付</span>
-                        <span class="din" style="margin-left:8px;font-size:8.5px;letter-spacing:.16em;
-                                                 color:var(--rust)" th:text="#{checkout.mock}">模拟</span>
                     </div>
                     <div class="tiny" style="margin-top:5px;letter-spacing:.1em" th:text="#{checkout.pay1.d}">
-                        提交后进入模拟支付页
+                        提交后进入支付确认
                     </div>
                 </div>
-                <div class="din" style="margin-left:auto;font-size:9px;letter-spacing:.16em;color:var(--mute)"
+                <div class="din" style="margin-left:auto;font-size:11px;letter-spacing:.16em;color:var(--mute)"
                      th:text="#{checkout.recommend}">推荐</div>
             </div>
             <div style="display:flex;align-items:center;padding:17px 18px;border:1px solid var(--line);
@@ -129,7 +129,7 @@
         </div>
 
         <!-- 右：摘要 -->
-        <div style="width:3var(--gx);flex:none;margin-left:76px">
+        <div class="cols-side" style="width:340px;flex:none;margin-left:56px;min-width:0">
             <div style="background:var(--linen);padding:26px 26px 24px">
                 <div style="display:flex;align-items:baseline">
                     <span class="tiny" style="letter-spacing:.2em;color:var(--ink)" th:text="#{checkout.summary}">订单摘要</span>
@@ -182,7 +182,7 @@
 
             <div style="margin-top:18px;padding:16px 18px;border:1px solid var(--line);display:flex;
                         align-items:flex-start;gap:11px">
-                <span style="color:var(--rust);display:flex;margin-top:2px">
+                <span style="color:var(--rust-ink);display:flex;margin-top:2px">
                     <svg width="11" height="9" viewBox="0 0 12 9" fill="none" stroke="currentColor"
                          stroke-width="1.5"><path d="M1 4.6L4.3 7.8 11 1.2"/></svg></span>
                 <span style="font-size:11px;line-height:1.8;color:var(--mute)" th:text="#{checkout.note}">

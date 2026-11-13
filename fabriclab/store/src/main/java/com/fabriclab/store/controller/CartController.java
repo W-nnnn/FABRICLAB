@@ -130,6 +130,14 @@ public class CartController {
         model.addAttribute("brand", brandService.brand());
         model.addAttribute("tagline", brandService.tagline());
         model.addAttribute("recommendations", recommend());
+        model.addAttribute("onSaleTotal", onSaleTotal());
+    }
+
+    /** 在售商品总数：推荐位标题里的件数取真实值。 */
+    private long onSaleTotal() {
+        Long total = productMapper.selectCount(new LambdaQueryWrapper<Product>()
+                .eq(Product::getStatus, ProductService.STATUS_ON_SALE));
+        return total == null ? 0L : total;
     }
 
     /** 推荐位：在售且有库存的商品按上架顺序取前四条，取不到时给空列表由模板跳过。 */

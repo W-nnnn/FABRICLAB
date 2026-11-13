@@ -62,7 +62,7 @@ public class PaymentService {
             return new PayOutcome(false, order.getPaymentNo());
         }
         if (!status.payable()) {
-            throw new BusinessException("当前状态不能模拟支付");
+            throw new BusinessException("当前状态不能发起支付");
         }
         String paymentNo = nextPaymentNo();
         // 状态、方式、凭证与首次成功时间在同一条更新中写入，满足付款信息成组约束
@@ -83,7 +83,7 @@ public class PaymentService {
             return new PayOutcome(false, latest.getPaymentNo());
         }
         if (!latestStatus.payable()) {
-            throw new BusinessException("当前状态不能模拟支付");
+            throw new BusinessException("当前状态不能发起支付");
         }
         throw new BusinessException("订单状态已变化，请刷新后重试");
     }
@@ -95,7 +95,7 @@ public class PaymentService {
     public void recordFailure(long userId, String rawOrderId) {
         SalesOrder order = requireOwned(userId, parseOrderId(rawOrderId));
         if (!OrderStatus.of(order.getStatus()).payable()) {
-            throw new BusinessException("当前状态不能模拟支付");
+            throw new BusinessException("当前状态不能发起支付");
         }
     }
 

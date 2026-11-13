@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<html lang="zh-CN" th:lang="${lang == 'en' ? 'en' : 'zh-CN'}" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
+    <link rel="icon" type="image/png" th:href="@{/images/mark.png}"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="|#{nav.brand} · #{cart.title}|">FABRICLAB · 购物袋</title>
-    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113n}"/>
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261114a}"/>
 </head>
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
@@ -26,8 +27,8 @@
         <div style="padding:34px var(--gx) 30px;display:flex;align-items:flex-end">
             <div>
                 <div class="eyebrow" th:text="#{cart.eyebrow}">购物袋</div>
-                <div class="h2" style="margin-top:12px;font-size:34px"
-                     th:text="|#{cart.bag} （${view.lines.size()}）|">购物袋</div>
+                <h1 class="h2" style="margin-top:12px;font-size:34px"
+                    th:text="|#{cart.bag} （${view.lines.size()}）|">购物袋</h1>
             </div>
             <div style="margin-left:auto;display:flex;align-items:baseline;gap:14px">
                 <span class="tiny" th:text="#{cart.total}">合计</span>
@@ -44,11 +45,11 @@
             购物车包含失效条目，暂时不能整车结算；失效条目仍会保留，可移除后再结算。
         </p>
 
-        <div style="display:flex;padding:0 var(--gx)">
+        <div class="cols" style="display:flex;padding:0 var(--gx)">
             <!-- 左：清单 -->
-            <div style="width:860px;flex:none">
+            <div class="cols-main" style="width:860px;flex:none">
                 <div style="display:flex;padding:0 0 12px;border-bottom:1px solid var(--ink);
-                            font-family:var(--f-body);font-size:10px;letter-spacing:.18em;color:var(--mute)">
+                            font-family:var(--f-body);font-size:11px;letter-spacing:.18em;color:var(--mute)">
                     <span th:text="#{cart.col.item}">商品</span>
                     <span style="margin-left:auto" th:text="#{cart.col.qty}">数量 / 金额</span>
                 </div>
@@ -65,7 +66,7 @@
                         <div class="sk" th:text="${line.sku}">FL-CM-01</div>
                         <div class="attr">
                             <span th:text="|#{cart.unit} ¥ ${#numbers.formatDecimal(line.unitPrice, 1, 2)}|">单价</span>
-                            <span th:if="${line.unavailable}" style="color:var(--rust)" th:text="${tr.t(line.reason)}">商品已下架</span>
+                            <span th:if="${line.unavailable}" style="color:var(--rust-ink)" th:text="${tr.t(line.reason)}">商品已下架</span>
                         </div>
                     </div>
                     <div class="qty">
@@ -79,7 +80,7 @@
                                        th:value="${line.quantity}" min="1" max="99" step="1"
                                        th:aria-label="#{cart.qty.aria}"/>
                             </span>
-                            <button type="submit" class="tlink plain" style="font-size:10px;color:var(--ink)"
+                            <button type="submit" class="tlink" style="font-size:11.5px;color:var(--ink)"
                                     th:text="#{cart.update}">更新</button>
                         </form>
                         <span th:if="${line.unavailable}" class="din" style="font-size:11px"
@@ -88,7 +89,7 @@
                             <input type="hidden" name="_csrf" th:value="${csrfToken}"/>
                             <input type="hidden" name="itemId" th:value="${line.itemId}"/>
                             <input type="hidden" name="version" th:value="${line.version}"/>
-                            <button type="submit" class="tlink plain" style="font-size:10px;color:var(--mute)"
+                            <button type="submit" class="tlink" style="font-size:11.5px;color:var(--ink)"
                                     th:text="#{cart.remove}">移除</button>
                         </form>
                     </div>
@@ -100,7 +101,7 @@
 
                 <div style="margin-top:24px;padding:16px 20px;background:var(--linen);display:flex;
                             align-items:center;gap:12px">
-                    <span style="color:var(--rust);display:flex">
+                    <span style="color:var(--rust-ink);display:flex">
                         <svg width="11" height="9" viewBox="0 0 12 9" fill="none" stroke="currentColor"
                              stroke-width="1.5"><path d="M1 4.6L4.3 7.8 11 1.2"/></svg></span>
                     <span style="font-size:11.5px;letter-spacing:.03em;line-height:1.7;color:var(--mute)"
@@ -116,7 +117,7 @@
             </div>
 
             <!-- 右：汇总 -->
-            <div style="width:340px;flex:none;margin-left:72px">
+            <div class="cols-side" style="width:340px;flex:none;margin-left:72px">
                 <div class="sum">
                     <div class="l"><span th:text="#{cart.subtotal}">商品件数</span>
                         <b th:text="|${view.totalQuantity}|">0</b></div>
@@ -132,7 +133,7 @@
                       th:text="#{cart.checkout}">去结算 →</span>
 
                 <div style="margin-top:18px;display:flex;align-items:center;gap:8px;
-                            font-family:var(--f-body);font-size:9.5px;letter-spacing:.1em;color:var(--faint)">
+                            font-family:var(--f-body);font-size:11px;letter-spacing:.1em;color:var(--faint)">
                     <span th:text="#{cart.accept}">支持</span>
                     <span style="border:1px solid var(--line);padding:3px 7px">WECHAT</span>
                     <span style="border:1px solid var(--line);padding:3px 7px">ALIPAY</span>
@@ -143,22 +144,22 @@
                 <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--line);
                             display:flex;flex-direction:column;gap:9px">
                     <span style="display:flex;align-items:center;gap:7px;
-                                font-family:var(--f-body);font-size:10px;letter-spacing:.1em;color:var(--mute)">
-                        <span style="display:flex;color:var(--rust)">
+                                font-family:var(--f-body);font-size:11px;letter-spacing:.1em;color:var(--mute)">
+                        <span style="display:flex;color:var(--rust-ink)">
                             <svg width="11" height="9" viewBox="0 0 12 9" fill="none" stroke="currentColor"
                                  stroke-width="1.5"><path d="M1 4.6L4.3 7.8 11 1.2"/></svg></span>
                         <span th:text="#{home.p1}">终身免费修补</span>
                     </span>
                     <span style="display:flex;align-items:center;gap:7px;
-                                font-family:var(--f-body);font-size:10px;letter-spacing:.1em;color:var(--mute)">
-                        <span style="display:flex;color:var(--rust)">
+                                font-family:var(--f-body);font-size:11px;letter-spacing:.1em;color:var(--mute)">
+                        <span style="display:flex;color:var(--rust-ink)">
                             <svg width="11" height="9" viewBox="0 0 12 9" fill="none" stroke="currentColor"
                                  stroke-width="1.5"><path d="M1 4.6L4.3 7.8 11 1.2"/></svg></span>
                         <span th:text="#{home.p2}">四家工坊出品</span>
                     </span>
                     <span style="display:flex;align-items:center;gap:7px;
-                                font-family:var(--f-body);font-size:10px;letter-spacing:.1em;color:var(--mute)">
-                        <span style="display:flex;color:var(--rust)">
+                                font-family:var(--f-body);font-size:11px;letter-spacing:.1em;color:var(--mute)">
+                        <span style="display:flex;color:var(--rust-ink)">
                             <svg width="11" height="9" viewBox="0 0 12 9" fill="none" stroke="currentColor"
                                  stroke-width="1.5"><path d="M1 4.6L4.3 7.8 11 1.2"/></svg></span>
                         <span th:text="#{home.p3}">纤维可追溯</span>
@@ -192,7 +193,7 @@
                     <div class="h2" style="margin-top:14px" th:text="#{cart.rec.title}">和袋里的配一配</div>
                 </div>
                 <div class="r">
-                    <a class="tlink mute" th:href="@{/category}" th:text="#{cart.rec.more}">查看全部 42 件</a>
+                    <a class="tlink mute" th:href="@{/category}" th:text="#{cart.rec.more(${onSaleTotal})}">查看全部 42 件</a>
                 </div>
             </div>
             <div class="g4">

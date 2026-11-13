@@ -136,6 +136,12 @@ public class BrowseService {
         return new LambdaQueryWrapper<Product>().eq(Product::getStatus, ProductService.STATUS_ON_SALE);
     }
 
+    /** 在售商品总数：页面上的件数文案统一取此值，不写死数字。 */
+    public long onSaleTotal() {
+        Long total = productMapper.selectCount(onSale());
+        return total == null ? 0L : total;
+    }
+
     private void applySort(LambdaQueryWrapper<Product> wrapper, SortOption sort) {
         switch (sort) {
             case PRICE_ASC -> wrapper.orderByAsc(Product::getPrice).orderByAsc(Product::getId);
