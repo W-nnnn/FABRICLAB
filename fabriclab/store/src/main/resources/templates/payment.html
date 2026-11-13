@@ -4,13 +4,13 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="|#{nav.brand} · #{pay.title}|">FABRICLAB · 模拟支付</title>
-    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113a}"/>
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113c}"/>
 </head>
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
 
-    <p class="flash warn" style="margin:20px 84px 0" th:if="${orderError != null}" th:text="${orderError}">提示</p>
-    <p class="flash" style="margin:20px 84px 0" th:if="${orderFlash != null}" th:text="${orderFlash}">提示</p>
+    <p class="flash warn" style="margin:20px var(--gx) 0" th:if="${orderError != null}" th:text="${tr.t(orderError)}">提示</p>
+    <p class="flash" style="margin:20px var(--gx) 0" th:if="${orderFlash != null}" th:text="${orderFlash}">提示</p>
 
     <div style="display:flex;height:880px">
         <!-- 左：大片 -->

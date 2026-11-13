@@ -1,5 +1,6 @@
 package com.fabriclab.store.controller;
 
+import com.fabriclab.store.config.ContentI18n;
 import com.fabriclab.store.exception.BusinessException;
 import com.fabriclab.store.exception.CsrfViolationException;
 import com.fabriclab.store.exception.NotFoundException;
@@ -13,9 +14,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 /**
  * 统一错误呈现：参数错误 400、资源不存在 404、技术异常 500。
  * 技术异常输出通用提示，不暴露 SQL、堆栈或内部信息。
+ * 异常渲染时 @ControllerAdvice 的 @ModelAttribute 不会执行，
+ * 因此语言链接与内容翻译器在此手动注入。
  */
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
+    private final ContentI18n contentI18n = new ContentI18n();
 
     @ExceptionHandler(BusinessException.class)
     public String handleBadRequest(BusinessException e, Model model, HttpServletRequest request,
@@ -51,6 +56,7 @@ public class GlobalExceptionHandler {
                           int status, String title, String message) {
         response.setStatus(status);
         LangLinks.fill(model, request);
+        model.addAttribute("tr", contentI18n);
         model.addAttribute("statusCode", status);
         model.addAttribute("errorTitle", title);
         model.addAttribute("errorMessage", message);

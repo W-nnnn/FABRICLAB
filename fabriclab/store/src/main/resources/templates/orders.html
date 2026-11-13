@@ -4,7 +4,7 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="|#{nav.brand} · #{orders.title}|">FABRICLAB · 我的订单</title>
-    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113a}"/>
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113c}"/>
 </head>
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
@@ -19,7 +19,7 @@
         </div>
     </div>
 
-    <div style="padding:40px 84px 0;display:flex;align-items:flex-end">
+    <div style="padding:40px var(--gx) 0;display:flex;align-items:flex-end">
         <div>
             <div class="eyebrow" th:text="#{account.eyebrow}">我的账户</div>
             <div class="h2" style="margin-top:12px;font-size:34px" th:text="#{orders.heading}">我的订单</div>
@@ -30,7 +30,7 @@
     </div>
 
     <!-- 状态筛选 -->
-    <div style="padding:28px 84px 0">
+    <div style="padding:28px var(--gx) 0">
         <div style="border-bottom:1px solid var(--line);display:flex;align-items:flex-end">
             <a style="margin-right:42px;padding-bottom:15px;font-family:var(--f-body);font-size:12.5px;
                       letter-spacing:.06em"
@@ -50,7 +50,7 @@
 
     <!-- 订单号查询 -->
     <form th:action="@{/orders}" method="get"
-          style="padding:22px 84px 0;display:flex;align-items:center;gap:16px">
+          style="padding:22px var(--gx) 0;display:flex;align-items:center;gap:16px">
         <input type="hidden" name="status" th:value="${query.statusParam()}"/>
         <input type="hidden" name="size" th:value="${query.size()}"/>
         <div style="display:flex;align-items:center;border-bottom:1px solid var(--line2);padding-bottom:9px;
@@ -66,7 +66,7 @@
     </form>
 
     <!-- 空结果 -->
-    <div class="empty" th:if="${result.total == 0}" style="padding:70px 84px 0">
+    <div class="empty" th:if="${result.total == 0}" style="padding:70px var(--gx) 0">
         <h2 th:if="${query.orderNo() != null}" th:text="#{orders.empty.search}">没有匹配该订单号的订单</h2>
         <h2 th:unless="${query.orderNo() != null}" th:text="#{orders.empty.title}">这里还没有订单</h2>
         <p th:text="#{orders.empty.body}">先去挑选几件成衣，下单后可在这里查看进度与支付。</p>
@@ -76,7 +76,7 @@
     </div>
 
     <!-- 订单块 -->
-    <div style="padding:0 84px" th:if="${result.total > 0}">
+    <div style="padding:0 var(--gx)" th:if="${result.total > 0}">
         <div th:each="row : ${rows}" style="padding:26px 0;border-bottom:1px solid var(--line)">
             <div style="display:flex;align-items:baseline">
                 <a class="din" style="font-size:11px;letter-spacing:.14em"
@@ -96,7 +96,7 @@
                 <div style="display:flex;gap:8px;flex:none">
                     <div th:each="t : ${row.thumbs}"
                          style="width:78px;height:100px;background:var(--linen);overflow:hidden">
-                        <img th:src="${'/' + t.image}" th:alt="${t.name}" loading="lazy"
+                        <img th:src="${'/' + t.image}" th:alt="${tr.t(t.name)}" loading="lazy"
                              style="width:100%;height:100%;object-fit:cover"/>
                     </div>
                     <div th:if="${row.thumbs.isEmpty()}"
@@ -108,7 +108,7 @@
                 <div style="margin-left:20px">
                     <div style="font-size:13px;letter-spacing:.03em">
                         <span th:each="t, s : ${row.thumbs}"
-                              th:text="${(s.first ? '' : ' / ') + t.name}">本季单品</span>
+                              th:text="${(s.first ? '' : ' / ') + tr.t(t.name)}">本季单品</span>
                         <span th:if="${row.thumbs.isEmpty()}" th:text="|#{orders.no} ${row.order.orderNo}|">
                             订单号 FL20260101000000000001
                         </span>
@@ -154,7 +154,7 @@
     </div>
 
     <!-- 账户快捷 -->
-    <div style="padding:64px 84px 0">
+    <div style="padding:64px var(--gx) 0">
         <div class="ptitle">
             <div>
                 <div class="eyebrow" th:text="#{account.shortcut.eb}">账户 / 快捷入口</div>

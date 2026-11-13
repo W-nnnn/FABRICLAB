@@ -4,21 +4,27 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="|#{nav.brand} · #{error.title}|">FABRICLAB · 提示</title>
-    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113a}"/>
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113c}"/>
 </head>
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
 
     <th:block th:replace="~{fragments :: header(null)}"></th:block>
 
-    <div style="padding:110px 84px 90px;display:flex;align-items:center;gap:70px">
+    <div style="padding:110px var(--gx) 90px;display:flex;align-items:center;gap:70px">
         <div style="flex:1">
             <div class="din" style="font-size:120px;font-weight:700;letter-spacing:-.04em;line-height:.86"
                  th:text="${statusCode != null ? statusCode : (status != null ? status : 500)}">404</div>
             <div class="h2" style="margin-top:26px;font-size:34px"
-                 th:text="${errorTitle != null ? errorTitle : '页面不存在'}">页面不存在</div>
+                 th:if="${errorTitle != null}" th:text="${tr.t(errorTitle)}">页面不存在</div>
+            <div class="h2" style="margin-top:26px;font-size:34px"
+                 th:unless="${errorTitle != null}" th:text="#{error.notfound.title}">页面不存在</div>
             <div class="lead" style="margin-top:18px;width:440px;font-size:12.5px"
-                 th:text="${errorMessage != null ? errorMessage : '请求的资源不存在或暂时无法访问'}">
+                 th:if="${errorMessage != null}" th:text="${tr.t(errorMessage)}">
+                链接可能失效，或者这件已经卖完下架。
+            </div>
+            <div class="lead" style="margin-top:18px;width:440px;font-size:12.5px"
+                 th:unless="${errorMessage != null}" th:text="#{error.notfound.body}">
                 链接可能失效，或者这件已经卖完下架。
             </div>
             <div style="margin-top:34px;display:flex;gap:12px">
