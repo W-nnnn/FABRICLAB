@@ -2,9 +2,35 @@
 /* ==========================================================================
    FABRICLAB 用户端样式表
    设计基准 1440px；品牌三色 墨 #1A1A1A / 纸 #F2EFE9 / 陶土 #B4643A
-   字体：Bahnschrift 代 DIN Next（同属 DIN 1451 血统）；华文中宋作中文大字；
-         正文用微软雅黑 Light。
+   字体：自托管思源宋体（Noto Serif SC）做中文大字与标题，
+         思源黑体（Noto Sans SC）做正文——中英文同一字族，保证两版排版一致；
+         Bahnschrift 代 DIN Next（同属 DIN 1451 血统）做品牌字标与数字。
    ========================================================================== */
+
+@font-face {
+    font-family: "Noto Serif SC";
+    font-weight: 500;
+    font-display: swap;
+    src: url("../fonts/NotoSerifSC-500.woff2") format("woff2");
+}
+@font-face {
+    font-family: "Noto Sans SC";
+    font-weight: 300;
+    font-display: swap;
+    src: url("../fonts/NotoSansSC-300.woff2") format("woff2");
+}
+@font-face {
+    font-family: "Noto Sans SC";
+    font-weight: 400;
+    font-display: swap;
+    src: url("../fonts/NotoSansSC-400.woff2") format("woff2");
+}
+@font-face {
+    font-family: "Noto Sans SC";
+    font-weight: 500;
+    font-display: swap;
+    src: url("../fonts/NotoSansSC-500.woff2") format("woff2");
+}
 
 :root {
     --ink: #1A1A1A;
@@ -20,9 +46,9 @@
     --cream2: rgba(242, 239, 233, .40);
 
     --f-din: "DIN Next LT Pro", "Bahnschrift", "DIN Alternate", "Segoe UI", Arial, sans-serif;
-    --f-song: "STZhongsong", "华文中宋", "Songti SC", STSong, SimSun, serif;
-    --f-body: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", sans-serif;
-    --f-serif: Georgia, "Times New Roman", serif;
+    --f-song: "Noto Serif SC", "STZhongsong", "华文中宋", "Songti SC", STSong, SimSun, serif;
+    --f-body: "Noto Sans SC", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", sans-serif;
+    --f-serif: "Noto Serif SC", Georgia, "Times New Roman", serif;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -62,21 +88,6 @@ table { border-collapse: collapse; width: 100%; }
 .din { font-family: var(--f-din); }
 .serif { font-family: var(--f-serif); }
 .up { text-transform: uppercase; }
-
-/* ------------------------------------------------------------ 公告条 */
-.anno {
-    height: 36px;
-    background: var(--ink);
-    color: var(--wall);
-    display: flex;
-    align-items: center;
-    padding: 0 84px;
-    font-family: var(--f-din);
-    font-size: 10px;
-    letter-spacing: .2em;
-}
-.anno .r { margin-left: auto; display: flex; gap: 30px; color: var(--cream); }
-.anno em { font-style: normal; color: var(--rust); opacity: .95; }
 
 /* ------------------------------------------------------------ 头部 */
 .hdr {
@@ -147,6 +158,11 @@ table { border-collapse: collapse; width: 100%; }
 }
 .eyebrow.g { color: var(--mute); }
 .disp { font-family: var(--f-song); font-weight: 400; line-height: .96; letter-spacing: .06em; }
+/* 中文版大字 172px；英文单词更长，缩小并收紧字距，避免溢出与图片重叠 */
+body.lang-cn .disp-hero { font-size: 172px; }
+body.lang-en .disp-hero { font-size: 128px; letter-spacing: .02em; }
+/* 英文正文略收字距，贴近中文版视觉密度 */
+body.lang-en .lead, body.lang-en .tiny, body.lang-en .eyebrow { letter-spacing: .06em; }
 .h2 { font-family: var(--f-song); font-weight: 400; font-size: 31px; letter-spacing: .12em; line-height: 1.3; }
 .h3 { font-family: var(--f-body); font-weight: 400; font-size: 14.5px; letter-spacing: .1em; }
 .lead {
@@ -423,5 +439,5 @@ table { border-collapse: collapse; width: 100%; }
 /* 窄屏兜底：设计基准 1440，低于此按比例收边距 */
 @media (max-width: 1440px) {
     .page { width: 100%; }
-    .hdr, .anno, .pad, .foot, .chr, .strip { padding-left: 24px; padding-right: 24px; }
+    .hdr, .pad, .foot, .chr, .strip { padding-left: 24px; padding-right: 24px; }
 }

@@ -6,7 +6,7 @@
     <title th:text="|#{nav.brand} · #{signup.title}|">FABRICLAB · 注册</title>
     <link rel="stylesheet" th:href="@{/css/store.css}"/>
 </head>
-<body>
+<body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
 
     <div style="display:flex;height:1060px">

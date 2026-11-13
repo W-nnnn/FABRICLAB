@@ -6,24 +6,23 @@
     <title th:text="|#{nav.brand} · #{home.title}|">FABRICLAB · 未染</title>
     <link rel="stylesheet" th:href="@{/css/store.css}"/>
 </head>
-<body>
+<body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
 
-    <th:block th:replace="~{fragments :: anno}"></th:block>
     <th:block th:replace="~{fragments :: header(null)}"></th:block>
 
-    <!-- ======================================================= 首屏 -->
-    <div style="display:flex;min-height:792px;border-bottom:1px solid var(--line);position:relative">
-        <div style="width:712px;flex:none;padding:62px 0 40px 84px;display:flex;flex-direction:column">
+    <!-- ======================================================= 首屏（占满视口） -->
+    <div style="display:flex;min-height:calc(100vh - 78px);border-bottom:1px solid var(--line);position:relative">
+        <div style="width:712px;flex:none;padding:46px 0 36px 84px;display:flex;flex-direction:column">
             <div class="eyebrow" th:text="#{home.eyebrow}">二〇二六 秋冬 · 第七辑</div>
-            <div class="disp" style="margin-top:44px;font-size:172px"
+            <div class="disp disp-hero" style="margin-top:30px"
                  th:utext="#{home.display}">未<br><span style=&quot;color:#B4643A&quot;>染</span></div>
-            <div class="song" style="margin-top:34px;font-size:19px;letter-spacing:.1em;color:var(--mute)"
+            <div class="song" style="margin-top:26px;font-size:19px;letter-spacing:.1em;color:var(--mute)"
                  th:text="#{home.slogan}">布本无色，衣有十年。</div>
-            <div class="lead" style="margin-top:20px;width:398px" th:text="#{home.lead}">
+            <div class="lead" style="margin-top:16px;width:398px" th:text="#{home.lead}">
                 一季只做七件。不追季，不追潮，只用未染的天然纤维，把版型磨到可以穿十年的程度。
             </div>
-            <div style="margin-top:32px;display:flex;align-items:center;gap:24px">
+            <div style="margin-top:26px;display:flex;align-items:center;gap:24px">
                 <a class="btn" th:href="@{/category}">
                     <span th:text="#{home.cta}">进入选购</span>
                     <svg width="14" height="9" viewBox="0 0 15 9" fill="none" stroke="currentColor"
@@ -35,7 +34,7 @@
             <!-- 当季首件：型录信息 -->
             <div th:if="${home.featured() != null and !home.featured().isEmpty()}"
                  th:with="lead0=${home.featured()[0]}"
-                 style="margin-top:24px;padding-top:18px;border-top:1px solid var(--line);
+                 style="margin-top:20px;padding-top:15px;border-top:1px solid var(--line);
                         display:flex;align-items:center;gap:14px">
                 <span class="tiny" style="letter-spacing:.18em" th:text="#{home.look}">FW26 / 型录 01</span>
                 <a style="font-size:12.5px;letter-spacing:.04em"
@@ -51,7 +50,7 @@
             </div>
 
             <!-- 本季三色 -->
-            <div style="margin-top:30px;display:flex;align-items:center;gap:22px">
+            <div style="margin-top:24px;display:flex;align-items:center;gap:22px">
                 <span class="tiny" style="letter-spacing:.18em" th:text="#{home.colours}">本季三色</span>
                 <span style="display:flex;align-items:center;gap:7px">
                     <i style="width:11px;height:11px;border-radius:50%;background:#57554F;
@@ -74,7 +73,7 @@
             </div>
 
             <!-- 承诺细条 -->
-            <div style="margin-top:20px;display:flex;align-items:center;gap:18px;
+            <div style="margin-top:16px;display:flex;align-items:center;gap:18px;
                         font-family:var(--f-body);font-size:10px;letter-spacing:.1em;color:var(--faint)">
                 <span style="display:flex;align-items:center;gap:5px">
                     <span style="display:flex;color:var(--rust)">
@@ -97,7 +96,7 @@
             </div>
 
             <!-- 四个数字 -->
-            <div style="margin-top:auto;display:flex;border-top:1px solid var(--line);padding-top:20px">
+            <div style="margin-top:auto;display:flex;border-top:1px solid var(--line);padding-top:16px">
                 <div style="flex:1">
                     <div class="din" style="font-size:22px;font-weight:500;letter-spacing:-.01em">100%</div>
                     <div class="tiny" style="margin-top:8px" th:text="#{home.stat1}">天然纤维</div>

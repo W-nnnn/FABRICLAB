@@ -6,10 +6,9 @@
     <title th:text="|#{nav.brand} · #{checkout.title}|">FABRICLAB · 确认订单</title>
     <link rel="stylesheet" th:href="@{/css/store.css}"/>
 </head>
-<body>
+<body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
 
-    <th:block th:replace="~{fragments :: anno}"></th:block>
     <th:block th:replace="~{fragments :: header(null)}"></th:block>
 
     <p class="flash warn" style="margin-top:24px" th:if="${checkoutError != null}" th:text="${checkoutError}">提示</p>

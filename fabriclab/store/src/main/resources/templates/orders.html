@@ -6,10 +6,9 @@
     <title th:text="|#{nav.brand} · #{orders.title}|">FABRICLAB · 我的订单</title>
     <link rel="stylesheet" th:href="@{/css/store.css}"/>
 </head>
-<body>
+<body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
 
-    <th:block th:replace="~{fragments :: anno}"></th:block>
     <th:block th:replace="~{fragments :: header(null)}"></th:block>
 
     <div class="strip" th:if="${currentUser != null}">

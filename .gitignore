@@ -21,3 +21,6 @@ application-local.yml
 
 # Office 打开文档时的临时锁文件
 ~$*
+
+# 下载/处理临时文件（此前曾误提交 18 个 .tmp，见 PR #16）
+*.tmp

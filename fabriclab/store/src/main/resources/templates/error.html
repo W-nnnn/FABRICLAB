@@ -6,10 +6,9 @@
     <title th:text="|#{nav.brand} · #{error.title}|">FABRICLAB · 提示</title>
     <link rel="stylesheet" th:href="@{/css/store.css}"/>
 </head>
-<body>
+<body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
 
-    <th:block th:replace="~{fragments :: anno}"></th:block>
     <th:block th:replace="~{fragments :: header(null)}"></th:block>
 
     <div style="padding:110px 84px 90px;display:flex;align-items:center;gap:70px">

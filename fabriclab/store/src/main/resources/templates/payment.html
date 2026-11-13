@@ -6,7 +6,7 @@
     <title th:text="|#{nav.brand} · #{pay.title}|">FABRICLAB · 模拟支付</title>
     <link rel="stylesheet" th:href="@{/css/store.css}"/>
 </head>
-<body>
+<body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
 
     <p class="flash warn" style="margin:20px 84px 0" th:if="${orderError != null}" th:text="${orderError}">提示</p>
