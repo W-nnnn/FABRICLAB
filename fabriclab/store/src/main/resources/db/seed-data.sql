@@ -85,10 +85,10 @@ FROM (
 工艺：三针五线包边
 所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。' AS description, 'images/products/FL-CM-06/1.jpg' AS cover_image, 99.00 AS price, 0 AS stock, 'ON_SALE' AS status, 60 AS sort_order
     UNION ALL
-    SELECT 7 AS id, 'FL-CM-07' AS sku, 'COMMUTE_ACC' AS category_code, '羊绒针织帽 · 深栗' AS name, '头层牛皮托特包，可装14寸笔记本。' AS summary, '羊绒针织帽 · 深栗。面料：头层牛皮
-克重：约900g
-版型：立挺方型
-工艺：手工油边缝线
+    SELECT 7 AS id, 'FL-CM-07' AS sku, 'COMMUTE_ACC' AS category_code, '羊绒针织帽 · 深栗' AS name, '小口径罗纹羊绒帽，贴身保暖不扎。' AS summary, '羊绒针织帽 · 深栗。面料：100%羊绒
+克重：约95g
+帽围：适合 54–58cm
+工艺：罗纹针织，无接缝帽顶
 所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。' AS description, 'images/products/FL-CM-07/1.jpg' AS cover_image, 359.00 AS price, 18 AS stock, 'ON_SALE' AS status, 10 AS sort_order
     UNION ALL
     SELECT 8 AS id, 'FL-CM-08' AS sku, 'COMMUTE_ACC' AS category_code, '羊绒针织帽 · 石墨' AS name, '软底乐福鞋，久走不累。' AS summary, '羊绒针织帽 · 石墨。面料：头层牛皮
