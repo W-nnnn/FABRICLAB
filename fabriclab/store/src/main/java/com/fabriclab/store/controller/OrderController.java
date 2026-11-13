@@ -2,6 +2,7 @@ package com.fabriclab.store.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fabriclab.store.entity.SalesOrder;
+import com.fabriclab.store.entity.StoreUser;
 import com.fabriclab.store.exception.BusinessException;
 import com.fabriclab.store.model.CurrentUser;
 import com.fabriclab.store.model.OrderQuery;
@@ -11,6 +12,7 @@ import com.fabriclab.store.service.CurrentUserService;
 import com.fabriclab.store.service.OrderService;
 import com.fabriclab.store.service.OrderService.OrderDetail;
 import com.fabriclab.store.service.OrderService.OrderThumb;
+import com.fabriclab.store.mapper.StoreUserMapper;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -41,15 +44,22 @@ public class OrderController {
         }
     }
 
+    /** 账户资料（仅本人可见的非敏感字段，不含密码散列与角色原文）。 */
+    public record Profile(String username, String displayName, String email, String phone,
+                          String status, LocalDateTime createdAt) {
+    }
+
     private final BrandService brandService;
     private final OrderService orderService;
     private final CurrentUserService currentUserService;
+    private final StoreUserMapper storeUserMapper;
 
     public OrderController(BrandService brandService, OrderService orderService,
-                           CurrentUserService currentUserService) {
+                           CurrentUserService currentUserService, StoreUserMapper storeUserMapper) {
         this.brandService = brandService;
         this.orderService = orderService;
         this.currentUserService = currentUserService;
+        this.storeUserMapper = storeUserMapper;
     }
 
     /** 本人订单列表：筛选、订单号与页码共同生效；超过末页显示空结果并保留条件。 */
@@ -72,6 +82,11 @@ public class OrderController {
         model.addAttribute("rows", result.getRecords().stream()
                 .map(order -> OrderRow.of(order, thumbs)).toList());
         model.addAttribute("statuses", List.of(OrderStatus.values()));
+        StoreUser user = storeUserMapper.selectById(current.id());
+        if (user != null) {
+            model.addAttribute("profile", new Profile(user.getUsername(), user.getDisplayName(),
+                    user.getEmail(), user.getPhone(), user.getStatus(), user.getCreatedAt()));
+        }
         return "orders";
     }
 

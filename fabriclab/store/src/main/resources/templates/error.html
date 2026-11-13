@@ -4,7 +4,7 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="|#{nav.brand} · #{error.title}|">FABRICLAB · 提示</title>
-    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113g}"/>
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113m}"/>
 </head>
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
@@ -28,8 +28,8 @@
                 链接可能失效，或者这件已经卖完下架。
             </div>
             <div style="margin-top:34px;display:flex;gap:12px">
-                <a class="btn" th:href="@{/main}" th:text="#{error.home}">返回首页</a>
-                <a class="btn ghost" th:href="@{/category}">
+                <a class="btn" data-nav="back" th:href="@{/main}" th:text="#{error.home}">返回首页</a>
+                <a class="btn ghost" data-nav="back" th:href="@{/category}">
                     <span th:text="#{error.shop}">返回商品列表</span>
                     <svg width="14" height="9" viewBox="0 0 15 9" fill="none" stroke="currentColor"
                          stroke-width="1.2"><path d="M0 4.5h13.4M9.8 1l3.6 3.5-3.6 3.5"/></svg>
