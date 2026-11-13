@@ -147,3 +147,75 @@
     input.addEventListener('change', function () { set(input.value); });
   });
 })();
+
+/* ============================================================ 账户中心 */
+/* 左侧板块在当前页内切换；订单面板的筛选/搜索/分页走局部刷新，不整页跳转 */
+(function () {
+  'use strict';
+  var pane = document.getElementById('opanel');
+  if (!pane) return;
+
+  /* ---- 板块切换（hash 记忆，前进后退可用） ---- */
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.anav [data-pane]'));
+  function showPane(name) {
+    tabs.forEach(function (t) {
+      t.classList.toggle('on', t.getAttribute('data-pane') === name);
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.apane'), function (p) {
+      p.hidden = p.id !== 'pane-' + name;
+    });
+  }
+  tabs.forEach(function (t) {
+    t.addEventListener('click', function (e) {
+      e.preventDefault();
+      var name = t.getAttribute('data-pane');
+      showPane(name);
+      if (history.replaceState) history.replaceState(null, '', '#' + name);
+    });
+  });
+  /* 快捷卡「账户设置」同页切换 */
+  Array.prototype.forEach.call(document.querySelectorAll('[data-pane-link]'), function (a) {
+    a.addEventListener('click', function (e) {
+      e.preventDefault();
+      var name = a.getAttribute('data-pane-link');
+      showPane(name);
+      if (history.replaceState) history.replaceState(null, '', '#' + name);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+  var initial = (location.hash || '#orders').slice(1);
+  showPane(document.getElementById('pane-' + initial) ? initial : 'orders');
+
+  /* ---- 订单面板局部刷新 ---- */
+  var busy = false;
+  function load(url, push) {
+    if (busy) return;
+    busy = true;
+    pane.classList.add('loading');
+    fetch(url, { credentials: 'same-origin' })
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); })
+      .then(function (text) {
+        var doc = new DOMParser().parseFromString(text, 'text/html');
+        var next = doc.getElementById('opanel');
+        if (next) pane.innerHTML = next.innerHTML;
+        if (push && history.pushState) history.pushState(null, '', url);
+        pane.classList.remove('loading');
+        busy = false;
+      })
+      .catch(function () { window.location.href = url; });
+  }
+  pane.addEventListener('click', function (e) {
+    var a = e.target.closest('a.ptab, a.pglink');
+    if (!a) return;
+    e.preventDefault();
+    load(a.href, true);
+  });
+  pane.addEventListener('submit', function (e) {
+    var f = e.target.closest('form[data-pjax]');
+    if (!f) return;
+    e.preventDefault();
+    var qs = new URLSearchParams(new FormData(f)).toString();
+    load(f.getAttribute('action') + (qs ? '?' + qs : ''), true);
+  });
+  window.addEventListener('popstate', function () { load(location.href, false); });
+})();

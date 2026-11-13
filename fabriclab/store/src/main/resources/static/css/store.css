@@ -629,6 +629,52 @@ body.lang-en .lead, body.lang-en .tiny, body.lang-en .eyebrow { letter-spacing: 
     letter-spacing: .04em; color: rgba(26, 26, 26, .12); line-height: .9;
 }
 
+/* 账户中心：左板块导航 */
+.anav {
+    width: 216px; flex: none;
+    background: var(--card); border: 1px solid var(--line);
+    padding: 18px 0; position: sticky; top: 128px; align-self: flex-start;
+}
+.anav .an {
+    display: flex; align-items: baseline; gap: 12px; padding: 13px 22px;
+    border-left: 2px solid transparent;
+    transition: background .2s ease, border-color .2s ease;
+}
+.anav .an .no { font-family: var(--f-din); font-size: 9px; letter-spacing: .2em; color: var(--faint); }
+.anav .an .nm { font-family: var(--f-body); font-size: 12.5px; letter-spacing: .06em; color: var(--mute); }
+.anav .an:hover { background: rgba(26, 26, 26, .03); }
+.anav .an:hover .nm { color: var(--ink); }
+.anav .an.on { border-left-color: var(--rust); background: rgba(180, 100, 58, .05); }
+.anav .an.on .nm { color: var(--ink); font-weight: 500; }
+.anav .an.on .no { color: var(--rust); }
+
+/* 账户中心：板块与面板 */
+.apane[hidden] { display: none; }
+#opanel { transition: opacity .25s ease; }
+#opanel.loading { opacity: .45; pointer-events: none; }
+
+/* 个人资料行 */
+.prow {
+    display: flex; align-items: baseline; gap: 24px;
+    padding: 17px 0; border-bottom: 1px solid var(--line);
+}
+.prow .pl {
+    width: 120px; flex: none;
+    font-family: var(--f-body); font-size: 10px; letter-spacing: .16em; color: var(--mute);
+}
+.prow .pv { font-family: var(--f-body); font-size: 13px; letter-spacing: .04em; color: var(--ink); }
+.prow .pv.din { font-size: 12.5px; letter-spacing: .08em; }
+
+/* 设置语言切换 */
+.slang {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 58px; height: 34px; padding: 0 16px;
+    border: 1px solid var(--line2);
+    font-family: var(--f-body); font-size: 11px; letter-spacing: .14em; color: var(--mute);
+    transition: color .2s ease, border-color .2s ease;
+}
+.slang:hover { color: var(--ink); border-color: var(--ink); }
+
 /* 顶栏会员条 */
 .strip {
     display: flex; align-items: center; height: 44px; padding: 0 var(--gx);
