@@ -185,6 +185,31 @@ html, body { overflow-x: clip; }
 /* 中文版大字 172px；英文单词更长，缩小并收紧字距，避免溢出与图片重叠 */
 body.lang-cn .disp-hero { font-size: 172px; }
 body.lang-en .disp-hero { font-size: 128px; letter-spacing: .02em; }
+
+/* 首屏大字侧的竖排品牌批注：填补中文版大字右侧的横向留白 */
+.hero-vert {
+    writing-mode: vertical-rl;
+    font-family: var(--f-din); font-size: 9px; font-weight: 400;
+    letter-spacing: .42em; color: var(--faint);
+    border-left: 1px solid var(--line);
+}
+
+/* 首屏工艺索引条：与统计条两个弹性间隙均分中部留白 */
+.craft {
+    display: flex; align-items: baseline;
+    border-top: 1px solid var(--line);
+    padding-top: 20px; margin-top: auto;
+}
+.craft .c { flex: 1; display: flex; align-items: baseline; gap: 12px; }
+.craft .c + .c { border-left: 1px solid var(--line); padding-left: 22px; }
+.craft .zi {
+    font-family: var(--f-serif); font-size: 24px; line-height: 1;
+    letter-spacing: 0; color: var(--ink); flex: none;
+}
+.craft .d {
+    font-family: var(--f-body); font-size: 10px; letter-spacing: .12em;
+    color: var(--mute); line-height: 1.8;
+}
 /* 英文正文略收字距，贴近中文版视觉密度 */
 body.lang-en .lead, body.lang-en .tiny, body.lang-en .eyebrow { letter-spacing: .06em; }
 .h2 { font-family: var(--f-song); font-weight: 400; font-size: 31px; letter-spacing: .12em; line-height: 1.3; }

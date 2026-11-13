@@ -4,7 +4,7 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="|#{nav.brand} · #{home.title}|">FABRICLAB · 未染</title>
-    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113e}"/>
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113f}"/>
 </head>
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
@@ -15,8 +15,12 @@
     <div style="display:flex;min-height:calc(100vh - 108px);border-bottom:1px solid var(--line);position:relative">
         <div style="width:712px;flex:none;padding:46px 0 36px var(--gx);display:flex;flex-direction:column">
             <div class="eyebrow" th:text="#{home.eyebrow}">二〇二六 秋冬 · 第七辑</div>
-            <div class="disp disp-hero" style="margin-top:30px"
-                 th:utext="#{home.display}">未<br><span style=&quot;color:#B4643A&quot;>染</span></div>
+            <div style="margin-top:26px;display:flex;align-items:stretch">
+                <div class="disp disp-hero"
+                     th:utext="#{home.display}">未<br><span style=&quot;color:#B4643A&quot;>染</span></div>
+                <div class="hero-vert" style="margin-left:auto;padding-left:18px"
+                     th:text="#{home.vert}">UNDYED ATELIER · EST. 2019</div>
+            </div>
             <div class="song" style="margin-top:26px;font-size:19px;letter-spacing:.1em;color:var(--mute)"
                  th:text="#{home.slogan}">布本无色，衣有十年。</div>
             <div class="lead" style="margin-top:16px;width:398px" th:text="#{home.lead}">
@@ -31,11 +35,30 @@
                 <a class="tlink" th:href="@{/category}" th:text="#{home.lookbook}">查看型录</a>
             </div>
 
+            <!-- 工艺索引：与统计条两个弹性间隙均分中部留白 -->
+            <div class="craft">
+                <div class="c">
+                    <span class="zi" th:text="#{home.craft1.t}">染</span>
+                    <span class="d" th:text="#{home.craft1.d}">不过染缸</span>
+                </div>
+                <div class="c">
+                    <span class="zi" th:text="#{home.craft2.t}">织</span>
+                    <span class="d" th:text="#{home.craft2.d}">天然纤维纱线</span>
+                </div>
+                <div class="c">
+                    <span class="zi" th:text="#{home.craft3.t}">裁</span>
+                    <span class="d" th:text="#{home.craft3.d}">第九版版型</span>
+                </div>
+                <div class="c">
+                    <span class="zi" th:text="#{home.craft4.t}">缝</span>
+                    <span class="d" th:text="#{home.craft4.d}">终身免费修补</span>
+                </div>
+            </div>
+
             <!-- 当季首件：型录信息 -->
             <div th:if="${home.featured() != null and !home.featured().isEmpty()}"
                  th:with="lead0=${home.featured()[0]}"
-                 style="margin-top:20px;padding-top:15px;border-top:1px solid var(--line);
-                        display:flex;align-items:center;gap:14px">
+                 style="margin-top:26px;display:flex;align-items:center;gap:14px">
                 <span class="tiny" style="letter-spacing:.18em" th:text="#{home.look}">FW26 / 型录 01</span>
                 <a style="font-size:12.5px;letter-spacing:.04em"
                    th:href="@{/product(id=${lead0.id})}" th:text="${tr.t(lead0.name)}">羊毛开衫</a>
@@ -50,7 +73,7 @@
             </div>
 
             <!-- 本季三色 -->
-            <div style="margin-top:24px;display:flex;align-items:center;gap:22px">
+            <div style="margin-top:20px;display:flex;align-items:center;gap:22px">
                 <span class="tiny" style="letter-spacing:.18em" th:text="#{home.colours}">本季三色</span>
                 <span style="display:flex;align-items:center;gap:7px">
                     <i style="width:11px;height:11px;border-radius:50%;background:#57554F;
