@@ -154,43 +154,62 @@
 })();
 
 /* ============================================================ 商品图集 */
-/* 缩略图点击切换主图（交叉淡入+微推近）、悬停箭头、键盘左右方向键、自动轮播 */
+/* 主图切换：方向感知的横向对接位移——向后翻（下一张/缩略图/→）新图自右入、旧图向左出，
+   向前翻反向。两张图不透明且首尾相接，全程无叠影、无闪白，也不会出现「像刷新」的闪跳。
+   取消自动轮播：图集只跟随用户操作，阅读时画面不自行跳动。 */
 (function () {
   'use strict';
   var root = document.querySelector('[data-gallery]');
   if (!root) return;
-  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var imgs = Array.prototype.slice.call(root.querySelectorAll('.gstage img'));
   var thumbs = Array.prototype.slice.call(root.querySelectorAll('.gthumb'));
   var counter = root.querySelector('.gcount');
   var n = imgs.length;
   if (!n) return;
-  var idx = 0, timer = null, DUR = 5200;
+  var idx = 0, cleanTimer = null;
 
   function pad(x) { return (x < 10 ? '0' : '') + x; }
 
-  function show(i) {
-    idx = (i + n) % n;
-    imgs.forEach(function (im, k) { im.classList.toggle('on', k === idx); });
+  function paint() {
     thumbs.forEach(function (t, k) { t.classList.toggle('on', k === idx); });
     if (counter) counter.textContent = pad(idx + 1) + ' / ' + pad(n);
   }
 
-  function stop() { if (timer) { clearInterval(timer); timer = null; } }
-  function play() { if (reduce || n < 2) return; stop(); timer = setInterval(function () { show(idx + 1); }, DUR); }
+  function show(i, dir) {
+    i = ((i % n) + n) % n;
+    if (i === idx) return;
+    dir = dir < 0 ? -1 : 1;
+    var incoming = imgs[i], outgoing = imgs[idx];
+
+    /* 1. 入场图先以无过渡状态移到画面外侧（右入 / 左入） */
+    incoming.classList.remove('on', 'off', 'l', 'r');
+    incoming.classList.add(dir > 0 ? 'pre-r' : 'pre-l');
+    void incoming.offsetWidth;
+    /* 2. 解除起点后入场：位移回 0，与出场图首尾相接 */
+    incoming.classList.remove('pre-r', 'pre-l');
+    incoming.classList.add('on');
+    /* 3. 出场图保持不透明反向滑出（不淡出，避免中途半透明叠成重影） */
+    outgoing.classList.remove('on', 'pre-r', 'pre-l');
+    outgoing.classList.add('off', dir > 0 ? 'l' : 'r');
+
+    idx = i;
+    paint();
+
+    /* 过渡结束后清理离场标记：此刻该图已不可见，不会引起视觉变化 */
+    clearTimeout(cleanTimer);
+    cleanTimer = setTimeout(function () {
+      imgs.forEach(function (im) {
+        if (!im.classList.contains('on')) im.classList.remove('off', 'l', 'r');
+      });
+    }, 480);
+  }
 
   thumbs.forEach(function (t, k) {
-    t.addEventListener('click', function () { show(k); play(); });
+    t.addEventListener('click', function () { show(k, k >= idx ? 1 : -1); });
   });
   var prev = root.querySelector('.garrow.prev'), next = root.querySelector('.garrow.next');
-  if (prev) prev.addEventListener('click', function () { show(idx - 1); play(); });
-  if (next) next.addEventListener('click', function () { show(idx + 1); play(); });
-
-  var stage = root.querySelector('.gstage');
-  if (stage) {
-    stage.addEventListener('mouseenter', stop);
-    stage.addEventListener('mouseleave', play);
-  }
+  if (prev) prev.addEventListener('click', function () { show(idx - 1, -1); });
+  if (next) next.addEventListener('click', function () { show(idx + 1, 1); });
 
   /* 键盘左右方向键：仅当图集在视口内且焦点不在输入框时生效 */
   document.addEventListener('keydown', function (e) {
@@ -199,22 +218,24 @@
     if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT')) return;
     var r = root.getBoundingClientRect();
     if (r.bottom < 0 || r.top > window.innerHeight) return;
-    if (e.key === 'ArrowLeft') { show(idx - 1); } else { show(idx + 1); }
-    play();
+    var step = e.key === 'ArrowLeft' ? -1 : 1;
+    show(idx + step, step);
   });
 
-  /* 详情区图集联动：点击后回到顶部并切换主图到对应张 */
+  /* 详情区图集联动：切换到对应主图并回到图集位置 */
   Array.prototype.forEach.call(document.querySelectorAll('[data-jump]'), function (b) {
     b.addEventListener('click', function () {
       var i = parseInt(b.getAttribute('data-jump'), 10);
-      show(isNaN(i) ? 0 : i);
-      play();
+      if (isNaN(i)) i = 0;
+      show(i, i >= idx ? 1 : -1);
+      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
     });
   });
 
-  show(0);
-  play();
+  /* 初始图直接呈现，不播放过渡 */
+  imgs.forEach(function (im, k) { im.classList.toggle('on', k === 0); });
+  paint();
 })();
 
 /* ============================================================ 数量步进器 */
