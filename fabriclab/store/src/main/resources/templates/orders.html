@@ -4,7 +4,7 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="|#{nav.brand} · #{orders.title}|">FABRICLAB · 我的订单</title>
-    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113d}"/>
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113e}"/>
 </head>
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
@@ -138,13 +138,13 @@
 
         <div style="padding:36px 0 0;display:flex;align-items:center;gap:24px;
                     font-family:var(--f-din);font-size:10px;letter-spacing:.18em">
-            <a th:if="${query.page() > 1}" style="color:var(--ink)"
+            <a class="pglink" th:if="${query.page() > 1}"
                th:href="@{/orders(status=${query.statusParam()}, orderNo=${query.orderNo()},
                            size=${query.size()}, page=${query.page() - 1})}"
                th:text="#{shop.prev}">上一页</a>
             <span style="color:var(--ink)" th:text="${#numbers.formatInteger(query.page(), 2)}">01</span>
             <span style="color:var(--faint)" th:text="${#numbers.formatInteger(result.pages, 2)}">01</span>
-            <a th:if="${query.page() < result.pages}" style="margin-left:auto;color:var(--mute)"
+            <a class="pglink" style="margin-left:auto" th:if="${query.page() < result.pages}"
                th:href="@{/orders(status=${query.statusParam()}, orderNo=${query.orderNo()},
                            size=${query.size()}, page=${query.page() + 1})}"
                th:text="#{shop.next}">下一页 →</a>
@@ -161,50 +161,47 @@
                 <div class="h2" style="margin-top:14px" th:text="#{account.shortcut.title}">账户里的其他</div>
             </div>
         </div>
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);
-                    border-top:1px solid var(--line)">
-            <a style="background:var(--wall);padding:24px 24px 26px" th:href="@{/category}">
-                <div style="display:flex;align-items:baseline">
-                    <span class="din" style="font-size:8.5px;letter-spacing:.2em;color:var(--faint)">01</span>
-                    <span style="margin-left:auto;color:var(--rust);display:flex">
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px">
+            <a class="qcard" th:href="@{/category}">
+                <div class="qrow">
+                    <span class="qno">01</span>
+                    <span class="qarw">
                         <svg width="14" height="9" viewBox="0 0 15 9" fill="none" stroke="currentColor"
                              stroke-width="1.2"><path d="M0 4.5h13.4M9.8 1l3.6 3.5-3.6 3.5"/></svg></span>
                 </div>
-                <div style="margin-top:16px;font-size:13.5px;letter-spacing:.04em" th:text="#{account.a1}">继续选购</div>
-                <div class="tiny" style="margin-top:8px;line-height:1.9" th:text="#{account.a1.d}">本季全部在售</div>
+                <div class="qt" th:text="#{account.a1}">继续选购</div>
+                <div class="qd" th:text="#{account.a1.d}">本季全部在售</div>
             </a>
-            <a style="background:var(--wall);padding:24px 24px 26px" th:href="@{/cart}">
-                <div style="display:flex;align-items:baseline">
-                    <span class="din" style="font-size:8.5px;letter-spacing:.2em;color:var(--faint)">02</span>
-                    <span style="margin-left:auto;color:var(--rust);display:flex">
+            <a class="qcard" th:href="@{/cart}">
+                <div class="qrow">
+                    <span class="qno">02</span>
+                    <span class="qarw">
                         <svg width="14" height="9" viewBox="0 0 15 9" fill="none" stroke="currentColor"
                              stroke-width="1.2"><path d="M0 4.5h13.4M9.8 1l3.6 3.5-3.6 3.5"/></svg></span>
                 </div>
-                <div style="margin-top:16px;font-size:13.5px;letter-spacing:.04em" th:text="#{account.a2}">购物袋</div>
-                <div class="tiny" style="margin-top:8px;line-height:1.9"
-                     th:text="|${cartBadge == null ? 0 : cartBadge} #{account.a2.d}|">袋中件数</div>
+                <div class="qt" th:text="#{account.a2}">购物袋</div>
+                <div class="qd" th:text="|${cartBadge == null ? 0 : cartBadge} #{account.a2.d}|">袋中件数</div>
             </a>
-            <a style="background:var(--wall);padding:24px 24px 26px" th:href="@{/main}">
-                <div style="display:flex;align-items:baseline">
-                    <span class="din" style="font-size:8.5px;letter-spacing:.2em;color:var(--faint)">03</span>
-                    <span style="margin-left:auto;color:var(--rust);display:flex">
+            <a class="qcard" th:href="@{/main}">
+                <div class="qrow">
+                    <span class="qno">03</span>
+                    <span class="qarw">
                         <svg width="14" height="9" viewBox="0 0 15 9" fill="none" stroke="currentColor"
                              stroke-width="1.2"><path d="M0 4.5h13.4M9.8 1l3.6 3.5-3.6 3.5"/></svg></span>
                 </div>
-                <div style="margin-top:16px;font-size:13.5px;letter-spacing:.04em" th:text="#{account.a3}">品牌手记</div>
-                <div class="tiny" style="margin-top:8px;line-height:1.9" th:text="#{account.a3.d}">面料与工坊</div>
+                <div class="qt" th:text="#{account.a3}">品牌手记</div>
+                <div class="qd" th:text="#{account.a3.d}">面料与工坊</div>
             </a>
-            <form style="background:var(--wall);padding:24px 24px 26px" th:action="@{/signout}" method="post">
+            <form class="qcard" th:action="@{/signout}" method="post">
                 <input type="hidden" name="_csrf" th:value="${csrfToken}"/>
-                <div style="display:flex;align-items:baseline">
-                    <span class="din" style="font-size:8.5px;letter-spacing:.2em;color:var(--faint)">04</span>
-                    <span style="margin-left:auto;color:var(--rust);display:flex">
+                <div class="qrow">
+                    <span class="qno">04</span>
+                    <span class="qarw">
                         <svg width="14" height="9" viewBox="0 0 15 9" fill="none" stroke="currentColor"
                              stroke-width="1.2"><path d="M0 4.5h13.4M9.8 1l3.6 3.5-3.6 3.5"/></svg></span>
                 </div>
-                <button type="submit" style="margin-top:16px;font-size:13.5px;letter-spacing:.04em;text-align:left"
-                        th:text="#{account.a4}">退出登录</button>
-                <div class="tiny" style="margin-top:8px;line-height:1.9" th:text="#{account.a4.d}">本次会话结束</div>
+                <button type="submit" class="qt" th:text="#{account.a4}">退出登录</button>
+                <div class="qd" th:text="#{account.a4.d}">本次会话结束</div>
             </form>
         </div>
     </div>

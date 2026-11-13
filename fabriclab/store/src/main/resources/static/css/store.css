@@ -151,19 +151,17 @@ html, body { overflow-x: clip; }
 }
 .hdr form.inline input[type="text"]:focus { width: 150px; opacity: 1; outline: none; }
 
-/* 第二层：编号系列目录 */
+/* 第二层：系列目录——墨色横条，与纸色品牌层形成双层对比 */
 .navbar {
     display: flex; align-items: stretch; justify-content: center; gap: clamp(20px, 3.4vw, 58px);
     height: 46px; padding: 0 var(--gx);
-    border-top: 1px solid var(--line);
-    border-bottom: 1px solid var(--line2);
-    background: var(--wall);
+    background: var(--ink);
 }
 .nitem {
     position: relative;
     display: flex; align-items: center;
     font-family: var(--f-body); font-size: 12.5px; font-weight: 400;
-    letter-spacing: .14em; color: var(--mute);
+    letter-spacing: .14em; color: rgba(242, 239, 233, .62);
     transition: color .25s ease;
 }
 .nitem::after {
@@ -172,9 +170,9 @@ html, body { overflow-x: clip; }
     transform: scaleX(0); transform-origin: center;
     transition: transform .3s cubic-bezier(.22, .61, .36, 1);
 }
-.nitem:hover { color: var(--ink); }
+.nitem:hover { color: var(--wall); }
 .nitem:hover::after { transform: scaleX(1); }
-.nitem.on { color: var(--ink); font-weight: 500; }
+.nitem.on { color: var(--wall); font-weight: 500; }
 .nitem.on::after { transform: scaleX(1); }
 
 /* ------------------------------------------------------------ 排版 */
@@ -211,7 +209,7 @@ body.lang-en .lead, body.lang-en .tiny, body.lang-en .eyebrow { letter-spacing: 
     transition: background .25s ease, filter .2s ease, transform .12s ease;
 }
 .btn.rust { background: var(--rust); }
-.btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line2); }
+.btn.ghost { background: transparent; color: var(--ink); border: 1px solid rgba(26, 26, 26, .55); font-weight: 400; }
 .btn.ghost:hover { border-color: var(--ink); }
 .btn.sm { height: 42px; padding: 0 22px; font-size: 11px; letter-spacing: .12em; }
 .btn[disabled], .btn.disabled { background: var(--line2); color: var(--wall); cursor: not-allowed; }
@@ -222,7 +220,7 @@ body.lang-en .lead, body.lang-en .tiny, body.lang-en .eyebrow { letter-spacing: 
     padding-bottom: 6px; display: inline-block;
 }
 .tlink.rust { border-color: var(--rust); color: var(--rust); }
-.tlink.mute { border-color: var(--line2); color: var(--mute); }
+.tlink.mute { border-color: rgba(26, 26, 26, .5); color: var(--body); }
 .tlink.plain { border: 0; padding: 0; }
 
 /* ------------------------------------------------------------ 商品卡 */
@@ -430,15 +428,53 @@ body.lang-en .lead, body.lang-en .tiny, body.lang-en .eyebrow { letter-spacing: 
 }
 .pager .pg { color: var(--faint); }
 .pager .pg.on { color: var(--ink); }
-.pager .next { margin-left: auto; color: var(--mute); }
+.pager .next { margin-left: auto; color: var(--body); }
+
+/* 分页/翻页链接：下划线 + 墨色，保证可辨识 */
+.pglink {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--f-body); font-size: 11.5px; font-weight: 400; letter-spacing: .14em;
+    color: var(--ink); border-bottom: 1px solid rgba(26, 26, 26, .55); padding-bottom: 5px;
+    transition: color .2s ease, border-color .2s ease;
+}
+.pglink:hover { color: var(--rust); border-color: var(--rust); }
+.pglink svg { display: block; }
+
+/* 账户快捷卡：白卡 + 细边 + 悬浮抬升 */
+.qcard {
+    display: block;
+    background: var(--card); border: 1px solid var(--line);
+    padding: 24px 24px 28px;
+    transition: box-shadow .3s ease, transform .3s ease, border-color .3s ease;
+}
+.qcard:hover {
+    box-shadow: 0 16px 36px rgba(26, 26, 26, .13);
+    border-color: rgba(26, 26, 26, .32);
+    transform: translateY(-3px);
+}
+.qcard .qrow { display: flex; align-items: center; }
+.qcard .qno { font-family: var(--f-din); font-size: 9px; letter-spacing: .22em; color: var(--rust); }
+.qcard .qarw { margin-left: auto; color: var(--rust); display: flex; transition: transform .3s ease; }
+.qcard:hover .qarw { transform: translateX(5px); }
+.qcard .qt {
+    margin-top: 20px; font-family: var(--f-body); font-size: 13.5px;
+    font-weight: 500; letter-spacing: .04em; color: var(--ink); text-align: left;
+}
+.qcard .qd {
+    margin-top: 9px; font-family: var(--f-body); font-size: 10.5px;
+    letter-spacing: .12em; color: var(--mute); line-height: 1.9;
+}
 
 /* 面包屑 */
 .crumb {
     padding: 24px var(--gx) 0;
-    font-family: var(--f-body); font-size: 10px; letter-spacing: .16em; color: var(--faint);
+    font-family: var(--f-body); font-size: 10.5px; letter-spacing: .16em; color: var(--mute);
 }
-.crumb a { color: var(--mute); }
-.crumb a:hover { color: var(--ink); }
+.crumb a {
+    color: var(--body); border-bottom: 1px solid rgba(26, 26, 26, .45); padding-bottom: 3px;
+    transition: color .2s ease, border-color .2s ease;
+}
+.crumb a:hover { color: var(--ink); border-color: var(--ink); }
 
 /* 顶栏会员条 */
 .strip {

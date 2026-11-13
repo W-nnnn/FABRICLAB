@@ -4,7 +4,7 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="|#{nav.brand} · #{shop.title}|">FABRICLAB · 全部商品</title>
-    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113d}"/>
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113e}"/>
 </head>
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
@@ -202,20 +202,20 @@
 
             <div style="margin-top:52px;display:flex;align-items:center;gap:24px;
                         font-family:var(--f-din);font-size:10px;letter-spacing:.18em">
-                <a th:if="${query.page() > 1}"
+                <a class="pglink" th:if="${query.page() > 1}"
                    th:href="@{/category(category=${result.scope().entry() != null ? result.scope().entry().id : null},
                                productType=${query.productTypeParam()},
                                sort=${query.sort().name() == 'DEFAULT' ? null : query.sort().name()},
                                keyword=${query.keyword()}, size=${query.size()}, page=${query.page() - 1})}"
-                   style="color:var(--ink)" th:text="#{shop.prev}">上一页</a>
+                   th:text="#{shop.prev}">上一页</a>
                 <span style="color:var(--ink)" th:text="${#numbers.formatInteger(query.page(), 2)}">01</span>
                 <span style="color:var(--faint)" th:text="${#numbers.formatInteger(result.page.pages, 2)}">01</span>
-                <a th:if="${query.page() < result.page.pages}"
+                <a class="pglink" style="margin-left:auto" th:if="${query.page() < result.page.pages}"
                    th:href="@{/category(category=${result.scope().entry() != null ? result.scope().entry().id : null},
                                productType=${query.productTypeParam()},
                                sort=${query.sort().name() == 'DEFAULT' ? null : query.sort().name()},
                                keyword=${query.keyword()}, size=${query.size()}, page=${query.page() + 1})}"
-                   style="margin-left:auto;color:var(--mute)" th:text="#{shop.next}">下一页 →</a>
+                   th:text="#{shop.next}">下一页 →</a>
             </div>
         </div>
     </div>

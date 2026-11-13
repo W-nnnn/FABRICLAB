@@ -668,16 +668,16 @@ SELECT id AS locked_product_id FROM product ORDER BY id FOR UPDATE;
 SET @fl_seed_now = CURRENT_TIMESTAMP;
 
 INSERT INTO _fl_demo_orders (order_no, username, status, age_hours, receiver_name, receiver_phone, receiver_address) VALUES
-    ('DEMO-202611-AL-01', 'alice', 'PENDING_PAYMENT', 1, '林晓', '13800000001', '教学示例地址：杭州市西湖区 FABRICLAB A 座（非真实收货地址）'),
-    ('DEMO-202611-AL-02', 'alice', 'PAID', 25, '林晓', '13800000001', '教学示例地址：杭州市西湖区 FABRICLAB A 座（非真实收货地址）'),
-    ('DEMO-202611-AL-03', 'alice', 'SHIPPED', 72, '林晓', '13800000001', '教学示例地址：杭州市西湖区 FABRICLAB A 座（非真实收货地址）'),
-    ('DEMO-202611-AL-04', 'alice', 'COMPLETED', 168, '林晓', '13800000001', '教学示例地址：杭州市西湖区 FABRICLAB A 座（非真实收货地址）'),
-    ('DEMO-202611-AL-05', 'alice', 'CANCELLED', 48, '林晓', '13800000001', '教学示例地址：杭州市西湖区 FABRICLAB A 座（非真实收货地址）'),
-    ('DEMO-202611-BO-01', 'bob', 'PENDING_PAYMENT', 2, '陈晨', '13800000002', '教学示例地址：杭州市西湖区 FABRICLAB B 座（非真实收货地址）'),
-    ('DEMO-202611-BO-02', 'bob', 'PAID', 49, '陈晨', '13800000002', '教学示例地址：杭州市西湖区 FABRICLAB B 座（非真实收货地址）'),
-    ('DEMO-202611-BO-03', 'bob', 'SHIPPED', 96, '陈晨', '13800000002', '教学示例地址：杭州市西湖区 FABRICLAB B 座（非真实收货地址）'),
-    ('DEMO-202611-BO-04', 'bob', 'COMPLETED', 192, '陈晨', '13800000002', '教学示例地址：杭州市西湖区 FABRICLAB B 座（非真实收货地址）'),
-    ('DEMO-202611-BO-05', 'bob', 'CANCELLED', 24, '陈晨', '13800000002', '教学示例地址：杭州市西湖区 FABRICLAB B 座（非真实收货地址）');
+    ('DEMO-202611-AL-01', 'alice', 'PENDING_PAYMENT', 1, '林晓', '13800000001', '上海市徐汇区永康路 128 弄 3 号 502 室'),
+    ('DEMO-202611-AL-02', 'alice', 'PAID', 25, '林晓', '13800000001', '上海市徐汇区永康路 128 弄 3 号 502 室'),
+    ('DEMO-202611-AL-03', 'alice', 'SHIPPED', 72, '林晓', '13800000001', '上海市徐汇区永康路 128 弄 3 号 502 室'),
+    ('DEMO-202611-AL-04', 'alice', 'COMPLETED', 168, '林晓', '13800000001', '上海市徐汇区永康路 128 弄 3 号 502 室'),
+    ('DEMO-202611-AL-05', 'alice', 'CANCELLED', 48, '林晓', '13800000001', '上海市徐汇区永康路 128 弄 3 号 502 室'),
+    ('DEMO-202611-BO-01', 'bob', 'PENDING_PAYMENT', 2, '陈晨', '13800000002', '杭州市西湖区文二路 215 号 3 幢 1201 室'),
+    ('DEMO-202611-BO-02', 'bob', 'PAID', 49, '陈晨', '13800000002', '杭州市西湖区文二路 215 号 3 幢 1201 室'),
+    ('DEMO-202611-BO-03', 'bob', 'SHIPPED', 96, '陈晨', '13800000002', '杭州市西湖区文二路 215 号 3 幢 1201 室'),
+    ('DEMO-202611-BO-04', 'bob', 'COMPLETED', 192, '陈晨', '13800000002', '杭州市西湖区文二路 215 号 3 幢 1201 室'),
+    ('DEMO-202611-BO-05', 'bob', 'CANCELLED', 24, '陈晨', '13800000002', '杭州市西湖区文二路 215 号 3 幢 1201 室');
 INSERT INTO _fl_demo_items (order_no, sku, quantity, unit_price) VALUES
     ('DEMO-202611-AL-01', 'FL-LS-01', 1, 189.00),
     ('DEMO-202611-AL-01', 'FL-CM-03', 1, 259.00),
