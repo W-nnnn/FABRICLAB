@@ -12,7 +12,9 @@
 
     <th:block th:replace="~{fragments :: header(null)}"></th:block>
 
-    <p class="flash warn" style="margin-top:24px" th:if="${checkoutError != null}" th:text="${tr.t(checkoutError)}">提示</p>
+    <span id="main" tabindex="-1"></span>
+    <p class="flash warn" id="checkoutError" style="margin-top:24px" th:if="${checkoutError != null}"
+       th:text="${tr.t(checkoutError)}">提示</p>
 
     <div style="padding:34px var(--gx) 26px;display:flex;align-items:flex-end">
         <div>
@@ -32,18 +34,20 @@
             <form th:action="@{/checkout/submit}" method="post" id="receiver">
                 <input type="hidden" name="_csrf" th:value="${csrfToken}"/>
 
-                <div class="field">
+                <div class="field" th:classappend="${errorField == 'name'} ? ' error'">
                     <label class="lb" for="receiverName" th:text="#{checkout.name}">收件人</label>
                     <input id="receiverName" type="text" name="receiverName" maxlength="50" required
-                           th:value="${receiverName}" th:placeholder="#{checkout.name.ph}"/>
+                           th:value="${receiverName}" th:placeholder="#{checkout.name.ph}"
+                           th:attr="aria-invalid=${errorField == 'name'} ? 'true' : 'false',aria-describedby=${errorField != null} ? 'checkoutError' : null"/>
                 </div>
 
                 <div style="display:flex;gap:26px">
-                    <div class="field" style="flex:1">
+                    <div class="field" style="flex:1" th:classappend="${errorField == 'phone'} ? ' error'">
                         <label class="lb" for="receiverPhone" th:text="#{checkout.phone}">手机</label>
                         <input id="receiverPhone" type="tel" name="receiverPhone" maxlength="30" required
                                inputmode="tel" autocomplete="tel"
-                               th:value="${receiverPhone}" th:placeholder="#{checkout.phone.ph}"/>
+                               th:value="${receiverPhone}" th:placeholder="#{checkout.phone.ph}"
+                               th:attr="aria-invalid=${errorField == 'phone'} ? 'true' : 'false',aria-describedby=${errorField != null} ? 'checkoutError' : null"/>
                     </div>
                     <div class="field" style="flex:1">
                         <label class="lb" th:text="#{checkout.delivery}">配送方式</label>
@@ -51,10 +55,11 @@
                     </div>
                 </div>
 
-                <div class="field">
+                <div class="field" th:classappend="${errorField == 'address'} ? ' error'">
                     <label class="lb" for="receiverAddress" th:text="#{checkout.address}">详细地址</label>
                     <input id="receiverAddress" type="text" name="receiverAddress" maxlength="255" required
-                           th:value="${receiverAddress}" th:placeholder="#{checkout.address.ph}"/>
+                           th:value="${receiverAddress}" th:placeholder="#{checkout.address.ph}"
+                           th:attr="aria-invalid=${errorField == 'address'} ? 'true' : 'false',aria-describedby=${errorField != null} ? 'checkoutError' : null"/>
                 </div>
             </form>
 
@@ -110,7 +115,7 @@
                     <div style="font-size:12.5px;letter-spacing:.04em;color:var(--mute)"
                          th:text="#{checkout.pay2}">支付宝</div>
                     <div class="tiny" style="margin-top:5px;letter-spacing:.1em" th:text="#{checkout.pay2.d}">
-                        课程项目暂未接入
+                        暂未开放，仅支持货到付款
                     </div>
                 </div>
             </div>
@@ -186,7 +191,7 @@
                     <svg width="11" height="9" viewBox="0 0 12 9" fill="none" stroke="currentColor"
                          stroke-width="1.5"><path d="M1 4.6L4.3 7.8 11 1.2"/></svg></span>
                 <span style="font-size:11px;line-height:1.8;color:var(--mute)" th:text="#{checkout.note}">
-                    打开确认页不锁价、不预占库存；提交时若购物车、商品状态、库存或价格已变化，需重新确认后才能成交。
+                    提交订单后将按当时的价格与库存确认；若期间发生变化，会请你重新确认。
                 </span>
             </div>
         </div>

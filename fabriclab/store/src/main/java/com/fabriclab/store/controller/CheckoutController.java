@@ -77,23 +77,24 @@ public class CheckoutController {
             receiver = ReceiverInfo.parse(receiverName, receiverPhone, receiverAddress);
         } catch (BusinessException e) {
             return backToConfirm(current.id(), receiverName, receiverPhone,
-                    receiverAddress, e.getMessage(), session, model, redirect);
+                    receiverAddress, e.getMessage(), ReceiverInfo.fieldOf(e.getMessage()),
+                    session, model, redirect);
         }
         long orderId;
         try {
             orderId = checkoutService.placeOrder(current.id(), confirmation, receiver);
         } catch (BusinessException e) {
             return backToConfirm(current.id(), receiverName, receiverPhone,
-                    receiverAddress, e.getMessage(), session, model, redirect);
+                    receiverAddress, e.getMessage(), null, session, model, redirect);
         }
         session.removeAttribute(KEY_CONFIRMATION);
-        redirect.addFlashAttribute("orderFlash", "订单已提交，请完成模拟支付");
+        redirect.addFlashAttribute("orderFlash", "订单已提交，请完成支付");
         return "redirect:/orders/" + orderId;
     }
 
     /** 失败回确认页：保留合法收货输入，并按当前车刷新确认，避免用过期金额再次成交。 */
     private String backToConfirm(long userId, String name,
-                                 String phone, String address, String message,
+                                 String phone, String address, String message, String errorField,
                                  HttpSession session, Model model, RedirectAttributes redirect) {
         try {
             CheckoutView view = checkoutService.prepare(userId);
@@ -105,6 +106,7 @@ public class CheckoutController {
             return "redirect:/cart";
         }
         model.addAttribute("checkoutError", message);
+        model.addAttribute("errorField", errorField);
         model.addAttribute("receiverName", name);
         model.addAttribute("receiverPhone", phone);
         model.addAttribute("receiverAddress", address);
