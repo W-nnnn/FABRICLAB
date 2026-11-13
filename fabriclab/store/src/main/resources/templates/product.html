@@ -4,7 +4,7 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="|#{nav.brand} · ${tr.t(view.product().name)}|">FABRICLAB · 商品详情</title>
-    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113c}"/>
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113g}"/>
 </head>
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
@@ -30,34 +30,48 @@
     </p>
 
     <div style="display:flex;padding:26px var(--gx) 0;gap:64px;align-items:flex-start">
-        <!-- 左：图 -->
-        <div style="flex:1.15;min-width:0;max-width:860px">
-            <div style="aspect-ratio:3/4;overflow:hidden;background:var(--linen);position:relative">
-                <img th:src="@{|/${view.gallery()[0].path()}|}" th:alt="${tr.t(view.gallery()[0].alt())}"
-                     style="width:100%;height:100%;object-fit:cover"/>
-                <span class="tag" style="position:absolute;left:14px;top:14px;background:var(--wall);
+        <!-- 左：图集（主图交叉淡入 + 缩略图切换 + 方向键 + 自动轮播） -->
+        <div data-gallery style="flex:1.15;min-width:0;max-width:860px">
+            <div class="gstage">
+                <img th:each="image, i : ${view.gallery()}"
+                     th:classappend="${i.first} ? 'on'"
+                     th:src="@{|/${image.path()}|}" th:alt="${tr.t(image.alt())}"
+                     th:loading="${i.first} ? 'eager' : 'lazy'"/>
+                <span class="tag" style="position:absolute;left:14px;top:14px;z-index:3;background:var(--wall);
                                          font-family:var(--f-body);font-size:10px;letter-spacing:.1em;
                                          padding:4px 8px"
                       th:if="${!view.soldOut()}" th:text="#{product.new}">新到</span>
-                <span class="tag sold" style="position:absolute;left:14px;top:14px;background:var(--ink);
+                <span class="tag sold" style="position:absolute;left:14px;top:14px;z-index:3;background:var(--ink);
                                               color:var(--wall);font-family:var(--f-body);font-size:10px;
                                               letter-spacing:.1em;padding:4px 8px"
                       th:if="${view.soldOut()}" th:text="#{product.soldout}">售罄</span>
+                <button type="button" class="garrow prev" th:if="${view.gallery().size() > 1}"
+                        th:aria-label="#{product.prev.img}">
+                    <svg width="8" height="13" viewBox="0 0 8 13" fill="none" stroke="currentColor"
+                         stroke-width="1.3"><path d="M7 1L1.5 6.5 7 12"/></svg>
+                </button>
+                <button type="button" class="garrow next" th:if="${view.gallery().size() > 1}"
+                        th:aria-label="#{product.next.img}">
+                    <svg width="8" height="13" viewBox="0 0 8 13" fill="none" stroke="currentColor"
+                         stroke-width="1.3"><path d="M1 1l5.5 5.5L1 12"/></svg>
+                </button>
             </div>
+
             <div style="display:flex;gap:10px;margin-top:10px" th:if="${view.gallery().size() > 1}">
-                <div th:each="image, i : ${view.gallery()}"
-                     style="flex:1;aspect-ratio:3/4;overflow:hidden;background:var(--linen)"
-                     th:style="${i.index == 0} ? 'flex:1;aspect-ratio:3/4;overflow:hidden;background:var(--linen);outline:1px solid var(--ink);outline-offset:-1px'
-                               : 'flex:1;aspect-ratio:3/4;overflow:hidden;background:var(--linen)'">
-                    <img th:src="@{|/${image.path()}|}" th:alt="${tr.t(image.alt())}" loading="lazy"
-                         style="width:100%;height:100%;object-fit:cover"/>
-                </div>
+                <button type="button" class="gthumb" th:each="image, i : ${view.gallery()}"
+                        th:classappend="${i.first} ? 'on'"
+                        th:aria-label="#{product.view.aria}">
+                    <img th:src="@{|/${image.path()}|}" alt="" loading="lazy"/>
+                </button>
             </div>
-            <p class="tiny" th:if="${view.gallery().size() == 1}" th:text="#{product.album.fallback}">该商品暂无相册，展示封面图</p>
-            <div style="margin-top:14px;display:flex;align-items:center;gap:10px">
-                <span class="tiny" th:text="${view.gallery().size()} == 1 ? #{product.one.view} : #{product.four.view}">4 张图</span>
+            <p class="tiny" style="margin-top:12px" th:if="${view.gallery().size() == 1}"
+               th:text="#{product.album.fallback}">该商品暂无相册，展示封面图</p>
+
+            <div style="margin-top:14px;display:flex;align-items:center;gap:14px">
+                <span class="din gcount" style="font-size:10px;letter-spacing:.22em;color:var(--ink)"
+                      th:text="|${#numbers.formatInteger(1, 2)} / ${#numbers.formatInteger(view.gallery().size(), 2)}|">01 / 04</span>
                 <span style="flex:1;height:1px;background:var(--line)"></span>
-                <span class="tiny" th:text="#{product.enlarge}">放大 ⤢</span>
+                <span class="tiny" th:text="${view.product().sku}">FL-CM-01</span>
             </div>
         </div>
 
@@ -73,7 +87,7 @@
 
             <div class="h2" style="margin-top:18px;font-size:30px" th:text="${tr.t(view.product().name)}">商品名称</div>
             <div class="tiny" style="margin-top:10px;letter-spacing:.2em"
-                 th:text="${tr.t(view.second().name)} + ' · ' + ${view.product().sku}">通勤成衣</div>
+                 th:text="${tr.t(view.line().name)} + ' · ' + ${tr.t(view.second().name)} + ' · ' + ${view.product().sku}">通勤出行 · 通勤成衣</div>
 
             <div style="margin-top:20px;display:flex;align-items:baseline;gap:12px">
                 <span class="din" style="font-size:22px;font-weight:500;letter-spacing:.01em"
@@ -85,6 +99,34 @@
 
             <div class="lead" style="margin-top:18px;font-size:12.5px;line-height:1.95"
                  th:text="${tr.t(view.product().summary)}">简介</div>
+
+            <!-- 卖点 -->
+            <div style="margin-top:22px;border-top:1px solid var(--line);padding-top:18px">
+                <div class="tiny" style="letter-spacing:.2em;color:var(--ink)" th:text="#{product.usp.t}">卖点</div>
+                <div style="margin-top:13px;display:flex;flex-direction:column;gap:10px">
+                    <div style="display:flex;align-items:center;gap:10px">
+                        <span style="color:var(--rust);display:flex;flex:none">
+                            <svg width="11" height="9" viewBox="0 0 12 9" fill="none" stroke="currentColor"
+                                 stroke-width="1.5"><path d="M1 4.6L4.3 7.8 11 1.2"/></svg></span>
+                        <span style="font-size:12px;letter-spacing:.03em;color:var(--body)"
+                              th:text="#{product.usp1}">未染天然纤维</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px">
+                        <span style="color:var(--rust);display:flex;flex:none">
+                            <svg width="11" height="9" viewBox="0 0 12 9" fill="none" stroke="currentColor"
+                                 stroke-width="1.5"><path d="M1 4.6L4.3 7.8 11 1.2"/></svg></span>
+                        <span style="font-size:12px;letter-spacing:.03em;color:var(--body)"
+                              th:text="#{product.usp2}">第九版版型</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px">
+                        <span style="color:var(--rust);display:flex;flex:none">
+                            <svg width="11" height="9" viewBox="0 0 12 9" fill="none" stroke="currentColor"
+                                 stroke-width="1.5"><path d="M1 4.6L4.3 7.8 11 1.2"/></svg></span>
+                        <span style="font-size:12px;letter-spacing:.03em;color:var(--body)"
+                              th:text="#{product.usp3}">终身免费修补</span>
+                    </div>
+                </div>
+            </div>
 
             <!-- 规格提示：一个款号即一个可购买单位 -->
             <div style="margin-top:24px;display:flex;align-items:center;gap:10px;padding:14px 16px;
@@ -107,16 +149,18 @@
                 <span class="tiny" th:if="${view.soldOut()}" th:text="#{product.soldout.note}">该商品暂时无法购买</span>
             </div>
 
-            <!-- 加入购物袋 -->
+            <!-- 加入购物袋（数量步进器可用） -->
             <form th:action="@{/cart/add}" method="post" style="margin-top:24px">
                 <input type="hidden" name="_csrf" th:value="${csrfToken}"/>
                 <input type="hidden" name="productId" th:value="${view.product().id}"/>
                 <div style="display:flex;align-items:center;gap:14px">
-                    <span class="qbox" style="height:52px">
-                        <button type="button" tabindex="-1" aria-hidden="true">—</button>
+                    <span class="qbox lg" data-qty>
+                        <button type="button" data-minus th:aria-label="#{cart.qty.minus}"
+                                th:disabled="${view.soldOut()}">−</button>
                         <input type="number" name="quantity" value="1" min="1" max="99" step="1"
                                th:disabled="${view.soldOut()}" th:aria-label="#{cart.qty.aria}"/>
-                        <button type="button" tabindex="-1" aria-hidden="true">+</button>
+                        <button type="button" data-plus th:aria-label="#{cart.qty.plus}"
+                                th:disabled="${view.soldOut()}">+</button>
                     </span>
                     <button type="submit" class="btn" style="flex:1" th:disabled="${view.soldOut()}"
                             th:text="#{product.add.bag}">加入购物袋</button>
@@ -164,9 +208,9 @@
                     <span style="font-size:12px;letter-spacing:.03em;color:var(--mute)" th:text="${view.product().sku}">FL-CM-01</span>
                 </div>
                 <div style="display:flex;padding:12px 0;border-bottom:1px solid var(--line)">
-                    <span class="tiny" style="width:88px;flex:none;letter-spacing:.18em" th:text="#{product.spec.cat}">分类</span>
+                    <span class="tiny" style="width:88px;flex:none;letter-spacing:.18em" th:text="#{product.spec.line}">系列线</span>
                     <span style="font-size:12px;letter-spacing:.03em;color:var(--mute)"
-                          th:text="${tr.t(view.line().name)} + ' / ' + ${tr.t(view.second().name)}">通勤 / 成衣</span>
+                          th:text="${tr.t(view.line().name)} + ' / ' + ${tr.t(view.second().name)}">通勤出行 / 通勤成衣</span>
                 </div>
                 <div style="display:flex;padding:12px 0;border-bottom:1px solid var(--line)">
                     <span class="tiny" style="width:88px;flex:none;letter-spacing:.18em" th:text="#{product.spec.stock}">库存</span>
@@ -182,7 +226,7 @@
         </div>
     </div>
 
-    <!-- 商品详情：纯文本逐段 -->
+    <!-- 商品详情：完整图集（点击回联主图）+ 逐段工艺文本 -->
     <div style="margin-top:76px;padding:0 var(--gx)" th:if="${!view.descriptionLines().isEmpty()}">
         <div style="border-bottom:1px solid var(--line);padding-bottom:14px;display:flex;gap:36px">
             <span style="font-family:var(--f-body);font-size:12px;letter-spacing:.12em;color:var(--ink);
@@ -190,9 +234,12 @@
                   th:text="#{product.tab.story}">商品详情</span>
         </div>
         <div style="display:flex;gap:60px;padding-top:36px">
-            <div style="flex:1;min-width:0;max-width:760px;aspect-ratio:3/2;overflow:hidden;background:var(--linen)">
-                <img th:src="@{/images/look/wide-01.jpg}" alt="" loading="lazy"
-                     style="width:100%;height:100%;object-fit:cover"/>
+            <div class="sgrid" style="flex:1.15;min-width:0;max-width:760px" th:if="${view.gallery().size() > 1}">
+                <button type="button" data-jump th:each="image, i : ${view.gallery()}"
+                        th:attr="data-jump=${i.index}" th:aria-label="#{product.view.aria}">
+                    <img th:src="@{|/${image.path()}|}" th:alt="${tr.t(image.alt())}" loading="lazy"/>
+                    <span class="ix" th:text="${#numbers.formatInteger(i.count, 2)}">01</span>
+                </button>
             </div>
             <div style="flex:1;min-width:0;max-width:560px">
                 <div class="h3" style="font-size:16px" th:text="#{product.story.title}">面料与工艺</div>

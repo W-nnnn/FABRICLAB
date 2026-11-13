@@ -4,13 +4,13 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="|#{nav.brand} · #{pay.title}|">FABRICLAB · 模拟支付</title>
-    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113c}"/>
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113g}"/>
 </head>
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
 
     <p class="flash warn" style="margin:20px var(--gx) 0" th:if="${orderError != null}" th:text="${tr.t(orderError)}">提示</p>
-    <p class="flash" style="margin:20px var(--gx) 0" th:if="${orderFlash != null}" th:text="${orderFlash}">提示</p>
+    <p class="flash" style="margin:20px var(--gx) 0" th:if="${orderFlash != null}" th:text="${tr.t(orderFlash)}">提示</p>
 
     <div style="display:flex;height:880px">
         <!-- 左：大片 -->
@@ -42,7 +42,7 @@
                 <span th:text="${view.order.orderNo}">FL20260101000000000001</span>
             </div>
             <div style="margin-top:10px;font-size:11.5px;letter-spacing:.03em;color:var(--faint)"
-                 th:text="${view.status.label()}">待支付</div>
+                 th:text="${tr.t(view.status.label())}">待支付</div>
 
             <div style="margin-top:34px;padding-top:28px;border-top:1px solid var(--line)">
                 <div class="tiny" style="letter-spacing:.22em" th:text="#{pay.amount}">应付金额</div>

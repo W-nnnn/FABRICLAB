@@ -4,7 +4,7 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="|#{nav.brand} · #{order.title}|">FABRICLAB · 订单详情</title>
-    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113c}"/>
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113g}"/>
 </head>
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
@@ -16,12 +16,12 @@
     </div>
 
     <p class="flash warn" style="margin-top:20px" th:if="${orderError != null}" th:text="${tr.t(orderError)}">提示</p>
-    <p class="flash" style="margin-top:20px" th:if="${orderFlash != null}" th:text="${orderFlash}">提示</p>
+    <p class="flash" style="margin-top:20px" th:if="${orderFlash != null}" th:text="${tr.t(orderFlash)}">提示</p>
 
     <div style="padding:30px var(--gx) 34px;display:flex;align-items:flex-end">
         <div>
             <div class="eyebrow" th:text="#{order.eyebrow}">订单详情</div>
-            <div class="h2" style="margin-top:12px;font-size:34px" th:text="${detail.status.label()}">待付款</div>
+            <div class="h2" style="margin-top:12px;font-size:34px" th:text="${tr.t(detail.status.label())}">待付款</div>
             <div class="din" style="margin-top:14px;font-size:10.5px;letter-spacing:.16em;color:var(--mute)">
                 <span th:text="${detail.order.orderNo}">FL20260101000000000001</span>
                 <span> · </span>
@@ -65,9 +65,9 @@
                              th:style="${detail.order.paidAt != null} ? 'color:var(--ink)' : 'color:var(--faint)'"
                              th:text="#{order.step2}">支付</div>
                         <div class="tiny" style="margin-top:6px;letter-spacing:.12em"
-                             th:text="${detail.order.paidAt != null
-                                       ? #temporals.format(detail.order.paidAt, 'yyyy-MM-dd HH:mm')
-                                       : '等待中'}">等待中</div>
+                             th:text="${detail.order.paidAt != null}
+                       ? ${#temporals.format(detail.order.paidAt, 'yyyy-MM-dd HH:mm')}
+                       : #{order.waiting}">等待中</div>
                     </div>
                 </div>
 
@@ -83,9 +83,9 @@
                              th:style="${detail.order.shippedAt != null} ? 'color:var(--ink)' : 'color:var(--faint)'"
                              th:text="#{order.step3}">发货</div>
                         <div class="tiny" style="margin-top:6px;letter-spacing:.12em"
-                             th:text="${detail.order.shippedAt != null
-                                       ? #temporals.format(detail.order.shippedAt, 'yyyy-MM-dd HH:mm')
-                                       : '等待中'}">等待中</div>
+                             th:text="${detail.order.shippedAt != null}
+                       ? ${#temporals.format(detail.order.shippedAt, 'yyyy-MM-dd HH:mm')}
+                       : #{order.waiting}">等待中</div>
                     </div>
                 </div>
 
@@ -111,10 +111,10 @@
                     <div class="thumb" style="width:80px">
                         <img th:src="${#strings.isEmpty(item.coverImageSnapshot)
                                        ? '/images/mark.png' : '/' + item.coverImageSnapshot}"
-                             th:alt="${item.productNameSnapshot}" loading="lazy"/>
+                             th:alt="${tr.t(item.productNameSnapshot)}" loading="lazy"/>
                     </div>
                     <div class="info">
-                        <div class="nm" th:text="${item.productNameSnapshot}">商品名称</div>
+                        <div class="nm" th:text="${tr.t(item.productNameSnapshot)}">商品名称</div>
                         <div class="sk" th:text="${item.skuSnapshot}">FL-CM-01</div>
                         <div class="attr">
                             <span th:text="|× ${item.quantity}|">× 1</span>
@@ -131,11 +131,11 @@
                 <div>
                     <div class="tiny" style="letter-spacing:.2em;margin-bottom:14px" th:text="#{order.delivery}">收货信息</div>
                     <div style="font-size:12px;line-height:2.1;color:var(--mute)">
-                        <span th:text="${detail.order.receiverName}">姓名</span>
+                        <span th:text="${tr.t(detail.order.receiverName)}">姓名</span>
                         <span> · </span>
                         <span th:text="${detail.order.receiverPhone}">电话</span>
                         <br/>
-                        <span th:text="${detail.order.receiverAddress}">地址</span>
+                        <span th:text="${tr.t(detail.order.receiverAddress)}">地址</span>
                     </div>
                 </div>
                 <div>
@@ -169,8 +169,10 @@
                     <b th:text="#{checkout.free}">免运费</b>
                 </div>
                 <div class="l tot">
-                    <span th:text="${detail.status.name() == 'PENDING_PAYMENT' ? '应付'
-                              : (detail.status.name() == 'CANCELLED' ? '订单金额' : '已模拟支付')}">应付</span>
+                    <span th:text="${detail.status.name() == 'PENDING_PAYMENT'}
+                              ? #{order.amount.due}
+                              : (${detail.status.name() == 'CANCELLED'}
+                                 ? #{order.amount.total} : #{order.amount.paid})">应付</span>
                     <b th:text="|¥ ${#numbers.formatDecimal(detail.order.totalAmount, 1, 2)}|">¥ 0.00</b>
                 </div>
             </div>
@@ -180,7 +182,7 @@
                    th:href="@{/orders/{id}/payment(id=${detail.order.id})}"
                    th:text="#{order.pay.now}">教学模拟支付</a>
                 <form th:action="@{/orders/{id}/cancel(id=${detail.order.id})}" method="post"
-                      onsubmit="return confirm('取消后将关闭订单并释放已占用的库存，确定取消吗？');">
+                      th:onsubmit="|return confirm('#{order.cancel.confirm}');|">
                     <input type="hidden" name="_csrf" th:value="${csrfToken}"/>
                     <button type="submit" class="btn ghost wide" style="margin-top:10px"
                             th:text="#{order.cancel}">取消订单</button>
@@ -194,7 +196,7 @@
             <div style="margin-top:26px;padding-top:18px;border-top:1px solid var(--line)">
                 <div class="tiny" style="letter-spacing:.2em;margin-bottom:12px" th:text="#{order.address}">收货地址</div>
                 <div style="font-size:11.5px;line-height:1.9;color:var(--mute)">
-                    <span th:text="${detail.order.receiverAddress}">地址</span>
+                    <span th:text="${tr.t(detail.order.receiverAddress)}">地址</span>
                 </div>
             </div>
         </div>

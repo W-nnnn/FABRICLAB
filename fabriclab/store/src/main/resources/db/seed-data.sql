@@ -85,10 +85,10 @@ FROM (
 工艺：三针五线包边
 所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。' AS description, 'images/products/FL-CM-06/1.jpg' AS cover_image, 99.00 AS price, 0 AS stock, 'ON_SALE' AS status, 60 AS sort_order
     UNION ALL
-    SELECT 7 AS id, 'FL-CM-07' AS sku, 'COMMUTE_ACC' AS category_code, '羊绒针织帽 · 深栗' AS name, '头层牛皮托特包，可装14寸笔记本。' AS summary, '羊绒针织帽 · 深栗。面料：头层牛皮
-克重：约900g
-版型：立挺方型
-工艺：手工油边缝线
+    SELECT 7 AS id, 'FL-CM-07' AS sku, 'COMMUTE_ACC' AS category_code, '羊绒针织帽 · 深栗' AS name, '小口径罗纹羊绒帽，贴身保暖不扎。' AS summary, '羊绒针织帽 · 深栗。面料：100%羊绒
+克重：约95g
+帽围：适合 54–58cm
+工艺：罗纹针织，无接缝帽顶
 所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。' AS description, 'images/products/FL-CM-07/1.jpg' AS cover_image, 359.00 AS price, 18 AS stock, 'ON_SALE' AS status, 10 AS sort_order
     UNION ALL
     SELECT 8 AS id, 'FL-CM-08' AS sku, 'COMMUTE_ACC' AS category_code, '羊绒针织帽 · 石墨' AS name, '软底乐福鞋，久走不累。' AS summary, '羊绒针织帽 · 石墨。面料：头层牛皮
@@ -668,16 +668,16 @@ SELECT id AS locked_product_id FROM product ORDER BY id FOR UPDATE;
 SET @fl_seed_now = CURRENT_TIMESTAMP;
 
 INSERT INTO _fl_demo_orders (order_no, username, status, age_hours, receiver_name, receiver_phone, receiver_address) VALUES
-    ('DEMO-202611-AL-01', 'alice', 'PENDING_PAYMENT', 1, '林晓', '13800000001', '教学示例地址：杭州市西湖区 FABRICLAB A 座（非真实收货地址）'),
-    ('DEMO-202611-AL-02', 'alice', 'PAID', 25, '林晓', '13800000001', '教学示例地址：杭州市西湖区 FABRICLAB A 座（非真实收货地址）'),
-    ('DEMO-202611-AL-03', 'alice', 'SHIPPED', 72, '林晓', '13800000001', '教学示例地址：杭州市西湖区 FABRICLAB A 座（非真实收货地址）'),
-    ('DEMO-202611-AL-04', 'alice', 'COMPLETED', 168, '林晓', '13800000001', '教学示例地址：杭州市西湖区 FABRICLAB A 座（非真实收货地址）'),
-    ('DEMO-202611-AL-05', 'alice', 'CANCELLED', 48, '林晓', '13800000001', '教学示例地址：杭州市西湖区 FABRICLAB A 座（非真实收货地址）'),
-    ('DEMO-202611-BO-01', 'bob', 'PENDING_PAYMENT', 2, '陈晨', '13800000002', '教学示例地址：杭州市西湖区 FABRICLAB B 座（非真实收货地址）'),
-    ('DEMO-202611-BO-02', 'bob', 'PAID', 49, '陈晨', '13800000002', '教学示例地址：杭州市西湖区 FABRICLAB B 座（非真实收货地址）'),
-    ('DEMO-202611-BO-03', 'bob', 'SHIPPED', 96, '陈晨', '13800000002', '教学示例地址：杭州市西湖区 FABRICLAB B 座（非真实收货地址）'),
-    ('DEMO-202611-BO-04', 'bob', 'COMPLETED', 192, '陈晨', '13800000002', '教学示例地址：杭州市西湖区 FABRICLAB B 座（非真实收货地址）'),
-    ('DEMO-202611-BO-05', 'bob', 'CANCELLED', 24, '陈晨', '13800000002', '教学示例地址：杭州市西湖区 FABRICLAB B 座（非真实收货地址）');
+    ('DEMO-202611-AL-01', 'alice', 'PENDING_PAYMENT', 1, '林晓', '13800000001', '上海市徐汇区永康路 128 弄 3 号 502 室'),
+    ('DEMO-202611-AL-02', 'alice', 'PAID', 25, '林晓', '13800000001', '上海市徐汇区永康路 128 弄 3 号 502 室'),
+    ('DEMO-202611-AL-03', 'alice', 'SHIPPED', 72, '林晓', '13800000001', '上海市徐汇区永康路 128 弄 3 号 502 室'),
+    ('DEMO-202611-AL-04', 'alice', 'COMPLETED', 168, '林晓', '13800000001', '上海市徐汇区永康路 128 弄 3 号 502 室'),
+    ('DEMO-202611-AL-05', 'alice', 'CANCELLED', 48, '林晓', '13800000001', '上海市徐汇区永康路 128 弄 3 号 502 室'),
+    ('DEMO-202611-BO-01', 'bob', 'PENDING_PAYMENT', 2, '陈晨', '13800000002', '杭州市西湖区文二路 215 号 3 幢 1201 室'),
+    ('DEMO-202611-BO-02', 'bob', 'PAID', 49, '陈晨', '13800000002', '杭州市西湖区文二路 215 号 3 幢 1201 室'),
+    ('DEMO-202611-BO-03', 'bob', 'SHIPPED', 96, '陈晨', '13800000002', '杭州市西湖区文二路 215 号 3 幢 1201 室'),
+    ('DEMO-202611-BO-04', 'bob', 'COMPLETED', 192, '陈晨', '13800000002', '杭州市西湖区文二路 215 号 3 幢 1201 室'),
+    ('DEMO-202611-BO-05', 'bob', 'CANCELLED', 24, '陈晨', '13800000002', '杭州市西湖区文二路 215 号 3 幢 1201 室');
 INSERT INTO _fl_demo_items (order_no, sku, quantity, unit_price) VALUES
     ('DEMO-202611-AL-01', 'FL-LS-01', 1, 189.00),
     ('DEMO-202611-AL-01', 'FL-CM-03', 1, 259.00),

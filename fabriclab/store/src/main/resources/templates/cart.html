@@ -4,7 +4,7 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="|#{nav.brand} · #{cart.title}|">FABRICLAB · 购物袋</title>
-    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113c}"/>
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113g}"/>
 </head>
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
@@ -79,7 +79,7 @@
                                        th:value="${line.quantity}" min="1" max="99" step="1"
                                        th:aria-label="#{cart.qty.aria}"/>
                             </span>
-                            <button type="submit" class="tlink plain" style="font-size:10px;color:var(--mute)"
+                            <button type="submit" class="tlink plain" style="font-size:10px;color:var(--ink)"
                                     th:text="#{cart.update}">更新</button>
                         </form>
                         <span th:if="${line.unavailable}" class="din" style="font-size:11px"
@@ -88,7 +88,7 @@
                             <input type="hidden" name="_csrf" th:value="${csrfToken}"/>
                             <input type="hidden" name="itemId" th:value="${line.itemId}"/>
                             <input type="hidden" name="version" th:value="${line.version}"/>
-                            <button type="submit" class="tlink plain" style="font-size:10px;color:var(--faint)"
+                            <button type="submit" class="tlink plain" style="font-size:10px;color:var(--mute)"
                                     th:text="#{cart.remove}">移除</button>
                         </form>
                     </div>
