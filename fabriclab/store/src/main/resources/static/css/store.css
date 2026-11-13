@@ -554,6 +554,81 @@ body.lang-en .lead, body.lang-en .tiny, body.lang-en .eyebrow { letter-spacing: 
 }
 .crumb a:hover { color: var(--ink); border-color: var(--ink); }
 
+/* 会员横幅（账户页顶） */
+.mband {
+    display: flex; align-items: flex-end; gap: 40px;
+    padding: 38px var(--gx) 34px;
+    background: var(--linen);
+    border-bottom: 1px solid var(--line);
+}
+.mband .mname {
+    margin-top: 12px;
+    font-family: var(--f-song); font-weight: 400;
+    font-size: 30px; letter-spacing: .12em; color: var(--ink);
+}
+.mband .mr {
+    margin-left: auto; display: flex; align-items: flex-end; gap: 44px;
+}
+.mband .mstat .n {
+    font-family: var(--f-din); font-size: 26px; font-weight: 500;
+    letter-spacing: -.01em; color: var(--ink); line-height: 1;
+}
+.mband .mstat .l { margin-top: 9px; font-family: var(--f-body); font-size: 10px; letter-spacing: .16em; color: var(--mute); }
+.mband .mdiv { width: 1px; align-self: stretch; background: rgba(26, 26, 26, .16); }
+.mband .mbiz {
+    font-family: var(--f-body); font-size: 10.5px; letter-spacing: .14em;
+    color: var(--mute); line-height: 2.1; text-align: left;
+}
+
+/* 订单卡片 */
+.ocard {
+    background: var(--card); border: 1px solid var(--line);
+    padding: 24px 26px 26px;
+    transition: box-shadow .3s ease, border-color .3s ease;
+}
+.ocard:hover {
+    border-color: rgba(26, 26, 26, .32);
+    box-shadow: 0 12px 30px rgba(26, 26, 26, .10);
+}
+.ocard + .ocard { margin-top: 14px; }
+.ocard .ohead { display: flex; align-items: baseline; }
+.ocard .ono {
+    font-family: var(--f-din); font-size: 11px; letter-spacing: .14em; color: var(--ink);
+    border-bottom: 1px solid rgba(26, 26, 26, .4); padding-bottom: 2px;
+    transition: color .2s ease, border-color .2s ease;
+}
+.ocard .ono:hover { color: var(--rust); border-color: var(--rust); }
+.ocard .odate {
+    margin-left: 18px; font-family: var(--f-din);
+    font-size: 9.5px; letter-spacing: .14em; color: var(--faint);
+}
+
+/* 状态章 */
+.chip {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 5px 13px;
+    font-family: var(--f-body); font-size: 11px; letter-spacing: .1em;
+    border: 1px solid transparent;
+}
+.chip::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: currentColor; flex: none; }
+.chip.pay { color: #8B4526; border-color: rgba(180, 100, 58, .5); background: rgba(180, 100, 58, .08); }
+.chip.ship { color: var(--ink); border-color: rgba(26, 26, 26, .38); background: var(--wall); }
+.chip.done { color: var(--mute); border-color: var(--line2); background: var(--wall); }
+.chip.void { color: var(--faint); border-color: var(--line2); border-style: dashed; background: var(--wall); }
+
+/* 空状态面板 */
+.emptyp {
+    margin: 30px var(--gx) 0;
+    background: var(--linen); border: 1px solid var(--line);
+    padding: 66px 58px 60px;
+    display: flex; align-items: flex-end;
+}
+.emptyp .mark {
+    margin-left: auto; align-self: flex-end;
+    font-family: var(--f-din); font-size: 52px; font-weight: 300;
+    letter-spacing: .04em; color: rgba(26, 26, 26, .12); line-height: .9;
+}
+
 /* 顶栏会员条 */
 .strip {
     display: flex; align-items: center; height: 44px; padding: 0 var(--gx);

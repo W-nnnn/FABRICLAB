@@ -4,28 +4,39 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="|#{nav.brand} · #{orders.title}|">FABRICLAB · 我的订单</title>
-    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113g}"/>
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113h}"/>
 </head>
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
 
     <th:block th:replace="~{fragments :: header(null)}"></th:block>
 
-    <div class="strip" th:if="${currentUser != null}">
-        <span class="who" th:text="|#{account.no} ${currentUser.displayName()}|">会员号</span>
-        <div class="r">
-            <span th:text="#{account.points}">2,480 积分 · 二级会员</span>
-            <span class="hi" th:text="|${result.total} #{account.orders}|">共 4 单</span>
-        </div>
-    </div>
-
-    <div style="padding:40px var(--gx) 0;display:flex;align-items:flex-end">
+    <!-- 会员横幅 -->
+    <section class="mband" th:if="${currentUser != null}">
         <div>
             <div class="eyebrow" th:text="#{account.eyebrow}">我的账户</div>
-            <div class="h2" style="margin-top:12px;font-size:34px" th:text="#{orders.heading}">我的订单</div>
+            <div class="mname" th:text="|#{account.no} · ${currentUser.displayName()}|">会员 · 林晓</div>
+        </div>
+        <div class="mr">
+            <div class="mstat">
+                <div class="n" th:text="${result.total}">0</div>
+                <div class="l" th:text="#{account.orders}">单</div>
+            </div>
+            <div class="mstat">
+                <div class="n" th:text="${cartBadge == null ? 0 : cartBadge}">0</div>
+                <div class="l" th:text="#{account.a2}">购物袋</div>
+            </div>
+            <div class="mdiv"></div>
+            <div class="mbiz" th:utext="#{svc.repair.d}">终身免费<br>全国门店可收</div>
+        </div>
+    </section>
+
+    <div style="padding:36px var(--gx) 0;display:flex;align-items:flex-end">
+        <div>
+            <div class="h2" style="font-size:32px" th:text="#{orders.heading}">我的订单</div>
         </div>
         <div style="margin-left:auto;display:flex;align-items:center;gap:26px">
-            <span class="tiny" th:text="|${result.total} #{orders.count}|">共 4 单</span>
+            <span class="tiny" th:text="|#{orders.count} ${result.total}|">共 4 单</span>
         </div>
     </div>
 
@@ -66,33 +77,36 @@
     </form>
 
     <!-- 空结果 -->
-    <div class="empty" th:if="${result.total == 0}" style="padding:70px var(--gx) 0">
-        <h2 th:if="${query.orderNo() != null}" th:text="#{orders.empty.search}">没有匹配该订单号的订单</h2>
-        <h2 th:unless="${query.orderNo() != null}" th:text="#{orders.empty.title}">这里还没有订单</h2>
-        <p th:text="#{orders.empty.body}">先去挑选几件成衣，下单后可在这里查看进度与支付。</p>
-        <div class="acts">
-            <a class="btn" th:href="@{/category}" th:text="#{orders.empty.cta}">去选购</a>
+    <div class="emptyp" th:if="${result.total == 0}">
+        <div>
+            <h2 style="font-size:26px" th:if="${query.orderNo() != null}" th:text="#{orders.empty.search}">没有匹配该订单号的订单</h2>
+            <h2 style="font-size:26px" th:unless="${query.orderNo() != null}" th:text="#{orders.empty.title}">这里还没有订单</h2>
+            <p th:text="#{orders.empty.body}">先去挑选几件成衣，下单后可在这里查看进度与支付。</p>
+            <div class="acts">
+                <a class="btn" th:href="@{/category}" th:text="#{orders.empty.cta}">去选购</a>
+            </div>
         </div>
+        <div class="mark">FW26</div>
     </div>
 
     <!-- 订单块 -->
-    <div style="padding:0 var(--gx)" th:if="${result.total > 0}">
-        <div th:each="row : ${rows}" style="padding:26px 0;border-bottom:1px solid var(--line)">
-            <div style="display:flex;align-items:baseline">
-                <a class="din" style="font-size:11px;letter-spacing:.14em"
+    <div style="padding:28px var(--gx) 0" th:if="${result.total > 0}">
+        <div class="ocard" th:each="row : ${rows}">
+            <div class="ohead">
+                <a class="ono"
                    th:href="@{/orders/{id}(id=${row.order.id})}" th:text="${row.order.orderNo}">
                     FL20260101000000000001</a>
-                <span class="din" style="margin-left:20px;font-size:9.5px;letter-spacing:.14em;color:var(--faint)"
+                <span class="odate"
                       th:text="${#temporals.format(row.order.createdAt, 'yyyy-MM-dd HH:mm')}">2026-01-01 00:00</span>
-                <span style="margin-left:auto;display:flex;align-items:baseline;gap:10px">
-                    <span class="state" th:classappend="${row.order.status == 'PENDING_PAYMENT'} ? 'pay'
+                <span class="chip" style="margin-left:auto"
+                      th:classappend="${row.order.status == 'PENDING_PAYMENT'} ? 'pay'
                               : (${row.order.status == 'CANCELLED'} ? 'void'
                               : (${row.order.status == 'SHIPPED' or row.order.status == 'COMPLETED'} ? 'done' : 'ship'))"
-                          th:text="${tr.t(row.statusLabel)}">待支付</span>
-                </span>
+                      th:text="${tr.t(row.statusLabel)}">待支付</span>
             </div>
 
-            <div style="display:flex;align-items:center;margin-top:18px">
+            <div style="display:flex;align-items:center;margin-top:20px;padding-top:18px;
+                        border-top:1px solid var(--line)">
                 <div style="display:flex;gap:8px;flex:none">
                     <div th:each="t : ${row.thumbs}"
                          style="width:78px;height:100px;background:var(--linen);overflow:hidden">
@@ -105,7 +119,7 @@
                         <span class="din" style="font-size:9px;letter-spacing:.14em;color:var(--mute)">FW26</span>
                     </div>
                 </div>
-                <div style="margin-left:20px">
+                <div style="margin-left:22px">
                     <div style="font-size:13px;letter-spacing:.03em">
                         <span th:each="t, s : ${row.thumbs}"
                               th:text="${(s.first ? '' : ' / ') + tr.t(t.name)}">本季单品</span>
@@ -113,7 +127,7 @@
                             订单号 FL20260101000000000001
                         </span>
                     </div>
-                    <div class="tiny" style="margin-top:7px;letter-spacing:.1em"
+                    <div class="tiny" style="margin-top:8px;letter-spacing:.1em"
                          th:text="|#{orders.no} ${row.order.orderNo}|">
                         订单号 FL20260101000000000001
                     </div>
@@ -121,12 +135,11 @@
                          th:text="|#{orders.placed} ${#temporals.format(row.order.createdAt, 'yyyy-MM-dd HH:mm')}|">
                         下单时间 2026-01-01 00:00
                     </div>
-                    <div class="tiny" style="margin-top:6px;letter-spacing:.1em" th:text="${tr.t(row.statusLabel)}">待支付</div>
                 </div>
                 <div style="margin-left:auto;text-align:right">
-                    <div class="din" style="font-size:15px;letter-spacing:.04em"
+                    <div class="din" style="font-size:16px;font-weight:500;letter-spacing:.04em"
                          th:text="|¥ ${#numbers.formatDecimal(row.order.totalAmount, 1, 2)}|">¥ 0.00</div>
-                    <div style="margin-top:12px;display:flex;justify-content:flex-end;gap:10px">
+                    <div style="margin-top:14px;display:flex;justify-content:flex-end;gap:10px">
                         <a class="btn sm" th:if="${row.order.status == 'PENDING_PAYMENT'}"
                            th:href="@{/orders/{id}(id=${row.order.id})}" th:text="#{orders.pay}">去支付</a>
                         <a class="btn ghost sm" th:if="${row.order.status != 'PENDING_PAYMENT'}"
@@ -136,7 +149,7 @@
             </div>
         </div>
 
-        <div style="padding:36px 0 0;display:flex;align-items:center;gap:24px;
+        <div style="padding:32px 0 0;display:flex;align-items:center;gap:24px;
                     font-family:var(--f-din);font-size:10px;letter-spacing:.18em">
             <a class="pglink" th:if="${query.page() > 1}"
                th:href="@{/orders(status=${query.statusParam()}, orderNo=${query.orderNo()},
