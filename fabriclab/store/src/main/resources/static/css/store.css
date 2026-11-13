@@ -731,6 +731,24 @@ body.lang-en .lead, body.lang-en .tiny, body.lang-en .eyebrow { letter-spacing: 
 #opanel.loading { opacity: .35; pointer-events: none; }
 #opanel.swapped { transition: none; animation: paneIn .36s cubic-bezier(.22, .61, .36, 1) backwards; }
 
+/* 选购列表：筛选 / 排序 / 翻页只换这一块，整页不重载
+   ——等待期轻微暗化（不出现空白帧），数据到达后原位浮入 */
+#catalog { position: relative; transition: opacity .14s linear; }
+#catalog.busy { opacity: .72; }
+#catalog.swapped { transition: none; animation: catIn .24s cubic-bezier(.22, .61, .36, 1) backwards; }
+@keyframes catIn { from { opacity: .72; transform: translateY(4px); } }
+/* 等待期顶上一条发丝进度线，提示「正在换内容」 */
+#catalog.busy::before {
+    content: ""; position: absolute; left: 0; right: 0; top: 0; height: 1px; z-index: 3;
+    background: var(--ink); transform-origin: left;
+    animation: catProgress .8s cubic-bezier(.4, 0, .2, 1) infinite;
+}
+@keyframes catProgress {
+    0% { transform: scaleX(0); opacity: 1; }
+    60% { transform: scaleX(.82); opacity: 1; }
+    100% { transform: scaleX(1); opacity: 0; }
+}
+
 /* 个人资料行 */
 .prow {
     display: flex; align-items: baseline; gap: 24px;
@@ -919,6 +937,7 @@ body.lang-en .lead, body.lang-en .tiny, body.lang-en .eyebrow { letter-spacing: 
 
 @media (prefers-reduced-motion: reduce) {
     .page > :not(.hdw), .card.in, .ripple, .apane.pane-in, #opanel.swapped, .qbox input.tick,
+    #catalog, #catalog.busy::before,
     .btn, .btn.ghost::before, .gstage img, #opanel, .hdr form.inline input[type="text"],
     .anav .an::before {
         animation: none !important;

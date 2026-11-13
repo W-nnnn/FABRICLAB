@@ -368,3 +368,114 @@
   });
   window.addEventListener('popstate', function () { load(location.href, false); });
 })();
+
+/* ============================================================ 选购列表局部刷新 */
+/* 左侧系列线、类型、排序、筛选标签、关键字查询、翻页：只替换 #catalog 里的内容，
+   不整页跳转——整页切走再切回会有一帧空白，看起来就是「一闪」。
+   商品卡仍走整页过渡（深入详情，属层级变化）。 */
+(function () {
+  'use strict';
+  var region = document.getElementById('catalog');
+  if (!region) return;
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var busy = false, seq = 0, fitTimer = null, pending = null;
+
+  /* 同一路径才算「换筛选」；/product 等属于换页，交给页面过渡 */
+  function samePath(url) {
+    try { return new URL(url, location.href).pathname === location.pathname; }
+    catch (e) { return false; }
+  }
+
+  /* 服务端会把未选条件渲染成空参数，地址栏里去掉它们，保持可读 */
+  function tidy(url) {
+    try {
+      var u = new URL(url, location.href);
+      Array.from(u.searchParams.keys()).forEach(function (k) {
+        if (!u.searchParams.get(k)) u.searchParams.delete(k);
+      });
+      return u.pathname + u.search;
+    } catch (e) { return url; }
+  }
+
+  function topOf() {
+    var hdr = document.querySelector('.hdw');
+    var off = hdr ? hdr.getBoundingClientRect().height : 0;
+    return Math.max(0, region.getBoundingClientRect().top + window.pageYOffset - off - 10);
+  }
+
+  function load(url, mode, force) {
+    url = tidy(url);
+    if (!force && url === location.pathname + location.search) return; /* 条件没变，不重取 */
+    if (busy) { pending = { url: url, mode: mode }; return; } /* 连点：记住最后一击，结束后再来 */
+    busy = true;
+    var mine = ++seq;
+    var t0 = Date.now();
+    region.classList.remove('swapped');
+    if (!reduce) region.classList.add('busy'); /* 降级时不暗化，连瞬时明暗都不要 */
+    fetch(url, { credentials: 'same-origin' })
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); })
+      .then(function (html) {
+        if (mine !== seq) return;
+        var next = new DOMParser().parseFromString(html, 'text/html').getElementById('catalog');
+        /* 最快路径下也留住一小段暗场，否则暗一下又亮回，本身就成了闪 */
+        var wait = Math.max(0, 130 - (Date.now() - t0));
+        setTimeout(function () {
+          /* 局部取的内容可能与当前节点数不同：内容在暗场期间换掉，看不出跳变 */
+          if (next) region.innerHTML = next.innerHTML;
+          if (mode === 'push' && history.pushState) history.pushState(null, '', url);
+          else if (mode === 'replace' && history.replaceState) history.replaceState(null, '', url);
+          region.classList.remove('busy');
+          if (!reduce) {
+            void region.offsetWidth;
+            region.classList.add('swapped');
+            clearTimeout(fitTimer);
+            fitTimer = setTimeout(function () { region.classList.remove('swapped'); }, 320);
+          }
+          busy = false;
+          var nx = pending; /* 等待期间的点击只在最后生效，不丢操作 */
+          pending = null;
+          if (nx) load(nx.url, nx.mode, true);
+        }, wait);
+      })
+      .catch(function () {
+        busy = false;
+        pending = null;
+        region.classList.remove('busy');
+        window.location.href = url; /* 取不到就退回整页跳转 */
+      });
+  }
+
+  region.addEventListener('click', function (e) {
+    if (e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    var a = e.target.closest('a');
+    if (!a) return;
+    var href = a.getAttribute('href');
+    if (!href || href.charAt(0) === '#') return;
+    if (a.target === '_blank' || a.hasAttribute('download')) return;
+    if (!samePath(a.href)) return; /* 商品卡等：不接管，走整页过渡 */
+    /* 置位 defaultPrevented 后，document 上的页面退出动画会自动跳过 */
+    e.preventDefault();
+    if (a.href === location.href) return;
+    load(a.href, 'push');
+    if (a.classList.contains('pglink')) {
+      window.scrollTo({ top: topOf(), behavior: reduce ? 'auto' : 'smooth' });
+    }
+  });
+
+  region.addEventListener('submit', function (e) {
+    var f = e.target;
+    if (!f || f.tagName !== 'FORM') return;
+    e.preventDefault();
+    var qs = new URLSearchParams();
+    new FormData(f).forEach(function (v, k) {
+      if (String(v).trim() !== '') qs.append(k, v);
+    });
+    var action = f.getAttribute('action') || location.pathname;
+    load(action + (qs.toString() ? '?' + qs.toString() : ''), 'push');
+  });
+
+  /* 前进 / 后退回到某个筛选状态：按地址重取这一块 */
+  window.addEventListener('popstate', function () {
+    if (samePath(location.href)) load(location.href, 'none', true);
+  });
+})();
