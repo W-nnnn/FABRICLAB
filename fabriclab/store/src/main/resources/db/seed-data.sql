@@ -793,3 +793,143 @@ UNION ALL SELECT 'sales_order_item', COUNT(*) FROM sales_order_item;
 SELECT 'status' AS check_name, status AS detail, COUNT(*) AS row_count FROM product GROUP BY status
 UNION ALL SELECT 'on-sale sold-out', NULL, COUNT(*) FROM product WHERE status = 'ON_SALE' AND stock = 0
 UNION ALL SELECT 'on-sale stock=1', NULL, COUNT(*) FROM product WHERE status = 'ON_SALE' AND stock = 1;
+-- ============================================================ 目录一致性修正
+-- 修正内容：商品简介与详情文案按款类重写（原文案与商品无关）；
+--          5 件商品按实际图片重新定名并归入正确系列；清理图集中混入的其他款式照片。
+-- 本段在种子数据末尾执行，可重复运行。
+
+UPDATE product SET name='细吊带背心 · 墨黑', summary='桑蚕丝缎吊带背心，细肩带收边，单穿或内搭都利落。', description='细吊带背心 · 墨黑。面料：桑蚕丝缎\n克重：96g/m²\n版型：修身直下摆\n工艺：手工包边与暗缝\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='COMMUTE_GAR') WHERE sku='FL-CM-01';
+DELETE FROM product_image WHERE product_id=(SELECT id FROM product WHERE sku='FL-CM-01') AND sort_order IN (20);
+
+UPDATE product SET name='山羊绒高领衫 · 深栗', summary='山羊绒高领衫，贴颈柔软，秋冬打底不臃肿。', description='山羊绒高领衫 · 深栗。面料：山羊绒\n克重：260g/m²\n版型：修身微收腰\n工艺：全成型无缝编织\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='COMMUTE_GAR') WHERE sku='FL-CM-02';
+
+UPDATE product SET name='棉质针织衫 · 灰蓝', summary='精梳棉针织衫，布面平整，四季可单穿。', description='棉质针织衫 · 灰蓝。面料：精梳棉\n克重：220g/m²\n版型：直筒宽松\n工艺：圆机平针\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='COMMUTE_GAR') WHERE sku='FL-CM-03';
+
+UPDATE product SET name='牛仔衬衫 · 中蓝', summary='水洗牛仔衬衫，硬挺有型，也可当薄外套穿。', description='牛仔衬衫 · 中蓝。面料：水洗牛仔\n克重：310g/m²\n版型：宽松落肩\n工艺：双线明缝\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='COMMUTE_GAR') WHERE sku='FL-CM-04';
+
+UPDATE product SET name='法兰绒衬衫 · 炭灰', summary='磨毛法兰绒衬衫，绒面柔软，冬季内搭保暖。', description='法兰绒衬衫 · 炭灰。面料：磨毛法兰绒\n克重：280g/m²\n版型：常规直筒\n工艺：起绒磨毛整理\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='COMMUTE_GAR') WHERE sku='FL-CM-05';
+
+UPDATE product SET name='连帽卫衣 · 墨黑', summary='厚磅连帽卫衣，毛圈内里，宽松落肩。', description='连帽卫衣 · 墨黑。面料：棉质毛圈\n克重：380g/m²\n版型：宽松落肩\n工艺：双针车缝与罗纹收口\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='COMMUTE_GAR') WHERE sku='FL-CM-06';
+
+UPDATE product SET name='羊绒针织帽 · 深栗', summary='罗纹羊绒针织帽，贴头不压发，冬季常备。', description='羊绒针织帽 · 深栗。面料：山羊绒\n克重：90g/m²\n版型：罗纹贴头\n工艺：双层编织\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='COMMUTE_ACC') WHERE sku='FL-CM-07';
+
+UPDATE product SET name='羊绒针织帽 · 石墨', summary='罗纹羊绒针织帽，贴头不压发，冬季常备。', description='羊绒针织帽 · 石墨。面料：山羊绒\n克重：90g/m²\n版型：罗纹贴头\n工艺：双层编织\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='COMMUTE_ACC') WHERE sku='FL-CM-08';
+
+UPDATE product SET name='羊绒羊毛围巾 · 米色', summary='羊绒羊毛混纺围巾，轻软亲肤，通勤挡风。', description='羊绒羊毛围巾 · 米色。面料：羊绒羊毛混纺\n克重：180g/m²\n版型：中长幅宽\n工艺：手工收边\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='COMMUTE_ACC') WHERE sku='FL-CM-09';
+
+UPDATE product SET name='羊绒羊毛围巾 · 灰蓝', summary='羊绒羊毛混纺围巾，轻软亲肤，通勤挡风。', description='羊绒羊毛围巾 · 灰蓝。面料：羊绒羊毛混纺\n克重：180g/m²\n版型：中长幅宽\n工艺：手工收边\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='COMMUTE_ACC') WHERE sku='FL-CM-10';
+
+UPDATE product SET name='加大羊绒围巾 · 米色', summary='加大幅面羊绒围巾，可绕两圈，通勤挡风。', description='加大羊绒围巾 · 米色。面料：羊绒混纺\n克重：240g/m²\n版型：加宽加长\n工艺：手工锁边\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='COMMUTE_ACC') WHERE sku='FL-CM-11';
+
+UPDATE product SET name='加大羊绒围巾 · 灰蓝', summary='加大幅面羊绒围巾，可绕两圈，通勤挡风。', description='加大羊绒围巾 · 灰蓝。面料：羊绒混纺\n克重：240g/m²\n版型：加宽加长\n工艺：手工锁边\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='COMMUTE_ACC') WHERE sku='FL-CM-12';
+
+UPDATE product SET name='羊毛套头衫 · 深灰', summary='粗纺羊毛套头衫，轮廓松弛，居家与短途外出皆宜。', description='羊毛套头衫 · 深灰。面料：粗纺羊毛\n克重：340g/m²\n版型：落肩宽松\n工艺：全成型编织\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='HOME_GAR') WHERE sku='FL-HM-01';
+UPDATE product_image pi JOIN product p ON p.id = pi.product_id SET pi.alt_text='羊毛套头衫 · 深灰' WHERE p.sku='FL-HM-01';
+DELETE FROM product_image WHERE product_id=(SELECT id FROM product WHERE sku='FL-HM-01') AND sort_order IN (30, 40);
+
+UPDATE product SET name='罗纹背心 · 墨黑', summary='罗纹棉背心，弹力贴合，内搭外穿都干净。', description='罗纹背心 · 墨黑。面料：精梳棉罗纹\n克重：160g/m²\n版型：修身贴合\n工艺：罗纹收口\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='HOME_GAR') WHERE sku='FL-HM-02';
+
+UPDATE product SET name='羊毛大衣 · 藏青', summary='双面羊毛大衣，无里布轻量保暖，廓形挺括。', description='羊毛大衣 · 藏青。面料：双面羊毛\n克重：620g/m²\n版型：直筒廓形\n工艺：手工绷缝\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='HOME_GAR') WHERE sku='FL-HM-03';
+
+UPDATE product SET name='羊毛夹克 · 藏青', summary='羊毛混纺夹克，短款利落，通勤外层首选。', description='羊毛夹克 · 藏青。面料：羊毛混纺\n克重：480g/m²\n版型：短款直身\n工艺：明线压缝\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='HOME_GAR') WHERE sku='FL-HM-04';
+
+UPDATE product SET name='羊毛直筒半裙 · 墨黑', summary='羊毛直筒半裙，垂顺不贴身，及膝长度。', description='羊毛直筒半裙 · 墨黑。面料：羊毛混纺\n克重：320g/m²\n版型：直筒中长\n工艺：侧隐拉链\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='HOME_GAR') WHERE sku='FL-HM-05';
+
+UPDATE product SET name='拉链连帽卫衣 · 墨黑', summary='拉链连帽卫衣，帽子挺括，可作薄外套。', description='拉链连帽卫衣 · 墨黑。面料：棉质毛圈\n克重：400g/m²\n版型：常规直筒\n工艺：双层帽片\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='HOME_GAR') WHERE sku='FL-HM-06';
+
+UPDATE product SET name='圆领羊毛衫 · 墨黑', summary='圆领羊毛衫，细针平整，单穿不刺。', description='圆领羊毛衫 · 墨黑。面料：细针羊毛\n克重：230g/m²\n版型：常规直身\n工艺：全成型编织\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='HOME_GAR') WHERE sku='FL-HM-07';
+UPDATE product_image pi JOIN product p ON p.id = pi.product_id SET pi.alt_text='圆领羊毛衫 · 墨黑' WHERE p.sku='FL-HM-07';
+DELETE FROM product_image WHERE product_id=(SELECT id FROM product WHERE sku='FL-HM-07') AND sort_order IN (20, 30, 40);
+
+UPDATE product SET name='罗纹羊毛袜三双装 · 墨黑', summary='罗纹羊毛袜三双装，保暖耐穿，一套换洗。', description='罗纹羊毛袜三双装 · 墨黑。面料：羊毛混纺\n规格：中筒 · 三双装\n版型：贴合足型\n工艺：加固脚跟与袜尖\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='HOME_ACC') WHERE sku='FL-HM-08';
+
+UPDATE product SET name='罗纹羊毛袜三双装 · 炭灰', summary='罗纹羊毛袜三双装，保暖耐穿，一套换洗。', description='罗纹羊毛袜三双装 · 炭灰。面料：羊毛混纺\n规格：中筒 · 三双装\n版型：贴合足型\n工艺：加固脚跟与袜尖\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='HOME_ACC') WHERE sku='FL-HM-09';
+
+UPDATE product SET name='罗纹羊毛袜三双装 · 藏青', summary='罗纹羊毛袜三双装，保暖耐穿，一套换洗。', description='罗纹羊毛袜三双装 · 藏青。面料：羊毛混纺\n规格：中筒 · 三双装\n版型：贴合足型\n工艺：加固脚跟与袜尖\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='HOME_ACC') WHERE sku='FL-HM-10';
+
+UPDATE product SET name='罗纹羊毛袜三双装 · 深灰', summary='罗纹羊毛袜三双装，保暖耐穿，一套换洗。', description='罗纹羊毛袜三双装 · 深灰。面料：羊毛混纺\n规格：中筒 · 三双装\n版型：贴合足型\n工艺：加固脚跟与袜尖\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='HOME_ACC') WHERE sku='FL-HM-11';
+
+UPDATE product SET name='罗纹美利奴羊毛袜 · 墨黑', summary='美利奴羊毛袜，细密柔软，久穿不闷。', description='罗纹美利奴羊毛袜 · 墨黑。面料：美利奴羊毛\n规格：中筒\n版型：贴合足型\n工艺：无骨缝合\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='HOME_ACC') WHERE sku='FL-HM-12';
+
+UPDATE product SET name='水洗亚麻衬衫 · 本白', summary='水洗亚麻衬衫，垂坠透气，越穿越软。', description='水洗亚麻衬衫 · 本白。面料：水洗亚麻\n克重：190g/m²\n版型：宽松直身\n工艺：水洗做旧\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='LEISURE_GAR') WHERE sku='FL-LS-01';
+DELETE FROM product_image WHERE product_id=(SELECT id FROM product WHERE sku='FL-LS-01') AND sort_order IN (40);
+
+UPDATE product SET name='亚麻阔腿裤 · 藏青', summary='亚麻阔腿裤，高腰垂坠，遮腿型。', description='亚麻阔腿裤 · 藏青。面料：亚麻混纺\n克重：240g/m²\n版型：高腰阔腿\n工艺：侧缝明线\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='LEISURE_GAR') WHERE sku='FL-LS-02';
+
+UPDATE product SET name='长袖珠地 Polo · 墨黑', summary='长袖珠地 Polo，透气不贴身，领型挺括。', description='长袖珠地 Polo · 墨黑。面料：珠地棉\n克重：210g/m²\n版型：常规直筒\n工艺：双针领口\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='LEISURE_GAR') WHERE sku='FL-LS-03';
+
+UPDATE product SET name='长袖 T 恤 · 墨黑', summary='精梳棉长袖 T，薄厚适中，四季打底。', description='长袖 T 恤 · 墨黑。面料：精梳棉\n克重：180g/m²\n版型：常规直筒\n工艺：领口包边\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='LEISURE_GAR') WHERE sku='FL-LS-04';
+
+UPDATE product SET name='宽松斜纹裤 · 墨黑', summary='斜纹棉宽松长裤，直筒垂顺，久坐不勒。', description='宽松斜纹裤 · 墨黑。面料：斜纹棉\n克重：300g/m²\n版型：宽松直筒\n工艺：加固腰头\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='LEISURE_GAR') WHERE sku='FL-LS-05';
+
+UPDATE product SET name='美利奴半拉链衫 · 浅驼', summary='美利奴半拉链衫，立领挡风，运动日常皆可。', description='美利奴半拉链衫 · 浅驼。面料：美利奴羊毛\n克重：260g/m²\n版型：常规直身\n工艺：半开拉链\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='LEISURE_GAR') WHERE sku='FL-LS-06';
+
+UPDATE product SET name='再生羊绒帽 · 炭灰', summary='再生羊绒针织帽，轻软保暖，帽口可翻折。', description='再生羊绒帽 · 炭灰。面料：再生羊绒\n克重：80g/m²\n版型：罗纹贴头\n工艺：双层翻边\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='LEISURE_ACC') WHERE sku='FL-LS-07';
+DELETE FROM product_image WHERE product_id=(SELECT id FROM product WHERE sku='FL-LS-07') AND sort_order IN (20, 30, 40);
+
+UPDATE product SET name='再生羊绒帽 · 浅驼', summary='再生羊绒针织帽，轻软保暖，帽口可翻折。', description='再生羊绒帽 · 浅驼。面料：再生羊绒\n克重：80g/m²\n版型：罗纹贴头\n工艺：双层翻边\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='LEISURE_ACC') WHERE sku='FL-LS-08';
+
+UPDATE product SET name='加大羊绒围巾 · 藏青', summary='加大幅面羊绒围巾，可绕两圈，通勤挡风。', description='加大羊绒围巾 · 藏青。面料：羊绒混纺\n克重：240g/m²\n版型：加宽加长\n工艺：手工锁边\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='LEISURE_ACC') WHERE sku='FL-LS-09';
+
+UPDATE product SET name='羊绒羊毛围巾 · 墨黑', summary='羊绒羊毛混纺围巾，轻软亲肤，通勤挡风。', description='羊绒羊毛围巾 · 墨黑。面料：羊绒羊毛混纺\n克重：180g/m²\n版型：中长幅宽\n工艺：手工收边\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='LEISURE_ACC') WHERE sku='FL-LS-10';
+
+UPDATE product SET name='羊绒羊毛围巾 · 藏青', summary='羊绒羊毛混纺围巾，轻软亲肤，通勤挡风。', description='羊绒羊毛围巾 · 藏青。面料：羊绒羊毛混纺\n克重：180g/m²\n版型：中长幅宽\n工艺：手工收边\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='LEISURE_ACC') WHERE sku='FL-LS-11';
+
+UPDATE product SET name='罗纹羊毛帽 · 墨黑', summary='罗纹羊毛帽，弹性贴头，冬季保暖。', description='罗纹羊毛帽 · 墨黑。面料：羊毛混纺\n克重：85g/m²\n版型：罗纹贴头\n工艺：双层编织\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='LEISURE_ACC') WHERE sku='FL-LS-12';
+
+UPDATE product SET name='绗缝外套 · 橄榄绿', summary='绗缝夹棉外套，轻量保暖，可收纳出行。', description='绗缝外套 · 橄榄绿。面料：尼龙绗缝面布，棉填充\n克重：480g/m²\n版型：直身中长\n工艺：分段绗线\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='OUTDOOR_GAR') WHERE sku='FL-OC-01';
+UPDATE product_image pi JOIN product p ON p.id = pi.product_id SET pi.alt_text='绗缝外套 · 橄榄绿' WHERE p.sku='FL-OC-01';
+DELETE FROM product_image WHERE product_id=(SELECT id FROM product WHERE sku='FL-OC-01') AND sort_order IN (30, 40);
+
+UPDATE product SET name='常规斜纹裤 · 墨黑', summary='斜纹棉常规长裤，版型周正，四季可穿。', description='常规斜纹裤 · 墨黑。面料：斜纹棉\n克重：310g/m²\n版型：常规直筒\n工艺：加固袋口\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='OCCASION_GAR') WHERE sku='FL-OC-02';
+
+UPDATE product SET name='大圆领上衣 · 墨黑', summary='精梳棉大圆领上衣，领口宽舒，单穿不紧绷。', description='大圆领上衣 · 墨黑。面料：精梳棉\n克重：180g/m²\n版型：宽松直身\n工艺：领口包边\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='OCCASION_GAR') WHERE sku='FL-OC-03';
+
+UPDATE product SET name='修身斜纹裤 · 米色', summary='修身斜纹裤，锥形收口，线条干净。', description='修身斜纹裤 · 米色。面料：斜纹棉\n克重：300g/m²\n版型：锥形修身\n工艺：侧缝压线\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='OCCASION_GAR') WHERE sku='FL-OC-04';
+
+UPDATE product SET name='修身牛仔裤 · 中蓝', summary='水洗修身牛仔裤，弹力适中，久坐不硬。', description='修身牛仔裤 · 中蓝。面料：水洗牛仔\n克重：340g/m²\n版型：修身锥形\n工艺：双线明缝\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='OCCASION_GAR') WHERE sku='FL-OC-05';
+
+UPDATE product SET name='卫裤 · 墨黑', summary='棉质卫裤，抽绳腰头，居家出行都合适。', description='卫裤 · 墨黑。面料：棉质毛圈\n克重：360g/m²\n版型：宽松直筒\n工艺：抽绳腰头\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='OCCASION_GAR') WHERE sku='FL-OC-06';
+
+UPDATE product SET name='水洗府绸衬衫 · 浅蓝', summary='水洗府绸衬衫，布面柔滑，通勤可穿。', description='水洗府绸衬衫 · 浅蓝。面料：水洗府绸棉\n克重：150g/m²\n版型：常规直身\n工艺：免烫压光\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='OCCASION_GAR') WHERE sku='FL-OC-07';
+UPDATE product_image pi JOIN product p ON p.id = pi.product_id SET pi.alt_text='水洗府绸衬衫 · 浅蓝' WHERE p.sku='FL-OC-07';
+DELETE FROM product_image WHERE product_id=(SELECT id FROM product WHERE sku='FL-OC-07') AND sort_order IN (20, 30, 40);
+
+UPDATE product SET name='罗纹棉袜三双装 · 藏青', summary='罗纹棉袜三双装，换洗方便，日常耐磨。', description='罗纹棉袜三双装 · 藏青。面料：精梳棉\n规格：中筒 · 三双装\n版型：贴合足型\n工艺：加固脚跟\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='OCCASION_ACC') WHERE sku='FL-OC-08';
+
+UPDATE product SET name='罗纹棉袜三双装 · 浅灰绿', summary='罗纹棉袜三双装，换洗方便，日常耐磨。', description='罗纹棉袜三双装 · 浅灰绿。面料：精梳棉\n规格：中筒 · 三双装\n版型：贴合足型\n工艺：加固脚跟\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='OCCASION_ACC') WHERE sku='FL-OC-09';
+
+UPDATE product SET name='罗纹棉袜 · 墨黑', summary='罗纹棉袜，袜口不勒，日常耐磨。', description='罗纹棉袜 · 墨黑。面料：精梳棉\n规格：中筒\n版型：贴合足型\n工艺：罗纹袜口与加固脚跟\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='OCCASION_ACC') WHERE sku='FL-OC-10';
+
+UPDATE product SET name='罗纹棉袜 · 炭灰', summary='罗纹棉袜，袜口不勒，日常耐磨。', description='罗纹棉袜 · 炭灰。面料：精梳棉\n规格：中筒\n版型：贴合足型\n工艺：罗纹袜口与加固脚跟\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='OCCASION_ACC') WHERE sku='FL-OC-11';
+
+UPDATE product SET name='罗纹棉袜 · 藏青', summary='罗纹棉袜，袜口不勒，日常耐磨。', description='罗纹棉袜 · 藏青。面料：精梳棉\n规格：中筒\n版型：贴合足型\n工艺：罗纹袜口与加固脚跟\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='OCCASION_ACC') WHERE sku='FL-OC-12';
+
+UPDATE product SET name='美利奴羊毛衫 · 炭灰', summary='美利奴羊毛衫，细针平整，四季可叠穿。', description='美利奴羊毛衫 · 炭灰。面料：美利奴羊毛\n克重：240g/m²\n版型：常规直身\n工艺：全成型编织\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='OUTDOOR_GAR') WHERE sku='FL-OD-01';
+DELETE FROM product_image WHERE product_id=(SELECT id FROM product WHERE sku='FL-OD-01') AND sort_order IN (20, 30, 40);
+
+UPDATE product SET name='美利奴高领打底 · 墨黑', summary='美利奴高领打底，贴身不扎，冬季内搭。', description='美利奴高领打底 · 墨黑。面料：美利奴羊毛\n克重：200g/m²\n版型：修身贴身\n工艺：无缝编织\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='OUTDOOR_GAR') WHERE sku='FL-OD-02';
+
+UPDATE product SET name='美利奴拉链开衫 · 墨黑', summary='美利奴拉链开衫，可开可合，温差应对。', description='美利奴拉链开衫 · 墨黑。面料：美利奴羊毛\n克重：280g/m²\n版型：常规直身\n工艺：双向拉链\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='OUTDOOR_GAR') WHERE sku='FL-OD-03';
+
+UPDATE product SET name='衬衫式外套 · 藏青', summary='衬衫式外套，硬挺有型，可当轻外层。', description='衬衫式外套 · 藏青。面料：斜纹棉\n克重：330g/m²\n版型：宽松直身\n工艺：明线压缝\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='OUTDOOR_GAR') WHERE sku='FL-OD-04';
+
+UPDATE product SET name='珠地网眼 Polo · 墨黑', summary='珠地网眼 Polo，透气爽利，短袖更好动。', description='珠地网眼 Polo · 墨黑。面料：珠地棉\n克重：190g/m²\n版型：常规直身\n工艺：双针领口\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='OUTDOOR_GAR') WHERE sku='FL-OD-05';
+
+UPDATE product SET name='府绸衬衫 · 本白', summary='高支府绸衬衫，布面光洁，领型挺括。', description='府绸衬衫 · 本白。面料：高支府绸棉\n克重：150g/m²\n版型：常规直身\n工艺：免烫压光\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='OUTDOOR_GAR') WHERE sku='FL-OD-06';
+
+UPDATE product SET name='针织 Polo · 棕褐', summary='针织 Polo 衫，领型挺括，透气不闷。', description='针织 Polo · 棕褐。面料：珠地针织棉\n克重：220g/m²\n版型：常规直身\n工艺：双针领口与罗纹袖口\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='OUTDOOR_GAR') WHERE sku='FL-OD-07';
+UPDATE product_image pi JOIN product p ON p.id = pi.product_id SET pi.alt_text='针织 Polo · 棕褐' WHERE p.sku='FL-OD-07';
+DELETE FROM product_image WHERE product_id=(SELECT id FROM product WHERE sku='FL-OD-07') AND sort_order IN (20, 30, 40);
+
+UPDATE product SET name='罗纹羊毛帽 · 藏青', summary='罗纹羊毛帽，弹性贴头，冬季保暖。', description='罗纹羊毛帽 · 藏青。面料：羊毛混纺\n克重：85g/m²\n版型：罗纹贴头\n工艺：双层编织\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='OUTDOOR_ACC') WHERE sku='FL-OD-08';
+
+UPDATE product SET name='加大羊绒围巾 · 墨黑', summary='加大幅面羊绒围巾，可绕两圈，通勤挡风。', description='加大羊绒围巾 · 墨黑。面料：羊绒混纺\n克重：240g/m²\n版型：加宽加长\n工艺：手工锁边\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='OUTDOOR_ACC') WHERE sku='FL-OD-09';
+
+UPDATE product SET name='再生羊绒帽 · 浅灰', summary='再生羊绒针织帽，轻软保暖，帽口可翻折。', description='再生羊绒帽 · 浅灰。面料：再生羊绒\n克重：80g/m²\n版型：罗纹贴头\n工艺：双层翻边\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='OUTDOOR_ACC') WHERE sku='FL-OD-10';
+
+UPDATE product SET name='再生羊绒帽 · 沙色', summary='再生羊绒针织帽，轻软保暖，帽口可翻折。', description='再生羊绒帽 · 沙色。面料：再生羊绒\n克重：80g/m²\n版型：罗纹贴头\n工艺：双层翻边\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='OUTDOOR_ACC') WHERE sku='FL-OD-11';
+
+UPDATE product SET name='罗纹棉袜三双装 · 墨黑', summary='罗纹棉袜三双装，换洗方便，日常耐磨。', description='罗纹棉袜三双装 · 墨黑。面料：精梳棉\n规格：中筒 · 三双装\n版型：贴合足型\n工艺：加固脚跟\n所有名称、价格与库存仅用于课程演示，不构成真实销售建议。一个商品对应一个固定SKU，尺码与配色体现在商品名称中，不提供规格选项。', category_id=(SELECT id FROM category WHERE code='OUTDOOR_ACC') WHERE sku='FL-OD-12';
+
+-- 一致性修正结束
