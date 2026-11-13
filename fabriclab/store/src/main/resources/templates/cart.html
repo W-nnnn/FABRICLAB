@@ -4,14 +4,14 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="|#{nav.brand} · #{cart.title}|">FABRICLAB · 购物袋</title>
-    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113a}"/>
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113c}"/>
 </head>
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
 
     <th:block th:replace="~{fragments :: header(null)}"></th:block>
 
-    <p class="flash warn" style="margin-top:24px" th:if="${cartError != null}" th:text="${cartError}">提示</p>
+    <p class="flash warn" style="margin-top:24px" th:if="${cartError != null}" th:text="${tr.t(cartError)}">提示</p>
 
     <!-- 空袋 -->
     <div class="empty" th:if="${view.empty}">
@@ -23,7 +23,7 @@
     </div>
 
     <th:block th:unless="${view.empty}">
-        <div style="padding:34px 84px 30px;display:flex;align-items:flex-end">
+        <div style="padding:34px var(--gx) 30px;display:flex;align-items:flex-end">
             <div>
                 <div class="eyebrow" th:text="#{cart.eyebrow}">购物袋</div>
                 <div class="h2" style="margin-top:12px;font-size:34px"
@@ -36,7 +36,7 @@
             </div>
         </div>
 
-        <div style="padding:0 84px 30px">
+        <div style="padding:0 var(--gx) 30px">
             <th:block th:replace="~{fragments :: steps(1)}"></th:block>
         </div>
 
@@ -44,7 +44,7 @@
             购物车包含失效条目，暂时不能整车结算；失效条目仍会保留，可移除后再结算。
         </p>
 
-        <div style="display:flex;padding:0 84px">
+        <div style="display:flex;padding:0 var(--gx)">
             <!-- 左：清单 -->
             <div style="width:860px;flex:none">
                 <div style="display:flex;padding:0 0 12px;border-bottom:1px solid var(--ink);
@@ -57,15 +57,15 @@
                      th:classappend="${line.unavailable} ? 'invalid'">
                     <a class="thumb" th:href="@{/product(id=${line.productId})}">
                         <img th:src="${#strings.isEmpty(line.coverImage) ? '/images/mark.png' : '/' + line.coverImage}"
-                             th:alt="${line.name}" loading="lazy"/>
+                             th:alt="${tr.t(line.name)}" loading="lazy"/>
                     </a>
                     <div class="info">
                         <a class="nm" style="display:block" th:href="@{/product(id=${line.productId})}"
-                           th:text="${line.name}">商品名称</a>
+                           th:text="${tr.t(line.name)}">商品名称</a>
                         <div class="sk" th:text="${line.sku}">FL-CM-01</div>
                         <div class="attr">
                             <span th:text="|#{cart.unit} ¥ ${#numbers.formatDecimal(line.unitPrice, 1, 2)}|">单价</span>
-                            <span th:if="${line.unavailable}" style="color:var(--rust)" th:text="${line.reason}">商品已下架</span>
+                            <span th:if="${line.unavailable}" style="color:var(--rust)" th:text="${tr.t(line.reason)}">商品已下架</span>
                         </div>
                     </div>
                     <div class="qty">
@@ -77,7 +77,7 @@
                             <span class="qbox">
                                 <input class="qty-input" type="number" name="quantity"
                                        th:value="${line.quantity}" min="1" max="99" step="1"
-                                       aria-label="购买数量"/>
+                                       th:aria-label="#{cart.qty.aria}"/>
                             </span>
                             <button type="submit" class="tlink plain" style="font-size:10px;color:var(--mute)"
                                     th:text="#{cart.update}">更新</button>
@@ -159,7 +159,7 @@
             </div>
         </div>
 
-        <div style="padding:70px 84px 0">
+        <div style="padding:70px var(--gx) 0">
             <div class="ptitle">
                 <div>
                     <div class="eyebrow" th:text="#{cart.rec.eb}">为你而选</div>

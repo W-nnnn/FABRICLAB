@@ -4,7 +4,7 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="|#{nav.brand} · #{order.title}|">FABRICLAB · 订单详情</title>
-    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113a}"/>
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113c}"/>
 </head>
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
@@ -15,10 +15,10 @@
         <a th:href="@{/orders}" th:text="#{order.back}">← 返回订单列表</a>
     </div>
 
-    <p class="flash warn" style="margin-top:20px" th:if="${orderError != null}" th:text="${orderError}">提示</p>
+    <p class="flash warn" style="margin-top:20px" th:if="${orderError != null}" th:text="${tr.t(orderError)}">提示</p>
     <p class="flash" style="margin-top:20px" th:if="${orderFlash != null}" th:text="${orderFlash}">提示</p>
 
-    <div style="padding:30px 84px 34px;display:flex;align-items:flex-end">
+    <div style="padding:30px var(--gx) 34px;display:flex;align-items:flex-end">
         <div>
             <div class="eyebrow" th:text="#{order.eyebrow}">订单详情</div>
             <div class="h2" style="margin-top:12px;font-size:34px" th:text="${detail.status.label()}">待付款</div>
@@ -35,7 +35,7 @@
         </div>
     </div>
 
-    <div style="display:flex;padding:0 84px">
+    <div style="display:flex;padding:0 var(--gx)">
         <!-- 左 -->
         <div style="width:790px;flex:none">
             <!-- 时间线 -->

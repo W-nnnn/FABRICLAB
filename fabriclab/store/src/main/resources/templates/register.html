@@ -4,14 +4,14 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="|#{nav.brand} · #{signup.title}|">FABRICLAB · 注册</title>
-    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113a}"/>
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113c}"/>
 </head>
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
 
     <div style="display:flex;height:1060px">
         <!-- 左：表单 -->
-        <div style="flex:1;padding:42px 92px 44px 84px;display:flex;flex-direction:column">
+        <div style="flex:1;padding:42px 92px 44px var(--gx);display:flex;flex-direction:column">
             <div style="display:flex;align-items:center">
                 <a style="display:flex;align-items:center;gap:11px" th:href="@{/main}">
                     <img th:src="@{/images/mark.png}" alt="" style="height:26px"/>
@@ -50,7 +50,7 @@
                         注册后可使用购物袋与订单，随时查看购买记录。
                     </div>
 
-                    <p class="flash warn" style="margin:24px 0 0" th:if="${error != null}" th:text="${error}">错误提示</p>
+                    <p class="flash warn" style="margin:24px 0 0" th:if="${error != null}" th:text="${tr.t(error)}">错误提示</p>
 
                     <form th:action="@{/register}" method="post" style="margin-top:34px">
                         <input type="hidden" name="_csrf" th:value="${csrfToken}"/>

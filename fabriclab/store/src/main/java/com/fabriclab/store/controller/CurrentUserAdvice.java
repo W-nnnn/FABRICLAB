@@ -1,5 +1,6 @@
 package com.fabriclab.store.controller;
 
+import com.fabriclab.store.config.ContentI18n;
 import com.fabriclab.store.model.CurrentUser;
 import com.fabriclab.store.security.CsrfService;
 import com.fabriclab.store.service.CartService;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
 /**
- * 全局模型填充：CSRF 令牌、当前登录身份与购物车徽标。
+ * 全局模型填充：CSRF 令牌、当前登录身份、购物车徽标与数据库内容翻译器。
  * 徽标为本人数据库购物车数量总和（含失效条目），游客不注入、模板按 0 展示。
  */
 @ControllerAdvice
@@ -20,6 +21,8 @@ public class CurrentUserAdvice {
     private final CsrfService csrfService;
     private final CurrentUserService currentUserService;
     private final CartService cartService;
+    // 无依赖无状态，直接实例化；@WebMvcTest 切片不扫描 @Component
+    private final ContentI18n contentI18n = new ContentI18n();
 
     public CurrentUserAdvice(CsrfService csrfService, CurrentUserService currentUserService,
                              CartService cartService) {
@@ -34,6 +37,8 @@ public class CurrentUserAdvice {
         LangLinks.fill(model, request);
         // 头部系列线激活项：由请求路径与 category 参数推导，控制器无需各自传入
         model.addAttribute("navActive", navActive(request));
+        // 数据库内容（分类/商品名等）翻译器：模板以 ${tr.t(...)} 调用
+        model.addAttribute("tr", contentI18n);
         if (session != null) {
             model.addAttribute("csrfToken", csrfService.token(session));
             CurrentUser current = currentUserService.from(session);

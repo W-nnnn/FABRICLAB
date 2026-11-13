@@ -4,7 +4,7 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="|#{nav.brand} · #{home.title}|">FABRICLAB · 未染</title>
-    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113a}"/>
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113c}"/>
 </head>
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
@@ -12,8 +12,8 @@
     <th:block th:replace="~{fragments :: header(null)}"></th:block>
 
     <!-- ======================================================= 首屏（占满视口） -->
-    <div style="display:flex;min-height:calc(100vh - 78px);border-bottom:1px solid var(--line);position:relative">
-        <div style="width:712px;flex:none;padding:46px 0 36px 84px;display:flex;flex-direction:column">
+    <div style="display:flex;min-height:calc(100vh - 108px);border-bottom:1px solid var(--line);position:relative">
+        <div style="width:712px;flex:none;padding:46px 0 36px var(--gx);display:flex;flex-direction:column">
             <div class="eyebrow" th:text="#{home.eyebrow}">二〇二六 秋冬 · 第七辑</div>
             <div class="disp disp-hero" style="margin-top:30px"
                  th:utext="#{home.display}">未<br><span style=&quot;color:#B4643A&quot;>染</span></div>
@@ -38,12 +38,12 @@
                         display:flex;align-items:center;gap:14px">
                 <span class="tiny" style="letter-spacing:.18em" th:text="#{home.look}">FW26 / 型录 01</span>
                 <a style="font-size:12.5px;letter-spacing:.04em"
-                   th:href="@{/product(id=${lead0.id})}" th:text="${lead0.name}">羊毛开衫</a>
+                   th:href="@{/product(id=${lead0.id})}" th:text="${tr.t(lead0.name)}">羊毛开衫</a>
                 <span class="tiny" style="letter-spacing:.1em" th:text="${lead0.sku}">FL-OD-01</span>
                 <span class="din" style="font-size:11.5px;font-weight:500"
                       th:text="|¥ ${#numbers.formatDecimal(lead0.price, 1, 2)}|">¥ 1,670.00</span>
                 <a style="margin-left:auto;display:flex;color:var(--rust)"
-                   th:href="@{/product(id=${lead0.id})}" aria-label="查看商品">
+                   th:href="@{/product(id=${lead0.id})}" th:aria-label="#{product.view.aria}">
                     <svg width="14" height="9" viewBox="0 0 15 9" fill="none" stroke="currentColor"
                          stroke-width="1.2"><path d="M0 4.5h13.4M9.8 1l3.6 3.5-3.6 3.5"/></svg>
                 </a>
@@ -118,7 +118,7 @@
 
         <!-- 右：主图 -->
         <div style="flex:1;position:relative;overflow:hidden;background:var(--linen)">
-            <img th:src="@{/images/look/lb-03.jpg}" alt="FW26 型录"
+            <img th:src="@{/images/look/lb-03.jpg}" alt="FW26 LOOKBOOK"
                  style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
                         object-position:50% 14%"/>
             <div style="position:absolute;right:0;top:0;padding:15px 22px;font-family:var(--f-din);
@@ -142,7 +142,7 @@
                                       color:var(--faint)"
                    th:text="${#numbers.formatInteger(i.count, 2)}">01</i>
                 <b class="din" style="font-weight:500;font-size:10px;letter-spacing:.2em"
-                   th:text="${branch.line().name}">通勤</b>
+                   th:text="${tr.t(branch.line().name)}">通勤</b>
                 <span style="margin-left:auto;color:var(--rust);display:flex">
                     <svg width="14" height="9" viewBox="0 0 15 9" fill="none" stroke="currentColor"
                          stroke-width="1.2"><path d="M0 4.5h13.4M9.8 1l3.6 3.5-3.6 3.5"/></svg>
@@ -152,7 +152,7 @@
     </div>
 
     <!-- ======================================================= 三条规矩 -->
-    <div style="padding:74px 84px 0">
+    <div style="padding:74px var(--gx) 0">
         <div class="ptitle">
             <div>
                 <div class="eyebrow" th:text="#{home.rules.eb}">做法 / 三条规则</div>
@@ -204,7 +204,7 @@
              style="width:100%;height:100%;object-fit:cover;object-position:50% 30%"/>
         <div style="position:absolute;inset:0;background:linear-gradient(to right,
                     rgba(26,26,26,.62) 0%,rgba(26,26,26,.22) 46%,rgba(26,26,26,0) 74%)"></div>
-        <div style="position:absolute;left:84px;bottom:54px;color:var(--wall);max-width:430px">
+        <div style="position:absolute;left:var(--gx);bottom:54px;color:var(--wall);max-width:430px">
             <div class="din" style="font-size:9px;letter-spacing:.28em;opacity:.72"
                  th:text="#{home.edit.eb}">特辑 / FW26</div>
             <div class="disp" style="margin-top:16px;font-size:40px" th:utext="#{home.edit.title}">
@@ -225,7 +225,7 @@
             <img th:src="@{/images/look/wide-01.jpg}" alt="" loading="lazy"
                  style="width:100%;height:100%;object-fit:cover;object-position:50% 18%;opacity:.95"/>
         </div>
-        <div style="flex:1;padding:72px 84px 68px 66px;display:flex;flex-direction:column">
+        <div style="flex:1;padding:72px var(--gx) 68px 66px;display:flex;flex-direction:column">
             <div class="eyebrow" th:text="#{home.atelier.eb}">工坊 / 上海静安</div>
             <div class="song" style="margin-top:26px;font-size:40px;line-height:1.42;letter-spacing:.06em"
                  th:utext="#{home.atelier.title}">一间只做七件的<br>工坊</div>
@@ -257,7 +257,7 @@
     </div>
 
     <!-- ======================================================= 服务四栏 -->
-    <div style="padding:64px 84px 86px">
+    <div style="padding:64px var(--gx) 86px">
         <div class="svc">
             <div class="c">
                 <div class="no">SHIPPING</div>
@@ -283,7 +283,7 @@
     </div>
 
     <!-- ======================================================= 新品上架 -->
-    <div style="padding:78px 84px 0" th:if="${home.newArrivals() != null and !home.newArrivals().isEmpty()}">
+    <div style="padding:78px var(--gx) 0" th:if="${home.newArrivals() != null and !home.newArrivals().isEmpty()}">
         <div class="ptitle">
             <div>
                 <div class="eyebrow" th:text="#{home.new.eb}">新到 / 第七辑</div>
@@ -308,7 +308,7 @@
     </div>
 
     <!-- ======================================================= 精选推荐 -->
-    <div style="margin-top:76px;background:var(--linen);padding:60px 84px 66px"
+    <div style="margin-top:76px;background:var(--linen);padding:60px var(--gx) 66px"
          th:if="${home.featured() != null and !home.featured().isEmpty()}">
         <div class="ptitle">
             <div>

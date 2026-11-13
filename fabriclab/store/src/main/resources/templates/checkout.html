@@ -4,16 +4,16 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="|#{nav.brand} · #{checkout.title}|">FABRICLAB · 确认订单</title>
-    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113a}"/>
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113c}"/>
 </head>
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
 
     <th:block th:replace="~{fragments :: header(null)}"></th:block>
 
-    <p class="flash warn" style="margin-top:24px" th:if="${checkoutError != null}" th:text="${checkoutError}">提示</p>
+    <p class="flash warn" style="margin-top:24px" th:if="${checkoutError != null}" th:text="${tr.t(checkoutError)}">提示</p>
 
-    <div style="padding:34px 84px 26px;display:flex;align-items:flex-end">
+    <div style="padding:34px var(--gx) 26px;display:flex;align-items:flex-end">
         <div>
             <div class="eyebrow" th:text="#{checkout.eyebrow}">确认订单</div>
             <div class="h2" style="margin-top:12px;font-size:34px" th:text="#{checkout.heading}">确认订单</div>
@@ -23,7 +23,7 @@
         </div>
     </div>
 
-    <div style="display:flex;padding:14px 84px 0">
+    <div style="display:flex;padding:14px var(--gx) 0">
         <!-- 左：收货与提交 -->
         <div style="width:812px;flex:none">
             <div class="eyebrow g" style="margin-bottom:20px" th:text="#{checkout.s1}">01 / 收货信息</div>
@@ -45,8 +45,7 @@
                     </div>
                     <div class="field" style="flex:1">
                         <label class="lb" th:text="#{checkout.delivery}">配送方式</label>
-                        <input type="text" value="顺丰标快 · 2–3 个工作日" readonly tabindex="-1"
-                               th:value="#{checkout.delivery.value}"/>
+                        <input type="text" th:value="#{checkout.delivery.value}" readonly tabindex="-1"/>
                     </div>
                 </div>
 
@@ -130,7 +129,7 @@
         </div>
 
         <!-- 右：摘要 -->
-        <div style="width:384px;flex:none;margin-left:76px">
+        <div style="width:3var(--gx);flex:none;margin-left:76px">
             <div style="background:var(--linen);padding:26px 26px 24px">
                 <div style="display:flex;align-items:baseline">
                     <span class="tiny" style="letter-spacing:.2em;color:var(--ink)" th:text="#{checkout.summary}">订单摘要</span>
@@ -143,11 +142,11 @@
                          style="display:flex;align-items:center;gap:14px;padding:11px 0">
                         <div style="width:54px;aspect-ratio:3/4;overflow:hidden;background:var(--card);flex:none">
                             <img th:src="${#strings.isEmpty(line.coverImage) ? '/images/mark.png' : '/' + line.coverImage}"
-                                 th:alt="${line.name}" loading="lazy"
+                                 th:alt="${tr.t(line.name)}" loading="lazy"
                                  style="width:100%;height:100%;object-fit:cover"/>
                         </div>
                         <div>
-                            <div style="font-size:12px;letter-spacing:.02em" th:text="${line.name}">商品名称</div>
+                            <div style="font-size:12px;letter-spacing:.02em" th:text="${tr.t(line.name)}">商品名称</div>
                             <div class="tiny" style="margin-top:5px;letter-spacing:.1em"
                                  th:text="|${line.sku} · × ${line.quantity}|">FL-CM-01 · × 1</div>
                         </div>
@@ -193,7 +192,7 @@
         </div>
     </div>
 
-    <div style="margin-top:70px;padding:0 84px">
+    <div style="margin-top:70px;padding:0 var(--gx)">
         <div class="svc">
             <div class="c">
                 <div class="no">01</div>
