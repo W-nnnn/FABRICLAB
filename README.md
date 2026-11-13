@@ -28,7 +28,7 @@ Spring MVC + Thymeleaf + MyBatis-Plus，服务器端渲染；购物车存数据�
 | MySQL | 8.4（utf8mb4，Asia/Shanghai） |
 | 浏览器 | 桌面 Chrome / Edge，1366×768 与 1920×1080 |
 
-IntelliJ IDEA 项目根为 `fabriclab/`，项目配置位于 `fabriclab/.idea/`；编译目标与语言级别均为 17，源码编码 UTF-8。
+IntelliJ IDEA 项目根为 `fabriclab/`，项目配置位于 `fabriclab/.idea/`；编译目标与语言级别均为 25，源码编码 UTF-8。
 
 ## 数据库初始化
 
