@@ -21,7 +21,7 @@ class BrowseQueryTest {
         assertEquals(SortOption.DEFAULT, query.sort());
         assertNull(query.keyword());
         assertEquals(1, query.page());
-        assertEquals(6, query.size());
+        assertEquals(24, query.size());
         assertNull(query.productTypeParam());
     }
 

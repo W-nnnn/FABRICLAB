@@ -5,14 +5,14 @@ import com.fabriclab.store.exception.BusinessException;
 /**
  * 商品列表查询参数解析与归一。
  * 页码缺省 1、小于 1 的整数归一为 1，非整数或溢出返回参数错误；
- * 页大小缺省 6，仅允许 1—50 的整数；
+ * 页大小缺省 24，仅允许 1—50 的整数；
  * 关键字去首尾空白、最长 120 字符、空白等价于不搜索，不静默截断；
  * productType 仅接受 ALL / GARMENTS / ACCESSORIES，sort 仅接受 DEFAULT / PRICE_ASC / PRICE_DESC / NEWEST，非法值返回参数错误。
  */
 public class BrowseQuery {
 
     public static final int DEFAULT_PAGE = 1;
-    public static final int DEFAULT_SIZE = 6;
+    public static final int DEFAULT_SIZE = 24;
     public static final int MIN_SIZE = 1;
     public static final int MAX_SIZE = 50;
     public static final int MAX_KEYWORD_LENGTH = 120;
