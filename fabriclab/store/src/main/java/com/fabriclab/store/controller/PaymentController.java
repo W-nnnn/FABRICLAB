@@ -45,7 +45,7 @@ public class PaymentController {
         }
         PaymentView view = paymentService.prepare(current.id(), orderId);
         if (!view.status().payable()) {
-            redirect.addFlashAttribute("orderError", "只有待支付订单可以发起模拟支付");
+            redirect.addFlashAttribute("orderError", "只有待支付订单可以发起支付");
             return "redirect:/orders/" + orderId.trim();
         }
         model.addAttribute("brand", brandService.brand());
@@ -64,8 +64,8 @@ public class PaymentController {
         try {
             PayOutcome outcome = paymentService.pay(current.id(), orderId);
             redirect.addFlashAttribute("orderFlash", outcome.firstTime()
-                    ? "模拟支付成功，凭证 " + outcome.paymentNo() + "（教学模拟，不涉及真实资金）"
-                    : "订单已完成模拟支付，保留首次支付凭证与时间");
+                    ? "支付成功，支付凭证 " + outcome.paymentNo()
+                    : "该订单已支付，保留首次支付凭证与时间");
         } catch (BusinessException e) {
             redirect.addFlashAttribute("orderError", e.getMessage());
         }
@@ -81,7 +81,7 @@ public class PaymentController {
         }
         try {
             paymentService.recordFailure(current.id(), orderId);
-            redirect.addFlashAttribute("orderError", "模拟支付未成功，订单仍为待支付，可重新发起或取消订单");
+            redirect.addFlashAttribute("orderError", "支付未完成，订单仍为待支付，可重新发起或取消订单");
         } catch (BusinessException e) {
             redirect.addFlashAttribute("orderError", e.getMessage());
         }

@@ -262,7 +262,7 @@ class PaymentIntegrationTest {
 
         MvcResult page = paymentPage(alice.session(), orderId);
         assertEquals(200, page.getResponse().getStatus());
-        assertTrue(html(page).contains("教学模拟支付，不涉及真实资金"));
+        assertTrue(html(page).contains("本站为品牌演示站点，支付不产生真实扣款"));
         assertTrue(html(page).contains("¥ 398.00"), "支付页显示固定订单金额");
 
         // 首次：模拟失败，仍待支付、无凭证、不动库存
@@ -278,7 +278,7 @@ class PaymentIntegrationTest {
         // 再次：模拟成功
         MvcResult succeeded = pay(alice.session(), alice.csrf(), orderId);
         assertEquals(302, succeeded.getResponse().getStatus());
-        assertTrue(flash(succeeded, "orderFlash").contains("模拟支付成功"));
+        assertTrue(flash(succeeded, "orderFlash").contains("支付成功，支付凭证"));
         assertEquals("PAID", statusOf(orderId));
         assertEquals("MOCK", paymentMethodOf(orderId));
         String firstNo = paymentNoOf(orderId);
@@ -379,7 +379,7 @@ class PaymentIntegrationTest {
 
         MvcResult paid = pay(alice.session(), alice.csrf(), orderId);
         assertEquals(302, paid.getResponse().getStatus());
-        assertTrue(flash(paid, "orderError").contains("不能模拟支付"));
+        assertTrue(flash(paid, "orderError").contains("不能发起支付"));
         assertEquals("CANCELLED", statusOf(orderId), "已取消不能支付");
         assertNull(paymentNoOf(orderId));
         assertEquals(10, stockOf(productA), "被拒绝的支付不改变库存");

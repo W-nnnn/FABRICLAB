@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<html lang="zh-CN" th:lang="${lang == 'en' ? 'en' : 'zh-CN'}" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
+    <link rel="icon" type="image/png" th:href="@{/images/mark.png}"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="|#{nav.brand} · #{order.title}|">FABRICLAB · 订单详情</title>
-    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113n}"/>
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261114a}"/>
 </head>
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
@@ -22,7 +23,7 @@
         <div>
             <div class="eyebrow" th:text="#{order.eyebrow}">订单详情</div>
             <div class="h2" style="margin-top:12px;font-size:34px" th:text="${tr.t(detail.status.label())}">待付款</div>
-            <div class="din" style="margin-top:14px;font-size:10.5px;letter-spacing:.16em;color:var(--mute)">
+            <div class="din" style="margin-top:14px;font-size:11px;letter-spacing:.16em;color:var(--mute)">
                 <span th:text="${detail.order.orderNo}">FL20260101000000000001</span>
                 <span> · </span>
                 <span th:text="${#temporals.format(detail.order.createdAt, 'yyyy-MM-dd HH:mm')}">2026-01-01 00:00</span>
@@ -35,7 +36,7 @@
         </div>
     </div>
 
-    <div style="display:flex;padding:0 var(--gx)">
+    <div class="cols" style="display:flex;padding:0 var(--gx)">
         <!-- 左 -->
         <div style="width:790px;flex:none">
             <!-- 时间线 -->
@@ -94,7 +95,7 @@
                         <span style="display:block;width:7px;height:7px;border-radius:50%;background:var(--rust)"></span>
                     </span>
                     <div>
-                        <div style="font-size:12.5px;letter-spacing:.06em;color:var(--rust)" th:text="#{order.step4}">已取消</div>
+                        <div style="font-size:12.5px;letter-spacing:.06em;color:var(--rust-ink)" th:text="#{order.step4}">已取消</div>
                         <div class="tiny" style="margin-top:6px;letter-spacing:.12em">
                             <span th:text="#{order.cancelled.at}">取消时间</span> ·
                             <span th:text="${#temporals.format(detail.order.cancelledAt, 'yyyy-MM-dd HH:mm')}">时间</span>
@@ -180,7 +181,7 @@
             <th:block th:if="${detail.status.name() == 'PENDING_PAYMENT'}">
                 <a class="btn wide" style="margin-top:24px"
                    th:href="@{/orders/{id}/payment(id=${detail.order.id})}"
-                   th:text="#{order.pay.now}">教学模拟支付</a>
+                   th:text="#{order.pay.now}">立即支付</a>
                 <form th:action="@{/orders/{id}/cancel(id=${detail.order.id})}" method="post"
                       th:onsubmit="|return confirm('#{order.cancel.confirm}');|">
                     <input type="hidden" name="_csrf" th:value="${csrfToken}"/>

@@ -148,7 +148,7 @@ class OrderControllerTest {
                 .andExpect(content().string(containsString("亚麻衬衫")))
                 .andExpect(content().string(containsString("应付")))
                 .andExpect(content().string(containsString("取消订单")))
-                .andExpect(content().string(containsString("教学模拟支付")));
+                .andExpect(content().string(containsString("立即支付")));
     }
 
     @Test
