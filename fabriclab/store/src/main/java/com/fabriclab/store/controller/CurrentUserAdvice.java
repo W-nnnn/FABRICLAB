@@ -32,6 +32,8 @@ public class CurrentUserAdvice {
     public void populate(Model model, HttpSession session, HttpServletRequest request) {
         // 头部 EN / 中文 切换按钮据此高亮当前语言，取自会话语言而非请求头
         LangLinks.fill(model, request);
+        // 头部系列线激活项：由请求路径与 category 参数推导，控制器无需各自传入
+        model.addAttribute("navActive", navActive(request));
         if (session != null) {
             model.addAttribute("csrfToken", csrfService.token(session));
             CurrentUser current = currentUserService.from(session);
@@ -40,5 +42,24 @@ public class CurrentUserAdvice {
                 model.addAttribute("cartBadge", cartService.badge(current.id()));
             }
         }
+    }
+
+    /** 系列线激活项：/category?category=N 映射到五个系列线，其余页面不高亮。 */
+    private String navActive(HttpServletRequest request) {
+        if (!"/category".equals(request.getServletPath())) {
+            return null;
+        }
+        String c = request.getParameter("category");
+        if (c == null) {
+            return null;
+        }
+        return switch (c) {
+            case "1" -> "commute";
+            case "2" -> "leisure";
+            case "3" -> "outdoor";
+            case "4" -> "occasion";
+            case "5" -> "home";
+            default -> null;
+        };
     }
 }

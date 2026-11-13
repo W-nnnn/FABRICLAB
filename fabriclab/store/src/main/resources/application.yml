@@ -14,6 +14,12 @@ spring:
   thymeleaf:
     cache: false
     encoding: UTF-8
+  web:
+    resources:
+      cache:
+        cachecontrol:
+          # 静态资源（css/字体/图片）每次协商重验，避免样式更新后浏览器仍用旧缓存
+          no-cache: true
   messages:
     basename: messages
     encoding: UTF-8
