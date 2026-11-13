@@ -11,6 +11,13 @@
                 <b>FABRICLAB</b>
             </a>
             <span class="hdr-tag">UNDYED&nbsp;ATELIER<i>·</i>SHANGHAI</span>
+            <!-- 主快捷导航：任何页面一键回到首页 / 全部商品 -->
+            <nav class="hnav" th:aria-label="#{nav.home}">
+                <a class="hn" th:href="@{/main}" th:classappend="${active == 'home'} ? 'on'"
+                   th:text="#{nav.home}">首页</a>
+                <a class="hn" th:href="@{/category}" th:classappend="${active == 'shop'} ? 'on'"
+                   th:text="#{nav.all}">全部商品</a>
+            </nav>
             <div class="acts">
                 <a class="lang" th:href="${langHref + (lang == 'en' ? 'lang=zh' : 'lang=en')}"
                    th:aria-label="#{lang.switch}">
@@ -48,8 +55,8 @@
                 </a>
             </div>
         </div>
-        <!-- 系列目录：仅商品类页面显示，首页不渲染（首页传 active='home'） -->
-        <nav class="navbar" th:if="${active != 'home'}" th:aria-label="#{shop.f.category}">
+        <!-- 系列目录：仅商品类页面显示。首页传 'home'、账户中心传 'account'，均不渲染 -->
+        <nav class="navbar" th:if="${active != 'home' and active != 'account'}" th:aria-label="#{shop.f.category}">
             <a class="nitem" th:href="@{/category(category=1)}"
                th:classappend="${navActive == 'commute'} ? 'on'"><span class="nm" th:text="#{line.commute}">通勤出行</span></a>
             <a class="nitem" th:href="@{/category(category=2)}"

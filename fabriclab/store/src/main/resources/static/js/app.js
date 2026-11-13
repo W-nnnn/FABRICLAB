@@ -154,43 +154,62 @@
 })();
 
 /* ============================================================ 商品图集 */
-/* 缩略图点击切换主图（交叉淡入+微推近）、悬停箭头、键盘左右方向键、自动轮播 */
+/* 主图切换：方向感知的横向对接位移——向后翻（下一张/缩略图/→）新图自右入、旧图向左出，
+   向前翻反向。两张图不透明且首尾相接，全程无叠影、无闪白，也不会出现「像刷新」的闪跳。
+   取消自动轮播：图集只跟随用户操作，阅读时画面不自行跳动。 */
 (function () {
   'use strict';
   var root = document.querySelector('[data-gallery]');
   if (!root) return;
-  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var imgs = Array.prototype.slice.call(root.querySelectorAll('.gstage img'));
   var thumbs = Array.prototype.slice.call(root.querySelectorAll('.gthumb'));
   var counter = root.querySelector('.gcount');
   var n = imgs.length;
   if (!n) return;
-  var idx = 0, timer = null, DUR = 5200;
+  var idx = 0, cleanTimer = null;
 
   function pad(x) { return (x < 10 ? '0' : '') + x; }
 
-  function show(i) {
-    idx = (i + n) % n;
-    imgs.forEach(function (im, k) { im.classList.toggle('on', k === idx); });
+  function paint() {
     thumbs.forEach(function (t, k) { t.classList.toggle('on', k === idx); });
     if (counter) counter.textContent = pad(idx + 1) + ' / ' + pad(n);
   }
 
-  function stop() { if (timer) { clearInterval(timer); timer = null; } }
-  function play() { if (reduce || n < 2) return; stop(); timer = setInterval(function () { show(idx + 1); }, DUR); }
+  function show(i, dir) {
+    i = ((i % n) + n) % n;
+    if (i === idx) return;
+    dir = dir < 0 ? -1 : 1;
+    var incoming = imgs[i], outgoing = imgs[idx];
+
+    /* 1. 入场图先以无过渡状态移到画面外侧（右入 / 左入） */
+    incoming.classList.remove('on', 'off', 'l', 'r');
+    incoming.classList.add(dir > 0 ? 'pre-r' : 'pre-l');
+    void incoming.offsetWidth;
+    /* 2. 解除起点后入场：位移回 0，与出场图首尾相接 */
+    incoming.classList.remove('pre-r', 'pre-l');
+    incoming.classList.add('on');
+    /* 3. 出场图保持不透明反向滑出（不淡出，避免中途半透明叠成重影） */
+    outgoing.classList.remove('on', 'pre-r', 'pre-l');
+    outgoing.classList.add('off', dir > 0 ? 'l' : 'r');
+
+    idx = i;
+    paint();
+
+    /* 过渡结束后清理离场标记：此刻该图已不可见，不会引起视觉变化 */
+    clearTimeout(cleanTimer);
+    cleanTimer = setTimeout(function () {
+      imgs.forEach(function (im) {
+        if (!im.classList.contains('on')) im.classList.remove('off', 'l', 'r');
+      });
+    }, 480);
+  }
 
   thumbs.forEach(function (t, k) {
-    t.addEventListener('click', function () { show(k); play(); });
+    t.addEventListener('click', function () { show(k, k >= idx ? 1 : -1); });
   });
   var prev = root.querySelector('.garrow.prev'), next = root.querySelector('.garrow.next');
-  if (prev) prev.addEventListener('click', function () { show(idx - 1); play(); });
-  if (next) next.addEventListener('click', function () { show(idx + 1); play(); });
-
-  var stage = root.querySelector('.gstage');
-  if (stage) {
-    stage.addEventListener('mouseenter', stop);
-    stage.addEventListener('mouseleave', play);
-  }
+  if (prev) prev.addEventListener('click', function () { show(idx - 1, -1); });
+  if (next) next.addEventListener('click', function () { show(idx + 1, 1); });
 
   /* 键盘左右方向键：仅当图集在视口内且焦点不在输入框时生效 */
   document.addEventListener('keydown', function (e) {
@@ -199,22 +218,24 @@
     if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT')) return;
     var r = root.getBoundingClientRect();
     if (r.bottom < 0 || r.top > window.innerHeight) return;
-    if (e.key === 'ArrowLeft') { show(idx - 1); } else { show(idx + 1); }
-    play();
+    var step = e.key === 'ArrowLeft' ? -1 : 1;
+    show(idx + step, step);
   });
 
-  /* 详情区图集联动：点击后回到顶部并切换主图到对应张 */
+  /* 详情区图集联动：切换到对应主图并回到图集位置 */
   Array.prototype.forEach.call(document.querySelectorAll('[data-jump]'), function (b) {
     b.addEventListener('click', function () {
       var i = parseInt(b.getAttribute('data-jump'), 10);
-      show(isNaN(i) ? 0 : i);
-      play();
+      if (isNaN(i)) i = 0;
+      show(i, i >= idx ? 1 : -1);
+      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
     });
   });
 
-  show(0);
-  play();
+  /* 初始图直接呈现，不播放过渡 */
+  imgs.forEach(function (im, k) { im.classList.toggle('on', k === 0); });
+  paint();
 })();
 
 /* ============================================================ 数量步进器 */
@@ -346,4 +367,154 @@
     load(f.getAttribute('action') + (qs ? '?' + qs : ''), true);
   });
   window.addEventListener('popstate', function () { load(location.href, false); });
+})();
+
+/* ============================================================ 选购列表局部刷新 */
+/* 左侧系列线、类型、排序、筛选标签、关键字查询、翻页：只替换 #catalog 里的内容，
+   不整页跳转——整页切走再切回会有一帧空白，看起来就是「一闪」。
+   商品卡仍走整页过渡（深入详情，属层级变化）。 */
+(function () {
+  'use strict';
+  var region = document.getElementById('catalog');
+  if (!region) return;
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var busy = false, seq = 0, fitTimer = null, pending = null;
+
+  /* 同一路径才算「换筛选」；/product 等属于换页，交给页面过渡 */
+  function samePath(url) {
+    try { return new URL(url, location.href).pathname === location.pathname; }
+    catch (e) { return false; }
+  }
+
+  /* 服务端会把未选条件渲染成空参数，地址栏里去掉它们，保持可读 */
+  function tidy(url) {
+    try {
+      var u = new URL(url, location.href);
+      Array.from(u.searchParams.keys()).forEach(function (k) {
+        if (!u.searchParams.get(k)) u.searchParams.delete(k);
+      });
+      return u.pathname + u.search;
+    } catch (e) { return url; }
+  }
+
+  function topOf() {
+    var hdr = document.querySelector('.hdw');
+    var off = hdr ? hdr.getBoundingClientRect().height : 0;
+    return Math.max(0, region.getBoundingClientRect().top + window.pageYOffset - off - 10);
+  }
+
+  function load(url, mode, force) {
+    url = tidy(url);
+    if (!force && url === location.pathname + location.search) return; /* 条件没变，不重取 */
+    if (busy) { pending = { url: url, mode: mode }; return; } /* 连点：记住最后一击，结束后再来 */
+    busy = true;
+    var mine = ++seq;
+    var t0 = Date.now();
+    region.classList.remove('swapped');
+    if (!reduce) region.classList.add('busy'); /* 降级时不暗化，连瞬时明暗都不要 */
+    fetch(url, { credentials: 'same-origin' })
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); })
+      .then(function (html) {
+        if (mine !== seq) return;
+        var next = new DOMParser().parseFromString(html, 'text/html').getElementById('catalog');
+        /* 最快路径下也留住一小段暗场，否则暗一下又亮回，本身就成了闪 */
+        var wait = Math.max(0, 130 - (Date.now() - t0));
+        setTimeout(function () {
+          /* 局部取的内容可能与当前节点数不同：内容在暗场期间换掉，看不出跳变 */
+          if (next) region.innerHTML = next.innerHTML;
+          if (mode === 'push' && history.pushState) history.pushState(null, '', url);
+          else if (mode === 'replace' && history.replaceState) history.replaceState(null, '', url);
+          region.classList.remove('busy');
+          if (!reduce) {
+            void region.offsetWidth;
+            region.classList.add('swapped');
+            clearTimeout(fitTimer);
+            fitTimer = setTimeout(function () { region.classList.remove('swapped'); }, 320);
+          }
+          busy = false;
+          var nx = pending; /* 等待期间的点击只在最后生效，不丢操作 */
+          pending = null;
+          if (nx) load(nx.url, nx.mode, true);
+        }, wait);
+      })
+      .catch(function () {
+        busy = false;
+        pending = null;
+        region.classList.remove('busy');
+        window.location.href = url; /* 取不到就退回整页跳转 */
+      });
+  }
+
+  /* ---- 接管：同一路径的跳转都改成换这一块 ---- */
+  function formUrl(f) {
+    var qs = new URLSearchParams();
+    new FormData(f).forEach(function (v, k) {
+      if (String(v).trim() !== '') qs.append(k, v);
+    });
+    var action = f.getAttribute('action') || location.pathname;
+    return action + (qs.toString() ? '?' + qs.toString() : '');
+  }
+
+  /* 该链接是否由本模块处理：同路径、非新窗口、非切语言 */
+  function takeable(a) {
+    var href = a.getAttribute('href');
+    if (!href || href.charAt(0) === '#') return false;
+    if (a.target === '_blank' || a.hasAttribute('download')) return false;
+    if (a.classList.contains('lang')) return false; /* 切语言要整页重建，头部也得换 */
+    try {
+      if (new URL(a.href, location.href).searchParams.has('lang')) return false;
+    } catch (err) {}
+    return samePath(a.href);
+  }
+
+  function onClick(e) {
+    if (e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    var a = e.target.closest('a');
+    if (!a || !takeable(a)) return;
+    /* 置位 defaultPrevented 后，document 上的页面退出动画会自动跳过 */
+    e.preventDefault();
+    if (a.href === location.href) return;
+    load(a.href, 'push');
+    if (a.classList.contains('pglink')) {
+      window.scrollTo({ top: topOf(), behavior: reduce ? 'auto' : 'smooth' });
+    }
+  }
+
+  region.addEventListener('click', onClick);
+
+  region.addEventListener('submit', function (e) {
+    var f = e.target;
+    if (!f || f.tagName !== 'FORM') return;
+    e.preventDefault();
+    load(formUrl(f), 'push');
+  });
+
+  /* 顶部系列条与头部搜索不在 #catalog 内：在选购页换系列同样只换这一块，
+     否则整页淡出淡入又是一次闪白。其余页面没有 #catalog，照旧整页过渡。
+     用捕获阶段，先于 document 上的页面过渡接管。 */
+  document.addEventListener('click', function (e) {
+    if (e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    var a = e.target.closest('a');
+    if (!a || a.closest('#catalog') || !takeable(a) || a.href === location.href) return;
+    e.preventDefault();
+    load(a.href, 'push');
+    if (a.classList.contains('nitem') || a.classList.contains('hn')) {
+      window.scrollTo({ top: topOf(), behavior: reduce ? 'auto' : 'smooth' });
+    }
+  }, true);
+
+  document.addEventListener('submit', function (e) {
+    var f = e.target;
+    if (!f || f.tagName !== 'FORM' || f.closest('#catalog')) return;
+    if (e.defaultPrevented || !samePath(f.action || location.pathname)) return;
+    var kw = f.querySelector('input[name="keyword"]');
+    if (kw && !kw.value.trim()) return; /* 空搜索不提交，交给头部展开逻辑 */
+    e.preventDefault();
+    load(formUrl(f), 'push');
+  }, true);
+
+  /* 前进 / 后退回到某个筛选状态：按地址重取这一块 */
+  window.addEventListener('popstate', function () {
+    if (samePath(location.href)) load(location.href, 'none', true);
+  });
 })();

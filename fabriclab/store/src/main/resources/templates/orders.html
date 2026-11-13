@@ -4,12 +4,12 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="|#{nav.brand} · #{account.center}|">FABRICLAB · 我的账户</title>
-    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113m}"/>
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113n}"/>
 </head>
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
 
-    <th:block th:replace="~{fragments :: header(null)}"></th:block>
+    <th:block th:replace="~{fragments :: header('account')}"></th:block>
 
     <!-- 会员横幅 -->
     <section class="mband" th:if="${currentUser != null}">
@@ -313,6 +313,6 @@
     <div style="height:70px"></div>
     <th:block th:replace="~{fragments :: footer}"></th:block>
 </div>
-<script th:src="@{/js/app.js?v=20261113m}"></script>
+<script th:src="@{/js/app.js?v=20261113n}"></script>
 </body>
 </html>

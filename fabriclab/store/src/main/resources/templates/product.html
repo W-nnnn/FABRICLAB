@@ -4,12 +4,12 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="|#{nav.brand} · ${tr.t(view.product().name)}|">FABRICLAB · 商品详情</title>
-    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113m}"/>
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113n}"/>
 </head>
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
 
-    <th:block th:replace="~{fragments :: header(null)}"></th:block>
+    <th:block th:replace="~{fragments :: header('shop')}"></th:block>
 
     <div class="crumb">
         <a th:href="@{/main}" th:text="#{nav.home}">首页</a><span> / </span>
