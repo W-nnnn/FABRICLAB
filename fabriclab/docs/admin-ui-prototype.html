@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FABRICLAB 管理台 · 界面原型</title>
+<style>
+:root{
+  --ink:#1A1A1A; --cream:#F2EFE9; --rust:#B4643A; --rust-ink:#A0552F;
+  --paper:#FFF; --line:#E3DDD2; --line2:rgba(26,26,26,.26);
+  --muted:#6B665E; --faint:rgba(26,26,26,.48); --body:rgba(26,26,26,.78);
+  --fill:#FBFAF7; --wash:#F5F2EC; --danger-bg:#FBF1EC;
+  --f-song:"Noto Serif SC","Songti SC","STZhongsong",SimSun,serif;
+  --f-body:"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+  --f-din:"Bahnschrift","DIN Alternate","Segoe UI",Arial,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--f-body);font-size:13px;line-height:1.6;color:var(--ink);background:var(--cream);-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/* 原型工具条：不属于界面本身 */
+.proto{height:40px;background:#2C2C2A;color:#CFC9BD;display:flex;align-items:center;gap:6px;padding:0 16px;font-size:12px;position:relative;z-index:60}
+.proto b{color:#F2EFE9;font-weight:500;letter-spacing:.08em;margin-right:10px}
+.proto button{height:26px;padding:0 11px;background:transparent;border:1px solid #4A4A48;color:#CFC9BD;font-size:11.5px;letter-spacing:.06em;cursor:pointer}
+.proto button:hover{border-color:#B4643A;color:#F2EFE9}
+.proto button.on{background:#B4643A;border-color:#B4643A;color:#F2EFE9}
+.proto span{margin-left:auto;color:#7C7770;padding-left:16px}
+
+/* 骨架 */
+.shell{display:flex;height:calc(100vh - 40px);overflow:hidden}
+.hamb{display:none;width:32px;height:32px;align-items:center;justify-content:center;border:1px solid var(--line2);background:transparent;color:var(--ink);cursor:pointer;margin-right:14px;flex:none}
+.hamb:hover{border-color:var(--ink)}
+.scrim{display:none}
+.side{width:232px;flex:none;background:var(--ink);color:rgba(242,239,233,.88);display:flex;flex-direction:column;overflow-y:auto}
+.side__brand{height:72px;flex:none;display:flex;align-items:center;gap:10px;padding:0 20px;border-bottom:1px solid rgba(242,239,233,.12)}
+.side__mark{width:32px;height:32px;flex:none;background:var(--cream);color:var(--ink);display:flex;align-items:center;justify-content:center;font-family:var(--f-song);font-size:17px;font-weight:500}
+.side__brand b{display:block;font-size:12.5px;letter-spacing:.16em}
+.side__brand small{display:block;font-size:10px;letter-spacing:.24em;color:rgba(242,239,233,.45);margin-top:2px}
+.side__group{height:36px;display:flex;align-items:center;padding:0 20px;font-size:11px;letter-spacing:.18em;color:rgba(242,239,233,.45)}
+.side__item{height:40px;display:flex;align-items:center;gap:10px;padding:0 20px;font-size:13px;color:rgba(242,239,233,.82);border-left:3px solid transparent;transition:background .18s ease,color .18s ease}
+.side__item svg{flex:none;opacity:.72}
+.side__item:hover{background:rgba(242,239,233,.06);color:rgba(242,239,233,.96)}
+.side__item[aria-current]{background:rgba(242,239,233,.08);border-left-color:var(--rust);color:#F2EFE9}
+.side__item[aria-current] svg{opacity:1;color:var(--rust)}
+.side__sep{height:1px;background:rgba(242,239,233,.12);margin:8px 16px}
+.side__foot{margin-top:auto;padding:14px 20px;border-top:1px solid rgba(242,239,233,.12);font-size:11px;color:rgba(242,239,233,.5);line-height:1.7}
+.side__foot a{color:rgba(242,239,233,.82);border-bottom:1px solid rgba(242,239,233,.3);padding-bottom:1px}
+.side__foot a:hover{color:var(--cream);border-color:var(--rust)}
+
+.wrapr{flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden}
+.topbar{height:56px;flex:none;background:var(--paper);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 40px}
+.crumb{font-size:12px;color:var(--faint);display:flex;align-items:center;gap:8px}
+.crumb a:hover{color:var(--ink)}
+.crumb b{color:var(--ink);font-weight:400}
+.crumb i{font-style:normal;color:rgba(26,26,26,.28)}
+.topbar__who{display:flex;align-items:center;gap:14px;font-size:12px}
+.topbar__who b{font-weight:400;font-size:13px}
+.tag{display:inline-flex;align-items:center;height:22px;padding:0 9px;font-size:11px;letter-spacing:.06em;border:1px solid var(--line);color:var(--muted);background:var(--fill);white-space:nowrap}
+.tag--live{border-color:var(--rust);color:var(--rust-ink);background:var(--danger-bg)}
+.tag--done{border-color:var(--ink);color:var(--ink);background:var(--fill)}
+.tag--end{border:0;color:var(--faint);background:var(--wash)}
+.tag--out{border:1px dashed var(--rust);color:var(--rust-ink);background:transparent}
+.main{flex:1;overflow-y:auto;padding:32px 40px 64px}
+.page{max-width:1560px}
+.hd{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;margin-bottom:24px}
+.hd h1{font-family:var(--f-song);font-weight:500;font-size:26px;letter-spacing:.04em;line-height:1.25}
+.hd p{margin-top:6px;color:var(--muted);max-width:720px}
+.hd__act{display:flex;gap:10px;flex:none;padding-top:6px}
+
+/* 按钮 */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 20px;border:1px solid transparent;background:var(--ink);color:var(--cream);font-size:13px;letter-spacing:.06em;cursor:pointer;transition:background .18s ease,transform .12s ease,color .18s ease,border-color .18s ease}
+.btn:hover{background:var(--rust);transform:translateY(-1px)}
+.btn:active{transform:translateY(0)}
+.btn:focus-visible{outline:2px solid var(--rust);outline-offset:2px}
+.btn--sub{background:transparent;color:var(--ink);border-color:var(--line2)}
+.btn--sub:hover{background:transparent;border-color:var(--ink);color:var(--rust-ink);transform:none}
+.btn--danger{background:var(--rust);color:var(--cream)}
+.btn--sm{height:32px;padding:0 14px;font-size:12px}
+.btn--lg{height:48px;padding:0 30px;font-size:13px}
+.btn--wide{width:100%}
+.btn[disabled]{background:var(--line);color:var(--paper);cursor:not-allowed;transform:none}
+.btn[disabled]:hover{background:var(--line)}
+
+/* 卡片 */
+.card{background:var(--paper);border:1px solid var(--line)}
+.card__head{padding:16px 24px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:16px}
+.card__head h2{font-family:var(--f-song);font-size:17px;font-weight:500;letter-spacing:.04em}
+.card__head p{font-size:11.5px;color:var(--muted);margin-top:2px}
+.card__body{padding:20px 24px}
+.grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;margin-bottom:24px}
+.stat{background:var(--paper);border:1px solid var(--line);padding:20px 24px}
+.stat__k{font-size:11px;letter-spacing:.12em;color:var(--muted)}
+.stat__v{font-family:var(--f-din);font-size:30px;line-height:1.2;margin-top:8px;display:flex;align-items:baseline;gap:6px}
+.stat__v small{font-family:var(--f-body);font-size:12px;color:var(--muted);letter-spacing:.06em}
+.stat__n{margin-top:6px;font-size:11.5px;color:var(--faint)}
+
+/* 待办 */
+.todo{border-top:1px solid var(--line)}
+.todo:first-child{border-top:0}
+.todo a{display:grid;grid-template-columns:88px minmax(0,1fr) auto;align-items:center;gap:14px;padding:16px 24px;min-height:56px;transition:background .18s ease}
+.todo a:hover{background:var(--fill)}
+.todo__t{min-width:0}
+.todo .tag{justify-self:start}
+.todo__t b{font-weight:400;display:block}
+.todo__t small{display:block;color:var(--muted);font-size:11.5px;margin-top:2px}
+.todo__go{font-size:12px;color:var(--rust-ink);border-bottom:1px solid var(--rust);padding-bottom:2px;flex:none}
+
+/* 事实列表 */
+.facts{display:grid;grid-template-columns:104px 1fr;gap:12px 16px;font-size:12.5px}
+.facts dt{color:var(--muted);font-size:11.5px;letter-spacing:.06em}
+.facts dd{display:flex;align-items:center;gap:8px}
+.dot{width:6px;height:6px;background:var(--rust);flex:none}
+.dot--ok{background:var(--ink)}
+
+/* 筛选条 */
+.fbar{display:flex;align-items:center;gap:16px;min-height:64px;padding:12px 24px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.search{display:flex;align-items:center;gap:8px;width:260px;border-bottom:1px solid var(--line2);padding-bottom:7px}
+.search input{border:0;background:transparent;outline:none;font-family:inherit;font-size:13px;width:100%;color:var(--ink)}
+.search input::placeholder{color:var(--faint)}
+.search:focus-within{border-color:var(--ink)}
+.seg{display:flex;border:1px solid var(--line)}
+.seg button{height:34px;padding:0 14px;border:0;background:transparent;font-size:11.5px;letter-spacing:.06em;color:var(--muted);cursor:pointer;border-left:1px solid var(--line)}
+.seg button:first-child{border-left:0}
+.seg button:hover{background:var(--fill);color:var(--ink)}
+.seg button.on{background:var(--ink);color:var(--cream)}
+.fbar__right{margin-left:auto;display:flex;align-items:center;gap:16px}
+.tlink{font-size:12px;border-bottom:1px solid var(--ink);padding-bottom:3px;cursor:pointer;background:none;border-top:0;border-left:0;border-right:0;color:var(--ink)}
+.tlink:hover{color:var(--rust-ink);border-bottom-color:var(--rust)}
+
+/* 表格 */
+.tblwrap{overflow-x:auto}
+.tbl{width:100%;min-width:880px;border-collapse:collapse;caption-side:top}
+.tbl caption{text-align:left;padding:0 24px 12px;font-size:11px;color:var(--faint);letter-spacing:.04em}
+.tbl thead th{height:44px;padding:0 16px;text-align:left;font-size:11px;font-weight:400;letter-spacing:.12em;color:var(--muted);background:var(--fill);border-bottom:1px solid var(--line);white-space:nowrap;position:sticky;top:0;z-index:1}
+.tbl thead th:first-child{padding-left:24px}
+.tbl thead th:last-child{padding-right:24px;text-align:right}
+.tbl tbody td{padding:0 16px;height:52px;border-bottom:1px solid var(--line);vertical-align:middle}
+.tbl tbody td:first-child{padding-left:24px}
+.tbl tbody td:last-child{padding-right:24px;text-align:right}
+.tbl tbody tr{transition:background .12s ease}
+.tbl tbody tr:hover{background:var(--fill)}
+.tbl .num{font-family:var(--f-din);text-align:right}
+.tbl th.num{text-align:right}
+.tbl .key{font-family:var(--f-din);letter-spacing:.02em}
+.tbl .key a{border-bottom:1px solid transparent}
+.tbl .key a:hover{border-bottom-color:var(--ink)}
+.tbl .sub{display:block;font-size:11.5px;color:var(--muted);margin-top:1px}
+.thumb{width:40px;height:53px;background:var(--wash);display:block;flex:none}
+.thumb--a{background:#E8E1D4}
+.thumb--b{background:#DFD8C8}
+.thumb--c{background:#EDE7DA}
+.acts{display:flex;gap:14px;justify-content:flex-end;font-size:12px}
+.acts a{color:var(--rust-ink);border-bottom:1px solid transparent}
+.acts a:hover{border-bottom-color:var(--rust)}
+.acts a.mute{color:var(--muted)}
+.acts a.mute:hover{color:var(--ink);border-bottom-color:var(--ink)}
+
+/* 分页 */
+.pagerbar{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:64px;padding:12px 24px}
+.pagerbar__info{font-size:11.5px;letter-spacing:.06em;color:var(--muted)}
+.pagerbar__info b{font-family:var(--f-din);font-weight:400;color:var(--ink)}
+.pgs{display:flex;align-items:center;gap:4px}
+.pg{min-width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;padding:0 8px;font-family:var(--f-din);font-size:12px;color:var(--muted);border:1px solid transparent}
+.pg:hover{background:var(--fill);color:var(--ink)}
+.pg.on{background:var(--ink);color:var(--cream)}
+.pg.off{color:rgba(26,26,26,.28);pointer-events:none}
+.pgs select{height:32px;border:1px solid var(--line);background:var(--paper);font-family:inherit;font-size:11.5px;padding:0 6px;color:var(--muted);margin-left:12px}
+
+/* 表单 */
+.form2{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:24px;align-items:start}
+.stack{display:flex;flex-direction:column;gap:24px}
+.fs{padding:20px 24px 24px}
+.fs > h3{font-size:11px;letter-spacing:.16em;color:var(--rust-ink);margin-bottom:18px;font-weight:400}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.field{margin-bottom:20px}
+.field:last-child{margin-bottom:0}
+.field > label{display:block;font-size:11.5px;letter-spacing:.12em;color:var(--muted);margin-bottom:8px}
+.req{color:var(--rust);margin-left:3px}
+.ctl{width:100%;height:40px;padding:0 12px;border:1px solid var(--line2);background:var(--paper);font-family:inherit;font-size:13px;color:var(--ink);outline:none;transition:border-color .16s ease,box-shadow .16s ease}
+.ctl:focus{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.ctl::placeholder{color:var(--faint)}
+textarea.ctl{height:auto;min-height:84px;padding:10px 12px;line-height:1.7;resize:vertical}
+.ctl--ro{background:var(--wash);color:var(--muted);cursor:default}
+.ctl--ro:focus{border-color:var(--line2);box-shadow:none}
+.help{font-size:11.5px;color:var(--faint);margin-top:6px;display:flex;justify-content:space-between;gap:12px}
+.help__ro{color:var(--muted);flex:none}
+.field.err .ctl{border-color:var(--rust-ink)}
+.field.err > label{color:var(--rust-ink)}
+.errmsg{font-size:11.5px;color:var(--rust-ink);margin-top:6px}
+.side-card .card__body{padding:18px 20px}
+.big-num{font-family:var(--f-din);font-size:30px;line-height:1.2}
+.big-num small{font-family:var(--f-body);font-size:11.5px;color:var(--muted);margin-left:6px}
+.meta{display:grid;grid-template-columns:1fr auto;gap:8px 12px;font-size:11.5px;color:var(--muted)}
+.meta b{font-family:var(--f-din);font-weight:400;color:var(--ink)}
+.gal{display:flex;gap:8px;margin-bottom:12px}
+.gal span{width:72px;height:96px;background:var(--wash);display:block}
+.gal span:nth-child(2){background:#E8E1D4}
+.gal span:nth-child(3){background:#DFD8C8}
+.actions-bar{flex:none;background:var(--paper);border-top:1px solid var(--line);display:flex;justify-content:flex-end;align-items:center;gap:12px;padding:12px 40px;min-height:64px}
+.actions-bar .hint{margin-right:auto;font-size:11.5px;color:var(--muted);letter-spacing:.04em}
+.actions-bar[hidden]{display:none}
+
+/* 提示 */
+.alert{display:flex;align-items:flex-start;gap:10px;padding:12px 16px;border-left:3px solid var(--faint);background:var(--fill);color:var(--body);margin-bottom:24px}
+.alert--ok{background:#EFEBE3;border-left-color:var(--ink);color:var(--ink)}
+.alert--err{background:var(--danger-bg);border-left-color:var(--rust);color:#8A3F1E}
+.alert__x{margin-left:auto;background:none;border:0;cursor:pointer;color:inherit;opacity:.6;font-size:15px;line-height:1;padding:2px 4px}
+.alert__x:hover{opacity:1}
+
+/* 空状态 / 骨架 */
+.empty{padding:72px 24px;text-align:center;max-width:420px;margin:0 auto}
+.empty h3{font-family:var(--f-song);font-size:20px;font-weight:500;letter-spacing:.04em}
+.empty p{color:var(--muted);margin:10px 0 20px;line-height:1.9}
+.skel__row{display:flex;align-items:center;gap:16px;padding:0 24px;height:52px;border-bottom:1px solid var(--line)}
+.skel__sq{width:40px;height:40px;background:var(--wash);flex:none}
+.skel__ln{height:12px;background:var(--wash);flex:none}
+.skel{animation:fade .9s ease}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+
+/* 弹窗 */
+dialog{border:1px solid var(--line);padding:0;background:var(--paper);color:var(--ink);width:480px;max-width:calc(100% - 32px);box-shadow:0 24px 64px rgba(26,26,26,.24)}
+dialog::backdrop{background:rgba(26,26,26,.52)}
+.dlg__body{padding:28px}
+.dlg__body h2{font-family:var(--f-song);font-weight:500;font-size:20px;letter-spacing:.04em;margin-bottom:10px}
+.dlg__body p{color:var(--body);line-height:1.75}
+.dlg__acts{display:flex;justify-content:flex-end;gap:12px;margin-top:24px}
+
+/* 订单 */
+.ostatus{display:flex;align-items:center;gap:16px;padding:20px 24px;background:var(--paper);border:1px solid var(--line);margin-bottom:24px;flex-wrap:wrap}
+.ostatus__no{font-family:var(--f-din);font-size:17px;letter-spacing:.04em}
+.ostatus__act{margin-left:auto;display:flex;gap:10px}
+.tline{list-style:none}
+.tline li{display:flex;gap:12px;padding:0 0 16px;position:relative}
+.tline li:last-child{padding-bottom:0}
+.tline li::before{content:"";width:6px;height:6px;background:var(--ink);margin-top:7px;flex:none}
+.tline li.pending::before{background:var(--line);box-shadow:0 0 0 3px var(--paper) inset}
+.tline b{display:block;font-weight:400;font-size:12.5px}
+.tline small{display:block;font-family:var(--f-din);font-size:11.5px;color:var(--muted);margin-top:2px}
+
+.view{display:none}
+.view.on{display:block}
+.mt0{margin-top:0}
+.note{font-size:11.5px;color:var(--faint);margin-top:12px}
+@media(max-width:1279px){
+  .side{width:200px}
+  .main{padding:24px}
+  .topbar{padding:0 24px}
+  .grid4{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .form2{grid-template-columns:1fr}
+  .actions-bar{padding:12px 24px}
+}
+@media(max-width:1023px){
+  .side{position:fixed;top:40px;bottom:0;left:0;width:264px;z-index:50;transform:translateX(-100%);transition:transform .24s cubic-bezier(.22,.61,.36,1)}
+  .side.open{transform:translateX(0);box-shadow:0 0 48px rgba(0,0,0,.28)}
+  .scrim{display:none;position:fixed;top:40px;right:0;bottom:0;left:0;background:rgba(26,26,26,.5);z-index:45}
+  .scrim.on{display:block}
+  .hamb{display:inline-flex}
+  .crumb a,.crumb i{display:none}
+}
+@media(max-width:767px){
+  .main{padding:16px}
+  .topbar{padding:0 16px}
+  .grid4{grid-template-columns:1fr}
+  .frow{grid-template-columns:1fr}
+  .actions-bar{padding:12px 16px;flex-wrap:wrap}
+  .actions-bar .hint{display:none}
+  .fbar{padding:12px 16px}
+  .hd{flex-direction:column;gap:16px}
+  .hd__act{padding-top:0}
+}
+</style>
+</head>
+<body>
+
+<div class="proto">
+  <b>设计原型</b>
+  <button data-view="console" class="on">控制台</button>
+  <button data-view="list">款号列表</button>
+  <button data-view="edit">商品编辑</button>
+  <button data-view="order">订单详情</button>
+  <button data-view="kit">组件与状态</button>
+  <span>232 侧栏 · 56 顶栏 · 表格行高 52 · 与用户端同套 token</span>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<div class="shell">
+  <aside class="side">
+    <div class="side__brand">
+      <span class="side__mark">未</span>
+      <span><b>FABRICLAB</b><small>未染 · 管理台</small></span>
+    </div>
+
+    <div class="side__group">概览</div>
+    <a class="side__item" href="#" data-nav="console" aria-current="page">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="5" height="5"/><rect x="9" y="2" width="5" height="5"/><rect x="2" y="9" width="5" height="5"/><rect x="9" y="9" width="5" height="5"/></svg>
+      控制台
+    </a>
+
+    <div class="side__group">商品</div>
+    <a class="side__item" data-nav="categories" href="#">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h5v8H2zM9 4h5v8H9zM7 8h2"/></svg>
+      分类维护
+    </a>
+    <a class="side__item" data-nav="products" href="#">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2l6 3v6l-6 3-6-3V5z"/><path d="M8 2v12M2 5l6 3 6-3"/></svg>
+      款号维护
+    </a>
+    <a class="side__item" data-nav="stock" href="#">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12h12M4 12V8M8 12V5M12 12V9"/></svg>
+      库存与相册
+    </a>
+
+    <div class="side__group">顾客</div>
+    <a class="side__item" data-nav="users" href="#">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="5.5" r="2.6"/><path d="M2.6 14c0-2.8 2.4-4.6 5.4-4.6s5.4 1.8 5.4 4.6"/></svg>
+      账号管理
+    </a>
+
+    <div class="side__group">交易</div>
+    <a class="side__item" data-nav="orders" href="#">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 2h10v12l-2-1.4-2 1.4-2-1.4-2 1.4z"/><path d="M6 6h4M6 9h4"/></svg>
+      订单管理
+    </a>
+
+    <div class="side__group">系统</div>
+    <a class="side__item" data-nav="security" href="#">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2l5 2v5c0 3-2.2 4.6-5 5-2.8-.4-5-2-5-5V4z"/></svg>
+      会话与安全
+    </a>
+
+    <div class="side__sep"></div>
+    <div class="side__foot">
+      会话 30 分钟空闲失效<br />
+      <a href="#">退出登录</a>
+    </div>
+  </aside>
+
+  <div class="wrapr">
+    <div class="topbar">
+      <button class="hamb" id="hamb" aria-label="打开导航" aria-expanded="false">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 4h12M2 8h12M2 12h12"/></svg>
+      </button>
+      <nav class="crumb" aria-label="面包屑">
+        <a href="#" id="crumb-sec">概览</a><i>/</i><b id="crumb-cur" aria-current="page">控制台</b>
+      </nav>
+      <div class="topbar__who">
+        <b>平台管理员</b>
+        <span class="tag">ADMIN</span>
+        <button class="btn btn--sub btn--sm">退出</button>
+      </div>
+    </div>
+
+    <main class="main" id="main">
+
+      <!-- 控制台 -->
+      <section class="view on" id="v-console">
+        <div class="page">
+          <div class="alert alert--ok" role="status">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 8.5l3 3 7-7"/></svg>
+            <span>款号 FL-HM-07 已上架，用户端立即可见。</span>
+            <button class="alert__x" aria-label="关闭提示">×</button>
+          </div>
+
+          <div class="hd">
+            <div>
+              <h1>控制台</h1>
+              <p>这里只呈现可由当次查询核对的事项，不展示未经统计的经营指标。</p>
+            </div>
+          </div>
+
+          <div class="grid4">
+            <div class="stat">
+              <div class="stat__k">在售款号</div>
+              <div class="stat__v">54 <small>款</small></div>
+              <div class="stat__n">实时 · 用户端可见</div>
+            </div>
+            <div class="stat">
+              <div class="stat__k">草稿款号</div>
+              <div class="stat__v">6 <small>款</small></div>
+              <div class="stat__n">实时 · 用户端不可见</div>
+            </div>
+            <div class="stat">
+              <div class="stat__k">低库存</div>
+              <div class="stat__v">3 <small>款</small></div>
+              <div class="stat__n">库存 ≤ 3，建议补货</div>
+            </div>
+            <div class="stat">
+              <div class="stat__k">待发货</div>
+              <div class="stat__v">2 <small>笔</small></div>
+              <div class="stat__n">已支付未发货</div>
+            </div>
+          </div>
+
+          <div class="stack">
+            <div class="card">
+              <div class="card__head">
+                <div><h2>待处理</h2><p>按状态查询得到，处理后自动消失</p></div>
+              </div>
+              <div class="todo">
+                <a href="#">
+                  <span class="tag tag--live">待发货</span>
+                  <span class="todo__t"><b>2 笔订单已支付，等待发货</b><small>最早一笔 FL20261113090815A7C2 · 1 小时前支付</small></span>
+                  <span class="todo__go">去处理</span>
+                </a>
+                <a href="#">
+                  <span class="tag tag--out">低库存</span>
+                  <span class="todo__t"><b>3 款库存仅剩 1—3 件</b><small>FL-HM-09 羊绒围巾 · FL-CT-03 府绸衬衫 · FL-OD-02 工装外套</small></span>
+                  <span class="todo__go">去补货</span>
+                </a>
+                <a href="#">
+                  <span class="tag">草稿</span>
+                  <span class="todo__t"><b>6 款仍是草稿，未在用户端露出</b><small>补齐面料与工艺后上架</small></span>
+                  <span class="todo__go">去维护</span>
+                </a>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card__head">
+                <div><h2>系统状态</h2><p>前三项为固定配置，数据库一栏来自一次实际连接</p></div>
+              </div>
+              <div class="card__body">
+                <dl class="facts">
+                  <dt>后台端口</dt><dd><span class="dot"></span>8081 · 路径前缀 /admin</dd>
+                  <dt>会话超时</dt><dd><span class="dot"></span>30 分钟空闲失效</dd>
+                  <dt>CSRF</dt><dd><span class="dot"></span>已启用 · 全部写操作校验</dd>
+                  <dt>数据库</dt><dd><span class="dot dot--ok"></span>连接正常 · MyPetStore</dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 列表 -->
+      <section class="view" id="v-list">
+        <div class="page">
+          <div class="hd">
+            <div>
+              <h1>款号维护</h1>
+              <p>维护款号、面料与工艺、价格与上架状态。库存不在此处直接修改，走补货入口。</p>
+            </div>
+            <div class="hd__act"><button class="btn">新增款号</button></div>
+          </div>
+
+          <div class="card">
+            <div class="fbar">
+              <label class="search" for="kw">
+                <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="7" cy="7" r="4.4"/><path d="M10.4 10.4L14 14"/></svg>
+                <input id="kw" type="search" placeholder="按款号或名称搜索" />
+              </label>
+              <div class="seg" role="group" aria-label="按状态筛选">
+                <button class="on">全部</button>
+                <button>在售</button>
+                <button>草稿</button>
+                <button>售罄</button>
+              </div>
+              <div class="fbar__right">
+                <button class="tlink">重置</button>
+              </div>
+            </div>
+
+            <div class="tblwrap">
+              <table class="tbl">
+                <caption class="sr-only">款号列表，共 54 条，当前第 1 页</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">款号</th>
+                    <th scope="col">名称</th>
+                    <th scope="col">系列 / 品类</th>
+                    <th scope="col" class="num">价格</th>
+                    <th scope="col" class="num">库存</th>
+                    <th scope="col">状态</th>
+                    <th scope="col">操作</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="key"><a href="#">FL-HM-01</a></td>
+                    <td>山羊绒高领衫<span class="sub">山羊绒 · 12 针</span></td>
+                    <td>居家 / 成衣</td>
+                    <td class="num">¥1,280.00</td>
+                    <td class="num">18</td>
+                    <td><span class="tag tag--live">在售</span></td>
+                    <td><div class="acts"><a href="#">编辑</a><a href="#">补货</a><a href="#">相册</a><a href="#" class="mute">下架</a></div></td>
+                  </tr>
+                  <tr>
+                    <td class="key"><a href="#">FL-CT-03</a></td>
+                    <td>高支府绸衬衫<span class="sub">府绸棉 · 60 支</span></td>
+                    <td>通勤 / 成衣</td>
+                    <td class="num">¥429.00</td>
+                    <td class="num">2</td>
+                    <td><span class="tag tag--out">低库存</span></td>
+                    <td><div class="acts"><a href="#">编辑</a><a href="#">补货</a><a href="#">相册</a><a href="#" class="mute">下架</a></div></td>
+                  </tr>
+                  <tr>
+                    <td class="key"><a href="#">FL-HM-09</a></td>
+                    <td>羊绒围巾<span class="sub">羊绒 · 200×35</span></td>
+                    <td>居家 / 配饰</td>
+                    <td class="num">¥780.00</td>
+                    <td class="num">0</td>
+                    <td><span class="tag tag--end">售罄</span></td>
+                    <td><div class="acts"><a href="#">编辑</a><a href="#">补货</a><a href="#">相册</a><a href="#" class="mute">下架</a></div></td>
+                  </tr>
+                  <tr>
+                    <td class="key"><a href="#">FL-OD-02</a></td>
+                    <td>棉质工装外套<span class="sub">斜纹棉 · 水洗</span></td>
+                    <td>户外 / 成衣</td>
+                    <td class="num">¥1,180.00</td>
+                    <td class="num">1</td>
+                    <td><span class="tag tag--out">低库存</span></td>
+                    <td><div class="acts"><a href="#">编辑</a><a href="#">补货</a><a href="#">相册</a><a href="#" class="mute">下架</a></div></td>
+                  </tr>
+                  <tr>
+                    <td class="key"><a href="#">FL-EV-04</a></td>
+                    <td>丝缎长裙<span class="sub">桑蚕丝 · 19 姆米</span></td>
+                    <td>礼服 / 成衣</td>
+                    <td class="num">¥2,380.00</td>
+                    <td class="num">6</td>
+                    <td><span class="tag tag--live">在售</span></td>
+                    <td><div class="acts"><a href="#">编辑</a><a href="#">补货</a><a href="#">相册</a><a href="#" class="mute">下架</a></div></td>
+                  </tr>
+                  <tr>
+                    <td class="key"><a href="#">FL-CS-07</a></td>
+                    <td>水洗牛仔夹克<span class="sub">牛仔 · 12 盎司</span></td>
+                    <td>休闲 / 成衣</td>
+                    <td class="num">¥890.00</td>
+                    <td class="num">24</td>
+                    <td><span class="tag">草稿</span></td>
+                    <td><div class="acts"><a href="#">编辑</a><a href="#">补货</a><a href="#">相册</a><a href="#" class="mute">上架</a></div></td>
+                  </tr>
+                  <tr>
+                    <td class="key"><a href="#">FL-CS-11</a></td>
+                    <td>珠地 Polo<span class="sub">珠地棉 · 220g</span></td>
+                    <td>休闲 / 成衣</td>
+                    <td class="num">¥460.00</td>
+                    <td class="num">31</td>
+                    <td><span class="tag tag--live">在售</span></td>
+                    <td><div class="acts"><a href="#">编辑</a><a href="#">补货</a><a href="#">相册</a><a href="#" class="mute">下架</a></div></td>
+                  </tr>
+                  <tr>
+                    <td class="key"><a href="#">FL-HM-12</a></td>
+                    <td>羊毛混纺针织袜<span class="sub">羊毛混纺</span></td>
+                    <td>居家 / 配饰</td>
+                    <td class="num">¥128.00</td>
+                    <td class="num">60</td>
+                    <td><span class="tag tag--end">草稿</span></td>
+                    <td><div class="acts"><a href="#">编辑</a><a href="#">补货</a><a href="#">相册</a><a href="#" class="mute">上架</a></div></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="pagerbar">
+              <div class="pagerbar__info">共 <b>54</b> 条 · 第 <b>1</b> / <b>3</b> 页</div>
+              <div class="pgs">
+                <span class="pg off">上一页</span>
+                <span class="pg on" aria-current="page">1</span>
+                <a class="pg" href="#">2</a>
+                <a class="pg" href="#">3</a>
+                <a class="pg" href="#">下一页</a>
+                <select aria-label="每页条数"><option>20 条 / 页</option><option>10 条 / 页</option><option>50 条 / 页</option></select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 编辑 -->
+      <section class="view" id="v-edit">
+        <div class="page">
+          <div class="hd">
+            <div>
+              <h1>编辑款号 FL-HM-01</h1>
+              <p>款号创建后不可修改。库存只在补货入口调整，保存时以 version 校验并发。</p>
+            </div>
+          </div>
+
+          <div class="form2">
+            <div class="stack">
+              <div class="card">
+                <div class="card__head"><div><h2>基本信息</h2></div></div>
+                <div class="fs">
+                  <div class="frow">
+                    <div class="field">
+                      <label for="sku">款号<span class="req">*</span></label>
+                      <input class="ctl ctl--ro" id="sku" value="FL-HM-01" readonly />
+                      <div class="help"><span>创建后不可修改</span></div>
+                    </div>
+                    <div class="field">
+                      <label for="cat">所属分类<span class="req">*</span></label>
+                      <select class="ctl" id="cat"><option>居家 / 成衣</option><option>通勤 / 成衣</option></select>
+                      <div class="help"><span>只能选二级分类</span></div>
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label for="name">名称<span class="req">*</span></label>
+                    <input class="ctl" id="name" value="山羊绒高领衫" />
+                    <div class="help"><span>尺码与配色写在名称里，不设规格矩阵</span><span>6 / 60</span></div>
+                  </div>
+                  <div class="frow">
+                    <div class="field">
+                      <label for="price">价格（元）<span class="req">*</span></label>
+                      <input class="ctl" id="price" value="1280.00" />
+                      <div class="help"><span>两位小数，只影响之后的订单</span></div>
+                    </div>
+                    <div class="field">
+                      <label for="sort">排序</label>
+                      <input class="ctl" id="sort" value="10" />
+                      <div class="help"><span>数值越小越靠前</span></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card__head"><div><h2>面料与工艺</h2><p>纯文本输出，保留换行</p></div></div>
+                <div class="fs">
+                  <div class="field">
+                    <label for="fabric">面料</label>
+                    <textarea class="ctl" id="fabric">山羊绒 100%，内蒙古产，14 微米</textarea>
+                    <div class="help"><span>成分与产地</span><span>22 / 120</span></div>
+                  </div>
+                  <div class="frow">
+                    <div class="field">
+                      <label for="weight">克重</label>
+                      <input class="ctl" id="weight" value="12 针 · 380g" />
+                    </div>
+                    <div class="field">
+                      <label for="fit">版型</label>
+                      <input class="ctl" id="fit" value="直筒，肩线微落" />
+                    </div>
+                  </div>
+                  <div class="field err">
+                    <label for="craft">工艺<span class="req">*</span></label>
+                    <textarea class="ctl" id="craft" aria-invalid="true" aria-describedby="craft-err">包边缝合，罗纹领口与袖口</textarea>
+                    <div class="errmsg" id="craft-err">工艺不能为空，请填写至少一项工艺说明。</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card__head"><div><h2>商品文案</h2></div></div>
+                <div class="fs">
+                  <div class="field">
+                    <label for="desc">描述</label>
+                    <textarea class="ctl" id="desc" style="min-height:132px">山羊绒高领衫。面料：山羊绒 100%。版型：直筒，肩线微落。工艺：包边缝合，罗纹领口与袖口。</textarea>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="stack side-card">
+              <div class="card">
+                <div class="card__head"><div><h2>状态</h2></div></div>
+                <div class="card__body">
+                  <div class="seg" role="group" aria-label="上架状态" style="margin-bottom:12px">
+                    <button class="on">在售</button>
+                    <button>草稿</button>
+                  </div>
+                  <p style="font-size:11.5px;color:var(--muted);line-height:1.8">在售状态在用户端列表与详情可见，草稿仅后台可见。</p>
+                  <button class="btn btn--wide" style="margin-top:16px">保存修改</button>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card__head"><div><h2>库存</h2></div></div>
+                <div class="card__body">
+                  <div class="big-num">18 <small>件</small></div>
+                  <p style="font-size:11.5px;color:var(--muted);line-height:1.8;margin-top:8px">库存只能通过补货入口增加，编辑页不提供直接改写。</p>
+                  <button class="btn btn--sub btn--sm" style="margin-top:12px">去补货</button>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card__head"><div><h2>相册</h2></div></div>
+                <div class="card__body">
+                  <div class="gal"><span></span><span></span><span></span></div>
+                  <p style="font-size:11.5px;color:var(--muted)">3 张 · 平铺 / 上身 / 细节</p>
+                  <button class="btn btn--sub btn--sm" style="margin-top:12px">维护相册</button>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card__head"><div><h2>元信息</h2></div></div>
+                <div class="card__body">
+                  <div class="meta">
+                    <span>创建时间</span><b>2026-10-02 09:14</b>
+                    <span>更新时间</span><b>2026-11-13 18:22</b>
+                    <span>version</span><b>37</b>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- 订单详情 -->
+      <section class="view" id="v-order">
+        <div class="page">
+          <div class="hd">
+            <div>
+              <h1>订单详情</h1>
+              <p>金额、明细与支付凭证为成交快照，后台不修改。发货只允许从「已支付」发起一次。</p>
+            </div>
+          </div>
+
+          <div class="ostatus">
+            <span class="ostatus__no">FL20261113090815A7C2</span>
+            <span class="tag tag--live">已支付 · 待发货</span>
+            <span style="font-size:11.5px;color:var(--muted)">下单 2026-11-13 09:08 · 支付 2026-11-13 09:12</span>
+            <div class="ostatus__act">
+              <button class="btn btn--sub btn--sm">修改收货信息</button>
+              <button class="btn btn--sm">发货</button>
+            </div>
+          </div>
+
+          <div class="form2">
+            <div class="card">
+              <div class="card__head"><div><h2>明细快照</h2><p>单价为下单时的成交价，不随商品改价变化</p></div></div>
+              <div class="tblwrap">
+                <table class="tbl" style="min-width:520px;table-layout:fixed">
+                  <caption class="sr-only">订单商品明细</caption>
+                  <colgroup><col style="width:46%" /><col style="width:20%" /><col style="width:12%" /><col style="width:22%" /></colgroup>
+                  <thead>
+                    <tr>
+                      <th scope="col">款号 / 名称</th>
+                      <th scope="col" class="num">单价</th>
+                      <th scope="col" class="num">数量</th>
+                      <th scope="col" class="num">小计</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><span class="key">FL-HM-01</span><span class="sub">山羊绒高领衫</span></td>
+                      <td class="num">¥1,280.00</td>
+                      <td class="num">1</td>
+                      <td class="num">¥1,280.00</td>
+                    </tr>
+                    <tr>
+                      <td><span class="key">FL-CT-03</span><span class="sub">高支府绸衬衫</span></td>
+                      <td class="num">¥429.00</td>
+                      <td class="num">1</td>
+                      <td class="num">¥429.00</td>
+                    </tr>
+                    <tr>
+                      <td colspan="3" style="text-align:right;color:var(--muted)">合计</td>
+                      <td class="num" style="font-size:15px">¥1,709.00</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="stack side-card">
+              <div class="card">
+                <div class="card__head"><div><h2>收货信息</h2></div></div>
+                <div class="card__body">
+                  <div class="meta" style="grid-template-columns:56px 1fr">
+                    <span>收货人</span><b style="font-family:var(--f-body)">沈未染</b>
+                    <span>电话</span><b style="font-family:var(--f-body)">138 0013 8000</b>
+                    <span>地址</span><b style="font-family:var(--f-body);line-height:1.6;text-align:left">杭州市西湖区文三路 90 号 3 幢 502</b>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card__head"><div><h2>支付信息</h2></div></div>
+                <div class="card__body">
+                  <div class="meta" style="grid-template-columns:56px 1fr">
+                    <span>凭证号</span><b>MOCK202611130912154C8A</b>
+                    <span>方式</span><b style="font-family:var(--f-body)">演示支付</b>
+                    <span>支付时间</span><b>2026-11-13 09:12</b>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card__head"><div><h2>流转</h2></div></div>
+                <div class="card__body">
+                  <ul class="tline">
+                    <li><div><b>已支付</b><small>2026-11-13 09:12</small></div></li>
+                    <li><div><b>已下单</b><small>2026-11-13 09:08</small></div></li>
+                    <li class="pending"><div><b>发货</b><small>等待处理</small></div></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 组件 -->
+      <section class="view" id="v-kit">
+        <div class="page">
+          <div class="hd">
+            <div>
+              <h1>组件与状态</h1>
+              <p>交互状态与边界情况的实际呈现，落地时直接复用这里的尺寸与配色。</p>
+            </div>
+          </div>
+
+          <div class="stack">
+            <div class="card">
+              <div class="card__head"><div><h2>按钮</h2><p>四档尺寸，直角，悬停转陶土并上浮 1px</p></div></div>
+              <div class="card__body" style="display:flex;gap:16px;flex-wrap:wrap;align-items:center">
+                <button class="btn btn--lg">保存</button>
+                <button class="btn">新增款号</button>
+                <button class="btn btn--sm">行内操作</button>
+                <button class="btn btn--sub">取消</button>
+                <button class="btn btn--sub btn--sm">重置</button>
+                <button class="btn btn--danger">确认删除</button>
+                <button class="btn" disabled>保存中</button>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card__head"><div><h2>状态标签</h2><p>不用绿色表示成功，保持三色体系</p></div></div>
+              <div class="card__body" style="display:flex;gap:10px;flex-wrap:wrap">
+                <span class="tag tag--live">在售</span>
+                <span class="tag tag--live">已支付</span>
+                <span class="tag tag--done">已发货</span>
+                <span class="tag tag--done">已完成</span>
+                <span class="tag">草稿</span>
+                <span class="tag">待支付</span>
+                <span class="tag tag--end">已取消</span>
+                <span class="tag tag--end">已停用</span>
+                <span class="tag tag--out">低库存</span>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card__head"><div><h2>状态提示</h2><p>左 3px 色条，不自动消失</p></div></div>
+              <div class="card__body">
+                <div class="alert alert--ok" role="status">
+                  <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 8.5l3 3 7-7"/></svg>
+                  <span>款号 FL-HM-07 已上架。</span>
+                </div>
+                <div class="alert alert--err" role="alert">
+                  <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 4v5M8 11.4v.6"/><circle cx="8" cy="8" r="6.2"/></svg>
+                  <span>保存失败：款号 FL-HM-01 已存在，请换一个款号。</span>
+                  <button class="alert__x" aria-label="关闭提示">×</button>
+                </div>
+                <div class="alert">
+                  <span>补货为增量语义，提交后的库存为当前库存加增量。</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card__head"><div><h2>空状态</h2><p>无数据与无结果用不同文案</p></div></div>
+              <div class="card__body" style="padding:0">
+                <div class="empty">
+                  <h3>还没有款式</h3>
+                  <p>新增第一款后，它会出现在这里，并在上架后同步到用户端。</p>
+                  <button class="btn">新增款号</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card__head"><div><h2>加载骨架</h2><p>静态色块淡入，不做闪烁</p></div></div>
+              <div class="skel" style="padding:8px 0">
+                <div class="skel__row"><span class="skel__sq"></span><span class="skel__ln" style="width:18%"></span><span class="skel__ln" style="width:34%"></span><span class="skel__ln" style="width:12%;margin-left:auto"></span></div>
+                <div class="skel__row"><span class="skel__sq"></span><span class="skel__ln" style="width:22%"></span><span class="skel__ln" style="width:28%"></span><span class="skel__ln" style="width:12%;margin-left:auto"></span></div>
+                <div class="skel__row"><span class="skel__sq"></span><span class="skel__ln" style="width:16%"></span><span class="skel__ln" style="width:38%"></span><span class="skel__ln" style="width:12%;margin-left:auto"></span></div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card__head"><div><h2>二次确认</h2><p>破坏性操作必须写明后果</p></div></div>
+              <div class="card__body">
+                <button class="btn btn--danger btn--sm" onclick="document.getElementById('del').showModal()">删除该分类</button>
+                <p class="note">点击查看弹窗，ESC 或「取消」关闭。</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <div class="actions-bar" id="bar-edit" hidden>
+      <span class="hint">修改仅在点击保存后生效</span>
+      <button class="btn btn--sub">取消</button>
+      <button class="btn">保存修改</button>
+    </div>
+  </div>
+</div>
+
+<dialog id="del" aria-labelledby="del-t">
+  <div class="dlg__body">
+    <h2 id="del-t">删除分类「居家 / 配饰」</h2>
+    <p>该分类下有 4 款商品引用，删除后这些商品将失去归属。请先把商品移到其他分类，再执行删除。</p>
+    <div class="dlg__acts">
+      <button class="btn btn--sub" onclick="document.getElementById('del').close()">取消</button>
+      <button class="btn btn--danger" disabled>确认删除</button>
+    </div>
+  </div>
+</dialog>
+
+<script>
+const views = document.querySelectorAll('.view');
+const btns = document.querySelectorAll('.proto button[data-view]');
+const META = {
+  console: ['概览', '控制台', 'console'],
+  list: ['商品', '款号维护', 'products'],
+  edit: ['商品', '编辑款号', 'products'],
+  order: ['交易', '订单详情', 'orders'],
+  kit: ['设计规范', '组件与状态', null]
+};
+btns.forEach(b => b.addEventListener('click', () => {
+  btns.forEach(x => x.classList.remove('on'));
+  b.classList.add('on');
+  const v = b.dataset.view;
+  views.forEach(s => s.classList.toggle('on', s.id === 'v-' + v));
+  document.querySelector('.main').scrollTop = 0;
+  const [sec, cur, nav] = META[v];
+  document.getElementById('crumb-sec').textContent = sec;
+  document.getElementById('crumb-cur').textContent = cur;
+  document.getElementById('bar-edit').hidden = (v !== 'edit');
+  document.querySelectorAll('.side__item').forEach(a => {
+    if (nav && a.dataset.nav === nav) a.setAttribute('aria-current', 'page');
+    else a.removeAttribute('aria-current');
+  });
+}));
+document.querySelectorAll('.seg').forEach(seg => {
+  seg.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+    seg.querySelectorAll('button').forEach(x => x.classList.remove('on'));
+    b.classList.add('on');
+  }));
+});
+const scrim = document.getElementById('scrim');
+const sideEl = document.querySelector('.side');
+const hamb = document.getElementById('hamb');
+const setDrawer = on => {
+  sideEl.classList.toggle('open', on);
+  scrim.classList.toggle('on', on);
+  hamb.setAttribute('aria-expanded', on ? 'true' : 'false');
+};
+hamb.addEventListener('click', () => setDrawer(!sideEl.classList.contains('open')));
+scrim.addEventListener('click', () => setDrawer(false));
+document.addEventListener('keydown', e => { if (e.key === 'Escape') setDrawer(false); });
+document.querySelectorAll('.side__item').forEach(a => a.addEventListener('click', () => setDrawer(false)));
+
+document.querySelectorAll('.alert__x').forEach(x => {
+  x.addEventListener('click', e => e.currentTarget.closest('.alert').remove());
+});
+</script>
+</body>
+</html>
