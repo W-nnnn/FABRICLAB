@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<html lang="zh-CN" th:lang="${lang == 'en' ? 'en' : 'zh-CN'}" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
+    <link rel="icon" type="image/png" th:href="@{/images/mark.png}"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="|#{nav.brand} · #{error.title}|">FABRICLAB · 提示</title>
-    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113n}"/>
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261114a}"/>
 </head>
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">

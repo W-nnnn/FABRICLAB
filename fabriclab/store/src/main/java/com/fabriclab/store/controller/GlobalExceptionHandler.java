@@ -8,8 +8,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.dao.DataAccessException;
 import org.springframework.ui.Model;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 /**
  * 统一错误呈现：参数错误 400、资源不存在 404、技术异常 500。
@@ -44,6 +47,20 @@ public class GlobalExceptionHandler {
     public String handleDataAccess(Model model, HttpServletRequest request,
                                    HttpServletResponse response) {
         return render(model, request, response, 500, "加载失败", "数据暂时无法读取，请稍后重试");
+    }
+
+    /** 未匹配到的地址：没有对应页面就是 404，不能落到通用 500。 */
+    @ExceptionHandler({NoResourceFoundException.class, NoHandlerFoundException.class})
+    public String handleMissingPath(Model model, HttpServletRequest request,
+                                    HttpServletResponse response) {
+        return render(model, request, response, 404, "页面不存在", "链接可能失效，或者这件已经卖完下架");
+    }
+
+    /** 访问方式不对（例如对只收表单的地址发 GET）：明确 405，不冒充服务故障。 */
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public String handleMethodNotSupported(Model model, HttpServletRequest request,
+                                           HttpServletResponse response) {
+        return render(model, request, response, 405, "该地址不支持此访问方式", "请从页面上的入口重新操作");
     }
 
     @ExceptionHandler(Exception.class)
