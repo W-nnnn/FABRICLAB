@@ -4,7 +4,7 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="|#{nav.brand} · #{home.title}|">FABRICLAB · 未染</title>
-    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113k}"/>
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113l}"/>
 </head>
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
@@ -12,32 +12,30 @@
     <th:block th:replace="~{fragments :: header('home')}"></th:block>
 
     <!-- ======================================================= 首屏（占满视口，单层头部） -->
-    <div style="display:flex;min-height:calc(100vh - 62px);border-bottom:1px solid var(--line);position:relative">
-        <div style="width:712px;flex:none;padding:46px 0 46px var(--gx);display:flex;flex-direction:column;justify-content:center">
+    <div style="display:flex;min-height:calc(100vh - 62px);border-bottom:1px solid var(--line)">
+        <div class="hero-left">
             <div class="eyebrow" th:text="#{home.eyebrow}">二〇二六 秋冬 · 第七辑</div>
-            <div style="margin-top:26px;display:flex;align-items:stretch">
-                <div class="disp disp-hero"
-                     th:utext="#{home.display}">未<br><span style=&quot;color:#B4643A&quot;>染</span></div>
-                <div class="hero-vert" style="margin-left:auto;padding-left:18px"
-                     th:text="#{home.vert}">UNDYED ATELIER · EST. 2019</div>
+            <div class="disp disp-hero"
+                 th:utext="#{home.display}">未<br><span style=&quot;color:#B4643A&quot;>染</span></div>
+            <div class="hero-copy">
+                <div class="hero-song" th:text="#{home.slogan}">布本无色，衣有十年。</div>
+                <div class="lead hero-lead" th:text="#{home.lead}">
+                    一季只做七件。不追季，不追潮，只用未染的天然纤维，把版型磨到可以穿十年的程度。
+                </div>
+                <div class="hero-cta">
+                    <a class="btn" th:href="@{/category}">
+                        <span th:text="#{home.cta}">进入选购</span>
+                        <svg width="14" height="9" viewBox="0 0 15 9" fill="none" stroke="currentColor"
+                             stroke-width="1.2"><path d="M0 4.5h13.4M9.8 1l3.6 3.5-3.6 3.5"/></svg>
+                    </a>
+                    <a class="tlink" th:href="@{/category}" th:text="#{home.lookbook}">查看型录</a>
+                </div>
             </div>
-            <div class="song" style="margin-top:26px;font-size:19px;letter-spacing:.1em;color:var(--mute)"
-                 th:text="#{home.slogan}">布本无色，衣有十年。</div>
-            <div class="lead" style="margin-top:16px;width:398px" th:text="#{home.lead}">
-                一季只做七件。不追季，不追潮，只用未染的天然纤维，把版型磨到可以穿十年的程度。
-            </div>
-            <div style="margin-top:26px;display:flex;align-items:center;gap:24px">
-                <a class="btn" th:href="@{/category}">
-                    <span th:text="#{home.cta}">进入选购</span>
-                    <svg width="14" height="9" viewBox="0 0 15 9" fill="none" stroke="currentColor"
-                         stroke-width="1.2"><path d="M0 4.5h13.4M9.8 1l3.6 3.5-3.6 3.5"/></svg>
-                </a>
-                <a class="tlink" th:href="@{/category}" th:text="#{home.lookbook}">查看型录</a>
-            </div>
+            <div class="hero-vert" th:text="#{home.vert}">UNDYED ATELIER · EST. 2019</div>
         </div>
 
-        <!-- 右：主图（留白内嵌，不满幅） -->
-        <div style="flex:1;max-width:760px;margin-left:auto;position:relative;padding:36px 36px 36px 42px">
+        <!-- 右：主图（流式等比，随视口拉伸） -->
+        <div class="hero-media">
             <div style="position:relative;height:100%;overflow:hidden;background:var(--linen)">
                 <img th:src="@{/images/look/lb-03.jpg}" alt="FW26 LOOKBOOK"
                      style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
