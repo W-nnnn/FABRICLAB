@@ -11,15 +11,15 @@
         </a>
         <nav class="nav" aria-label="系列线">
             <a class="it" th:href="@{/category(category=1)}"
-               th:classappend="${active == 'commute'} ? 'on'" th:text="#{line.commute}">通勤出行</a>
+               th:classappend="${navActive == 'commute'} ? 'on'" th:text="#{line.commute}">通勤出行</a>
             <a class="it" th:href="@{/category(category=2)}"
-               th:classappend="${active == 'leisure'} ? 'on'" th:text="#{line.leisure}">休闲生活</a>
+               th:classappend="${navActive == 'leisure'} ? 'on'" th:text="#{line.leisure}">休闲生活</a>
             <a class="it" th:href="@{/category(category=3)}"
-               th:classappend="${active == 'outdoor'} ? 'on'" th:text="#{line.outdoor}">户外运动</a>
+               th:classappend="${navActive == 'outdoor'} ? 'on'" th:text="#{line.outdoor}">户外运动</a>
             <a class="it" th:href="@{/category(category=4)}"
-               th:classappend="${active == 'occasion'} ? 'on'" th:text="#{line.occasion}">礼服场合</a>
+               th:classappend="${navActive == 'occasion'} ? 'on'" th:text="#{line.occasion}">礼服场合</a>
             <a class="it" th:href="@{/category(category=5)}"
-               th:classappend="${active == 'home'} ? 'on'" th:text="#{line.home}">居家舒适</a>
+               th:classappend="${navActive == 'home'} ? 'on'" th:text="#{line.home}">居家舒适</a>
         </nav>
         <div class="acts">
             <a class="lang" th:href="${langHref + (lang == 'en' ? 'lang=zh' : 'lang=en')}"
@@ -98,6 +98,7 @@
             </div>
         </div>
     </div>
+    <script th:src="@{/js/app.js}"></script>
 </th:block>
 
 <!-- ============================================================ 商品卡 -->

@@ -441,3 +441,58 @@ body.lang-en .lead, body.lang-en .tiny, body.lang-en .eyebrow { letter-spacing: 
     .page { width: 100%; }
     .hdr, .pad, .foot, .chr, .strip { padding-left: 24px; padding-right: 24px; }
 }
+
+/* ============================================================ 交互增强 */
+
+/* 导航栏配色区分：顶部陶土细条 + 激活项陶土胶囊 + 悬浮反馈 */
+.hdr::before {
+    content: ""; position: absolute; left: 0; right: 0; top: 0; height: 3px;
+    background: var(--rust);
+}
+.nav .it { transition: color .25s ease; }
+.nav .it:hover { color: var(--rust); }
+.nav .it.on::after { display: none; }
+.nav .it.on {
+    color: var(--wall); background: var(--rust);
+    border-radius: 999px; padding: 6px 15px;
+}
+.lang { transition: color .2s ease, border-color .2s ease; }
+.lang:hover { border-color: var(--rust); color: var(--ink); }
+.ico { transition: color .2s ease, transform .2s ease; }
+.ico:hover { color: var(--rust); }
+.ico:active { transform: translateY(1px); }
+.tlink { transition: color .2s ease, border-color .2s ease; }
+.tlink:hover { color: var(--rust); border-color: var(--rust); }
+
+/* 按钮反馈：悬浮提亮、按下微缩、点击水波纹 */
+.btn {
+    position: relative; overflow: hidden; isolation: isolate;
+    transition: filter .2s ease, transform .12s ease, box-shadow .2s ease;
+}
+.btn:hover { filter: brightness(1.06); }
+.btn:active { transform: translateY(1px) scale(.985); }
+.btn:focus-visible { outline: 2px solid var(--rust); outline-offset: 3px; }
+.ripple {
+    position: absolute; border-radius: 50%; background: currentColor;
+    opacity: .3; transform: scale(0); animation: rip .55s ease-out forwards;
+    pointer-events: none; z-index: -1;
+}
+@keyframes rip { to { transform: scale(2.6); opacity: 0; } }
+
+/* 商品卡：悬停抬升 + 图片放大 */
+.card { transition: box-shadow .35s ease; }
+.card:hover { box-shadow: 0 16px 38px rgba(26, 26, 26, .16); }
+.card .ph img { transition: transform .6s cubic-bezier(.22, .61, .36, 1); }
+.card:hover .ph img { transform: scale(1.06); }
+@keyframes cardIn { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+.card.in { animation: cardIn .55s cubic-bezier(.22, .61, .36, 1) both; }
+
+/* 页面切换动效 */
+@keyframes pgIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@keyframes pgOut { from { opacity: 1; transform: none; } to { opacity: 0; transform: translateY(-10px); } }
+.page { animation: pgIn .5s cubic-bezier(.22, .61, .36, 1) both; }
+.page.pg-out { animation: pgOut .26s ease forwards; }
+
+@media (prefers-reduced-motion: reduce) {
+    .page, .card.in, .ripple { animation: none !important; }
+}
