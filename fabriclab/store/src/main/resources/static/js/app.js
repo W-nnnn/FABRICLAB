@@ -445,14 +445,32 @@
       });
   }
 
-  region.addEventListener('click', function (e) {
-    if (e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-    var a = e.target.closest('a');
-    if (!a) return;
+  /* ---- 接管：同一路径的跳转都改成换这一块 ---- */
+  function formUrl(f) {
+    var qs = new URLSearchParams();
+    new FormData(f).forEach(function (v, k) {
+      if (String(v).trim() !== '') qs.append(k, v);
+    });
+    var action = f.getAttribute('action') || location.pathname;
+    return action + (qs.toString() ? '?' + qs.toString() : '');
+  }
+
+  /* 该链接是否由本模块处理：同路径、非新窗口、非切语言 */
+  function takeable(a) {
     var href = a.getAttribute('href');
-    if (!href || href.charAt(0) === '#') return;
-    if (a.target === '_blank' || a.hasAttribute('download')) return;
-    if (!samePath(a.href)) return; /* 商品卡等：不接管，走整页过渡 */
+    if (!href || href.charAt(0) === '#') return false;
+    if (a.target === '_blank' || a.hasAttribute('download')) return false;
+    if (a.classList.contains('lang')) return false; /* 切语言要整页重建，头部也得换 */
+    try {
+      if (new URL(a.href, location.href).searchParams.has('lang')) return false;
+    } catch (err) {}
+    return samePath(a.href);
+  }
+
+  function onClick(e) {
+    if (e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    var a = e.target.closest('a');
+    if (!a || !takeable(a)) return;
     /* 置位 defaultPrevented 后，document 上的页面退出动画会自动跳过 */
     e.preventDefault();
     if (a.href === location.href) return;
@@ -460,19 +478,40 @@
     if (a.classList.contains('pglink')) {
       window.scrollTo({ top: topOf(), behavior: reduce ? 'auto' : 'smooth' });
     }
-  });
+  }
+
+  region.addEventListener('click', onClick);
 
   region.addEventListener('submit', function (e) {
     var f = e.target;
     if (!f || f.tagName !== 'FORM') return;
     e.preventDefault();
-    var qs = new URLSearchParams();
-    new FormData(f).forEach(function (v, k) {
-      if (String(v).trim() !== '') qs.append(k, v);
-    });
-    var action = f.getAttribute('action') || location.pathname;
-    load(action + (qs.toString() ? '?' + qs.toString() : ''), 'push');
+    load(formUrl(f), 'push');
   });
+
+  /* 顶部系列条与头部搜索不在 #catalog 内：在选购页换系列同样只换这一块，
+     否则整页淡出淡入又是一次闪白。其余页面没有 #catalog，照旧整页过渡。
+     用捕获阶段，先于 document 上的页面过渡接管。 */
+  document.addEventListener('click', function (e) {
+    if (e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    var a = e.target.closest('a');
+    if (!a || a.closest('#catalog') || !takeable(a) || a.href === location.href) return;
+    e.preventDefault();
+    load(a.href, 'push');
+    if (a.classList.contains('nitem') || a.classList.contains('hn')) {
+      window.scrollTo({ top: topOf(), behavior: reduce ? 'auto' : 'smooth' });
+    }
+  }, true);
+
+  document.addEventListener('submit', function (e) {
+    var f = e.target;
+    if (!f || f.tagName !== 'FORM' || f.closest('#catalog')) return;
+    if (e.defaultPrevented || !samePath(f.action || location.pathname)) return;
+    var kw = f.querySelector('input[name="keyword"]');
+    if (kw && !kw.value.trim()) return; /* 空搜索不提交，交给头部展开逻辑 */
+    e.preventDefault();
+    load(formUrl(f), 'push');
+  }, true);
 
   /* 前进 / 后退回到某个筛选状态：按地址重取这一块 */
   window.addEventListener('popstate', function () {
