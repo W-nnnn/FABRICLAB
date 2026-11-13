@@ -194,7 +194,7 @@ body.lang-en .disp-hero { font-size: 128px; letter-spacing: .02em; }
     border-left: 1px solid var(--line);
 }
 
-/* 首屏工艺索引条：与统计条两个弹性间隙均分中部留白 */
+/* 工艺索引条（商品详情页 story 区） */
 .craft {
     display: flex; align-items: baseline;
     border-top: 1px solid var(--line);
@@ -735,6 +735,10 @@ body.lang-en .lead, body.lang-en .tiny, body.lang-en .eyebrow { letter-spacing: 
 .card:hover { box-shadow: 0 16px 38px rgba(26, 26, 26, .16); }
 .card .ph img { transition: transform .6s cubic-bezier(.22, .61, .36, 1); }
 .card:hover .ph img { transform: scale(1.06); }
+/* 文字与图片同一节奏的悬停反馈 */
+.card .meta .nm, .card .meta .pr, .card .sub em { transition: color .6s cubic-bezier(.22, .61, .36, 1); }
+.card:hover .meta .nm { color: var(--rust); }
+.card:hover .sub em { color: var(--mute); }
 @keyframes cardIn { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
 .card.in { animation: cardIn .55s cubic-bezier(.22, .61, .36, 1) both; }
 

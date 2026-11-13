@@ -4,7 +4,7 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="|#{nav.brand} · #{cart.title}|">FABRICLAB · 购物袋</title>
-    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113h}"/>
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113i}"/>
 </head>
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
@@ -137,6 +137,32 @@
                     <span style="border:1px solid var(--line);padding:3px 7px">WECHAT</span>
                     <span style="border:1px solid var(--line);padding:3px 7px">ALIPAY</span>
                     <span style="border:1px solid var(--line);padding:3px 7px">UNIONPAY</span>
+                </div>
+
+                <!-- 品牌承诺（自首页迁入） -->
+                <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--line);
+                            display:flex;flex-direction:column;gap:9px">
+                    <span style="display:flex;align-items:center;gap:7px;
+                                font-family:var(--f-body);font-size:10px;letter-spacing:.1em;color:var(--mute)">
+                        <span style="display:flex;color:var(--rust)">
+                            <svg width="11" height="9" viewBox="0 0 12 9" fill="none" stroke="currentColor"
+                                 stroke-width="1.5"><path d="M1 4.6L4.3 7.8 11 1.2"/></svg></span>
+                        <span th:text="#{home.p1}">终身免费修补</span>
+                    </span>
+                    <span style="display:flex;align-items:center;gap:7px;
+                                font-family:var(--f-body);font-size:10px;letter-spacing:.1em;color:var(--mute)">
+                        <span style="display:flex;color:var(--rust)">
+                            <svg width="11" height="9" viewBox="0 0 12 9" fill="none" stroke="currentColor"
+                                 stroke-width="1.5"><path d="M1 4.6L4.3 7.8 11 1.2"/></svg></span>
+                        <span th:text="#{home.p2}">四家工坊出品</span>
+                    </span>
+                    <span style="display:flex;align-items:center;gap:7px;
+                                font-family:var(--f-body);font-size:10px;letter-spacing:.1em;color:var(--mute)">
+                        <span style="display:flex;color:var(--rust)">
+                            <svg width="11" height="9" viewBox="0 0 12 9" fill="none" stroke="currentColor"
+                                 stroke-width="1.5"><path d="M1 4.6L4.3 7.8 11 1.2"/></svg></span>
+                        <span th:text="#{home.p3}">纤维可追溯</span>
+                    </span>
                 </div>
 
                 <div style="margin-top:22px;padding-top:18px;border-top:1px solid var(--line)">

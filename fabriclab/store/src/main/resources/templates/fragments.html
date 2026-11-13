@@ -48,7 +48,8 @@
                 </a>
             </div>
         </div>
-        <nav class="navbar" th:aria-label="#{shop.f.category}">
+        <!-- 系列目录：仅商品类页面显示，首页不渲染（首页传 active='home'） -->
+        <nav class="navbar" th:if="${active != 'home'}" th:aria-label="#{shop.f.category}">
             <a class="nitem" th:href="@{/category(category=1)}"
                th:classappend="${navActive == 'commute'} ? 'on'"><span class="nm" th:text="#{line.commute}">通勤出行</span></a>
             <a class="nitem" th:href="@{/category(category=2)}"

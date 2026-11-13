@@ -4,7 +4,7 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="|#{nav.brand} · ${tr.t(view.product().name)}|">FABRICLAB · 商品详情</title>
-    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113h}"/>
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113i}"/>
 </head>
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
@@ -246,6 +246,25 @@
                 <div class="lead" style="margin-top:16px;font-size:12px;line-height:1.95">
                     <p th:each="paragraph : ${view.descriptionLines()}" th:text="${tr.t(paragraph)}"
                        style="margin-bottom:10px">纯文本详情段落</p>
+                </div>
+                <!-- 工艺索引（自首页迁入）：染织裁缝四格 -->
+                <div class="craft" style="margin-top:30px">
+                    <div class="c">
+                        <span class="zi" th:text="#{home.craft1.t}">染</span>
+                        <span class="d" th:text="#{home.craft1.d}">不过染缸</span>
+                    </div>
+                    <div class="c">
+                        <span class="zi" th:text="#{home.craft2.t}">织</span>
+                        <span class="d" th:text="#{home.craft2.d}">天然纤维纱线</span>
+                    </div>
+                    <div class="c">
+                        <span class="zi" th:text="#{home.craft3.t}">裁</span>
+                        <span class="d" th:text="#{home.craft3.d}">第九版版型</span>
+                    </div>
+                    <div class="c">
+                        <span class="zi" th:text="#{home.craft4.t}">缝</span>
+                        <span class="d" th:text="#{home.craft4.d}">终身免费修补</span>
+                    </div>
                 </div>
             </div>
         </div>
