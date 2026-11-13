@@ -777,8 +777,8 @@ body.lang-en .lead, body.lang-en .tiny, body.lang-en .eyebrow { letter-spacing: 
 @keyframes rip { to { transform: scale(2.6); opacity: 0; } }
 
 /* 商品卡：悬停抬升 + 图片放大 */
-.card { transition: box-shadow .35s ease; }
-.card:hover { box-shadow: 0 16px 38px rgba(26, 26, 26, .16); }
+.card { transition: box-shadow .35s ease, transform .6s cubic-bezier(.22, .61, .36, 1); }
+.card:hover { box-shadow: 0 16px 38px rgba(26, 26, 26, .16); transform: translateY(-6px); }
 .card .ph img { transition: transform .6s cubic-bezier(.22, .61, .36, 1); }
 .card:hover .ph img { transform: scale(1.06); }
 /* 文字与图片同一节奏的悬停反馈 */
@@ -786,7 +786,8 @@ body.lang-en .lead, body.lang-en .tiny, body.lang-en .eyebrow { letter-spacing: 
 .card:hover .meta .nm { color: var(--rust); }
 .card:hover .sub em { color: var(--mute); }
 @keyframes cardIn { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
-.card.in { animation: cardIn .55s cubic-bezier(.22, .61, .36, 1) both; }
+/* fill 用 backwards：动画结束后交还 transform 给级联，否则 fill 会永久钉住 transform、悬停抬升失效 */
+.card.in { animation: cardIn .55s cubic-bezier(.22, .61, .36, 1) backwards; }
 
 /* 页面切换动效 */
 @keyframes pgIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
