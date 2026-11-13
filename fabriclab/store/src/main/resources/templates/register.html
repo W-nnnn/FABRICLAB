@@ -31,7 +31,7 @@
                 <!-- 已注册：结果 -->
                 <th:block th:if="${registeredUsername != null}">
                     <div class="eyebrow" th:text="#{signup.done.eb}">注册成功</div>
-                    <div class="h2" style="margin-top:22px;font-size:36px" th:text="#{signup.done}">账号已创建</div>
+                    <h2 class="h2" style="margin-top:22px;font-size:36px" th:text="#{signup.done}">账号已创建</h2>
                     <div class="lead" style="margin-top:14px;width:360px;font-size:12px">
                         <span th:text="#{signup.done.body}">账号</span>
                         <b class="din" th:text="${registeredUsername}">username</b>
@@ -46,7 +46,7 @@
                 <!-- 未注册：表单 -->
                 <th:block th:if="${registeredUsername == null}">
                     <div class="eyebrow" th:text="#{signup.eyebrow}">注册</div>
-                    <div class="h2" style="margin-top:22px;font-size:36px" th:text="#{signup.heading}">成为会员</div>
+                    <h2 class="h2" style="margin-top:22px;font-size:36px" th:text="#{signup.heading}">成为会员</h2>
                     <div class="lead" style="margin-top:14px;width:340px;font-size:12px" th:text="#{signup.lead}">
                         注册后可使用购物袋与订单，随时查看购买记录。
                     </div>

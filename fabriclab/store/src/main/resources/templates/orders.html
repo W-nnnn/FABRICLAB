@@ -12,6 +12,7 @@
 
     <th:block th:replace="~{fragments :: header('account')}"></th:block>
 
+    <span id="main" tabindex="-1"></span>
     <!-- 会员横幅 -->
     <section class="mband" th:if="${currentUser != null}">
         <div>
@@ -54,7 +55,7 @@
             <!-- ===================== 板块一：我的订单 ===================== -->
             <section id="pane-orders" class="apane">
                 <div style="display:flex;align-items:flex-end">
-                    <div class="h2" style="font-size:30px" th:text="#{orders.heading}">我的订单</div>
+                    <h2 class="h2" style="font-size:30px" th:text="#{orders.heading}">我的订单</h2>
                     <span class="tiny" style="margin-left:auto" th:text="|#{orders.count} ${result.total}|">共 4 单</span>
                 </div>
 
@@ -191,7 +192,7 @@
                     <div class="ptitle">
                         <div>
                             <div class="eyebrow" th:text="#{account.shortcut.eb}">账户 / 快捷入口</div>
-                            <div class="h2" style="margin-top:14px" th:text="#{account.shortcut.title}">账户里的其他</div>
+                            <h2 class="h2" style="margin-top:14px" th:text="#{account.shortcut.title}">账户里的其他</h2>
                         </div>
                     </div>
                     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;padding-top:22px">
@@ -242,7 +243,7 @@
             <!-- ===================== 板块二：个人资料 ===================== -->
             <section id="pane-profile" class="apane" hidden th:if="${profile != null}">
                 <div style="display:flex;align-items:flex-end">
-                    <div class="h2" style="font-size:30px" th:text="#{account.nav.profile}">个人资料</div>
+                    <h2 class="h2" style="font-size:30px" th:text="#{account.nav.profile}">个人资料</h2>
                     <span class="tiny" style="margin-left:auto" th:text="#{profile.note}">仅本人可见</span>
                 </div>
                 <div style="margin-top:28px;background:var(--card);border:1px solid var(--line);padding:14px 30px">
@@ -281,11 +282,11 @@
             <!-- ===================== 板块三：账户设置 ===================== -->
             <section id="pane-settings" class="apane" hidden>
                 <div style="display:flex;align-items:flex-end">
-                    <div class="h2" style="font-size:30px" th:text="#{account.nav.settings}">账户设置</div>
+                    <h2 class="h2" style="font-size:30px" th:text="#{account.nav.settings}">账户设置</h2>
                 </div>
 
                 <div style="margin-top:28px;background:var(--card);border:1px solid var(--line);padding:26px 30px">
-                    <div class="h3" style="font-size:14px" th:text="#{settings.lang}">界面语言</div>
+                    <h3 class="h3" style="font-size:14px" th:text="#{settings.lang}">界面语言</h3>
                     <div class="tiny" style="margin-top:8px;line-height:1.9" th:text="#{settings.lang.d}">
                         切换商店界面与商品内容的显示语言。
                     </div>
@@ -299,7 +300,7 @@
                 </div>
 
                 <div style="margin-top:18px;background:var(--card);border:1px solid var(--line);padding:26px 30px">
-                    <div class="h3" style="font-size:14px" th:text="#{settings.security}">安全</div>
+                    <h3 class="h3" style="font-size:14px" th:text="#{settings.security}">安全</h3>
                     <form th:action="@{/signout}" method="post" style="margin-top:16px;display:flex;align-items:center;gap:18px">
                         <input type="hidden" name="_csrf" th:value="${csrfToken}"/>
                         <button type="submit" class="btn ghost sm" th:text="#{account.a4}">退出登录</button>
