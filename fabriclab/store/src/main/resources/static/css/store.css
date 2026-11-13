@@ -145,10 +145,13 @@ html, body { overflow-x: clip; }
     margin-left: -1px;
 }
 .hdr form.inline { display: flex; align-items: center; gap: 7px; }
+/* 点击放大镜展开：宽度与透明度先慢后快拉开（cubic-bezier 减速段） */
 .hdr form.inline input[type="text"] {
     width: 0; opacity: 0; border: 0; border-bottom: 1px solid var(--line2);
     background: transparent; padding: 3px 0;
+    transition: width .38s cubic-bezier(.22, .61, .36, 1), opacity .26s ease .05s;
 }
+.hdr form.inline.open input[type="text"],
 .hdr form.inline input[type="text"]:focus { width: 150px; opacity: 1; outline: none; }
 
 /* 第二层：系列目录——墨色横条，与纸色品牌层形成双层对比 */
@@ -414,12 +417,14 @@ body.lang-en .lead, body.lang-en .tiny, body.lang-en .eyebrow { letter-spacing: 
 .qbox.lg input { width: 44px; font-size: 13px; }
 
 /* ------------------------------------------------------------ 商品图集 */
+/* 主图切换：交叉淡入 + 微推近——新图从放大 1.03 落位到原尺寸，像镜头就焦 */
 .gstage { position: relative; aspect-ratio: 3/4; overflow: hidden; background: var(--linen); }
 .gstage img {
     position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
-    opacity: 0; transition: opacity .7s ease;
+    opacity: 0; transform: scale(1.03);
+    transition: opacity .5s cubic-bezier(.22, .61, .36, 1), transform .65s cubic-bezier(.22, .61, .36, 1);
 }
-.gstage img.on { opacity: 1; }
+.gstage img.on { opacity: 1; transform: none; }
 .garrow {
     position: absolute; top: 50%; transform: translateY(-50%); z-index: 2;
     width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
@@ -670,22 +675,35 @@ body.lang-en .lead, body.lang-en .tiny, body.lang-en .eyebrow { letter-spacing: 
     padding: 18px 0; position: sticky; top: 128px; align-self: flex-start;
 }
 .anav .an {
-    display: flex; align-items: baseline; gap: 12px; padding: 13px 22px;
-    border-left: 2px solid transparent;
-    transition: background .2s ease, border-color .2s ease;
+    position: relative;
+    display: flex; align-items: baseline; gap: 12px; padding: 13px 22px 13px 24px;
+    transition: background .2s ease;
+}
+/* 选中指示：陶土竖条自中心向两端生长，切换板块时这一笔就是"此刻所在" */
+.anav .an::before {
+    content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 2px;
+    background: var(--rust);
+    transform: scaleY(0); transform-origin: center;
+    transition: transform .3s cubic-bezier(.22, .61, .36, 1);
 }
 .anav .an .no { font-family: var(--f-din); font-size: 9px; letter-spacing: .2em; color: var(--faint); }
 .anav .an .nm { font-family: var(--f-body); font-size: 12.5px; letter-spacing: .06em; color: var(--mute); }
 .anav .an:hover { background: rgba(26, 26, 26, .03); }
 .anav .an:hover .nm { color: var(--ink); }
-.anav .an.on { border-left-color: var(--rust); background: rgba(180, 100, 58, .05); }
+.anav .an.on { background: rgba(180, 100, 58, .05); }
+.anav .an.on::before { transform: scaleY(1); }
 .anav .an.on .nm { color: var(--ink); font-weight: 500; }
 .anav .an.on .no { color: var(--rust); }
 
 /* 账户中心：板块与面板 */
 .apane[hidden] { display: none; }
-#opanel { transition: opacity .25s ease; }
-#opanel.loading { opacity: .45; pointer-events: none; }
+/* 板块切换 / 订单面板刷新共用同一进场：从下轻浮入 */
+@keyframes paneIn { from { opacity: 0; transform: translateY(14px); } }
+.apane.pane-in { animation: paneIn .34s cubic-bezier(.22, .61, .36, 1) backwards; }
+/* 订单面板：点击先暗化（退出），数据到达后新内容浮入 */
+#opanel { transition: opacity .18s ease; }
+#opanel.loading { opacity: .35; pointer-events: none; }
+#opanel.swapped { transition: none; animation: paneIn .36s cubic-bezier(.22, .61, .36, 1) backwards; }
 
 /* 个人资料行 */
 .prow {
@@ -782,9 +800,41 @@ body.lang-en .lead, body.lang-en .tiny, body.lang-en .eyebrow { letter-spacing: 
     .catpanel { position: static; width: 200px; }
 }
 
-/* ============================================================ 交互增强 */
+/* ============================================================ 切换动效系统
+   设计原则：运动方向承载语义——横向=系列间浏览、纵向=深入一层、
+   反向=回退、无向淡入=流程流转；退出加速干脆、进入减速柔和落位。
+   进入缓动 cubic-bezier(.22,.61,.36,1)（品牌惯性曲线），退出 cubic-bezier(.4,0,1,1)。
+   时长 170–440ms；全程尊重 prefers-reduced-motion。 */
 
-/* 导航反馈已在 .nitem 定义；此处保留语言与图标悬浮反馈 */
+/* ---------- 一、页面级导航：内容层过渡，双层吸顶头部保持稳定 ---------- */
+/* 过渡只作用于 .page 的内容层（非 .hdw 直接子元素）：跨页时头部静止如画框，
+   内容在框内换页，比整页抽动更有视觉连续性 */
+@keyframes pgInFwd { from { opacity: 0; transform: translateX(30px); } }
+@keyframes pgInBwd { from { opacity: 0; transform: translateX(-30px); } }
+@keyframes pgInUp { from { opacity: 0; transform: translateY(30px); } }
+@keyframes pgInDn { from { opacity: 0; transform: translateY(-26px); } }
+@keyframes pgInFade { from { opacity: 0; transform: translateY(6px); } }
+@keyframes pgOutFwd { to { opacity: 0; transform: translateX(-26px); } }
+@keyframes pgOutBwd { to { opacity: 0; transform: translateX(26px); } }
+@keyframes pgOutUp { to { opacity: 0; transform: translateY(-14px); } }
+@keyframes pgOutDn { to { opacity: 0; transform: translateY(18px); } }
+@keyframes pgOutFade { to { opacity: 0; } }
+
+/* 进入：减速柔和（backwards——结束后交还 transform 给级联，避免钉住悬停态） */
+.page.pg-in-fwd > :not(.hdw) { animation: pgInFwd .42s cubic-bezier(.22, .61, .36, 1) backwards; }
+.page.pg-in-bwd > :not(.hdw) { animation: pgInBwd .4s cubic-bezier(.22, .61, .36, 1) backwards; }
+.page.pg-in-up > :not(.hdw) { animation: pgInUp .44s cubic-bezier(.22, .61, .36, 1) backwards; }
+.page.pg-in-dn > :not(.hdw) { animation: pgInDn .4s cubic-bezier(.22, .61, .36, 1) backwards; }
+.page.pg-in-fade > :not(.hdw) { animation: pgInFade .36s cubic-bezier(.22, .61, .36, 1) backwards; }
+
+/* 退出：加速离场，干脆不拖沓 */
+.page.pg-out-fwd > :not(.hdw) { animation: pgOutFwd .21s cubic-bezier(.4, 0, 1, 1) forwards; }
+.page.pg-out-bwd > :not(.hdw) { animation: pgOutBwd .21s cubic-bezier(.4, 0, 1, 1) forwards; }
+.page.pg-out-up > :not(.hdw) { animation: pgOutUp .22s cubic-bezier(.4, 0, 1, 1) forwards; }
+.page.pg-out-dn > :not(.hdw) { animation: pgOutDn .2s cubic-bezier(.4, 0, 1, 1) forwards; }
+.page.pg-out-fade > :not(.hdw) { animation: pgOutFade .17s ease-in forwards; }
+
+/* ---------- 二、导航与链接反馈 ---------- */
 .lang { transition: color .2s ease, border-color .2s ease; }
 .lang:hover { border-color: var(--rust); color: var(--ink); }
 .ico { transition: color .2s ease, transform .2s ease; }
@@ -793,16 +843,29 @@ body.lang-en .lead, body.lang-en .tiny, body.lang-en .eyebrow { letter-spacing: 
 .tlink { transition: color .2s ease, border-color .2s ease; }
 .tlink:hover { color: var(--rust); border-color: var(--rust); }
 
-/* 按钮反馈：悬浮换陶土色、按下微缩、点击水波纹 */
+/* ---------- 三、按钮：实心=陶土渐染 + 轻抬；幽灵=墨色自下浸染 ---------- */
 .btn {
     position: relative; overflow: hidden; isolation: isolate;
-    transition: background .25s ease, transform .12s ease, box-shadow .2s ease;
+    transition: background .25s ease, color .25s ease,
+                transform .18s cubic-bezier(.22, .61, .36, 1), box-shadow .25s ease;
 }
-.btn:hover { background: var(--rust); }
-.btn.ghost:hover { background: var(--ink); color: var(--wall); border-color: var(--ink); }
-.btn[disabled]:hover, .btn.disabled:hover { background: var(--line2); }
-.btn:active { transform: translateY(1px) scale(.985); }
+.btn:hover { background: var(--rust); transform: translateY(-1px); box-shadow: 0 10px 24px rgba(180, 100, 58, .2); }
+.btn:active { transform: translateY(1px) scale(.985); box-shadow: none; transition-duration: .1s; }
 .btn:focus-visible { outline: 2px solid var(--rust); outline-offset: 3px; }
+.btn[disabled]:hover, .btn.disabled:hover { background: var(--line2); transform: none; box-shadow: none; }
+/* 幽灵按钮：墨色自下而上浸染填充（.light 供深色背景反相使用） */
+.btn.ghost::before {
+    content: ""; position: absolute; inset: 0; z-index: -1;
+    background: var(--ink);
+    transform: translateY(101%);
+    transition: transform .32s cubic-bezier(.22, .61, .36, 1);
+}
+.btn.ghost:hover { background: transparent; color: var(--wall); border-color: var(--ink); box-shadow: 0 10px 24px rgba(26, 26, 26, .14); }
+.btn.ghost:hover::before { transform: translateY(0); }
+.btn.ghost.light { border-color: rgba(242, 239, 233, .5); color: var(--wall); }
+.btn.ghost.light::before { background: var(--wall); }
+.btn.ghost.light:hover { color: var(--ink); border-color: var(--wall); box-shadow: 0 12px 26px rgba(0, 0, 0, .22); }
+/* 点击水波纹（从指针落点扩散） */
 .ripple {
     position: absolute; border-radius: 50%; background: currentColor;
     opacity: .3; transform: scale(0); animation: rip .55s ease-out forwards;
@@ -810,7 +873,7 @@ body.lang-en .lead, body.lang-en .tiny, body.lang-en .eyebrow { letter-spacing: 
 }
 @keyframes rip { to { transform: scale(2.6); opacity: 0; } }
 
-/* 商品卡：悬停抬升 + 图片放大 */
+/* ---------- 四、商品卡：悬停抬升 + 图片放大（文字同节奏） ---------- */
 .card { transition: box-shadow .35s ease, transform .6s cubic-bezier(.22, .61, .36, 1); }
 .card:hover { box-shadow: 0 16px 38px rgba(26, 26, 26, .16); transform: translateY(-6px); }
 .card .ph img { transition: transform .6s cubic-bezier(.22, .61, .36, 1); }
@@ -823,12 +886,16 @@ body.lang-en .lead, body.lang-en .tiny, body.lang-en .eyebrow { letter-spacing: 
 /* fill 用 backwards：动画结束后交还 transform 给级联，否则 fill 会永久钉住 transform、悬停抬升失效 */
 .card.in { animation: cardIn .55s cubic-bezier(.22, .61, .36, 1) backwards; }
 
-/* 页面切换动效 */
-@keyframes pgIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
-@keyframes pgOut { from { opacity: 1; transform: none; } to { opacity: 0; transform: translateY(-10px); } }
-.page { animation: pgIn .5s cubic-bezier(.22, .61, .36, 1) both; }
-.page.pg-out { animation: pgOut .26s ease forwards; }
+/* ---------- 五、数量步进：数字微跳反馈 ---------- */
+@keyframes numTick { 40% { opacity: .35; transform: translateY(-5px); } }
+.qbox input.tick { animation: numTick .24s cubic-bezier(.22, .61, .36, 1); }
 
 @media (prefers-reduced-motion: reduce) {
-    .page, .card.in, .ripple { animation: none !important; }
+    .page > :not(.hdw), .card.in, .ripple, .apane.pane-in, #opanel.swapped, .qbox input.tick,
+    .btn, .btn.ghost::before, .gstage img, #opanel, .hdr form.inline input[type="text"],
+    .anav .an::before {
+        animation: none !important;
+        transition: none !important;
+    }
+    .card:hover, .btn:hover, .btn:active { transform: none; }
 }

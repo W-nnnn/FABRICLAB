@@ -4,7 +4,7 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="|#{nav.brand} · #{home.title}|">FABRICLAB · 未染</title>
-    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113l}"/>
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261113m}"/>
 </head>
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
@@ -133,7 +133,7 @@
             <div style="margin-top:14px;font-size:12px;letter-spacing:.04em;opacity:.8;line-height:1.9"
                  th:text="#{home.edit.sub}">FW26 系列短片第 12 个镜头 · 上海西岸</div>
             <div style="margin-top:22px">
-                <a class="btn ghost" style="border-color:rgba(242,239,233,.5);color:var(--wall)"
+                <a class="btn ghost light"
                    th:href="@{/category}" th:text="#{home.edit.cta}">观看短片</a>
             </div>
         </div>
