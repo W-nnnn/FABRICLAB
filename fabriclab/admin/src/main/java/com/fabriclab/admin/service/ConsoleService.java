@@ -63,7 +63,7 @@ public class ConsoleService {
                 new AdminModule(m("admin.console.module.accounts"), "/admin/users",
                         m("admin.console.module.accounts.scope"), "FR-A-07", true),
                 new AdminModule(m("admin.console.module.orders"), "/admin/orders",
-                        m("admin.console.module.orders.scope"), "FR-A-05、FR-A-06", false));
+                        m("admin.console.module.orders.scope"), "FR-A-05、FR-A-06", true));
     }
 
     public Dashboard dashboard() {
