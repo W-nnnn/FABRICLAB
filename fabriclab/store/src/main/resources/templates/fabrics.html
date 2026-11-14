@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN" th:lang="${lang == 'en' ? 'en' : 'zh-CN'}" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <link rel="icon" type="image/png" th:href="@{/images/mark.png}"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="|#{nav.brand} · #{fabrics.title}|">FABRICLAB · 面料档案</title>
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261114a}"/>
+</head>
+<body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
+<div class="page">
+
+    <th:block th:replace="~{fragments :: header('shop')}"></th:block>
+
+    <span id="main" tabindex="-1"></span>
+
+    <div class="crumb">
+        <a th:href="@{/main}" th:text="#{nav.home}">首页</a>
+        <span> / </span>
+        <span th:text="#{fabrics.title}">面料档案</span>
+    </div>
+
+    <!-- 页头 -->
+    <div style="padding:26px var(--gx) 30px">
+        <div class="eyebrow" th:text="#{fabrics.eyebrow}">FABRIC ARCHIVE</div>
+        <h1 class="h2" style="margin-top:12px;font-size:38px" th:text="#{fabrics.title}">面料档案</h1>
+        <div class="lead" style="margin-top:14px;width:460px;font-size:12px;line-height:1.95"
+             th:text="#{fabrics.lead}">档案按纤维归为四类，与商品详情的洗护建议同一套判定；每一类下面是当季在售的相关款。</div>
+    </div>
+    <div style="margin:0 var(--gx);height:1px;background:var(--ink)"></div>
+
+    <!-- 四类纤维 -->
+    <th:block th:each="g, st : ${groups}">
+        <section style="padding:44px var(--gx) 50px;border-bottom:1px solid var(--line)">
+            <div style="display:flex;align-items:baseline;gap:16px">
+                <span class="din" style="font-size:13px;color:var(--mute)"
+                      th:text="${#numbers.formatInteger(st.count, 2)}">01</span>
+                <h2 class="h3" style="font-size:22px" th:text="#{__${g.titleKey}__}">丝</h2>
+                <span class="tiny" style="margin-left:auto" th:text="#{fabrics.count(${#lists.size(g.products)})}">N 件在售</span>
+            </div>
+            <p class="lead" style="margin-top:12px;max-width:560px;font-size:12px;line-height:1.95"
+               th:text="#{__${g.introKey}__}">档案介绍</p>
+            <div style="margin-top:10px;display:flex;align-items:center;gap:12px">
+                <span class="tiny" style="letter-spacing:.18em;color:var(--mute)" th:text="#{care.title}">洗护</span>
+                <span style="font-size:12px;color:var(--ink)" th:text="#{__${g.careKey}__}">洗护建议</span>
+            </div>
+
+            <div class="g4" style="margin-top:28px" th:if="${!#lists.isEmpty(g.products)}">
+                <th:block th:each="p, s : ${g.products}">
+                    <a th:replace="~{fragments :: card(${p}, ${#numbers.formatInteger(s.count, 2)})}"></a>
+                </th:block>
+            </div>
+            <p class="tiny" style="margin-top:24px" th:if="${#lists.isEmpty(g.products)}"
+               th:text="#{fabrics.empty}">本季没有该类在售款。</p>
+        </section>
+    </th:block>
+
+    <div style="height:86px"></div>
+    <th:block th:replace="~{fragments :: footer}"></th:block>
+</div>
+</body>
+</html>
