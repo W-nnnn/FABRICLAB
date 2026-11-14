@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.toLanguageTag()}">
+<head th:replace="~{fragments :: head('admin.prod.title')}"></head>
+<body>
+<a class="skip" href="#main" th:text="#{admin.skip}">跳到主要内容</a>
+<div class="shell">
+    <div th:replace="~{fragments :: side('products')}"></div>
+    <div class="scrim" id="scrim"></div>
+    <div class="wrap">
+        <div th:replace="~{fragments :: topbar(#{admin.nav.products}, #{admin.prod.title})}"></div>
+        <main class="main" id="main">
+            <div class="page">
+                <div class="ph">
+                    <div>
+                        <div class="ph__eyebrow"><em>02</em><span th:text="#{admin.nav.products}">商品</span></div>
+                        <h1 th:text="${editing} ? #{admin.prod.editTitle} : #{admin.prod.newTitle}">编辑款号</h1>
+                        <p th:text="#{admin.prod.note}">维护款号、面料工艺、价格与上架状态。</p>
+                    </div>
+                    <div class="ph__act" th:if="${editing}"><span class="ph__count" th:text="${form.sku}">FL-HM-01A</span></div>
+                </div>
+
+                <div class="alert alert--err" th:if="${error != null}" role="alert">
+                    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" style="flex:none"><use href="#i-alert"/></svg>
+                    <span th:text="${error}">错误</span>
+                </div>
+
+                <div class="cols">
+                    <div>
+                        <form id="productForm" method="post"
+                              th:action="${editing} ? @{/admin/products/{id}(id=${form.id})} : @{/admin/products}">
+                            <input type="hidden" name="_csrf" th:value="${csrfToken}" />
+                            <input type="hidden" name="version" th:value="${form.version}" />
+
+                            <section class="block">
+                                <div class="block__head">
+                                    <span class="block__no">01</span>
+                                    <div><h2 th:text="#{admin.prod.section.basics}">基本信息</h2>
+                                        <p th:text="#{admin.prod.f.skuHint}">创建后不可修改</p></div>
+                                </div>
+                                <div class="frow">
+                                    <div class="field">
+                                        <label th:for="sku"><span th:text="#{admin.prod.f.sku}">款号</span><em>*</em></label>
+                                        <input class="ctl" id="sku" name="sku" maxlength="40" th:value="${form.sku}"
+                                               th:readonly="${editing}" th:classappend="${editing} ? 'ctl--ro'" />
+                                        <div class="help"><span th:text="#{admin.prod.f.skuHint}">创建后不可修改</span></div>
+                                    </div>
+                                    <div class="field">
+                                        <label th:for="categoryId"><span th:text="#{admin.prod.f.category}">所属分类</span><em>*</em></label>
+                                        <select class="ctl" id="categoryId" name="categoryId" th:disabled="${editing}">
+                                            <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}"
+                                                    th:selected="${form.categoryId != null and form.categoryId == c.id}">居家成衣</option>
+                                        </select>
+                                        <input th:if="${editing}" type="hidden" name="categoryId" th:value="${form.categoryId}" />
+                                        <div class="help"><span th:text="#{admin.prod.f.categoryHint}">只能选二级分类</span></div>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label th:for="name"><span th:text="#{admin.prod.f.name}">名称</span><em>*</em></label>
+                                    <input class="ctl" id="name" name="name" maxlength="120" th:value="${form.name}" />
+                                    <div class="help"><span th:text="#{admin.prod.f.nameHint}">尺码与配色写在名称里</span></div>
+                                </div>
+                                <div class="frow">
+                                    <div class="field">
+                                        <label th:for="price"><span th:text="#{admin.prod.f.price}">价格（元）</span><em>*</em></label>
+                                        <input class="ctl" id="price" name="price" inputmode="decimal" th:value="${form.price}" />
+                                        <div class="help"><span th:text="#{admin.prod.f.priceHint}">两位小数</span></div>
+                                    </div>
+                                    <div class="field">
+                                        <label th:for="sortOrder"><span th:text="#{admin.prod.f.sort}">排序</span></label>
+                                        <input class="ctl" id="sortOrder" name="sortOrder" type="number" min="0" th:value="${form.sortOrder}" />
+                                        <div class="help"><span th:text="#{admin.prod.f.sortHint}">数值越小越靠前</span></div>
+                                    </div>
+                                </div>
+                                <div class="field" th:unless="${editing}">
+                                    <label th:for="stock"><span th:text="#{admin.prod.f.stock}">当前库存</span></label>
+                                    <input class="ctl" id="stock" name="stock" type="number" min="0" th:value="${form.stock}" />
+                                    <div class="help"><span th:text="#{admin.prod.f.stockHint}">编辑页不提供直接改写</span></div>
+                                </div>
+                                <div class="field">
+                                    <label th:for="coverImage"><span th:text="#{admin.prod.f.cover}">封面路径</span><em>*</em></label>
+                                    <input class="ctl" id="coverImage" name="coverImage" th:value="${form.coverImage}" />
+                                </div>
+                            </section>
+
+                            <section class="block">
+                                <div class="block__head">
+                                    <span class="block__no">02</span>
+                                    <div><h2 th:text="#{admin.prod.section.fabric}">面料与工艺</h2>
+                                        <p th:text="#{admin.prod.f.descriptionHint}">用户端详情页正文</p></div>
+                                </div>
+                                <div class="frow">
+                                    <div class="field">
+                                        <label th:for="fabric"><span th:text="#{admin.prod.f.fabric}">面料</span></label>
+                                        <input class="ctl" id="fabric" name="fabric" th:value="${form.fabric}" />
+                                    </div>
+                                    <div class="field">
+                                        <label th:for="weightNote"><span th:text="#{admin.prod.f.weight}">克重</span></label>
+                                        <input class="ctl" id="weightNote" name="weightNote" th:value="${form.weightNote}" />
+                                    </div>
+                                </div>
+                                <div class="frow">
+                                    <div class="field">
+                                        <label th:for="fitNote"><span th:text="#{admin.prod.f.fit}">版型</span></label>
+                                        <input class="ctl" id="fitNote" name="fitNote" th:value="${form.fitNote}" />
+                                    </div>
+                                    <div class="field">
+                                        <label th:for="craftNote"><span th:text="#{admin.prod.f.craft}">工艺</span></label>
+                                        <input class="ctl" id="craftNote" name="craftNote" th:value="${form.craftNote}" />
+                                    </div>
+                                </div>
+                            </section>
+
+                            <section class="block">
+                                <div class="block__head">
+                                    <span class="block__no">03</span>
+                                    <div><h2 th:text="#{admin.prod.section.copy}">商品文案</h2>
+                                        <p th:text="#{admin.prod.f.descriptionHint}">保留换行</p></div>
+                                </div>
+                                <div class="field">
+                                    <label th:for="summary"><span th:text="#{admin.prod.f.description}">描述</span></label>
+                                    <textarea class="ctl" id="summary" name="descriptionExtra" rows="5"
+                                              th:text="${form.descriptionExtra}">描述</textarea>
+                                </div>
+                                <div class="field">
+                                    <label th:for="sum"><span th:text="#{admin.prod.f.summary}">摘要</span></label>
+                                    <input class="ctl" id="sum" name="summary" th:value="${form.summary}" />
+                                </div>
+                            </section>
+                        </form>
+                    </div>
+
+                    <aside class="aside-col">
+                        <div class="aside-sec">
+                            <h3 th:text="#{admin.prod.section.publish}">上架状态</h3>
+                            <select class="ctl" name="status" form="productForm">
+                                <option value="ON_SALE" th:selected="${form.status == 'ON_SALE'}" th:text="#{admin.prod.publishLive}">在售</option>
+                                <option value="DRAFT" th:selected="${form.status != 'ON_SALE'}" th:text="#{admin.prod.publishDraft}">草稿</option>
+                            </select>
+                            <p style="font-size:11px;color:var(--faint);margin-top:10px;line-height:1.7"
+                               th:text="#{admin.prod.f.statusHint}">在售状态在用户端可见</p>
+                        </div>
+                        <div class="aside-sec">
+                            <h3 th:text="#{admin.prod.section.stock}">库存</h3>
+                            <div class="bignum" th:text="${form.stock}">18</div>
+                            <p style="font-size:11px;color:var(--faint);margin-top:8px;line-height:1.7"
+                               th:text="#{admin.prod.f.stockHint}">库存只能通过补货入口增加</p>
+                        </div>
+                        <div class="aside-sec">
+                            <h3 th:text="#{admin.prod.section.meta}">元信息</h3>
+                            <dl class="facts">
+                                <dt th:text="#{admin.prod.f.version}">version</dt><dd th:text="${form.version}">0</dd>
+                                <dt th:text="#{admin.prod.f.created}">创建</dt><dd>—</dd>
+                                <dt th:text="#{admin.prod.f.updated}">更新</dt><dd>—</dd>
+                            </dl>
+                        </div>
+                    </aside>
+                </div>
+                <footer th:replace="~{fragments :: footer}"></footer>
+            </div>
+        </main>
+        <div class="actions-bar">
+            <span class="actions-bar__note" th:text="#{admin.prod.saveHint}">修改仅在点击保存后生效</span>
+            <div class="actions-bar__act">
+                <a class="btn btn--line" th:href="@{/admin/products}" th:text="#{admin.action.cancel}">取消</a>
+                <button class="btn" type="submit" form="productForm" th:text="#{admin.action.save}">保存修改</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="~{fragments :: icons}"></div>
+<script th:replace="~{fragments :: shellJs}"></script>
+</body>
+</html>
