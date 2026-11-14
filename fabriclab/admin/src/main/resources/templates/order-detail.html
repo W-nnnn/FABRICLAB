@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.toLanguageTag()}">
+<head th:replace="~{fragments :: head('admin.order.detailTitle')}"></head>
+<body>
+<a class="skip" href="#main" th:text="#{admin.skip}">跳到主要内容</a>
+<div class="shell">
+    <div th:replace="~{fragments :: side('orders')}"></div>
+    <div class="scrim" id="scrim"></div>
+    <div class="wrap">
+        <div th:replace="~{fragments :: topbar(#{admin.nav.trade}, #{admin.order.detailTitle})}"></div>
+        <main class="main" id="main">
+            <div class="page">
+                <div th:replace="~{fragments :: notice}"></div>
+
+                <div class="ph">
+                    <div>
+                        <div class="ph__eyebrow"><em>04</em><span th:text="#{admin.nav.trade}">交易</span></div>
+                        <h1 class="code" th:text="${o.orderNo}">FL20261114A1B2C3</h1>
+                        <p th:text="#{admin.order.headMeta(${o.createdAt},${o.paidAt},${#lists.size(o.items)})}">下单 2026.11.13 08:10 · 支付 — · 共 2 项</p>
+                    </div>
+                    <div class="ph__act">
+                        <span class="tag" th:classappend="${o.statusClass}" th:text="${o.statusLabel}">已支付</span>
+                        <button type="button" class="btn" th:if="${o.canShip}" onclick="openShip()"
+                                th:text="#{admin.order.ship}">确认发货</button>
+                        <a class="btn btn--line" th:href="@{/admin/orders}" th:text="#{admin.order.backToList}">返回订单列表</a>
+                    </div>
+                </div>
+
+                <div class="cols">
+                    <div>
+                        <section class="block">
+                            <div class="block__head">
+                                <span class="block__no">01</span>
+                                <div><h2 th:text="#{admin.order.section.items}">明细快照</h2>
+                                    <p th:text="#{admin.order.itemsNote}">以下数据来自下单时的快照，不随商品后续变化。</p></div>
+                                <span class="block__count" th:text="${#lists.size(o.items)}">2</span>
+                            </div>
+                            <div class="tblwrap">
+                                <table class="tbl tbl--mini">
+                                    <colgroup><col style="width:150px" /><col /><col style="width:110px" /><col style="width:80px" /><col style="width:110px" /></colgroup>
+                                    <thead><tr>
+                                        <th th:text="#{admin.order.colSku}">款号</th>
+                                        <th th:text="#{admin.order.colItem}">商品</th>
+                                        <th class="n" th:text="#{admin.order.colUnit}">单价</th>
+                                        <th class="n" th:text="#{admin.order.colQty}">数量</th>
+                                        <th class="n" th:text="#{admin.order.colSubtotal}">小计</th>
+                                    </tr></thead>
+                                    <tbody>
+                                    <tr th:each="i : ${o.items}">
+                                        <td class="sku" th:text="${i.sku}">FL-TN-001</td>
+                                        <td th:text="${tr.t(i.name)}">高领羊毛衫</td>
+                                        <td class="n money" th:text="${i.unitPrice}">¥640.00</td>
+                                        <td class="n" th:text="${i.quantity}">1</td>
+                                        <td class="n money" th:text="${i.lineAmount}">¥640.00</td>
+                                    </tr>
+                                    </tbody>
+                                    <tfoot><tr>
+                                        <td colspan="4" class="n" style="text-align:right" th:text="#{admin.order.totalLine}">合计</td>
+                                        <td class="n money tfoot-amt" th:text="${o.totalAmount}">¥1,280.00</td>
+                                    </tr></tfoot>
+                                </table>
+                            </div>
+                        </section>
+
+                        <section class="block">
+                            <div class="block__head">
+                                <span class="block__no">02</span>
+                                <div><h2 th:text="#{admin.order.section.timeline}">流转记录</h2>
+                                    <p th:text="#{admin.order.timelineNote}">状态迁移由操作发生时记录；未发生的节点留空。</p></div>
+                            </div>
+                            <ol class="tl">
+                                <li class="tl__it" th:each="s : ${o.timeline}">
+                                    <span class="tl__dot" th:classappend="${s.done} ? 'on'"></span>
+                                    <span class="tl__label" th:text="${s.label}">支付</span>
+                                    <span class="tl__date" th:text="${s.done} ? ${s.date} : #{admin.order.tl.pending}">—</span>
+                                </li>
+                            </ol>
+                        </section>
+                    </div>
+
+                    <aside class="aside-col">
+                        <div class="aside-sec">
+                            <h3 th:text="#{admin.order.section.receiver}">收货信息</h3>
+                            <dl class="facts">
+                                <dt th:text="#{admin.order.f.receiver}">收货人</dt><dd th:text="${o.receiverName}">林晓</dd>
+                                <dt th:text="#{admin.order.f.phone}">联系电话</dt><dd th:text="${o.receiverPhone}">138 0000 0001</dd>
+                                <dt th:text="#{admin.order.f.address}">收货地址</dt><dd style="word-break:break-all" th:text="${o.receiverAddress}">上海市静安区…</dd>
+                            </dl>
+                            <button class="btn btn--sm btn--line" type="button" style="margin-top:14px"
+                                    th:if="${o.canEditReceiver}" onclick="openReceiver()"
+                                    th:text="#{admin.order.editReceiver}">修改收货信息</button>
+                        </div>
+                        <div class="aside-sec">
+                            <h3 th:text="#{admin.order.section.payment}">支付信息</h3>
+                            <dl class="facts">
+                                <dt th:text="#{admin.order.f.buyer}">买家</dt><dd th:text="${o.buyer}">林晓 · @alice</dd>
+                                <dt th:text="#{admin.order.f.method}">支付方式</dt><dd th:text="${o.paymentMethodLabel}">模拟支付</dd>
+                                <dt th:text="#{admin.order.f.payNo}">支付凭证</dt>
+                                <dd class="num" style="word-break:break-all" th:text="${o.paymentNo}">MOCK2026…</dd>
+                                <dt th:text="#{admin.order.f.paidAt}">支付时间</dt><dd th:text="${o.paidAt}">—</dd>
+                            </dl>
+                        </div>
+                        <div class="aside-sec" th:if="${o.canDelete}">
+                            <h3 th:text="#{admin.order.delete}">删除订单</h3>
+                            <p class="aside-note" th:text="#{admin.order.deleteText}">仅已取消且无支付凭证的教学演示订单可以删除。</p>
+                            <button class="btn btn--sm btn--danger" type="button" style="margin-top:14px"
+                                    onclick="openDelete()" th:text="#{admin.action.delete}">删除</button>
+                        </div>
+                    </aside>
+                </div>
+                <footer th:replace="~{fragments :: footer}"></footer>
+            </div>
+        </main>
+    </div>
+</div>
+
+<dialog id="receiverDlg" th:if="${o.canEditReceiver}">
+    <form method="post" th:action="@{/admin/orders/{no}/receiver(no=${o.orderNo})}">
+        <input type="hidden" name="_csrf" th:value="${csrfToken}" />
+        <div class="dlg__body">
+            <h2 th:text="#{admin.order.editReceiverTitle}">修改收货信息</h2>
+            <p><b class="num" th:text="${o.orderNo}">FL20261114A1B2C3</b></p>
+            <p style="margin-top:10px" th:text="#{admin.order.editReceiverText}">仅待支付、待发货订单可以修改收货信息。</p>
+            <div class="dlg__form" style="margin-top:14px">
+                <div class="field">
+                    <label for="receiverName"><span th:text="#{admin.order.f.receiverName}">收货人</span><em>*</em></label>
+                    <input class="ctl" id="receiverName" name="receiverName" maxlength="50" th:value="${o.receiverName}" />
+                </div>
+                <div class="field">
+                    <label for="receiverPhone"><span th:text="#{admin.order.f.receiverPhone}">联系电话</span><em>*</em></label>
+                    <input class="ctl" id="receiverPhone" name="receiverPhone" maxlength="30" inputmode="tel" th:value="${o.receiverPhone}" />
+                </div>
+                <div class="field">
+                    <label for="receiverAddress"><span th:text="#{admin.order.f.receiverAddress}">收货地址</span><em>*</em></label>
+                    <input class="ctl" id="receiverAddress" name="receiverAddress" maxlength="255" th:value="${o.receiverAddress}" />
+                </div>
+            </div>
+        </div>
+        <div class="dlg__foot">
+            <button type="button" class="btn btn--line" onclick="document.getElementById('receiverDlg').close()"
+                    th:text="#{admin.action.cancel}">取消</button>
+            <button type="submit" class="btn" th:text="#{admin.action.save}">保存修改</button>
+        </div>
+    </form>
+</dialog>
+
+<dialog id="shipDlg" th:if="${o.canShip}">
+    <form method="post" th:action="@{/admin/orders/{no}/ship(no=${o.orderNo})}">
+        <input type="hidden" name="_csrf" th:value="${csrfToken}" />
+        <div class="dlg__body">
+            <h2 th:text="#{admin.order.shipTitle}">确认发货</h2>
+            <p><b class="num" th:text="${o.orderNo}">FL20261114A1B2C3</b></p>
+            <p style="margin-top:10px" th:text="#{admin.order.shipText}">发货后订单状态变为已发货，并记录首次发货时间；该操作不可撤销。</p>
+        </div>
+        <div class="dlg__foot">
+            <button type="button" class="btn btn--line" onclick="document.getElementById('shipDlg').close()"
+                    th:text="#{admin.action.cancel}">取消</button>
+            <button type="submit" class="btn" th:text="#{admin.order.ship}">确认发货</button>
+        </div>
+    </form>
+</dialog>
+
+<dialog id="deleteDlg" th:if="${o.canDelete}">
+    <form method="post" th:action="@{/admin/orders/{no}/delete(no=${o.orderNo})}">
+        <input type="hidden" name="_csrf" th:value="${csrfToken}" />
+        <div class="dlg__body">
+            <h2 th:text="#{admin.order.deleteTitle}">删除订单</h2>
+            <p><b class="num" th:text="${o.orderNo}">FL20261114A1B2C3</b></p>
+            <p style="margin-top:10px" th:text="#{admin.order.deleteWarning}">此操作不可恢复。</p>
+        </div>
+        <div class="dlg__foot">
+            <button type="button" class="btn btn--line" onclick="document.getElementById('deleteDlg').close()"
+                    th:text="#{admin.action.cancel}">取消</button>
+            <button type="submit" class="btn btn--danger" th:text="#{admin.action.confirmDelete}">确认删除</button>
+        </div>
+    </form>
+</dialog>
+
+<div th:replace="~{fragments :: icons}"></div>
+<script th:replace="~{fragments :: shellJs}"></script>
+<script>
+(function () {
+    window.openReceiver = function () { document.getElementById('receiverDlg').showModal(); return false; };
+    window.openShip = function () { document.getElementById('shipDlg').showModal(); return false; };
+    window.openDelete = function () { document.getElementById('deleteDlg').showModal(); };
+})();
+</script>
+</body>
+</html>

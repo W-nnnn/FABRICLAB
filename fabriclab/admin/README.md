@@ -1,6 +1,6 @@
 # fabriclab-admin
 
-FABRICLAB 后台管理端，端口 8081，与用户端（`fabriclab/store`，8080）独立部署、共享同一 `MyPetStore` 库。当前阶段：T15 分类、款号、库存补货、服装相册与顾客账号。
+FABRICLAB 后台管理端，端口 8081，与用户端（`fabriclab/store`，8080）独立部署、共享同一 `MyPetStore` 库。当前阶段：T16 分类、款号、库存补货、服装相册、顾客账号与订单管理。
 
 设计依据：`docs/admin-design.md`（角色、用例、模块、字段与状态、权限矩阵）；视觉规范见 `docs/admin-ui-design.md` 与 `docs/admin-ui-prototype.html`。
 
@@ -59,8 +59,10 @@ mvn test
 | `http://localhost:8081/admin/products/{id}/album` | 服装相册：平铺 / 上身 / 细节三组、来源与许可、设为封面、空组入口 |
 | `http://localhost:8081/admin/users` | 顾客账号列表：用户名包含匹配、状态分段、ID 升序分页、订单数与累计 |
 | `http://localhost:8081/admin/users/{id}` | 账号资料：只读身份、联系方式、最近订单；重置口令与启停各自独立提交 |
+| `http://localhost:8081/admin/orders` | 订单列表：订单号完整精确搜索、五状态分段、分页缺省 10、待发货行发货 |
+| `http://localhost:8081/admin/orders/{orderNo}` | 订单详情：明细快照、流转记录、收货与支付信息；改收货、发货、受限删除 |
 | `POST http://localhost:8081/admin/products/{id}/restock` | 增量补货：正整数，按最新库存加算并递增 `version` |
-| `http://localhost:8081/health` | `{"status":"UP","app":"fabriclab-admin","stage":"T15"}` |
+| `http://localhost:8081/health` | `{"status":"UP","app":"fabriclab-admin","stage":"T16"}` |
 
 ## 库存与相册口径
 
@@ -92,3 +94,11 @@ mvn test
 - 重置口令写统一初始口令 `Passw0rd!2026`（每次新盐），不接收新口令输入；旧口令立即失效。
 - 用户端会话里存着口令散列指纹，重置后下一次受保护请求即失效；改资料不动散列，不会踢掉在线会话。
 - 启停带原状态条件更新，重复操作不写库并提示当前状态；停用只影响登录与在线会话，历史订单与快照不变。
+
+## 订单管理口径
+
+- 查单只走订单号完整精确匹配，超 40 字符 400；五状态分段计数实时，非法状态值 400；页大小缺省 10。
+- 详情全部读成交快照：金额、明细、支付方式与凭证只读；流转记录展示下单 / 支付 / 发货 / 完成 / 取消，未发生节点空心。
+- 修改收货信息限待支付、待发货；收货人 / 电话 / 地址必填且限长，更新带状态条件，防并发改单。
+- 发货仅 `PAID → SHIPPED` 条件更新并写首次 `shipped_at`；重复发货不改首次时间，非法状态发货被拒并提示当前状态（AC-29）。
+- 删除仅限已取消且无支付凭证的教学演示订单，同一事务先明细后主表；有效交易订单删除一律被拒。

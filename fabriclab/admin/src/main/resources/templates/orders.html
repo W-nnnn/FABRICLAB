@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.toLanguageTag()}">
+<head th:replace="~{fragments :: head('admin.order.title')}"></head>
+<body>
+<a class="skip" href="#main" th:text="#{admin.skip}">跳到主要内容</a>
+<div class="shell">
+    <div th:replace="~{fragments :: side('orders')}"></div>
+    <div class="scrim" id="scrim"></div>
+    <div class="wrap">
+        <div th:replace="~{fragments :: topbar(#{admin.nav.trade}, #{admin.nav.orders})}"></div>
+        <main class="main" id="main">
+            <div class="page">
+                <div th:replace="~{fragments :: notice}"></div>
+
+                <div class="ph">
+                    <div>
+                        <div class="ph__eyebrow"><em>04</em><span th:text="#{admin.nav.trade}">交易</span></div>
+                        <h1 th:text="#{admin.order.title}">订单管理</h1>
+                        <p th:text="#{admin.order.note}">全站查单、修改收货信息、发货与受限删除。</p>
+                    </div>
+                    <div class="ph__act">
+                        <span class="ph__count"
+                              th:text="#{admin.order.countLine(${result.allCount},${result.paidCount})}">在册 8 笔 · 待发货 2 笔</span>
+                    </div>
+                </div>
+
+                <div class="toolbar">
+                    <form class="search" th:action="@{/admin/orders}" method="get">
+                        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><use href="#i-search"/></svg>
+                        <input type="search" name="kw" th:value="${kw}" th:placeholder="#{admin.order.search}" />
+                        <input type="hidden" name="status" th:value="${status}" />
+                        <input type="hidden" name="size" th:value="${pageSize}" />
+                    </form>
+                    <div class="seg" role="group">
+                        <a th:href="@{/admin/orders(kw=${kw},status='all',size=${pageSize})}"
+                           th:classappend="${status == 'all'} ? 'on'"><span th:text="#{admin.order.filterAll}">全部</span><em th:text="${result.allCount}">8</em></a>
+                        <a th:href="@{/admin/orders(kw=${kw},status='pending',size=${pageSize})}"
+                           th:classappend="${status == 'pending' or status == 'PENDING_PAYMENT'} ? 'on'"><span th:text="#{admin.order.statusPending}">待支付</span><em th:text="${result.pendingCount}">1</em></a>
+                        <a th:href="@{/admin/orders(kw=${kw},status='paid',size=${pageSize})}"
+                           th:classappend="${status == 'paid' or status == 'PAID'} ? 'on'"><span th:text="#{admin.order.statusPaid}">已支付</span><em th:text="${result.paidCount}">2</em></a>
+                        <a th:href="@{/admin/orders(kw=${kw},status='shipped',size=${pageSize})}"
+                           th:classappend="${status == 'shipped' or status == 'SHIPPED'} ? 'on'"><span th:text="#{admin.order.statusShipped}">已发货</span><em th:text="${result.shippedCount}">2</em></a>
+                        <a th:href="@{/admin/orders(kw=${kw},status='completed',size=${pageSize})}"
+                           th:classappend="${status == 'completed' or status == 'COMPLETED'} ? 'on'"><span th:text="#{admin.order.statusCompleted}">已完成</span><em th:text="${result.completedCount}">2</em></a>
+                        <a th:href="@{/admin/orders(kw=${kw},status='cancelled',size=${pageSize})}"
+                           th:classappend="${status == 'cancelled' or status == 'CANCELLED'} ? 'on'"><span th:text="#{admin.order.statusCancelled}">已取消</span><em th:text="${result.cancelledCount}">1</em></a>
+                    </div>
+                    <div class="toolbar__right">
+                        <a class="txt txt--muted" th:href="@{/admin/orders}" th:text="#{admin.action.resetFilter}">重置筛选</a>
+                    </div>
+                </div>
+
+                <div class="empty" th:if="${result.total == 0}">
+                    <span class="empty__ic"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><use href="#i-orders"/></svg></span>
+                    <h3 th:text="${kw != null and !#strings.isEmpty(kw)} ? #{admin.order.emptyTitle} : #{admin.order.emptyDataTitle}">没有符合条件的订单</h3>
+                    <p th:text="#{admin.order.emptyText}">订单号需要完整输入；也可清除状态筛选后重试。</p>
+                    <a class="btn btn--sm" th:href="@{/admin/orders}" th:text="#{admin.action.clear}">清除</a>
+                </div>
+
+                <div class="tblwrap" th:unless="${result.total == 0}">
+                    <table class="tbl">
+                        <caption class="sr-only"
+                                 th:text="#{admin.order.caption(${result.total},${currentPage},${pageSize})}">订单列表</caption>
+                        <colgroup>
+                            <col style="width:210px" /><col class="col-md" style="width:160px" />
+                            <col style="width:120px" /><col style="width:96px" />
+                            <col class="col-md" style="width:130px" /><col style="width:120px" />
+                        </colgroup>
+                        <thead><tr>
+                            <th th:text="#{admin.order.colNo}">订单号</th>
+                            <th class="col-md" th:text="#{admin.order.colReceiver}">收货人</th>
+                            <th class="n" th:text="#{admin.order.colAmount}">金额</th>
+                            <th th:text="#{admin.order.colStatus}">状态</th>
+                            <th class="date col-md" th:text="#{admin.order.colCreated}">下单时间</th>
+                            <th th:text="#{admin.order.colActions}">操作</th>
+                        </tr></thead>
+                        <tbody>
+                        <tr th:each="r : ${result.rows}">
+                            <td class="sku"><a th:href="@{/admin/orders/{no}(no=${r.orderNo})}" th:text="${r.orderNo}">FL20261114A1B2C3</a></td>
+                            <td class="col-md" th:text="${r.receiverName}">林晓</td>
+                            <td class="n money" th:text="${r.amount}">¥1,280.00</td>
+                            <td><span class="tag" th:classappend="${r.statusClass}" th:text="${r.statusLabel}">已支付</span></td>
+                            <td class="date col-md" th:text="${r.createdAt}">2026.11.13 08:10</td>
+                            <td><div class="acts">
+                                <a class="txt" th:href="@{/admin/orders/{no}(no=${r.orderNo})}" th:text="#{admin.order.detail}">详情</a>
+                                <form th:if="${r.canShip}" method="post"
+                                      th:action="@{/admin/orders/{no}/ship(no=${r.orderNo})}" style="display:contents">
+                                    <input type="hidden" name="_csrf" th:value="${csrfToken}" />
+                                    <button type="submit" class="txt" th:text="#{admin.order.ship}">发货</button>
+                                </form>
+                            </div></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="pager" th:unless="${result.total == 0}">
+                    <div class="pager__info"
+                         th:text="#{admin.order.pager(${result.total},${currentPage},${result.pages})}">共 8 条</div>
+                    <div class="pgs">
+                        <a class="pg pg--dir" th:if="${currentPage > 1}"
+                           th:href="@{/admin/orders(kw=${kw},status=${status},size=${pageSize},page=${currentPage - 1})}"
+                           th:text="#{admin.action.prev}">上一页</a>
+                        <span class="pg pg--dir off" th:unless="${currentPage > 1}" th:text="#{admin.action.prev}">上一页</span>
+                        <a class="pg" th:each="i : ${#numbers.sequence(1, result.pages)}"
+                           th:classappend="${i == currentPage} ? 'on'" th:text="${i}"
+                           th:href="@{/admin/orders(kw=${kw},status=${status},size=${pageSize},page=${i})}">1</a>
+                        <a class="pg pg--dir" th:if="${currentPage < result.pages}"
+                           th:href="@{/admin/orders(kw=${kw},status=${status},size=${pageSize},page=${currentPage + 1})}"
+                           th:text="#{admin.action.next}">下一页</a>
+                        <span class="pg pg--dir off" th:unless="${currentPage < result.pages}" th:text="#{admin.action.next}">下一页</span>
+                        <form method="get" th:action="@{/admin/orders}" style="display:contents">
+                            <input type="hidden" name="kw" th:value="${kw}" />
+                            <input type="hidden" name="status" th:value="${status}" />
+                            <select class="psize" name="size" onchange="this.form.submit()"
+                                    th:aria-label="#{admin.order.perPage}">
+                                <option th:each="n : ${ {10,20,50} }" th:value="${n}" th:selected="${n == pageSize}"
+                                        th:text="${n} + ' ' + #{admin.order.perPage}">10 条 / 页</option>
+                            </select>
+                        </form>
+                    </div>
+                </div>
+
+                <footer th:replace="~{fragments :: footer}"></footer>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div th:replace="~{fragments :: icons}"></div>
+<script th:replace="~{fragments :: shellJs}"></script>
+</body>
+</html>
