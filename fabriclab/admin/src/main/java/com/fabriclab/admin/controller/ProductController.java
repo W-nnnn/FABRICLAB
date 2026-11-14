@@ -14,6 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /** 款号维护（UC-A4）：列表筛选分页、新增编辑、上下架、批量与受限删除。 */
@@ -62,6 +63,10 @@ public class ProductController {
 
     @GetMapping("/{id}/edit")
     public String editForm(@PathVariable long id, Model model) {
+        var p = productService.require(id);
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm");
+        model.addAttribute("createdAt", p.getCreatedAt() == null ? null : p.getCreatedAt().format(fmt));
+        model.addAttribute("updatedAt", p.getUpdatedAt() == null ? null : p.getUpdatedAt().format(fmt));
         model.addAttribute("form", productService.form(id));
         model.addAttribute("editing", true);
         model.addAttribute("categories", catalogService.secondLevels());

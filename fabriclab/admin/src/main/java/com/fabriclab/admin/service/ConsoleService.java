@@ -27,7 +27,7 @@ import java.util.Locale;
 public class ConsoleService {
 
     public record Featured(String sku, String name, String summary, BigDecimal price,
-                           int stock, String status) {}
+                           int stock, String status, String statusLabel, String shape) {}
     public record Recent(long id, String sku, String name, String status, String time, boolean live) {}
     public record Need(String label, String title, String detail, String href, boolean accent) {}
     public record Dashboard(Featured featured, long live, long draft, long low, long ship,
@@ -80,7 +80,8 @@ public class ConsoleService {
                         "WHERE status='ON_SALE' ORDER BY updated_at DESC, id DESC LIMIT 1",
                 rs -> rs.next() ? new Featured(rs.getString("sku"), rs.getString("name"),
                         rs.getString("summary"), rs.getBigDecimal("price"),
-                        rs.getInt("stock"), rs.getString("status")) : null);
+                        rs.getInt("stock"), rs.getString("status"),
+                        m("admin.prod.hero.live"), shape(rs.getString("name"))) : null);
 
         List<Recent> recent = jdbc().query(
                 "SELECT id, sku, name, status, updated_at FROM product ORDER BY updated_at DESC, id DESC LIMIT 3",
@@ -111,6 +112,18 @@ public class ConsoleService {
         }
 
         return new Dashboard(featured, live, draft, low, ship, needs, recent, today());
+    }
+
+    private String shape(String name) {
+        String n = name == null ? "" : name;
+        if (n.contains("围巾") || n.contains("帽")) return "scarf";
+        if (n.contains("袜")) return "socks";
+        if (n.contains("裙")) return "dress";
+        if (n.contains("衬衫") || n.contains("罩衫")) return "shirt";
+        if (n.contains("Polo") || n.contains("T 恤") || n.contains("背心")) return "polo";
+        if (n.contains("夹克") || n.contains("马甲")) return "jacket";
+        if (n.contains("外套") || n.contains("大衣") || n.contains("西装")) return "coat";
+        return "turtleneck";
     }
 
     private long count(String sql) {

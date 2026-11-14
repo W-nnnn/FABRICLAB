@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title th:text="${brand} + ' · ' + #{${titleKey}}">FABRICLAB 管理台</title>
+    <link rel="icon" href="data:," />
     <link rel="stylesheet" th:href="@{/css/admin.css}" />
 </head>
 <body>
@@ -148,7 +149,7 @@
     </a>
 
     <div class="side__foot">
-        <span class="side__ava" th:text="${currentAdmin != null ? #strings.substring(currentAdmin.displayName,0,1) : 'A'}">沈</span>
+        <span class="side__ava" th:text="${isEn != null && isEn ? 'S' : (currentAdmin != null ? #strings.substring(currentAdmin.displayName,0,1) : 'A')}">沈</span>
         <span class="side__who">
             <b th:text="${currentAdmin != null ? currentAdmin.displayName : '—'}">平台管理员</b>
             <small>ADMIN</small>
@@ -167,11 +168,9 @@
         <svg width="17" height="17" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2.4 4.6h11.2M2.4 8h11.2M2.4 11.4h11.2"/></svg>
     </button>
     <nav class="crumb" th:aria-label="#{admin.nav.breadcrumb}">
-        <a th:href="@{/admin/console}" th:text="#{admin.nav.dashboard}">控制台</a>
-        <i>/</i>
         <span th:text="${section}" th:remove="tag">商品</span>
         <i th:if="${current != null}">/</i>
-        <b th:text="${current}" aria-current="page">款号维护</b>
+        <b th:if="${current != null}" th:text="${current}" aria-current="page">款号维护</b>
     </nav>
     <div class="topbar__tools">
         <form class="gsearch" th:action="@{/admin/products}" method="get">

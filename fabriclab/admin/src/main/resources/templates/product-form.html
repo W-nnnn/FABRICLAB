@@ -47,8 +47,8 @@
                                     <div class="field">
                                         <label th:for="categoryId"><span th:text="#{admin.prod.f.category}">所属分类</span><em>*</em></label>
                                         <select class="ctl" id="categoryId" name="categoryId" th:disabled="${editing}">
-                                            <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}"
-                                                    th:selected="${form.categoryId != null and form.categoryId == c.id}">居家成衣</option>
+                                            <option th:each="c : ${categories}" th:value="${c.id}" th:text="${tr.t(c.name)}"
+                                                    th:selected="${form.categoryId != null and form.categoryId == c.id}">—</option>
                                         </select>
                                         <input th:if="${editing}" type="hidden" name="categoryId" th:value="${form.categoryId}" />
                                         <div class="help"><span th:text="#{admin.prod.f.categoryHint}">只能选二级分类</span></div>
@@ -149,8 +149,8 @@
                             <h3 th:text="#{admin.prod.section.meta}">元信息</h3>
                             <dl class="facts">
                                 <dt th:text="#{admin.prod.f.version}">version</dt><dd th:text="${form.version}">0</dd>
-                                <dt th:text="#{admin.prod.f.created}">创建</dt><dd>—</dd>
-                                <dt th:text="#{admin.prod.f.updated}">更新</dt><dd>—</dd>
+                                <dt th:text="#{admin.prod.f.created}">创建</dt><dd th:text="${createdAt != null ? createdAt : '—'}">—</dd>
+                                <dt th:text="#{admin.prod.f.updated}">更新</dt><dd th:text="${updatedAt != null ? updatedAt : '—'}">—</dd>
                             </dl>
                         </div>
                     </aside>

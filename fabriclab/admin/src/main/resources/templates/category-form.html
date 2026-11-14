@@ -44,8 +44,8 @@
                                     <label th:for="parentId"><span th:text="#{admin.cat.parent}">上级分类</span></label>
                                     <select class="ctl" id="parentId" name="parentId" th:disabled="${editing}">
                                         <option value="" th:text="#{admin.cat.parentNone}">一级分类（无上级）</option>
-                                        <option th:each="p : ${parents}" th:value="${p.id}" th:text="${p.name}"
-                                                th:selected="${form.parentId != null and form.parentId == p.id}">通勤出行</option>
+                                        <option th:each="p : ${parents}" th:value="${p.id}" th:text="${tr.t(p.name)}"
+                                                th:selected="${form.parentId != null and form.parentId == p.id}">—</option>
                                     </select>
                                     <input th:if="${editing}" type="hidden" name="parentId" th:value="${form.parentId}" />
                                     <div class="help"><span th:text="#{admin.cat.immutable}">创建后不可修改</span></div>

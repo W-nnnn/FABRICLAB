@@ -1,5 +1,6 @@
 package com.fabriclab.admin.controller;
 
+import com.fabriclab.admin.config.ContentI18n;
 import com.fabriclab.admin.model.AdminUser;
 import com.fabriclab.admin.security.CsrfService;
 import com.fabriclab.admin.service.AdminSessionService;
@@ -37,6 +38,7 @@ public class AdminModelAdvice {
         model.addAttribute("brand", brandService.brand());
         model.addAttribute("tagline", brandService.tagline());
         model.addAttribute("consoleName", brandService.consoleName());
+        model.addAttribute("tr", new ContentI18n());
 
         boolean isEn = "en".equals(LocaleContextHolder.getLocale().getLanguage());
         model.addAttribute("isEn", isEn);

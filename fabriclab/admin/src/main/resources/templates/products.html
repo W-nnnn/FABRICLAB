@@ -19,12 +19,8 @@
                         <p th:text="#{admin.prod.note}">维护款号、面料工艺、价格与上架状态。</p>
                     </div>
                     <div class="ph__act">
-                        <span class="ph__count">
-                            <span th:text="#{admin.prod.count}">在册</span>
-                            <b th:text="${result.allCount}">60</b>
-                            <span th:text="#{admin.prod.live}">在售</span>
-                            <b th:text="${result.liveCount}">52</b>
-                        </span>
+                        <span class="ph__count"
+                              th:text="#{admin.prod.countLine(${result.allCount},${result.liveCount})}">在册 60 款 · 在售 54</span>
                         <a class="btn" th:href="@{/admin/products/new}" th:text="#{admin.prod.new}">新增款号</a>
                     </div>
                 </div>
@@ -38,13 +34,13 @@
                     </form>
                     <div class="seg" role="group">
                         <a th:href="@{/admin/products(kw=${kw},filter='all',size=${pageSize})}"
-                           th:classappend="${filter == 'all'} ? 'on'" th:text="#{admin.prod.filterAll}">全部<em th:text="${result.allCount}">60</em></a>
+                           th:classappend="${filter == 'all'} ? 'on'" ><span th:text="#{admin.prod.filterAll}">全部</span><em th:text="${result.allCount}">60</em></a>
                         <a th:href="@{/admin/products(kw=${kw},filter='live',size=${pageSize})}"
-                           th:classappend="${filter == 'live' or filter == 'ON_SALE'} ? 'on'" th:text="#{admin.prod.filterLive}">在售<em th:text="${result.liveCount}">52</em></a>
+                           th:classappend="${filter == 'live' or filter == 'ON_SALE'} ? 'on'" ><span th:text="#{admin.prod.filterLive}">在售</span><em th:text="${result.liveCount}">52</em></a>
                         <a th:href="@{/admin/products(kw=${kw},filter='draft',size=${pageSize})}"
-                           th:classappend="${filter == 'draft' or filter == 'DRAFT'} ? 'on'" th:text="#{admin.prod.filterDraft}">草稿<em th:text="${result.draftCount}">6</em></a>
+                           th:classappend="${filter == 'draft' or filter == 'DRAFT'} ? 'on'" ><span th:text="#{admin.prod.filterDraft}">草稿</span><em th:text="${result.draftCount}">6</em></a>
                         <a th:href="@{/admin/products(kw=${kw},filter='sold',size=${pageSize})}"
-                           th:classappend="${filter == 'sold'} ? 'on'" th:text="#{admin.prod.filterSold}">售罄<em th:text="${result.soldCount}">2</em></a>
+                           th:classappend="${filter == 'sold'} ? 'on'" ><span th:text="#{admin.prod.filterSold}">售罄</span><em th:text="${result.soldCount}">2</em></a>
                     </div>
                     <div class="toolbar__right">
                         <a class="txt txt--muted" th:href="@{/admin/products}" th:text="#{admin.action.resetFilter}">重置筛选</a>
@@ -98,21 +94,19 @@
                                 <td class="sku"><a th:href="@{/admin/products/{id}/edit(id=${r.id})}" th:text="${r.sku}">FL-HM-01A</a></td>
                                 <td><div class="pcell">
                                     <span class="pimg" th:style="|--tone:${r.tone}|"><svg viewBox="0 0 40 52" aria-hidden="true"><use th:href="|#g-${r.shape}|" href="#g-shirt"/></svg></span>
-                                    <span class="tname"><span class="nm" th:text="${r.name}">山羊绒高领衫</span>
-                                        <span class="sub" th:text="${r.fabricLine}">山羊绒 100%</span></span>
+                                    <span class="tname"><span class="nm" th:text="${tr.t(r.name)}">山羊绒高领衫</span>
+                                        <span class="sub" th:text="${tr.t(r.fabricLine)}">山羊绒 100%</span></span>
                                 </div></td>
-                                <td class="cat col-md" th:text="${r.categoryName}">居家 / 成衣</td>
+                                <td class="cat col-md" th:text="${tr.t(r.categoryName)}">居家 / 成衣</td>
                                 <td class="n money" th:text="'¥' + ${#numbers.formatDecimal(r.price,1,2)}">¥1,280.00</td>
                                 <td class="n col-md" th:text="${r.stock}">18</td>
                                 <td class="date col-md" th:text="${r.updatedAt}">2026.11.13</td>
                                 <td><span class="tag" th:classappend="${r.statusClass}" th:text="${r.statusLabel}">在售</span></td>
                                 <td><div class="acts">
                                     <a class="txt" th:href="@{/admin/products/{id}/edit(id=${r.id})}" th:text="#{admin.action.edit}">编辑</a>
-                                    <button type="submit" class="txt" th:attr="formaction=@{/admin/products/{id}/status(id=${r.id})}"
-                                            name="target" th:value="${r.status == 'ON_SALE'} ? 'DRAFT' : 'ON_SALE'"
-                                            th:text="${r.status == 'ON_SALE'} ? #{admin.action.unpublish} : #{admin.action.publish}">下架</button>
-                                    <button type="button" class="txt txt--danger" th:attr="data-id=${r.id},data-name=${r.name}"
-                                            onclick="openDel(this)" th:text="#{admin.action.delete}">删除</button>
+                                    <button type="button" class="more"
+                                            th:attr="data-id=${r.id},data-name=${r.name},data-target=${r.status == 'ON_SALE'} ? 'DRAFT' : 'ON_SALE',data-label=${r.status == 'ON_SALE'} ? #{admin.action.unpublish} : #{admin.action.publish}"
+                                            onclick="openRowMenu(this)" th:aria-label="#{admin.action.more}">···</button>
                                 </div></td>
                             </tr>
                             </tbody>
@@ -142,6 +136,12 @@
                         </div>
                     </div>
                 </form>
+
+                <div class="rowmenu" id="rowMenu" hidden>
+                    <button type="submit" form="listForm" id="menuStatus" name="target" value="DRAFT" th:text="#{admin.action.unpublish}">下架</button>
+                    <hr />
+                    <button type="button" id="menuDel" class="danger" th:text="#{admin.action.delete}">删除</button>
+                </div>
 
                 <footer th:replace="~{fragments :: footer}"></footer>
             </div>
@@ -196,11 +196,30 @@
         });
         sync();
     }
-    window.openDel = function (btn) {
+    var rowMenu = document.getElementById('rowMenu');
+    window.openRowMenu = function (btn) {
         var id = btn.getAttribute('data-id');
-        document.getElementById('delForm').action = '/admin/products/' + id + '/delete';
-        document.getElementById('del').showModal();
+        var status = document.getElementById('menuStatus');
+        status.formAction = '/admin/products/' + id + '/status';
+        status.value = btn.getAttribute('data-target');
+        status.textContent = btn.getAttribute('data-label');
+        document.getElementById('menuDel').setAttribute('data-id', id);
+        rowMenu.hidden = false;
+        var r = btn.getBoundingClientRect();
+        rowMenu.style.left = Math.max(8, r.right - rowMenu.offsetWidth) + 'px';
+        rowMenu.style.top = (r.bottom + rowMenu.offsetHeight + 8 > window.innerHeight
+                ? r.top - rowMenu.offsetHeight - 4 : r.bottom + 4) + 'px';
     };
+    document.getElementById('menuDel').addEventListener('click', function () {
+        rowMenu.hidden = true;
+        document.getElementById('delForm').action = '/admin/products/' + this.getAttribute('data-id') + '/delete';
+        document.getElementById('del').showModal();
+    });
+    document.addEventListener('click', function (e) {
+        if (!rowMenu.hidden && !e.target.closest('#rowMenu') && !e.target.closest('.more')) {
+            rowMenu.hidden = true;
+        }
+    });
 })();
 </script>
 </body>

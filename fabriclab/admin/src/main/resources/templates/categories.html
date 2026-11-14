@@ -51,7 +51,7 @@
                             <th:block th:each="node : ${nodes}">
                                 <tr style="background:var(--wash)">
                                     <td class="sku" th:text="${node.code}">HOME</td>
-                                    <td><b th:text="${node.name}" style="font-weight:500">居家舒适</b></td>
+                                    <td><b th:text="${tr.t(node.name)}" style="font-weight:500">居家舒适</b></td>
                                     <td><span class="tag" th:text="#{admin.cat.level1}">一级</span></td>
                                     <td class="n" th:text="${node.sortOrder}">50</td>
                                     <td class="n" th:text="${node.productCount}">0</td>
@@ -63,7 +63,7 @@
                                 </tr>
                                 <tr th:each="child : ${node.children}">
                                     <td class="sku" th:text="${child.code}" style="padding-left:24px">HOME_GAR</td>
-                                    <td style="padding-left:24px"><span style="color:var(--faint)">└</span> <span th:text="${child.name}">居家成衣</span></td>
+                                    <td style="padding-left:24px"><span style="color:var(--faint)">└</span> <span th:text="${tr.t(child.name)}">居家成衣</span></td>
                                     <td><span class="tag" th:text="#{admin.cat.level2}">二级</span></td>
                                     <td class="n" th:text="${child.sortOrder}">10</td>
                                     <td class="n" th:text="${child.productCount}">12</td>

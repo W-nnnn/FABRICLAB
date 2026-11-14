@@ -19,7 +19,7 @@
                     <div>
                         <div class="ph__eyebrow"><em>01</em><span th:text="#{admin.nav.overview}">概览</span></div>
                         <h1 th:text="#{admin.console.title}">控制台</h1>
-                        <p th:text="#{admin.console.note}">只呈现可由当次查询核对的事项。</p>
+                        <p th:text="#{admin.console.desc}">只呈现可由当次查询核对的事项。</p>
                     </div>
                     <div class="ph__act"><span class="ph__count" th:text="${today}">2026.11.14</span></div>
                 </div>
@@ -27,17 +27,17 @@
                 <div class="hero" th:if="${featured != null}">
                     <div class="hero__txt">
                         <div class="hero__k">FABRICLAB · AW 2026</div>
-                        <h2 th:text="${featured.name}">山羊绒高领衫 · 燕麦</h2>
-                        <p th:text="${featured.summary}">内蒙古山羊绒，12 针织造。</p>
+                        <h2 th:text="${tr.t(featured.name)}">山羊绒高领衫 · 燕麦</h2>
+                        <p th:text="${tr.t(featured.summary)}">内蒙古山羊绒，12 针织造。</p>
                         <div class="hero__meta">
-                            <div><b th:text="${featured.sku}">FL-HM-01A</b><small th:text="#{admin.prod.f.sku}">款号</small></div>
-                            <div><b th:text="'¥' + ${#numbers.formatDecimal(featured.price,1,0)}">¥1,280</b><small>RETAIL</small></div>
-                            <div><b th:text="${featured.stock}">18</b><small th:text="#{admin.prod.f.stock}">当前库存</small></div>
-                            <div><b th:text="${featured.status}">ON_SALE</b><small>STATUS</small></div>
+                            <div><b th:text="${featured.sku}">FL-HM-01A</b><small th:text="#{admin.console.hero.sku}">款号</small></div>
+                            <div><b th:text="'¥' + ${#numbers.formatDecimal(featured.price,1,0)}">¥1,280</b><small th:text="#{admin.console.hero.retail}">RETAIL</small></div>
+                            <div><b th:text="${featured.stock}">18</b><small th:text="#{admin.console.hero.stock}">在库</small></div>
+                            <div><b th:text="${featured.statusLabel}">已上架</b><small th:text="#{admin.console.hero.status}">STATUS</small></div>
                         </div>
                     </div>
                     <div class="hero__vis">
-                        <span class="pimg" style="--tone:#E7DFCF"><svg viewBox="0 0 40 52" aria-hidden="true"><use href="#g-turtleneck"/></svg></span>
+                        <span class="pimg" style="--tone:#E7DFCF"><svg viewBox="0 0 40 52" aria-hidden="true"><use th:href="|#g-${featured.shape}|" href="#g-turtleneck"/></svg></span>
                         <em>FABRICLAB / AW 2026</em>
                     </div>
                 </div>
@@ -45,23 +45,23 @@
                 <div class="stats">
                     <div class="stat">
                         <div class="stat__k"><span th:text="#{admin.console.published}">在售款号</span><s>LIVE</s></div>
-                        <div class="stat__v"><span class="stat__num" th:text="${statLive}">52</span><small>款</small></div>
+                        <div class="stat__v"><span class="stat__num" th:text="${statLive}">52</span><small th:text="#{admin.console.unit.style}">款</small></div>
                         <div class="stat__n" th:text="#{admin.prod.f.statusHint}">在售状态在用户端可见</div>
                     </div>
                     <div class="stat">
                         <div class="stat__k"><span th:text="#{admin.console.draft}">草稿款号</span><s>DRAFT</s></div>
-                        <div class="stat__v"><span class="stat__num" th:text="${statDraft}">6</span><small>款</small></div>
-                        <div class="stat__n">后台可见</div>
+                        <div class="stat__v"><span class="stat__num" th:text="${statDraft}">6</span><small th:text="#{admin.console.unit.style}">款</small></div>
+                        <div class="stat__n" th:text="#{admin.console.foot.draft}">后台可见</div>
                     </div>
                     <div class="stat">
                         <div class="stat__k"><span th:text="#{admin.console.low}">低库存</span><s>&le; 3</s></div>
-                        <div class="stat__v"><span class="stat__num" th:text="${statLow}">2</span><small>款</small></div>
-                        <div class="stat__n">建议尽快补货</div>
+                        <div class="stat__v"><span class="stat__num" th:text="${statLow}">2</span><small th:text="#{admin.console.unit.style}">款</small></div>
+                        <div class="stat__n" th:text="#{admin.console.foot.low}">建议尽快补货</div>
                     </div>
                     <div class="stat">
                         <div class="stat__k"><span th:text="#{admin.console.toShip}">待发货</span><s>PAID</s></div>
-                        <div class="stat__v"><span class="stat__num" th:text="${statShip}">2</span><small>笔</small></div>
-                        <div class="stat__n">已支付未发出</div>
+                        <div class="stat__v"><span class="stat__num" th:text="${statShip}">2</span><small th:text="#{admin.console.unit.order}">笔</small></div>
+                        <div class="stat__n" th:text="#{admin.console.foot.ship}">已支付未发出</div>
                     </div>
                 </div>
 
@@ -82,7 +82,7 @@
                                         <span class="ledger__t"><b th:text="${item.title}">6 款仍是草稿</b>
                                             <small th:text="${item.detail}">补齐面料与工艺后即可上架</small></span>
                                         <span class="ledger__go">
-                                            <span th:text="#{admin.action.edit}">去维护</span>
+                                            <span th:text="#{admin.action.view}">查看</span>
                                             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 8h10M9.4 4.4L13 8l-3.6 3.6"/></svg>
                                         </span>
                                     </a>
@@ -103,7 +103,7 @@
                                 <li th:each="r : ${recent}">
                                     <span class="recent__t" th:text="${r.time}">28 分钟前</span>
                                     <span class="recent__n"><a th:href="@{/admin/products/{id}/edit(id=${r.id})}" th:text="${r.sku}">FL-HM-01A</a>
-                                        <span th:text="${r.name}">山羊绒高领衫</span></span>
+                                        <span th:text="${tr.t(r.name)}">山羊绒高领衫</span></span>
                                     <span class="tag" th:classappend="${r.live} ? 'tag--live'" th:text="${r.status}">在售</span>
                                 </li>
                             </ul>
