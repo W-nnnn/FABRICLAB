@@ -256,6 +256,10 @@ h1,h2,h3{font-weight:500}
 .tbl tbody tr:hover td:first-child{box-shadow:inset 2px 0 0 var(--rust)}
 .tbl tbody tr.sel{background:#F1ECDF}
 .tbl td.n,.tbl th.n{text-align:right}
+/* 页内嵌小表（如账号详情的最近订单）：跟着栏宽走，不再套用列表页的 900 下限 */
+.tbl--mini{min-width:0}
+.tbl--mini thead th{position:static;background:transparent}
+.tbl--mini tbody td{height:56px}
 .tbl .sku{font-family:var(--f-num);font-size:12px;letter-spacing:.06em;color:var(--muted)}
 .tbl .sku a:hover{color:var(--ink);border-bottom:1px solid var(--ink)}
 .tbl .nm{font-size:13.5px;line-height:1.4;display:block;overflow:hidden;text-overflow:ellipsis}
@@ -263,6 +267,14 @@ h1,h2,h3{font-weight:500}
 .tbl .cat{font-size:12px;color:var(--muted)}
 .tbl .date{font-family:var(--f-num);font-size:12px;color:var(--muted)}
 .tbl .pcell{display:flex;align-items:center;gap:13px;min-width:0}
+/* 顾客账号：没有商品图可看，用首字方牌替代缩略图，保持同一列节奏 */
+.tbl .ucell{display:flex;align-items:center;gap:13px;min-width:0}
+.uava{flex:none;width:28px;height:28px;display:grid;place-items:center;background:var(--wash);
+  box-shadow:inset 0 0 0 1px var(--rule-strong);font-family:var(--f-song);font-size:12.5px;
+  color:var(--muted);line-height:1;letter-spacing:0}
+.phead .uava{width:52px;height:52px;font-size:19px;color:var(--ink);background:var(--white)}
+html[lang="en"] .uava{font-size:13px;font-family:var(--f-sans)}
+html[lang="en"] .phead .uava{font-size:20px}
 .pimg{width:40px;height:52px;flex:none;display:block;position:relative;
   background-image:linear-gradient(160deg,rgba(255,255,255,.30),rgba(26,26,26,.05) 72%),
     repeating-linear-gradient(0deg,rgba(26,26,26,.022) 0 1px,transparent 1px 3px),

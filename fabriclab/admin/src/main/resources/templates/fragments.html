@@ -148,10 +148,17 @@
         <span th:text="#{admin.nav.styles}">款号维护</span>
     </a>
 
+    <h2 class="side__group" th:text="#{admin.nav.clients}">顾客</h2>
+    <a class="side__item" th:href="@{/admin/users}"
+       th:attr="aria-current=${active == 'users'} ? 'page' : null">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><use href="#i-users"/></svg>
+        <span th:text="#{admin.nav.accounts}">账号管理</span>
+    </a>
+
     <div class="side__foot">
         <span class="side__ava" th:text="${isEn != null && isEn ? 'S' : (currentAdmin != null ? #strings.substring(currentAdmin.displayName,0,1) : 'A')}">沈</span>
         <span class="side__who">
-            <b th:text="${currentAdmin != null ? currentAdmin.displayName : '—'}">平台管理员</b>
+            <b th:text="${currentAdmin != null ? tr.t(currentAdmin.displayName) : '—'}">平台管理员</b>
             <small>ADMIN</small>
         </span>
         <form th:action="@{/admin/signout}" method="post">
@@ -192,7 +199,7 @@
         </div>
         <div class="topbar__me">
             <i th:text="${isEn != null && isEn ? 'S' : '沈'}">沈</i>
-            <span th:text="${currentAdmin != null ? currentAdmin.displayName : '—'}">沈未染</span>
+            <span th:text="${currentAdmin != null ? tr.t(currentAdmin.displayName) : '—'}">沈未染</span>
         </div>
     </div>
     <div id="progress"></div>
