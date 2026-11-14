@@ -49,6 +49,9 @@ public class AuthService {
         session.setAttribute(CurrentUserService.KEY_USERNAME, user.getUsername());
         session.setAttribute(CurrentUserService.KEY_DISPLAY_NAME,
                 user.getDisplayName() == null ? user.getUsername() : user.getDisplayName());
+        // 记下口令散列的指纹：后台重置口令后指纹对不上，下一次受保护请求即失效会话。
+        session.setAttribute(CurrentUserService.KEY_CREDENTIAL_TAG,
+                CurrentUserService.credentialTag(user.getPasswordHash()));
         return new CurrentUser(user.getId(), user.getUsername(),
                 user.getDisplayName() == null ? user.getUsername() : user.getDisplayName());
     }

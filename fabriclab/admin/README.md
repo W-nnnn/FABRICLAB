@@ -1,6 +1,6 @@
 # fabriclab-admin
 
-FABRICLAB 后台管理端，端口 8081，与用户端（`fabriclab/store`，8080）独立部署、共享同一 `MyPetStore` 库。当前阶段：T14 分类、款号、库存补货与服装相册。
+FABRICLAB 后台管理端，端口 8081，与用户端（`fabriclab/store`，8080）独立部署、共享同一 `MyPetStore` 库。当前阶段：T15 分类、款号、库存补货、服装相册与顾客账号。
 
 设计依据：`docs/admin-design.md`（角色、用例、模块、字段与状态、权限矩阵）；视觉规范见 `docs/admin-ui-design.md` 与 `docs/admin-ui-prototype.html`。
 
@@ -9,16 +9,16 @@ FABRICLAB 后台管理端，端口 8081，与用户端（`fabriclab/store`，808
 ```
 src/main/java/com/fabriclab/admin/
 ├── config/       分页、语言（中 / 英）、商品内容词典、拦截器装配
-├── controller/   登录、控制台、分类、款号、相册、错误页
-├── service/      登录会话、分类树、商品维护、增量补货、相册、控制台计数、描述编解码
-├── model/        表单白名单与列表 / 相册视图
+├── controller/   登录、控制台、分类、款号、相册、顾客账号、错误页
+├── service/      登录会话、分类树、商品维护、增量补货、相册、账号维护、控制台计数、描述编解码
+├── model/        表单白名单与列表 / 相册 / 账号视图
 ├── entity/       与用户端同库同表的实体
 ├── mapper/       对应 Mapper
 ├── security/     CSRF 与 /admin/** 访问检查
 └── exception/    业务 400 / 未找到 404 / CSRF 403
 src/main/resources/
 ├── application.yml             8081、会话 Cookie ADMINSESSION、数据源
-├── templates/                  signon / console / categories / category-form / products / product-form / album / error / fragments
+├── templates/                  signon / console / categories / category-form / products / product-form / album / users / user-detail / error / fragments
 ├── messages.properties         界面文案（messages_en.properties 为英文版）
 ├── content-en.properties       商品数据英译词典
 ├── static/css/admin.css        V3 视觉
@@ -57,8 +57,10 @@ mvn test
 | `http://localhost:8081/admin/products` | 款号列表：筛选、搜索、分页、批量上下架、行菜单（相册 / 补货 / 上下架 / 删除） |
 | `http://localhost:8081/admin/products/new`、`/{id}/edit` | 新增与编辑；编辑页库存只读，补货走弹窗 |
 | `http://localhost:8081/admin/products/{id}/album` | 服装相册：平铺 / 上身 / 细节三组、来源与许可、设为封面、空组入口 |
+| `http://localhost:8081/admin/users` | 顾客账号列表：用户名包含匹配、状态分段、ID 升序分页、订单数与累计 |
+| `http://localhost:8081/admin/users/{id}` | 账号资料：只读身份、联系方式、最近订单；重置口令与启停各自独立提交 |
 | `POST http://localhost:8081/admin/products/{id}/restock` | 增量补货：正整数，按最新库存加算并递增 `version` |
-| `http://localhost:8081/health` | `{"status":"UP","app":"fabriclab-admin","stage":"T14"}` |
+| `http://localhost:8081/health` | `{"status":"UP","app":"fabriclab-admin","stage":"T15"}` |
 
 ## 库存与相册口径
 
@@ -82,3 +84,11 @@ mvn test
 - 不展示订单量、销售额、转化率、访客数等任何后台未真实统计的指标。
 - 只呈现当前管理员身份（账号、显示名、角色、本次登录时间）、会话与访问规则、后台模块范围及其所属需求。
 - 模块入口随对应任务启用；未启用入口不提供链接、不显示数量。
+
+## 账号管理口径
+
+- 只返回 `role='CUSTOMER'` 的账号；管理员账号不出现在列表，也不能通过详情、重置、启停读写，访问即 404。
+- 可改显示名、邮箱、电话；用户名与角色创建后不可改，提交不同值直接拒绝。
+- 重置口令写统一初始口令 `Passw0rd!2026`（每次新盐），不接收新口令输入；旧口令立即失效。
+- 用户端会话里存着口令散列指纹，重置后下一次受保护请求即失效；改资料不动散列，不会踢掉在线会话。
+- 启停带原状态条件更新，重复操作不写库并提示当前状态；停用只影响登录与在线会话，历史订单与快照不变。

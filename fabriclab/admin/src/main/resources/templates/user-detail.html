@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.toLanguageTag()}">
+<head th:replace="~{fragments :: head('admin.user.editTitle')}"></head>
+<body>
+<a class="skip" href="#main" th:text="#{admin.skip}">跳到主要内容</a>
+<div class="shell">
+    <div th:replace="~{fragments :: side('users')}"></div>
+    <div class="scrim" id="scrim"></div>
+    <div class="wrap">
+        <div th:replace="~{fragments :: topbar(#{admin.nav.clients}, #{admin.nav.accounts})}"></div>
+        <main class="main" id="main">
+            <div class="page">
+                <div th:replace="~{fragments :: notice}"></div>
+
+                <div class="ph">
+                    <div>
+                        <div class="ph__eyebrow"><em>03</em><span th:text="#{admin.nav.clients}">顾客</span></div>
+                        <h1 th:text="${tr.t(u.displayName)}">林晓</h1>
+                        <p th:text="#{admin.user.detailNote}">用户名与角色为只读；保存、重置、启停三个动作各自提交。</p>
+                    </div>
+                    <div class="ph__act">
+                        <span class="ph__count" th:text="'@' + ${u.username}">@alice</span>
+                        <a class="btn btn--line" th:href="@{/admin/users}" th:text="#{admin.user.backToList}">返回账号列表</a>
+                    </div>
+                </div>
+
+                <div class="phead">
+                    <span class="uava" th:text="${#strings.substring(tr.t(u.displayName),0,1)}">林</span>
+                    <div class="phead__id">
+                        <span class="sku" th:text="${u.username}">alice</span>
+                        <b th:text="${tr.t(u.displayName)}">林晓</b>
+                        <small th:text="${#messages.msg('admin.user.roleCustomer')} + ' · ' + ${#messages.msg('admin.user.f.created')} + ' ' + ${u.createdAt}">顾客 · 注册 2026.11.10 09:12</small>
+                    </div>
+                    <dl class="phead__facts">
+                        <div><dt th:text="#{admin.user.colOrders}">订单</dt><dd th:text="${u.orderCount}">4</dd></div>
+                        <div><dt th:text="#{admin.user.f.total}">累计金额</dt><dd class="money" th:text="${u.ordersTotal}">¥4,860.00</dd></div>
+                        <div><dt th:text="#{admin.user.colStatus}">状态</dt>
+                            <dd><span class="tag" th:classappend="${u.statusClass}" th:text="${u.statusLabel}">已启用</span></dd></div>
+                    </dl>
+                </div>
+
+                <div class="alert alert--err" th:if="${error != null}" role="alert">
+                    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" style="flex:none"><use href="#i-alert"/></svg>
+                    <span th:text="${error}">错误</span>
+                </div>
+
+                <div class="cols">
+                    <div>
+                        <form id="userForm" method="post" th:action="@{/admin/users/{id}(id=${u.id})}">
+                            <input type="hidden" name="_csrf" th:value="${csrfToken}" />
+                            <input type="hidden" name="username" th:value="${u.username}" />
+                            <input type="hidden" name="role" th:value="${u.role}" />
+
+                            <section class="block">
+                                <div class="block__head">
+                                    <span class="block__no">01</span>
+                                    <div><h2 th:text="#{admin.user.section.identity}">身份</h2>
+                                        <p th:text="#{admin.user.f.usernameHint}">登录名，创建后不可修改</p></div>
+                                </div>
+                                <div class="frow">
+                                    <div class="field">
+                                        <label th:for="usernameRo"><span th:text="#{admin.user.f.username}">用户名</span></label>
+                                        <input class="ctl ctl--ro" id="usernameRo" th:value="${u.username}" readonly />
+                                        <div class="help"><span th:text="#{admin.user.f.usernameHint}">登录名，创建后不可修改</span></div>
+                                    </div>
+                                    <div class="field">
+                                        <label th:for="roleRo"><span th:text="#{admin.user.f.role}">角色</span></label>
+                                        <input class="ctl ctl--ro" id="roleRo"
+                                               th:value="#{admin.user.roleCustomer}" readonly />
+                                        <div class="help"><span th:text="#{admin.user.f.roleHint}">顾客账号只能登录用户端</span></div>
+                                    </div>
+                                </div>
+                            </section>
+
+                            <section class="block">
+                                <div class="block__head">
+                                    <span class="block__no">02</span>
+                                    <div><h2 th:text="#{admin.user.section.contact}">联系方式</h2>
+                                        <p th:text="#{admin.user.contactNote}">只影响后台与页头展示，不改写历史订单里的收货快照。</p></div>
+                                </div>
+                                <div class="field">
+                                    <label for="displayName"><span th:text="#{admin.user.f.displayName}">显示名</span><em>*</em></label>
+                                    <input class="ctl" id="displayName" name="displayName" maxlength="50"
+                                           th:value="${form != null ? tr.t(form.displayName) : tr.t(u.displayName)}" />
+                                    <div class="help"><span th:text="#{admin.user.f.displayNameHint}">订单与页头展示的名称</span></div>
+                                </div>
+                                <div class="frow">
+                                    <div class="field">
+                                        <label for="email"><span th:text="#{admin.user.f.email}">邮箱</span></label>
+                                        <input class="ctl" id="email" name="email" maxlength="100" inputmode="email"
+                                               th:value="${form != null ? form.email : u.email}" />
+                                        <div class="help"><span th:text="#{admin.user.f.emailHint}">可留空；填写时需为有效邮箱</span></div>
+                                    </div>
+                                    <div class="field">
+                                        <label for="phone"><span th:text="#{admin.user.f.phone}">电话</span></label>
+                                        <input class="ctl" id="phone" name="phone" maxlength="30" inputmode="tel"
+                                               th:value="${form != null ? form.phone : u.phone}" />
+                                        <div class="help"><span th:text="#{admin.user.f.phoneHint}">可留空；仅数字、空格与 + - ( )</span></div>
+                                    </div>
+                                </div>
+                            </section>
+                        </form>
+
+                        <section class="block">
+                            <div class="block__head">
+                                <span class="block__no">03</span>
+                                <div><h2 th:text="#{admin.user.section.orders}">最近订单</h2>
+                                    <p th:text="#{admin.user.ordersNote}">订单为下单时的快照，改资料不会改写历史订单。</p></div>
+                                <span class="block__count" th:text="${u.orderCount}">4</span>
+                            </div>
+                            <p class="slot" th:if="${#lists.isEmpty(u.recentOrders)}" th:text="#{admin.user.ordersEmpty}">该账号还没有订单</p>
+                            <div class="tblwrap" th:unless="${#lists.isEmpty(u.recentOrders)}">
+                                <table class="tbl tbl--mini">
+                                    <colgroup><col style="width:200px" /><col /><col style="width:110px" /><col style="width:88px" /></colgroup>
+                                    <thead><tr>
+                                        <th th:text="#{admin.user.colOrderNo}">订单号</th>
+                                        <th th:text="#{admin.user.colOrderAt}">下单时间</th>
+                                        <th class="n" th:text="#{admin.user.colAmount}">金额</th>
+                                        <th th:text="#{admin.user.colStatus}">状态</th>
+                                    </tr></thead>
+                                    <tbody>
+                                    <tr th:each="o : ${u.recentOrders}">
+                                        <td class="sku" th:text="${o.orderNo}">DEMO-202611-AL-01</td>
+                                        <td class="date" th:text="${o.date}">2026.11.13 08:10</td>
+                                        <td class="n money" th:text="${o.amount}">¥1,280.00</td>
+                                        <td><span class="tag" th:classappend="${o.statusClass}" th:text="${o.statusLabel}">已支付</span></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+                    </div>
+
+                    <aside class="aside-col">
+                        <div class="aside-sec">
+                            <h3 th:text="#{admin.user.section.state}">账号状态</h3>
+                            <span class="tag" th:classappend="${u.statusClass}" th:text="${u.statusLabel}">已启用</span>
+                            <p class="aside-note" style="margin-top:12px"
+                               th:text="${u.status == 'ENABLED'} ? #{admin.user.statusDisabledText} : #{admin.user.statusEnabledText}">停用后该账号在下一次请求即失效。</p>
+                            <button class="btn btn--sm btn--line" type="button" style="margin-top:14px"
+                                    onclick="openStatus()"
+                                    th:text="${u.status == 'ENABLED'} ? #{admin.user.disable} : #{admin.user.enable}">停用账号</button>
+                        </div>
+                        <div class="aside-sec">
+                            <h3 th:text="#{admin.user.section.reset}">重置口令</h3>
+                            <p class="aside-note" th:text="#{admin.user.resetText}">把该账号的口令重置为统一初始口令。</p>
+                            <button class="btn btn--sm btn--line" type="button" style="margin-top:14px"
+                                    onclick="openReset()" th:text="#{admin.user.reset}">重置口令</button>
+                        </div>
+                        <div class="aside-sec">
+                            <h3 th:text="#{admin.user.section.facts}">账号概况</h3>
+                            <dl class="facts">
+                                <dt th:text="#{admin.user.f.created}">注册</dt><dd th:text="${u.createdAt}">—</dd>
+                                <dt th:text="#{admin.user.f.updated}">最近更新</dt><dd th:text="${u.updatedAt}">—</dd>
+                                <dt th:text="#{admin.user.f.orders}">订单</dt><dd th:text="${u.orderCount}">0</dd>
+                                <dt th:text="#{admin.user.f.total}">累计金额</dt><dd th:text="${u.ordersTotal}">¥0.00</dd>
+                            </dl>
+                        </div>
+                    </aside>
+                </div>
+                <footer th:replace="~{fragments :: footer}"></footer>
+            </div>
+        </main>
+        <div class="actions-bar">
+            <span class="actions-bar__note" th:text="#{admin.user.saveHint}">修改仅在点击保存后生效；用户名与角色不可改</span>
+            <div class="actions-bar__act">
+                <a class="btn btn--line" th:href="@{/admin/users}" th:text="#{admin.action.cancel}">取消</a>
+                <button class="btn" type="submit" form="userForm" th:text="#{admin.action.save}">保存修改</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<dialog id="resetDlg">
+    <form method="post" th:action="@{/admin/users/{id}/password(id=${u.id})}">
+        <input type="hidden" name="_csrf" th:value="${csrfToken}" />
+        <div class="dlg__body">
+            <h2 th:text="#{admin.user.resetTitle}">重置口令</h2>
+            <p><b th:text="|${tr.t(u.displayName)} · @${u.username}|">林晓 · @alice</b></p>
+            <p style="margin-top:10px" th:text="#{admin.user.resetText}">把该账号的口令重置为统一初始口令。</p>
+            <div class="dlg__meta">
+                <dl class="facts">
+                    <dt th:text="#{admin.user.resetInitial}">统一初始口令</dt>
+                    <dd class="num" th:text="${initialPassword}">Passw0rd!2026</dd>
+                </dl>
+            </div>
+        </div>
+        <div class="dlg__foot">
+            <button type="button" class="btn btn--line" onclick="document.getElementById('resetDlg').close()"
+                    th:text="#{admin.action.cancel}">取消</button>
+            <button type="submit" class="btn" th:text="#{admin.user.resetAction}">重置口令</button>
+        </div>
+    </form>
+</dialog>
+
+<dialog id="statusDlg">
+    <form method="post" th:action="@{/admin/users/{id}/status(id=${u.id})}">
+        <input type="hidden" name="_csrf" th:value="${csrfToken}" />
+        <input type="hidden" name="target" th:value="${u.status == 'ENABLED'} ? 'DISABLED' : 'ENABLED'" />
+        <div class="dlg__body">
+            <h2 th:text="${u.status == 'ENABLED'} ? #{admin.user.disable} : #{admin.user.enable}">停用账号</h2>
+            <p><b th:text="|${tr.t(u.displayName)} · @${u.username}|">林晓 · @alice</b></p>
+            <p style="margin-top:10px"
+               th:text="${u.status == 'ENABLED'} ? #{admin.user.statusDisabledText} : #{admin.user.statusEnabledText}">停用后该账号在下一次请求即失效。</p>
+        </div>
+        <div class="dlg__foot">
+            <button type="button" class="btn btn--line" onclick="document.getElementById('statusDlg').close()"
+                    th:text="#{admin.action.cancel}">取消</button>
+            <button type="submit" class="btn" th:text="#{admin.action.confirm}">确认</button>
+        </div>
+    </form>
+</dialog>
+
+<div th:replace="~{fragments :: icons}"></div>
+<script th:replace="~{fragments :: shellJs}"></script>
+<script>
+(function () {
+    window.openReset = function () { document.getElementById('resetDlg').showModal(); };
+    window.openStatus = function () { document.getElementById('statusDlg').showModal(); };
+})();
+</script>
+</body>
+</html>

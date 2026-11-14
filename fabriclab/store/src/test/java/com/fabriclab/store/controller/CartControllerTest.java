@@ -66,6 +66,8 @@ class CartControllerTest {
     @BeforeEach
     void setUp() {
         session = new MockHttpSession();
+        // 登录会话带口令散列指纹；后台重置口令后该请求会被判定为凭证已变
+        session.setAttribute(CurrentUserService.KEY_CREDENTIAL_TAG, CurrentUserService.credentialTag("$2a$10$AZQW9H0zzpstWCih7ev.rubTNT2spCFm8iydr01pdtiTnxJpA1A76"));
         when(currentUserService.from(session))
                 .thenReturn(new CurrentUser(1L, "alice", "Alice"));
         // 访问检查每请求查库复核：打桩为启用 CUSTOMER，登录态请求放行
@@ -73,6 +75,7 @@ class CartControllerTest {
         enabled.setId(1L);
         enabled.setRole("CUSTOMER");
         enabled.setStatus("ENABLED");
+        enabled.setPasswordHash("$2a$10$AZQW9H0zzpstWCih7ev.rubTNT2spCFm8iydr01pdtiTnxJpA1A76");
         lenient().when(storeUserMapper.selectById(1L)).thenReturn(enabled);
         lenient().when(brandService.brand()).thenReturn("FABRICLAB");
         lenient().when(brandService.tagline()).thenReturn("未染");
