@@ -41,15 +41,20 @@ class AuthInterceptorTest {
             session.setAttribute(CurrentUserService.KEY_USER_ID, userId);
             session.setAttribute(CurrentUserService.KEY_USERNAME, "alice");
             session.setAttribute(CurrentUserService.KEY_DISPLAY_NAME, "林晓");
+            session.setAttribute(CurrentUserService.KEY_CREDENTIAL_TAG,
+                    CurrentUserService.credentialTag(HASH));
             request.setSession(session);
         }
         return request;
     }
 
+    private static final String HASH = "$2a$10$AZQW9H0zzpstWCih7ev.rubTNT2spCFm8iydr01pdtiTnxJpA1A76";
+
     private StoreUser dbUser(String role, String status) {
         StoreUser user = new StoreUser();
         user.setId(7L);
         user.setUsername("alice");
+        user.setPasswordHash(HASH);
         user.setRole(role);
         user.setStatus(status);
         return user;
@@ -105,5 +110,40 @@ class AuthInterceptorTest {
         MockHttpServletResponse response = new MockHttpServletResponse();
         assertFalse(interceptor.preHandle(request, response, new Object()));
         assertTrue(response.isCommitted());
+    }
+
+    /** UC-A7：后台重置口令后，旧散列被替换，已登录会话在下一次请求即失效。 */
+    @Test
+    void passwordResetAfterLoginInvalidatesSession() throws Exception {
+        StoreUser reset = dbUser("CUSTOMER", "ENABLED");
+        reset.setPasswordHash("$2a$10$CdUEndzUHDMgTMYS.s01Be42kq7BcgdKg3IsNaZ/C5SXn59kuPZh.");
+        when(storeUserMapper.selectById(7L)).thenReturn(reset);
+        MockHttpServletRequest request = requestWithSession(7L);
+        MockHttpSession session = (MockHttpSession) request.getSession();
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        assertFalse(interceptor.preHandle(request, response, new Object()));
+        assertTrue(session.isInvalid(), "口令被重置后旧会话必须失效");
+        assertEquals("/signon?returnTo=%2Fcart", redirectOf(request, response));
+    }
+
+    /** 会话里没有指纹（升级前留下的会话）也不放行，避免旧凭证继续通行。 */
+    @Test
+    void sessionWithoutCredentialTagIsBlocked() throws Exception {
+        when(storeUserMapper.selectById(7L)).thenReturn(dbUser("CUSTOMER", "ENABLED"));
+        MockHttpServletRequest request = requestWithSession(7L);
+        MockHttpSession session = (MockHttpSession) request.getSession();
+        session.removeAttribute(CurrentUserService.KEY_CREDENTIAL_TAG);
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        assertFalse(interceptor.preHandle(request, response, new Object()));
+        assertTrue(session.isInvalid());
+    }
+
+    @Test
+    void credentialTagIsStableAndNotTheHashItself() {
+        String tag = CurrentUserService.credentialTag(HASH);
+        assertEquals(tag, CurrentUserService.credentialTag(HASH));
+        assertEquals(16, tag.length());
+        assertFalse(tag.contains(HASH));
+        assertEquals("", CurrentUserService.credentialTag(null));
     }
 }

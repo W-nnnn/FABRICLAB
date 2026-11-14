@@ -18,6 +18,7 @@ import java.nio.charset.StandardCharsets;
  * 受保护入口访问检查（FR-U-02）：未登录跳登录页（携带站内返回地址）；
  * 已登录者每次请求复核数据库中的角色与启用状态——会话内身份不足以放行，
  * 登录后被禁用或改角色的账号在下一次受保护请求即被拦截并失效会话。
+ * 同时复核会话里记下的口令散列指纹：后台重置口令后指纹对不上，同样立即失效会话。
  * 数据归属校验由 CurrentUserService.requireOwner 在各业务入口执行。
  *
  * <p>返回地址只对 GET / HEAD 取当前地址：POST 端点（如 /cart/add）没有可回跳的页面，
@@ -52,7 +53,12 @@ public class AuthInterceptor implements HandlerInterceptor {
         boolean usable = user != null
                 && "CUSTOMER".equals(user.getRole())
                 && "ENABLED".equals(user.getStatus());
-        if (!usable) {
+        // 后台重置口令会整条替换散列，会话里的指纹随即对不上：按凭证已变失效，要求重新登录。
+        Object tag = session.getAttribute(CurrentUserService.KEY_CREDENTIAL_TAG);
+        boolean credentialOk = usable
+                && tag instanceof String stored
+                && stored.equals(CurrentUserService.credentialTag(user.getPasswordHash()));
+        if (!usable || !credentialOk) {
             session.invalidate();
             response.sendRedirect(redirectTarget(request));
             return false;

@@ -63,6 +63,9 @@ class AuthServiceTest {
         assertNotEquals(oldId, request.getSession().getId());
         assertEquals(7L, request.getSession().getAttribute(CurrentUserService.KEY_USER_ID));
         assertEquals("alice", request.getSession().getAttribute(CurrentUserService.KEY_USERNAME));
+        assertEquals(CurrentUserService.credentialTag(hash),
+                request.getSession().getAttribute(CurrentUserService.KEY_CREDENTIAL_TAG),
+                "登录应记下口令散列指纹，供后续请求复核");
     }
 
     @Test
