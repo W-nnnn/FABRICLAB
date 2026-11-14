@@ -90,11 +90,21 @@
             </div>
             <div class="c">
                 <b class="t" th:text="#{foot.shop}">选购</b>
-                <p th:utext="#{foot.shop.list}">针织<br>衬衫<br>裤装<br>外套<br>牛仔</p>
+                <p>
+                    <a style="color:inherit" th:href="@{/series/1}" th:text="#{line.commute}">通勤出行</a><br>
+                    <a style="color:inherit" th:href="@{/series/2}" th:text="#{line.leisure}">休闲生活</a><br>
+                    <a style="color:inherit" th:href="@{/series/3}" th:text="#{line.outdoor}">户外运动</a><br>
+                    <a style="color:inherit" th:href="@{/series/4}" th:text="#{line.occasion}">礼服场合</a><br>
+                    <a style="color:inherit" th:href="@{/series/5}" th:text="#{line.home}">居家舒适</a>
+                </p>
             </div>
             <div class="c">
                 <b class="t" th:text="#{foot.service}">服务</b>
-                <p th:utext="#{foot.service.list}">尺码指南<br>面料养护<br>修改与修补<br>配送与退换</p>
+                <p>
+                    <a style="color:inherit" th:href="@{/fabrics}" th:text="#{fabrics.title}">面料档案</a><br>
+                    <a style="color:inherit" th:href="@{/crafts}" th:text="#{crafts.title}">工艺说明</a><br>
+                    <span style="color:var(--mute)">尺码指南<br>修改与修补<br>配送与退换</span>
+                </p>
             </div>
             <div class="c">
                 <b class="t" th:text="#{foot.store}">门店</b>
