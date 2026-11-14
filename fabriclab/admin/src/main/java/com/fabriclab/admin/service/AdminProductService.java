@@ -130,7 +130,7 @@ public class AdminProductService {
     }
 
     /** 服装剪影：按商品名称归类到设计稿的 8 种廓形，仅用于缩略示意。 */
-    private String shape(String name) {
+    public static String shape(String name) {
         String n = name == null ? "" : name;
         if (n.contains("围巾")) return "scarf";
         if (n.contains("袜")) return "socks";
@@ -142,7 +142,7 @@ public class AdminProductService {
         return "turtleneck";
     }
 
-    private String tone(String name) {
+    public static String tone(String name) {
         String n = name == null ? "" : name;
         if (n.contains("墨")) return "#767B74";
         if (n.contains("陶土") || n.contains("棕") || n.contains("驼")) return "#C08A6E";
@@ -233,6 +233,30 @@ public class AdminProductService {
                 .eq(Product::getId, id).eq(Product::getStatus, p.getStatus())
                 .set(Product::getStatus, next).setSql("version = version + 1");
         productMapper.update(null, uw);
+    }
+
+    /**
+     * 增量补货（UC-A5、AC-28）：只接受正整数增量，读取最新一行的库存与 version 后条件加算，
+     * 期间若被用户端下单、取消或另一次补货改写则整条更新落空并提示重试，不覆盖别人的写入。
+     */
+    public int restock(long id, Integer delta) {
+        if (delta == null || delta <= 0) {
+            throw new BusinessException(t("admin.err.stock.deltaInvalid"));
+        }
+        if (delta > 9999) {
+            throw new BusinessException(t("admin.err.stock.deltaTooLarge"));
+        }
+        Product p = require(id);
+        long expected = p.getVersion() == null ? 0L : p.getVersion();
+        int base = p.getStock() == null ? 0 : p.getStock();
+        LambdaUpdateWrapper<Product> uw = new LambdaUpdateWrapper<Product>()
+                .eq(Product::getId, id)
+                .eq(Product::getVersion, expected)
+                .setSql("stock = stock + " + delta + ", version = version + 1");
+        if (productMapper.update(null, uw) == 0) {
+            throw new BusinessException(t("admin.err.stock.conflict"));
+        }
+        return base + delta;
     }
 
     /** 只有无订单明细、无相册引用的商品可删；其余用下架表达停售。 */
