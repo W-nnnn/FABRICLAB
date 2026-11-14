@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.toLanguageTag()}">
+<head th:replace="~{fragments :: head('admin.album.title')}"></head>
+<body>
+<a class="skip" href="#main" th:text="#{admin.skip}">跳到主要内容</a>
+<div class="shell">
+    <div th:replace="~{fragments :: side('products')}"></div>
+    <div class="scrim" id="scrim"></div>
+    <div class="wrap">
+        <div th:replace="~{fragments :: topbar(#{admin.nav.products}, #{admin.album.title})}"></div>
+        <main class="main" id="main">
+            <div class="page">
+                <div th:replace="~{fragments :: notice}"></div>
+
+                <div class="ph">
+                    <div>
+                        <div class="ph__eyebrow"><em>02</em><span th:text="#{admin.nav.products}">商品</span></div>
+                        <h1 th:text="#{admin.album.title}">服装相册</h1>
+                        <p th:text="#{admin.album.note}">按平铺、上身、细节三组整理图片。</p>
+                    </div>
+                    <div class="ph__act">
+                        <span class="ph__count" th:text="#{admin.album.total(${total})}">共 4 张</span>
+                        <a class="btn btn--line" th:href="@{/admin/products/{id}/edit(id=${product.id})}"
+                           th:text="#{admin.album.back}">返回款号</a>
+                    </div>
+                </div>
+
+                <div class="phead">
+                    <span class="pimg" th:style="|--tone:${tone}|"><svg viewBox="0 0 40 52" aria-hidden="true"><use th:href="|#g-${shape}|" href="#g-shirt"/></svg></span>
+                    <div class="phead__id">
+                        <span class="sku" th:text="${product.sku}">FL-CM-01</span>
+                        <b th:text="${tr.t(product.name)}">山羊绒高领衫</b>
+                        <small th:text="${tr.t(categoryName)}">上装 / 针织</small>
+                    </div>
+                    <dl class="phead__facts">
+                        <div><dt th:text="#{admin.prod.colPrice}">价格</dt>
+                            <dd class="money" th:text="'¥' + ${#numbers.formatDecimal(product.price,1,2)}">¥429.00</dd></div>
+                        <div><dt th:text="#{admin.prod.colStock}">库存</dt>
+                            <dd th:text="${product.stock}">25</dd></div>
+                        <div><dt th:text="#{admin.prod.colStatus}">状态</dt>
+                            <dd><span class="tag" th:classappend="${product.status == 'ON_SALE'} ? 'tag--live'"
+                                      th:text="${statusLabel}">在售</span></dd></div>
+                    </dl>
+                </div>
+
+                <div class="alert alert--ok" th:if="${total == 0}">
+                    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" style="flex:none;margin-top:2px"><use href="#i-box"/></svg>
+                    <span><b th:text="#{admin.album.fallbackTitle}">相册为空时回退封面</b>
+                        <span th:text="${' · ' + #messages.msg('admin.album.fallbackText', product.coverImage)}"></span></span>
+                </div>
+
+                <div class="cols cols--album">
+                    <div>
+                        <section class="block" th:each="kind, kindStat : ${kinds}"
+                                 th:with="slug=${kind == 'F' ? 'flat' : (kind == 'W' ? 'worn' : 'detail')}">
+                            <div class="block__head">
+                                <span class="block__no" th:text="${#numbers.formatInteger(kindStat.index + 1, 2)}">01</span>
+                                <div><h2 th:text="${#messages.msg('admin.album.section.' + slug)}">平铺图</h2>
+                                    <p th:text="${#messages.msg('admin.album.note.' + slug)}">正面与背面平铺</p></div>
+                                <span class="block__count" th:text="${groups.get(kind).size()}">2</span>
+                            </div>
+
+                            <div class="shots" th:if="${!groups.get(kind).isEmpty()}">
+                                <article class="shot" th:each="img : ${groups.get(kind)}">
+                                    <a class="shot__frame" th:href="@{|/${img.path}|}" target="_blank" rel="noopener">
+                                        <img th:src="@{|/${img.path}|}" loading="lazy"
+                                             th:alt="${#strings.isEmpty(img.alt) ? tr.t(product.name) : tr.t(img.alt)}" />
+                                        <span class="shot__flag" th:if="${img.cover}" th:text="#{admin.album.isCover}">当前封面</span>
+                                    </a>
+                                    <div class="shot__meta">
+                                        <span class="shot__credit" th:classappend="${#strings.isEmpty(img.credit)} ? 'is-empty'"
+                                              th:text="${#strings.isEmpty(img.credit) ? #messages.msg('admin.album.noCredit') : img.credit}">© FABRICLAB</span>
+                                        <span class="shot__alt" th:classappend="${#strings.isEmpty(img.alt)} ? 'is-empty'"
+                                              th:text="${#strings.isEmpty(img.alt) ? #messages.msg('admin.album.noAlt') : tr.t(img.alt)}">正面平铺</span>
+                                        <span class="shot__path" th:text="${img.path}">images/products/FL-CM-01/1.jpg</span>
+                                    </div>
+                                    <div class="shot__acts">
+                                        <button type="button" class="txt" th:text="#{admin.album.edit}"
+                                                th:attr="data-id=${img.id},data-kind=${img.kind},data-path=${img.path},data-credit=${img.credit},data-alt=${img.alt},data-sort=${img.sortOrder}"
+                                                onclick="openShotEdit(this)">编辑</button>
+                                        <form th:action="@{/admin/products/{id}/album/{imageId}/cover(id=${product.id},imageId=${img.id})}" method="post">
+                                            <input type="hidden" name="_csrf" th:value="${csrfToken}" />
+                                            <button type="submit" class="txt" th:disabled="${img.cover}"
+                                                    th:text="${img.cover ? #messages.msg('admin.album.isCover') : #messages.msg('admin.album.setCover')}">设为封面</button>
+                                        </form>
+                                        <button type="button" class="txt txt--danger" th:text="#{admin.album.delete}"
+                                                th:attr="data-id=${img.id}" onclick="openShotDelete(this)">删除</button>
+                                    </div>
+                                </article>
+                            </div>
+
+                            <div class="slot" th:if="${groups.get(kind).isEmpty()}">
+                                <span th:text="#{admin.album.emptyGroup}">这一组还没有图片</span>
+                                <button type="button" class="txt" th:text="#{admin.album.new}"
+                                        th:attr="data-kind=${kind}" onclick="pickKind(this)">新增图片</button>
+                            </div>
+                        </section>
+                    </div>
+
+                    <aside class="aside-col aside-col--album">
+                        <div class="aside-sec">
+                            <h3 th:text="#{admin.album.newTitle}">新增一张</h3>
+                            <form th:action="@{/admin/products/{id}/album(id=${product.id})}" method="post">
+                                <input type="hidden" name="_csrf" th:value="${csrfToken}" />
+                                <div class="field">
+                                    <label><span th:text="#{admin.album.f.kind}">图类型</span></label>
+                                    <div class="pick">
+                                        <label th:each="k : ${kinds}">
+                                            <input type="radio" name="kind" th:value="${k}"
+                                                   th:checked="${k == 'F'}" />
+                                            <span th:text="${#messages.msg('admin.album.kind.' + (k == 'F' ? 'flat' : (k == 'W' ? 'worn' : 'detail')))}">平铺</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label for="path"><span th:text="#{admin.album.f.path}">图片路径</span><em>*</em></label>
+                                    <input class="ctl" id="path" name="path" maxlength="255"
+                                           th:placeholder="#{admin.album.f.pathHint}" />
+                                    <div class="help"><span th:text="#{admin.album.f.pathRule}">不得以 / 开头，也不含 ..</span></div>
+                                </div>
+                                <div class="field">
+                                    <label for="credit"><span th:text="#{admin.album.f.credit}">来源与许可</span></label>
+                                    <input class="ctl" id="credit" name="credit" maxlength="48"
+                                           th:placeholder="#{admin.album.f.creditHint}" />
+                                </div>
+                                <div class="field">
+                                    <label for="alt"><span th:text="#{admin.album.f.alt}">替代文本</span></label>
+                                    <input class="ctl" id="alt" name="alt" maxlength="64" />
+                                    <div class="help"><span th:text="#{admin.album.f.altHint}">供读屏使用</span></div>
+                                </div>
+                                <div class="field">
+                                    <label for="sortOrder"><span th:text="#{admin.album.f.sort}">排序</span></label>
+                                    <input class="ctl" id="sortOrder" name="sortOrder" type="number" min="0" value="0" />
+                                    <div class="help"><span th:text="#{admin.album.f.sortHint}">数值越小越靠前</span></div>
+                                </div>
+                                <button class="btn btn--lg" type="submit" style="width:100%"
+                                        th:text="#{admin.album.new}">新增图片</button>
+                            </form>
+                        </div>
+                        <div class="aside-sec">
+                            <h3 th:text="#{admin.album.orderTitle}">出图顺序</h3>
+                            <p class="aside-note"
+                               th:text="${total == 0} ? #{admin.album.fallbackText(${product.coverImage})} : #{admin.album.orderNote(${product.coverImage})}">用户端按 sort_order 出图。</p>
+                        </div>
+                    </aside>
+                </div>
+
+                <footer th:replace="~{fragments :: footer}"></footer>
+            </div>
+        </main>
+    </div>
+</div>
+
+<dialog id="shotDlg">
+    <form id="shotForm" method="post">
+        <input type="hidden" name="_csrf" th:value="${csrfToken}" />
+        <div class="dlg__body">
+            <h2 th:text="#{admin.album.editTitle}">编辑这张</h2>
+            <div class="field" style="margin-top:20px">
+                <label><span th:text="#{admin.album.f.kind}">图类型</span></label>
+                <div class="pick" id="dlgKind">
+                    <label th:each="k : ${kinds}">
+                        <input type="radio" name="kind" th:value="${k}" />
+                        <span th:text="${#messages.msg('admin.album.kind.' + (k == 'F' ? 'flat' : (k == 'W' ? 'worn' : 'detail')))}">平铺</span>
+                    </label>
+                </div>
+            </div>
+            <div class="field">
+                <label for="dlgPath"><span th:text="#{admin.album.f.path}">图片路径</span><em>*</em></label>
+                <input class="ctl" id="dlgPath" name="path" maxlength="255" />
+            </div>
+            <div class="field">
+                <label for="dlgCredit"><span th:text="#{admin.album.f.credit}">来源与许可</span></label>
+                <input class="ctl" id="dlgCredit" name="credit" maxlength="48" />
+            </div>
+            <div class="field">
+                <label for="dlgAlt"><span th:text="#{admin.album.f.alt}">替代文本</span></label>
+                <input class="ctl" id="dlgAlt" name="alt" maxlength="64" />
+            </div>
+            <div class="field">
+                <label for="dlgSort"><span th:text="#{admin.album.f.sort}">排序</span></label>
+                <input class="ctl" id="dlgSort" name="sortOrder" type="number" min="0" />
+            </div>
+        </div>
+        <div class="dlg__foot">
+            <button type="button" class="btn btn--line" onclick="document.getElementById('shotDlg').close()" th:text="#{admin.action.cancel}">取消</button>
+            <button type="submit" class="btn" th:text="#{admin.action.save}">保存</button>
+        </div>
+    </form>
+</dialog>
+
+<dialog id="shotDel">
+    <form id="shotDelForm" method="post">
+        <input type="hidden" name="_csrf" th:value="${csrfToken}" />
+        <div class="dlg__body">
+            <h2 th:text="#{admin.album.deleteTitle}">删除这张图片</h2>
+            <p th:text="#{admin.album.deleteText}">删除后用户端不再展示。</p>
+        </div>
+        <div class="dlg__foot">
+            <button type="button" class="btn btn--line" onclick="document.getElementById('shotDel').close()" th:text="#{admin.action.cancel}">取消</button>
+            <button type="submit" class="btn btn--danger" th:text="#{admin.action.confirmDelete}">确认删除</button>
+        </div>
+    </form>
+</dialog>
+
+<div th:replace="~{fragments :: icons}"></div>
+<script th:replace="~{fragments :: shellJs}"></script>
+<script th:inline="javascript">
+(function () {
+    var PID = /*[[${product.id}]]*/ 0;
+    window.openShotEdit = function (btn) {
+        var dlg = document.getElementById('shotDlg');
+        document.getElementById('shotForm').action = '/admin/products/' + PID + '/album/' + btn.getAttribute('data-id');
+        document.getElementById('dlgPath').value = btn.getAttribute('data-path') || '';
+        document.getElementById('dlgCredit').value = btn.getAttribute('data-credit') || '';
+        document.getElementById('dlgAlt').value = btn.getAttribute('data-alt') || '';
+        document.getElementById('dlgSort').value = btn.getAttribute('data-sort') || '0';
+        var kind = btn.getAttribute('data-kind') || 'F';
+        document.querySelectorAll('#dlgKind input').forEach(function (r) { r.checked = r.value === kind; });
+        dlg.showModal();
+    };
+    window.openShotDelete = function (btn) {
+        document.getElementById('shotDelForm').action =
+            '/admin/products/' + PID + '/album/' + btn.getAttribute('data-id') + '/delete';
+        document.getElementById('shotDel').showModal();
+    };
+    window.pickKind = function (btn) {
+        var kind = btn.getAttribute('data-kind');
+        var radio = document.querySelector('.aside-col--album input[name="kind"][value="' + kind + '"]');
+        if (radio) radio.checked = true;
+        document.querySelector('form[action$="/album"]').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        window.setTimeout(function () { document.getElementById('path').focus(); }, 380);
+    };
+})();
+</script>
+</body>
+</html>
