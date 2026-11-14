@@ -39,7 +39,8 @@ button{cursor:pointer}
   transition:color .15s ease,background .15s ease}
 .proto button:hover{color:var(--cream);background:rgba(242,239,233,.07)}
 .proto button.on{color:var(--ink);background:var(--cream)}
-.proto span{margin-left:auto;color:rgba(242,239,233,.3);padding-left:18px;letter-spacing:.03em;flex:none}
+.proto .proto__note{margin-left:auto;color:rgba(242,239,233,.3);padding-left:18px;letter-spacing:.03em;flex:none}
+.proto__lang{display:flex;gap:2px;margin-left:16px;padding-left:16px;border-left:1px solid rgba(242,239,233,.16);flex:none}
 
 /* ── 骨架 ───────────────────────────────────────── */
 .shell{display:flex;height:calc(100vh - 38px);overflow:hidden}
@@ -438,6 +439,9 @@ dialog::backdrop{background:rgba(26,26,26,.46);backdrop-filter:blur(1.5px)}
 }
 @media (max-width:1023px){
   :root{--pad:24px}
+  .ph{flex-direction:column;align-items:flex-start;gap:18px}
+  .ph__act{padding-bottom:0}
+  .ph p,html[data-lang="en"] .ph p{max-width:100%}
   .cols,.form2{grid-template-columns:1fr;gap:0}
   .cols__side,.form2__side{border-left:0;padding-left:0;padding-top:8px;margin-top:8px;position:static}
   .aside-sec{border-top:1px solid var(--rule);padding-top:24px}
@@ -480,6 +484,48 @@ dialog::backdrop{background:rgba(26,26,26,.46);backdrop-filter:blur(1.5px)}
   .actions-bar__in .btn{flex:1}
   dialog{width:calc(100% - 24px)}
 }
+
+/* ══ 英文版 · 同一套视觉语言，重设尺度 ══════════════
+   西文没有汉字方块，同字号下字面更窄、字距更松。
+   衬线标题换为 Iowan / Palatino / Georgia，
+   小标字距从 .18em 收到 .13em，行高抬到 1.68，
+   侧栏加宽 14px 容纳两词导航，品类列加宽容纳 RTW 缩写。 */
+html[data-lang="en"]{
+  --f-song:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+  --f-body:"Inter","Helvetica Neue",Arial,sans-serif;
+}
+html[data-lang="en"] body{line-height:1.68}
+html[data-lang="en"] .side{width:254px}
+html[data-lang="en"] .side__brand b{letter-spacing:.16em}
+html[data-lang="en"] .side__brand small{letter-spacing:.19em}
+html[data-lang="en"] .side__group{letter-spacing:.17em;font-size:9px}
+html[data-lang="en"] .side__item{letter-spacing:.012em}
+html[data-lang="en"] .side__who small{letter-spacing:.13em}
+html[data-lang="en"] .ph h1{font-size:37px;letter-spacing:-.006em;line-height:1.14}
+html[data-lang="en"] .ph p{max-width:680px}
+html[data-lang="en"] .ph__eyebrow{letter-spacing:.13em}
+html[data-lang="en"] .ph__count{letter-spacing:.02em}
+html[data-lang="en"] .stat__k{letter-spacing:.12em;font-size:10px}
+html[data-lang="en"] .stat__v small{letter-spacing:.08em;font-size:10.5px}
+html[data-lang="en"] .block__head h2{font-size:21.5px;letter-spacing:.004em}
+html[data-lang="en"] .aside-sec h3{letter-spacing:.14em}
+html[data-lang="en"] .kit-sec h3{letter-spacing:.14em}
+html[data-lang="en"] .tbl thead th{letter-spacing:.1em;font-size:9.5px}
+html[data-lang="en"] .tbl colgroup col:nth-child(4){width:134px}
+html[data-lang="en"] .tbl .nm{font-size:13.5px}
+html[data-lang="en"] .ledger a{grid-template-columns:100px minmax(0,1fr) 72px}
+html[data-lang="en"] .ledger__t b{font-size:13.5px;line-height:1.5}
+html[data-lang="en"] .ledger__go{letter-spacing:.02em}
+html[data-lang="en"] .dlg__body h2{font-size:22px;letter-spacing:0;line-height:1.4}
+html[data-lang="en"] .empty h3{font-size:21px;letter-spacing:0}
+html[data-lang="en"] .btn{letter-spacing:.02em}
+html[data-lang="en"] .tag{letter-spacing:.04em}
+html[data-lang="en"] .env{letter-spacing:.13em}
+html[data-lang="en"] .facts dt{font-size:11.5px;letter-spacing:.01em}
+html[data-lang="en"] .recent__n span{font-size:13px}
+html[data-lang="en"] .field > label{letter-spacing:.08em;font-size:10.5px}
+html[data-lang="en"] .help{font-size:10.5px}
+html[data-lang="en"] .kit-sec p.kd{font-size:11px}
 </style>
 </head>
 <body>
@@ -491,7 +537,11 @@ dialog::backdrop{background:rgba(26,26,26,.46);backdrop-filter:blur(1.5px)}
   <button data-view="edit">商品编辑</button>
   <button data-view="order">订单详情</button>
   <button data-view="kit">组件与状态</button>
-  <span>侧栏 240 · 顶栏 60 · 表格行 68 · 纸面排版，抬升只给浮层</span>
+  <span class="proto__note">侧栏 240 · 顶栏 60 · 表格行 68 · 纸面排版，抬升只给浮层</span>
+  <div class="proto__lang" role="group" aria-label="界面语言">
+    <button data-lang="zh" class="on">中文</button>
+    <button data-lang="en">EN</button>
+  </div>
 </div>
 
 <div class="scrim" id="scrim"></div>
@@ -695,7 +745,7 @@ dialog::backdrop{background:rgba(26,26,26,.46);backdrop-filter:blur(1.5px)}
               <p>维护款号、面料工艺、价格与上架状态。库存不在这里直接改写，走补货入口。</p>
             </div>
             <div class="ph__act">
-              <span class="ph__count">在册 <b>60</b> 款 · 在售 <b>54</b></span>
+              <span class="ph__count" data-en-html="<b>60</b> in catalogue · <b>54</b> live">在册 <b>60</b> 款 · 在售 <b>54</b></span>
               <button class="btn">新增款号</button>
             </div>
           </div>
@@ -717,7 +767,7 @@ dialog::backdrop{background:rgba(26,26,26,.46);backdrop-filter:blur(1.5px)}
           </div>
 
           <div class="bulk" id="bulk" hidden>
-            <span class="bulk__n">已选 <b id="bulk-n">0</b> 项</span>
+            <span class="bulk__n" data-en-html="<b id='bulk-n'>0</b> selected">已选 <b id="bulk-n">0</b> 项</span>
             <div class="bulk__act">
               <button class="txt">批量上架</button>
               <button class="txt">批量下架</button>
@@ -753,7 +803,7 @@ dialog::backdrop{background:rgba(26,26,26,.46);backdrop-filter:blur(1.5px)}
                   <td><div class="pcell"><span class="swatch swatch--a"></span><span class="tname"><span class="nm">山羊绒高领衫</span><span class="sub">山羊绒 100% · 12 针</span></span></div></td>
                   <td class="cat col-md">居家 / 成衣</td>
                   <td class="n money">¥1,280.00</td>
-                  <td class="n col-md">18</td><td class="date col-md">2026.11.13</td>
+                  <td class="n col-md">18</td><td class="date col-md" data-en="13 Nov 2026">2026.11.13</td>
                   <td><span class="tag tag--live">在售</span></td>
                   <td><div class="acts"><button class="txt">编辑</button><button class="more" aria-label="更多操作：山羊绒高领衫">···</button></div></td>
                 </tr>
@@ -763,7 +813,7 @@ dialog::backdrop{background:rgba(26,26,26,.46);backdrop-filter:blur(1.5px)}
                   <td><div class="pcell"><span class="swatch swatch--b"></span><span class="tname"><span class="nm">高支府绸衬衫</span><span class="sub">府绸棉 100% · 60 支</span></span></div></td>
                   <td class="cat col-md">通勤 / 成衣</td>
                   <td class="n money">¥429.00</td>
-                  <td class="n col-md">2</td><td class="date col-md">2026.11.13</td>
+                  <td class="n col-md">2</td><td class="date col-md" data-en="13 Nov 2026">2026.11.13</td>
                   <td><span class="tag tag--out">低库存</span></td>
                   <td><div class="acts"><button class="txt">编辑</button><button class="more" aria-label="更多操作：高支府绸衬衫">···</button></div></td>
                 </tr>
@@ -773,7 +823,7 @@ dialog::backdrop{background:rgba(26,26,26,.46);backdrop-filter:blur(1.5px)}
                   <td><div class="pcell"><span class="swatch swatch--c"></span><span class="tname"><span class="nm">羊绒围巾</span><span class="sub">羊绒 100% · 200×35</span></span></div></td>
                   <td class="cat col-md">居家 / 配饰</td>
                   <td class="n money">¥780.00</td>
-                  <td class="n col-md">0</td><td class="date col-md">2026.11.11</td>
+                  <td class="n col-md">0</td><td class="date col-md" data-en="11 Nov 2026">2026.11.11</td>
                   <td><span class="tag tag--end">售罄</span></td>
                   <td><div class="acts"><button class="txt">编辑</button><button class="more" aria-label="更多操作：羊绒围巾">···</button></div></td>
                 </tr>
@@ -783,7 +833,7 @@ dialog::backdrop{background:rgba(26,26,26,.46);backdrop-filter:blur(1.5px)}
                   <td><div class="pcell"><span class="swatch swatch--d"></span><span class="tname"><span class="nm">棉质工装外套</span><span class="sub">斜纹棉 100% · 水洗</span></span></div></td>
                   <td class="cat col-md">户外 / 成衣</td>
                   <td class="n money">¥1,180.00</td>
-                  <td class="n col-md">1</td><td class="date col-md">2026.11.10</td>
+                  <td class="n col-md">1</td><td class="date col-md" data-en="10 Nov 2026">2026.11.10</td>
                   <td><span class="tag tag--out">低库存</span></td>
                   <td><div class="acts"><button class="txt">编辑</button><button class="more" aria-label="更多操作：棉质工装外套">···</button></div></td>
                 </tr>
@@ -793,7 +843,7 @@ dialog::backdrop{background:rgba(26,26,26,.46);backdrop-filter:blur(1.5px)}
                   <td><div class="pcell"><span class="swatch swatch--b"></span><span class="tname"><span class="nm">丝缎长裙</span><span class="sub">桑蚕丝 100% · 19 姆米</span></span></div></td>
                   <td class="cat col-md">礼服 / 成衣</td>
                   <td class="n money">¥2,380.00</td>
-                  <td class="n col-md">6</td><td class="date col-md">2026.11.08</td>
+                  <td class="n col-md">6</td><td class="date col-md" data-en="8 Nov 2026">2026.11.08</td>
                   <td><span class="tag tag--live">在售</span></td>
                   <td><div class="acts"><button class="txt">编辑</button><button class="more" aria-label="更多操作：丝缎长裙">···</button></div></td>
                 </tr>
@@ -803,7 +853,7 @@ dialog::backdrop{background:rgba(26,26,26,.46);backdrop-filter:blur(1.5px)}
                   <td><div class="pcell"><span class="swatch swatch--d"></span><span class="tname"><span class="nm">水洗牛仔夹克</span><span class="sub">牛仔 100% · 12 盎司</span></span></div></td>
                   <td class="cat col-md">休闲 / 成衣</td>
                   <td class="n money">¥890.00</td>
-                  <td class="n col-md">24</td><td class="date col-md">2026.11.06</td>
+                  <td class="n col-md">24</td><td class="date col-md" data-en="6 Nov 2026">2026.11.06</td>
                   <td><span class="tag tag--idle">草稿</span></td>
                   <td><div class="acts"><button class="txt">编辑</button><button class="more" aria-label="更多操作：水洗牛仔夹克">···</button></div></td>
                 </tr>
@@ -813,7 +863,7 @@ dialog::backdrop{background:rgba(26,26,26,.46);backdrop-filter:blur(1.5px)}
                   <td><div class="pcell"><span class="swatch swatch--e"></span><span class="tname"><span class="nm">珠地 Polo</span><span class="sub">珠地棉 100% · 220g</span></span></div></td>
                   <td class="cat col-md">休闲 / 成衣</td>
                   <td class="n money">¥460.00</td>
-                  <td class="n col-md">31</td><td class="date col-md">2026.11.03</td>
+                  <td class="n col-md">31</td><td class="date col-md" data-en="3 Nov 2026">2026.11.03</td>
                   <td><span class="tag tag--live">在售</span></td>
                   <td><div class="acts"><button class="txt">编辑</button><button class="more" aria-label="更多操作：珠地 Polo">···</button></div></td>
                 </tr>
@@ -823,7 +873,7 @@ dialog::backdrop{background:rgba(26,26,26,.46);backdrop-filter:blur(1.5px)}
                   <td><div class="pcell"><span class="swatch swatch--a"></span><span class="tname"><span class="nm">羊毛混纺针织袜</span><span class="sub">羊毛混纺 · 均码</span></span></div></td>
                   <td class="cat col-md">居家 / 配饰</td>
                   <td class="n money">¥128.00</td>
-                  <td class="n col-md">60</td><td class="date col-md">2026.10.29</td>
+                  <td class="n col-md">60</td><td class="date col-md" data-en="29 Oct 2026">2026.10.29</td>
                   <td><span class="tag tag--idle">草稿</span></td>
                   <td><div class="acts"><button class="txt">编辑</button><button class="more" aria-label="更多操作：羊毛混纺针织袜">···</button></div></td>
                 </tr>
@@ -832,7 +882,7 @@ dialog::backdrop{background:rgba(26,26,26,.46);backdrop-filter:blur(1.5px)}
           </div>
 
           <div class="pager">
-            <div class="pager__info">共 <b>60</b> 条 · 第 <b>1</b> / <b>3</b> 页</div>
+            <div class="pager__info" data-en-html="<b>60</b> styles · page <b>1</b> of <b>3</b>">共 <b>60</b> 条 · 第 <b>1</b> / <b>3</b> 页</div>
             <div class="pgs">
               <span class="pg pg--dir off">上一页</span>
               <span class="pg on" aria-current="page">1</span>
@@ -971,8 +1021,8 @@ dialog::backdrop{background:rgba(26,26,26,.46);backdrop-filter:blur(1.5px)}
               <div class="aside-sec">
                 <h3>元信息</h3>
                 <div class="meta">
-                  <span>创建</span><b>2026.10.02 09:14</b>
-                  <span>更新</span><b>2026.11.13 18:22</b>
+                  <span>创建</span><b data-en="2 Oct 2026 09:14">2026.10.02 09:14</b>
+                  <span>更新</span><b data-en="13 Nov 2026 18:22">2026.11.13 18:22</b>
                   <span>version</span><b>37</b>
                 </div>
               </div>
@@ -1070,7 +1120,7 @@ dialog::backdrop{background:rgba(26,26,26,.46);backdrop-filter:blur(1.5px)}
                 <div class="meta">
                   <span>凭证号</span><b>MOCK202611130912154C8A</b>
                   <span>方式</span><b class="txt-val">演示支付</b>
-                  <span>支付时间</span><b>2026.11.13 09:12</b>
+                  <span>支付时间</span><b data-en="13 Nov 2026 09:12">2026.11.13 09:12</b>
                 </div>
               </div>
               <div class="aside-sec">
@@ -1236,7 +1286,7 @@ dialog::backdrop{background:rgba(26,26,26,.46);backdrop-filter:blur(1.5px)}
               <h3>批量操作 · BULK</h3>
               <p class="kd">选中行后出现在表头上方，取消选择即消失。</p>
               <div class="bulk">
-                <span class="bulk__n">已选 <b>3</b> 项</span>
+                <span class="bulk__n" data-en-html="<b>3</b> selected">已选 <b>3</b> 项</span>
                 <div class="bulk__act">
                   <button class="txt">批量上架</button>
                   <button class="txt txt--muted">取消选择</button>
@@ -1277,25 +1327,264 @@ dialog::backdrop{background:rgba(26,26,26,.46);backdrop-filter:blur(1.5px)}
 </dialog>
 
 <script>
+/* ═══════════════════════════════════════════════════════
+   双语层
+   中文为准、英文为译。文本节点按中文原串查表替换，
+   切换回中文时逐字还原，不做二次回译。
+   ═══════════════════════════════════════════════════════ */
+const EN = {
+  /* 工具条与骨架 */
+  '设计原型':'Design prototype',
+  '界面语言':'Interface language',
+  '控制台':'Dashboard',
+  '款号列表':'Style list',
+  '商品编辑':'Style editor',
+  '订单详情':'Order detail',
+  '组件与状态':'Components & states',
+  '侧栏 240 · 顶栏 60 · 表格行 68 · 纸面排版，抬升只给浮层':'Rail 240 · Bar 60 · Row 68 · Paper layout, elevation only for overlays',
+  '未':'F','沈':'S',
+  '概览':'Overview','商品':'Products','款号维护':'Styles','分类维护':'Categories',
+  '库存与相册':'Stock & Gallery','顾客':'Clients','账号管理':'Accounts',
+  '交易':'Commerce','订单管理':'Orders','系统':'System',
+  '会话与安全':'Sessions & Security','操作日志':'Audit Log',
+  '沈未染':'Shen Weiran','演示环境':'Demo',
+  '退出登录':'Sign out','打开导航':'Open navigation','面包屑':'Breadcrumb',
+  '搜索':'Search','帮助':'Help','关闭':'Close',
+
+  /* 控制台 */
+  '只呈现可由当次查询核对的事项。没有真实数据源的经营指标，这里不画。':'Only what the current query can verify. Trading metrics without a real source are not drawn here.',
+  '2026.11.14 · 周五':'14 Nov 2026 · Fri',
+  '在售款号':'Published','草稿款号':'Unpublished','低库存':'Low stock','待发货':'To ship',
+  '款':'styles','笔':'orders','件':'pcs',
+  '用户端列表可见':'Visible on the storefront','仅后台可见':'Back office only',
+  '建议尽快补货':'Restock soon','已支付未发出':'Paid, not dispatched',
+  '待处理':'Needs attention','按状态实时查出，处理完自动消失。':'Queried live by state; each item clears once handled.',
+  '2 笔订单已支付，等待发出':'2 paid orders awaiting dispatch',
+  '最早一笔 FL20261113090815A7C2 · 1 小时前支付':'Earliest FL20261113090815A7C2 · paid 1 h ago',
+  '去发货':'Ship',
+  '3 款库存只剩 1—3 件':'3 styles down to 1–3 pieces',
+  'FL-HM-09 羊绒围巾 · FL-CT-03 高支府绸衬衫 · FL-OD-02 棉质工装外套':'FL-HM-09 Cashmere Scarf · FL-CT-03 Fine Poplin Shirt · FL-OD-02 Cotton Chore Coat',
+  '去补货':'Restock','草稿':'Draft',
+  '6 款仍是草稿，未在用户端露出':'6 styles still draft, hidden from the storefront',
+  '补齐面料与工艺后即可上架':'Add fabric and craft detail to publish',
+  '去维护':'Edit','最近上架':'Recently published',
+  '按更新时间倒序取三条，与款号列表同一查询条件。':'Latest three by update time, same query as the style list.',
+  '28 分钟前':'28 min ago','2 小时前':'2 h ago','昨天 17:40':'Yesterday 17:40',
+  '在售':'Live','亚麻阔腿裤':'Linen Wide-Leg Trousers','精纺羊毛西装':'Worsted Wool Suit','水洗棉衬衫':'Washed Cotton Shirt',
+  '运行状态':'Runtime','服务端口':'Port','路径前缀':'Path prefix','会话超时':'Session timeout',
+  '30 分钟':'30 min','已启用':'Enabled','数据库':'Database','连接正常':'Connected',
+  '本次会话':'This session','登录时间':'Signed in','最近活动':'Last activity','刚刚':'Just now','来源':'Origin',
+  '说明':'Note',
+  '前四项是固定配置，数据库一栏来自一次实际连接。连接失败时此处转为「连接异常」并给出排查入口，不做自动重试。':'The first four are fixed configuration; the database row comes from one live connection. On failure it reads “Disconnected” and offers a diagnostic link — no automatic retry.',
+
+  /* 列表 */
+  '维护款号、面料工艺、价格与上架状态。库存不在这里直接改写，走补货入口。':'Maintain styles, fabric, craft, price and publish state. Stock changes only through restock.',
+  '在册':'In catalogue','款 · 在售':'styles · live','新增款号':'New style',
+  '全部':'All','售罄':'Sold out','重置筛选':'Reset filters',
+  '已选':'Selected','项':'','批量上架':'Publish','批量下架':'Unpublish','取消选择':'Clear',
+  '款号列表，共 60 条，当前第 1 页，每页 20 条':'Style list, 60 records, page 1 of 3, 20 per page',
+  '款号':'SKU','名称 / 面料':'Name / Fabric','品类':'Category','价格':'Price','库存':'Stock',
+  '更新':'Updated','状态':'Status','操作':'Actions',
+  '山羊绒高领衫':'Cashmere Turtleneck','山羊绒 100% · 12 针':'100% cashmere · 12 gg','居家 / 成衣':'Lounge / RTW',
+  '高支府绸衬衫':'Fine Poplin Shirt','府绸棉 100% · 60 支':'100% poplin cotton · 60s','通勤 / 成衣':'Tailoring / RTW',
+  '羊绒围巾':'Cashmere Scarf','羊绒 100% · 200×35':'100% cashmere · 200×35 cm','居家 / 配饰':'Lounge / Acc.',
+  '棉质工装外套':'Cotton Chore Coat','斜纹棉 100% · 水洗':'100% twill cotton · washed','户外 / 成衣':'Outdoor / RTW',
+  '丝缎长裙':'Silk Satin Dress','桑蚕丝 100% · 19 姆米':'100% mulberry silk · 19 momme','礼服 / 成衣':'Evening / RTW',
+  '水洗牛仔夹克':'Washed Denim Jacket','牛仔 100% · 12 盎司':'100% denim · 12 oz','休闲 / 成衣':'Casual / RTW',
+  '珠地 Polo':'Piqué Polo','珠地棉 100% · 220g':'100% piqué cotton · 220 gsm',
+  '羊毛混纺针织袜':'Wool-Blend Socks','羊毛混纺 · 均码':'Wool blend · one size',
+  '编辑':'Edit','共':'','条 · 第':'','页':'',
+  '上一页':'Prev','下一页':'Next',
+  '20 条 / 页':'20 / page','10 条 / 页':'10 / page','50 条 / 页':'50 / page',
+  '每页条数':'Rows per page','款号或名称':'SKU or name','按状态筛选':'Filter by state',
+  '全选本页':'Select all on this page','占位文字':'Placeholder',
+  '选择 FL-HM-01':'Select FL-HM-01','选择 FL-CT-03':'Select FL-CT-03','选择 FL-HM-09':'Select FL-HM-09',
+  '选择 FL-OD-02':'Select FL-OD-02','选择 FL-EV-04':'Select FL-EV-04','选择 FL-CS-07':'Select FL-CS-07',
+  '选择 FL-CS-11':'Select FL-CS-11','选择 FL-HM-12':'Select FL-HM-12',
+  '更多操作：山羊绒高领衫':'More actions: Cashmere Turtleneck',
+  '更多操作：高支府绸衬衫':'More actions: Fine Poplin Shirt',
+  '更多操作：羊绒围巾':'More actions: Cashmere Scarf',
+  '更多操作：棉质工装外套':'More actions: Cotton Chore Coat',
+  '更多操作：丝缎长裙':'More actions: Silk Satin Dress',
+  '更多操作：水洗牛仔夹克':'More actions: Washed Denim Jacket',
+  '更多操作：珠地 Polo':'More actions: Piqué Polo',
+  '更多操作：羊毛混纺针织袜':'More actions: Wool-Blend Socks',
+
+  /* 编辑 */
+  '商品 · 编辑':'Products · Edit',
+  '款号 FL-HM-01 · 创建于 2026.10.02。款号创建后不可修改，保存时以 version 校验并发。':'SKU FL-HM-01 · created 2 Oct 2026. The SKU is immutable; each save is guarded by the version column.',
+  '基本信息':'Basics','创建后不可修改':'Immutable after creation',
+  '所属分类':'Category','只能选二级分类':'Second-level category only',
+  '名称':'Name','尺码与配色写在名称里，不设规格矩阵':'Sizes and colours live in the name; no variant matrix',
+  '价格（元）':'Price (CNY)','两位小数，只影响之后的订单':'Two decimals; affects future orders only',
+  '排序':'Rank','数值越小越靠前':'Lower ranks surface first',
+  '面料与工艺':'Fabric & craft',
+  '纯文本输出，保留换行。用户在详情页看到的洗护建议由此处内容推导。':'Plain text, line breaks preserved. The care advice on the product page is derived from this text.',
+  '面料':'Fabric','山羊绒 100%，内蒙古产，14 微米':'100% cashmere, Inner Mongolia, 14 micron',
+  '成分与产地':'Composition and origin','克重':'Gauge','版型':'Fit','工艺':'Craft',
+  '包边缝合，罗纹领口与袖口':'Bound seams, ribbed collar and cuffs',
+  '工艺不能为空，请至少填写一项工艺说明。':'Craft cannot be empty. Describe at least one construction detail.',
+  '商品文案':'Copy','描述':'Description',
+  '山羊绒高领衫。面料：山羊绒 100%。版型：直筒，肩线微落。工艺：包边缝合，罗纹领口与袖口。':'Cashmere turtleneck. Fabric: 100% cashmere. Fit: straight, lightly dropped shoulder. Craft: bound seams, ribbed collar and cuffs.',
+  '用户端详情页正文':'Body copy on the product page',
+  '上架状态':'Publish state',
+  '在售状态在用户端列表与详情可见；草稿仅后台可见，不产生任何对外暴露。':'Live appears in the storefront list and detail page; draft stays internal and exposes nothing.',
+  '库存只能通过补货入口增加，编辑页不提供直接改写，避免绝对赋值覆盖并发写入。':'Stock only grows through restock. This page offers no direct overwrite, so concurrent writes are never clobbered.',
+  '相册':'Gallery','3 张 · 平铺 / 上身 / 细节':'3 images · flat / on-body / detail',
+  '维护相册':'Manage gallery','元信息':'Metadata','创建':'Created',
+  '12 针 · 380g':'12 gg · 380 g','直筒，肩线微落':'Straight, lightly dropped shoulder',
+
+  /* 订单 */
+  '交易 · 订单':'Commerce · Orders',
+  '下单 2026.11.13 09:08 · 支付 09:12 · 共 2 项。金额、明细与支付凭证为成交快照，后台不修改。':'Placed 13 Nov 2026 09:08 · paid 09:12 · 2 items. Amounts, lines and payment reference are a checkout snapshot and are not editable here.',
+  '已支付 · 待发货':'Paid · awaiting dispatch',
+  '修改收货信息':'Edit delivery','确认发货':'Mark as shipped',
+  '明细快照':'Line snapshot',
+  '单价为下单时的成交价，不随商品改价变化。':'Unit price is the price at checkout and does not follow later price changes.',
+  '订单商品明细，共 2 项，合计 1709 元':'Order lines, 2 items, ¥1,709 total',
+  '款号 / 名称':'SKU / Name','单价':'Unit price','数量':'Qty','小计':'Subtotal','合计':'Total',
+  '流转记录':'History','只记录已发生的状态变更，不预测后续节点。':'Records state changes only; no forecast nodes.',
+  '已支付':'Paid','2026.11.13 09:12 · 凭证 MOCK…4C8A':'13 Nov 2026 09:12 · ref MOCK…4C8A',
+  '已下单':'Placed','2026.11.13 09:08 · 沈未染':'13 Nov 2026 09:08 · Shen Weiran',
+  '发货':'Shipped','等待处理':'Pending',
+  '收货信息':'Delivery','收货人':'Recipient','电话':'Phone','地址':'Address',
+  '杭州市西湖区':'Xihu District, Hangzhou','文三路 90 号 3 幢 502':'Bldg 3, No. 90 Wensan Rd, Unit 502',
+  '支付信息':'Payment','凭证号':'Reference','方式':'Method','演示支付':'Demo payment','支付时间':'Paid at',
+  '备注':'Notes',
+  '该订单没有顾客备注，也没有后台操作备注。所有写操作都会记入操作日志。':'No customer note and no back-office note. Every write lands in the audit log.',
+
+  /* 组件 */
+  '设计规范':'Design system',
+  '落地时直接复用这里的尺寸、配色与状态，不再另立样式。':'Implementation reuses these sizes, colours and states. No new styles.',
+  '按钮 · BUTTON':'BUTTON','主按钮只有一种，页面上同时最多出现一个。':'One primary type; at most one per page.',
+  '保存修改':'Save changes','取消':'Cancel','行内操作':'Row action','重置':'Reset','更多':'More',
+  '删除':'Delete','保存中':'Saving',
+  '状态标记 · STATUS':'STATUS','不用绿色表示成功。方块形状与颜色共同承载语义。':'No green for success. Shape and colour carry the meaning together.',
+  '已发货':'Shipped','已完成':'Completed','待支付':'Unpaid','已取消':'Cancelled','已停用':'Disabled',
+  '库存为 0':'Out of stock',
+  '表单控件 · INPUT':'INPUT','聚焦用内描边加深，不改变盒模型尺寸。':'Focus deepens the inner border without changing the box model.',
+  '正常':'Default','只读':'Read-only','错误':'Invalid',
+  '价格需为大于 0 的两位小数。':'Price must be a positive number with two decimals.',
+  '开关':'Switch','允许用户端显示':'Visible on the storefront',
+  '提示 · NOTICE':'NOTICE','不自动消失，避免读屏用户错过。':'Never auto-dismisses, so screen readers never miss it.',
+  '款号 FL-HM-07 已上架，用户端立即可见。':'FL-HM-07 is live and visible on the storefront now.',
+  '保存失败：款号 FL-HM-01 已存在。':'Save failed: SKU FL-HM-01 already exists.',
+  '补货为增量语义，提交后的库存等于当前库存加增量。':'Restock is incremental: stock after submit equals current stock plus the amount added.',
+  '浮层 · TOAST':'TOAST','右下角浮出，4 秒自动收起，悬停暂停。':'Rises bottom-right, dismisses after 4 s, pauses on hover.',
+  '已保存':'Saved','FL-HM-01 的改动已生效。':'Changes to FL-HM-01 are live.',
+  '保存失败':'Save failed','商品已被其他操作更新，请重新加载。':'This style was updated elsewhere. Reload to continue.',
+  '二次确认 · DIALOG':'DIALOG','破坏性操作必须写明后果与替代路径。':'Destructive actions must state the consequence and the alternative.',
+  '删除该分类':'Delete category','ESC 或「取消」关闭，焦点回到触发按钮。':'ESC or Cancel closes; focus returns to the trigger.',
+  '空状态 · EMPTY':'EMPTY','无数据与无结果用两套文案。':'Zero data and zero results use different copy.',
+  '还没有款式':'No styles yet',
+  '新增第一款后，它会出现在这里，并在上架后同步到用户端。':'Add the first style and it appears here, then syncs to the storefront once published.',
+  '加载 · SKELETON':'SKELETON','静态色块淡入，不做逐条闪烁。':'Solid blocks fade in; no per-row shimmer.',
+  '分页 · PAGER':'PAGER','当前页用下划线，不用深色方块。':'Current page is underlined, not a filled block.',
+  '批量操作 · BULK':'BULK','选中行后出现在表头上方，取消选择即消失。':'Appears above the header once rows are selected; disappears when cleared.',
+  '未染 · 管理台':'Undyed · Management','会话 30 分钟空闲失效 · 全部写操作计入日志':'Session expires after 30 min idle · every write is logged',
+  '修改仅在点击保存后生效':'Changes apply only after saving',
+  '删除分类「居家 / 配饰」':'Delete category “Lounge / Acc.”',
+  '该分类下有 4 款商品引用，删除后这些商品将失去归属，用户端对应筛选也会消失。请先把商品移到其他分类，再执行删除。':'4 styles reference this category. Deleting it leaves them unassigned and removes the storefront filter. Move them to another category first.',
+  '可替代做法：把该分类改名为「归档 / 配饰」，保留引用关系。':'Alternative: rename it to “Archive / Acc.” and keep the references.',
+  '确认删除':'Confirm delete'
+};
+
+const META = {
+  console: { zh:['概览','控制台','console'],            en:['Overview','Dashboard','console'] },
+  list:    { zh:['商品','款号维护','products'],          en:['Products','Styles','products'] },
+  edit:    { zh:['商品','编辑款号','products'],          en:['Products','Edit style','products'] },
+  order:   { zh:['交易','订单详情','orders'],            en:['Commerce','Order detail','orders'] },
+  kit:     { zh:['设计规范','组件与状态',null],           en:['Design system','Components & states',null] }
+};
+
+let LANG = 'zh';
+let curView = 'console';
+const crumbSec = document.getElementById('crumb-sec');
+const crumbCur = document.getElementById('crumb-cur');
+
+/* 收集中文文本节点与属性，记下原串以便还原 */
+const i18nNodes = [];
+const i18nAttrs = [];
+(function collect(){
+  const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+  let n;
+  while ((n = w.nextNode())) {
+    const raw = n.nodeValue, k = raw.trim();
+    if (!k || !/[\u4e00-\u9fff]/.test(k)) continue;
+    const p = n.parentElement;
+    if (!p || p.closest('script,style,.proto__lang')) continue;
+    if (p.id === 'crumb-sec' || p.id === 'crumb-cur') continue;
+    i18nNodes.push({ n, raw, k });
+  }
+  document.querySelectorAll('[placeholder],[aria-label],[title],[alt]').forEach(el => {
+    ['placeholder','aria-label','title','alt'].forEach(a => {
+      const v = el.getAttribute(a);
+      if (v && /[\u4e00-\u9fff]/.test(v)) i18nAttrs.push({ el, a, raw: v });
+    });
+  });
+  document.querySelectorAll('input[value]').forEach(el => {
+    const v = el.getAttribute('value');
+    if (v && /[\u4e00-\u9fff]/.test(v)) i18nAttrs.push({ el, a: 'value', raw: v });
+  });
+  document.querySelectorAll('[data-en-html]').forEach(el => { el.dataset.zhHtml = el.innerHTML; });
+  document.querySelectorAll('[data-en]').forEach(el => { if (el.dataset.zh == null) el.dataset.zh = el.textContent; });
+})();
+
+function renderCrumb(){
+  const m = META[curView][LANG];
+  crumbSec.textContent = m[0];
+  crumbCur.textContent = m[1];
+}
+
+function setLang(lang){
+  LANG = lang;
+  const en = lang === 'en';
+  document.documentElement.dataset.lang = lang;
+  document.documentElement.setAttribute('lang', en ? 'en' : 'zh-CN');
+  document.title = en ? 'FABRICLAB Admin · Interface Prototype' : 'FABRICLAB 管理台 · 界面原型';
+
+  if (en) {
+    i18nNodes.forEach(o => {
+      const t = EN[o.k];
+      if (t != null) o.n.nodeValue = o.raw.replace(o.k, t);
+    });
+    i18nAttrs.forEach(o => {
+      const t = EN[o.raw];
+      if (t != null) o.el.setAttribute(o.a, t);
+    });
+    document.querySelectorAll('[data-en-html]').forEach(el => { el.innerHTML = el.dataset.enHtml; });
+    document.querySelectorAll('[data-en]').forEach(el => { el.textContent = el.dataset.en; });
+  } else {
+    i18nNodes.forEach(o => { o.n.nodeValue = o.raw; });
+    i18nAttrs.forEach(o => { o.el.setAttribute(o.a, o.raw); });
+    document.querySelectorAll('[data-en-html]').forEach(el => { el.innerHTML = el.dataset.zhHtml; });
+    document.querySelectorAll('[data-en]').forEach(el => { el.textContent = el.dataset.zh; });
+  }
+
+  renderCrumb();
+  syncBulk();
+  document.querySelectorAll('.proto__lang button').forEach(b => {
+    b.classList.toggle('on', b.dataset.lang === lang);
+  });
+}
+
+document.querySelectorAll('.proto__lang button').forEach(b => {
+  b.addEventListener('click', () => setLang(b.dataset.lang));
+});
+
+/* ── 视图切换 ─────────────────────────────────── */
 const views = document.querySelectorAll('.view');
 const btns = document.querySelectorAll('.proto button[data-view]');
-const META = {
-  console: ['概览', '控制台', 'console'],
-  list: ['商品', '款号维护', 'products'],
-  edit: ['商品', '编辑款号', 'products'],
-  order: ['交易', '订单详情', 'orders'],
-  kit: ['设计规范', '组件与状态', null]
-};
+
 btns.forEach(b => b.addEventListener('click', () => {
   btns.forEach(x => x.classList.remove('on'));
   b.classList.add('on');
-  const v = b.dataset.view;
-  views.forEach(s => s.classList.toggle('on', s.id === 'v-' + v));
+  curView = b.dataset.view;
+  views.forEach(s => s.classList.toggle('on', s.id === 'v-' + curView));
   document.querySelector('.main').scrollTop = 0;
-  const [sec, cur, nav] = META[v];
-  document.getElementById('crumb-sec').textContent = sec;
-  document.getElementById('crumb-cur').textContent = cur;
-  document.getElementById('bar-edit').hidden = (v !== 'edit');
+  renderCrumb();
+  const nav = META[curView][LANG][2];
+  document.getElementById('bar-edit').hidden = (curView !== 'edit');
   document.querySelectorAll('.side__item').forEach(a => {
     if (nav && a.dataset.nav === nav) a.setAttribute('aria-current', 'page');
     else a.removeAttribute('aria-current');
@@ -1316,6 +1605,7 @@ document.querySelectorAll('.seg2').forEach(seg => {
   }));
 });
 
+/* ── 抽屉 ─────────────────────────────────────── */
 const scrim = document.getElementById('scrim');
 const sideEl = document.querySelector('.side');
 const hamb = document.getElementById('hamb');
@@ -1333,15 +1623,15 @@ document.querySelectorAll('.alert__x').forEach(x => {
   x.addEventListener('click', e => e.currentTarget.closest('.alert').remove());
 });
 
-// 行选择联动 + 批量条
-const bulk = document.getElementById('bulk');
-const bulkN = document.getElementById('bulk-n');
+/* ── 行选择与批量条（切语言后节点会重建，故每次现查） ── */
 const bulkList = () => [...document.querySelectorAll('#v-list tbody .ck')];
-const syncBulk = () => {
+function syncBulk(){
   const n = bulkList().filter(c => c.checked).length;
-  bulk.hidden = n === 0;
-  bulkN.textContent = n;
-};
+  const bar = document.getElementById('bulk');
+  const num = document.getElementById('bulk-n');
+  if (bar) bar.hidden = n === 0;
+  if (num) num.textContent = n;
+}
 document.querySelectorAll('.tbl tbody .ck').forEach(ck => {
   ck.addEventListener('change', () => { ck.closest('tr').classList.toggle('sel', ck.checked); syncBulk(); });
 });
@@ -1356,22 +1646,25 @@ document.querySelectorAll('.tbl thead .ck').forEach(all => {
 });
 document.getElementById('bulk-clear').addEventListener('click', () => {
   bulkList().forEach(ck => { ck.checked = false; ck.closest('tr').classList.remove('sel'); });
-  document.querySelectorAll('.tbl thead .ck').forEach(a => a.checked = false);
+  document.querySelectorAll('.tbl thead .ck').forEach(a => { a.checked = false; });
   syncBulk();
 });
 
-// 顶部 1px 进度条：仅视图切换时演示
+/* ── 顶部 1px 进度条 ──────────────────────────── */
 const prog = document.getElementById('progress');
-const runProg = () => {
+function runProg(){
   prog.classList.remove('run');
   void prog.offsetWidth;
   prog.classList.add('run');
-};
+}
 
-// 窄屏显示汉堡
+/* ── 窄屏汉堡 ─────────────────────────────────── */
 const mq = window.matchMedia('(max-width:1023px)');
 const syncHamb = () => { hamb.style.display = mq.matches ? 'inline-flex' : 'none'; };
 syncHamb(); mq.addEventListener('change', syncHamb);
+
+/* 地址栏带 ?lang=en 时直接进英文，便于分享与截图 */
+if (new URLSearchParams(location.search).get('lang') === 'en') setLang('en');
 </script>
 </body>
 </html>

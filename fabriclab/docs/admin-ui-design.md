@@ -1,7 +1,8 @@
 # FABRICLAB 后台管理界面设计规范
 
 > 沿用用户端的三色与直角，按「样书」的排印逻辑重做信息结构。落地目录 `fabriclab/admin`，样式 `src/main/resources/static/css/admin.css`。
-> 高保真原型：`docs/admin-ui-prototype.html`（单文件，五视图，可直接打开）。
+> 高保真原型：`docs/admin-ui-prototype.html`（单文件，五视图，顶栏切换中英，可直接打开）。
+> 英文版规范：`docs/admin-ui-design.en.md`（不是本文的翻译，字号、字距、列宽按西文重设，见 6.12）。
 
 ## 一、设计主张
 
@@ -394,6 +395,51 @@
 
 内容区最后一条 `1px --rule`，两侧 10.5px 字距 `.12em` `--faint`：左「FABRICLAB 未染 · 管理台」，右「会话 30 分钟空闲失效 · 全部写操作计入日志」。作用等同于书的版权页，给长页面一个收口，也把系统约束写在用户随时能看到的地方。
 
+### 6.12 双语实现
+
+原型一个文件承载中英两版，顶栏右侧切换，即时生效、可来回切。
+
+**三类节点。**
+
+| 标记 | 存什么 | 例子 |
+|---|---|---|
+| 纯文本 | 中文原文，查字典替换 | `款号维护` → `Styles` |
+| `data-en` | 单个英文字符串，替换该节点文本 | `2026.11.13` → `13 Nov 2026` |
+| `data-en-html` | 英文标记，替换该节点内部 HTML | `共 <b>60</b> 条 · 第 <b>1</b> / <b>3</b> 页` → `<b>60</b> styles · page <b>1</b> of <b>3</b>` |
+
+`data-en-html` 专为语序不一致的片段存在。把 `共`、`条 · 第`、`页` 三段分别翻译，会得到 "Total 60 of 1 page 3"——语法上不成立。整句必须整体替换。全站只有三处：页头计数、分页状态、批量条计数。
+
+**回切靠记录，不靠回译。** 首次切换前记录每个中文文本节点的原串与前后空白，切回中文时原样写回，不经过英文再翻回来，因此反复切换不会累积偏差。
+
+**属性一并处理。** `placeholder`、`aria-label`、`title`、`alt`、`value` 走同一套字典。其中 `value` 最容易被漏：商品名、面料描述、工艺说明都是输入框的属性值，不是子文本。
+
+**不译的部分。** 款号（`FL-HM-01`）、订单号、支付凭证号（`MOCK…4C8A`）、路由、端口、`version` 计数是技术标识，两版完全一致，这也是它们统一用等宽字体的原因之一。
+
+**切语言必须重渲染，不能只换字。** 面包屑由脚本写入，按当前语言从双语 `META` 表重取；批量条计数在每次切换后按复选框实际状态重算——`data-en-html` 会重建内部的 `<b>` 节点，旧引用会印出上一版语言的数字。
+
+**两版不同的地方。**
+
+| 项 | 中文版 | 英文版 |
+|---|---|---|
+| 衬线栈 | Songti SC / Noto Serif SC | Iowan Old Style / Palatino / Georgia |
+| `h1` | 34px / `.015em` | 37px / `-.006em` |
+| 全大写小标字距 | `.18em` | `.13em` |
+| 表头 | 10px / `.14em` | 9.5px / `.10em` |
+| 正文行高 | 1.65 | 1.68 |
+| 侧栏宽度 | 240 | 254 |
+| 品类列宽 | 120 | 134 |
+| 日期 | `2026.11.13` | `13 Nov 2026` |
+| 导航大小写 | — | Title Case |
+| 计数标题 | 在售款号 / 草稿款号 | Published / Unpublished |
+
+**为什么字距要改。** `.18em` 落在「商品」两个字上是舒展的气口，落在 "RUNTIME" 上会把词撕成五座孤岛。西文全大写的合理区段是 `.10–.14em`，所以每一处小标都单独收过，不是整体缩一档。
+
+**为什么计数标题要改名。** 直译「在售款号」得到 "Live styles"，右侧状态码又是 `LIVE`，读作「Live styles LIVE」，说了两遍没多说一句。英文版换的是指标名，不是状态码：`Published` / `Unpublished`。
+
+**为什么西文底衬线不用 Georgia 打头。** Georgia 的圆润碗形与旧式数字对一家在无涂布纸上印画册的品牌来说过于亲和。Iowan Old Style 与 Palatino 更接近编辑物的锐度，且分别覆盖 macOS 与 Windows，首选即是对的。
+
+**不译即译。** 侧栏在英文版加宽 14px 容纳两词导航；按钮不设固定宽度，让英文自然撑开而不是挤成两行；日期改日在前，是国际运营者唯一无需解码的写法。
+
 ## 七、交互状态矩阵
 
 | 控件 | 默认 | 悬停 | 焦点 | 激活 / 选中 | 禁用 |
@@ -439,6 +485,8 @@
 ```css
 :root { /* 继承用户端 token；新增 --paper --canvas --white --rule --rule-strong
            --wash --wash-deep --faint --body 与 --f-song --f-body --f-num */ }
+/* 英文版只覆盖：衬线栈、h1 与区块标题字号、≥.1em 的全部字距、正文行高、
+   侧栏宽度、品类列宽。颜色、间距、描边与组件层不动——两版必须是一套系统。 */
 .shell / .side / .side__brand / .side__mark / .side__group / .side__item / .side__foot
 .topbar / .crumb / .ibtn / .env / #progress
 .main / .page / .ph / .ph__eyebrow / .ph__count / .ph__act
@@ -455,6 +503,8 @@
 .empty / .skelrow / .sk / dialog / .dlg__* / .toast
 .actions-bar / .colophon
 ```
+
+文案走 `messages.properties` / `messages_en.properties`，按屏区设键（`admin.styles.title`、`admin.styles.desc`…）。三处拼接句——页头计数、分页状态、批量条计数——必须用带占位符的整句（`{0} styles · page {1} of {2}`），不可拆成片段相加。
 
 ### 10.2 模板骨架
 
