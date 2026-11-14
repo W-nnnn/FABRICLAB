@@ -526,9 +526,290 @@ html[data-lang="en"] .recent__n span{font-size:13px}
 html[data-lang="en"] .field > label{letter-spacing:.08em;font-size:10.5px}
 html[data-lang="en"] .help{font-size:10.5px}
 html[data-lang="en"] .kit-sec p.kd{font-size:11px}
+/* ══════════════════════════════════════════════════════════════
+   V3 · 完成度重做
+   诊断：v2 把「克制」做成了「空缺」。纸面排版解决了廉价感，
+   却同时删掉了图像、图标、操作可见性与反馈，结果是线框稿而非成品。
+   本层不推翻 v2 的排印逻辑，只补回四件事：
+   表面层次 / 品牌在场 / 图像与图标 / 可操作的密度。
+   ══════════════════════════════════════════════════════════════ */
+:root{
+  --surface:#FFFFFF;
+  --rail:#211E1A;
+  --brand:#B4643A;
+  --brand-deep:#9E532D;
+  --brand-pale:#F4E9E0;
+  --hair:rgba(26,26,26,.075);
+}
+.i-en{display:none}
+html[data-lang="en"] .i-zh{display:none}
+html[data-lang="en"] .i-en{display:inline}
+html[data-lang="en"] .i-en.i-blk{display:block}
+
+/* ── 侧栏：减重、暖化、品牌带、图标系统 ─────────────── */
+.side{background:var(--rail);position:relative;
+  box-shadow:1px 0 0 rgba(0,0,0,.08),8px 0 28px rgba(26,26,26,.045)}
+.side::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--brand);z-index:2}
+.side__brand{padding-top:75px}
+.side__mark{background:var(--brand);color:#F2EFE9;border-color:transparent}
+.side__item{display:flex;align-items:center;gap:11px;padding-left:17px;
+  transition:background .15s ease,color .15s ease}
+.side__item > svg{width:16px;height:16px;flex:none;opacity:.42;stroke-width:1.35;
+  transition:opacity .15s ease}
+.side__item:hover > svg,.side__item[aria-current] > svg{opacity:.95}
+.side__item[aria-current]{background:rgba(180,100,58,.17);color:var(--cream)}
+.side__item[aria-current]::before{width:3px;background:var(--brand);opacity:1}
+.side__foot{border-top-color:rgba(242,239,233,.13)}
+.side__ava{background:rgba(180,100,58,.28);color:var(--cream)}
+.side__out:hover{background:rgba(242,239,233,.1)}
+
+/* ── 顶栏：做实，从「一条空带」变成工作台 ───────────── */
+.topbar{background:var(--surface);border-bottom:1px solid var(--rule);gap:0}
+.crumb{flex:1}
+.gsearch{display:flex;align-items:center;gap:9px;width:228px;height:32px;padding:0 11px;
+  border:1px solid var(--rule);background:var(--paper);transition:border-color .15s ease,box-shadow .15s ease}
+.gsearch:focus-within{border-color:var(--rule-strong);box-shadow:0 0 0 3px rgba(26,26,26,.045)}
+.gsearch svg{flex:none;color:var(--faint)}
+.gsearch input{border:0;outline:0;background:transparent;width:100%;font-size:12.5px;color:var(--ink)}
+.gsearch input::placeholder{color:var(--faint)}
+.gsearch kbd{font-family:var(--f-num);font-size:10px;color:var(--faint);border:1px solid var(--rule);
+  padding:1px 5px;letter-spacing:.04em;flex:none}
+.ibtn--dot{position:relative}
+.ibtn--dot::after{content:"";position:absolute;right:8px;top:7px;width:5px;height:5px;
+  background:var(--brand);box-shadow:0 0 0 2px var(--surface)}
+.topbar__me{display:flex;align-items:center;gap:9px;padding-left:14px;margin-left:4px;
+  border-left:1px solid var(--rule);height:30px}
+.topbar__me span{font-size:11.5px;color:var(--body)}
+.topbar__me i{width:24px;height:24px;display:grid;place-items:center;background:var(--rail);
+  color:var(--cream);font-style:normal;font-size:11px;font-family:var(--f-song)}
+
+/* ── 控制台主视觉：品牌色第一次大面积出现 ─────────── */
+.hero{display:grid;grid-template-columns:minmax(0,1fr) 260px;background:linear-gradient(112deg,#B96C40,#A9572E 82%);
+  color:var(--cream);margin:28px 0 4px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(118deg,rgba(255,255,255,.075),transparent 44%,rgba(26,26,26,.11) 100%)}
+.hero__txt{padding:30px 34px 32px;position:relative;z-index:1}
+.hero__k{font-size:10px;letter-spacing:.2em;opacity:.72;display:flex;align-items:center;gap:10px}
+.hero__k::before{content:"";width:18px;height:1px;background:currentColor;opacity:.7}
+.hero h2{font-family:var(--f-song);font-weight:500;font-size:29px;line-height:1.25;
+  letter-spacing:.02em;margin:16px 0 10px;max-width:520px}
+.hero p{font-size:12.5px;line-height:1.75;opacity:.86;max-width:540px}
+.hero__meta{display:flex;gap:28px;margin-top:22px;padding-top:16px;border-top:1px solid rgba(242,239,233,.25)}
+.hero__meta div{display:flex;flex-direction:column;gap:3px}
+.hero__meta b{font-family:var(--f-num);font-size:19px;font-weight:400;font-variant-numeric:tabular-nums}
+.hero__meta small{font-size:10px;letter-spacing:.12em;opacity:.72}
+.hero__vis{position:relative;display:grid;place-items:center;background:rgba(26,26,26,.09);
+  border-left:1px solid rgba(242,239,233,.16)}
+.hero__vis .pimg{width:150px;height:196px;--tone:#E7DFCF;color:#E7DFCF}
+.hero__vis .pimg::after{box-shadow:inset 0 0 0 1px rgba(242,239,233,.2)}
+.hero__vis em{position:absolute;bottom:12px;left:14px;font-style:normal;font-size:9.5px;
+  letter-spacing:.14em;opacity:.6}
+
+/* ── 工具区：连续白色工作带，不是一块块白卡片 ─────── */
+.toolbar{background:var(--surface);margin:0 -20px;padding:16px 20px 0;
+  border-top:1px solid var(--rule);align-items:center;gap:26px}
+.toolbar .search{margin-bottom:16px;width:264px}
+.toolbar .seg{margin-bottom:0}
+.toolbar .seg button{height:48px}
+.toolbar__right{margin-bottom:0}
+.bulk{background:var(--brand-pale);border-bottom:1px solid rgba(180,100,58,.18);
+  margin:0 -20px;padding:13px 20px}
+.bulk__n{color:var(--brand-deep)}
+.tbl thead th{background:var(--surface);border-bottom:1px solid var(--rule-strong);
+  color:var(--body);font-size:10.5px}
+.tblwrap{background:transparent}
+
+/* ── 缩略图：服装剪影取代纯色方块 ─────────────────── */
+.pimg{width:40px;height:52px;flex:none;display:block;position:relative;
+  background-image:
+    linear-gradient(160deg,rgba(255,255,255,.30),rgba(26,26,26,.05) 72%),
+    repeating-linear-gradient(0deg,rgba(26,26,26,.022) 0 1px,transparent 1px 3px),
+    repeating-linear-gradient(90deg,rgba(26,26,26,.022) 0 1px,transparent 1px 3px);
+  color:var(--tone,#CFC3AE);overflow:hidden;transition:transform .2s cubic-bezier(.22,.61,.36,1)}
+.pimg svg{width:100%;height:100%;display:block;filter:drop-shadow(0 2px 2px rgba(26,26,26,.17))}
+.pimg::after{content:"";position:absolute;inset:0;pointer-events:none;
+  box-shadow:inset 0 0 0 1px rgba(26,26,26,.09)}
+.tbl tbody tr:hover .pimg{transform:scale(1.055)}
+.pcell{gap:13px}
+.tbl tbody td{height:68px}
+.tbl tbody tr{transition:background .14s ease}
+.tbl tbody tr:hover{background:#F7F3EA}
+.tbl tbody tr:hover td:first-child{box-shadow:inset 2px 0 0 var(--brand)}
+
+/* ── 状态可读性：5px → 7px，文字回到正文字深 ─────── */
+.tag{font-size:12px;color:var(--body);gap:8px;padding:3px 0}
+.tag::before{width:7px;height:7px}
+.tag--live,.tag--act{color:var(--brand-deep)}
+.tag--end{color:var(--muted)}
+.tag--end::before{background:rgba(26,26,26,.3)}
+
+/* ── 行内操作：常态可见，不再靠 hover 猜 ─────────── */
+.acts{gap:6px;justify-content:flex-end}
+.acts .more{opacity:.55;transition:opacity .15s ease,background .15s ease}
+.tbl tbody tr:hover .more,.more:focus-visible{opacity:1}
+.more:hover{background:var(--wash-deep);opacity:1}
+.rowmenu{position:fixed;z-index:60;min-width:172px;background:var(--white);
+  border:1px solid var(--rule-strong);box-shadow:0 18px 44px rgba(26,26,26,.19);padding:5px 0}
+.rowmenu[hidden]{display:none}
+.rowmenu button{display:flex;align-items:center;gap:10px;width:100%;padding:9px 14px;
+  border:0;background:transparent;font-size:12.5px;text-align:left;color:var(--body)}
+.rowmenu button:hover{background:var(--wash)}
+.rowmenu button svg{width:14px;height:14px;color:var(--muted)}
+.rowmenu hr{border:0;border-top:1px solid var(--rule);margin:5px 0}
+.rowmenu .danger{color:var(--brand-deep)}
+
+/* ── 空状态（真实achable） ────────────────────────── */
+.tbl-empty{text-align:center;padding:64px 20px;border-bottom:1px solid var(--rule)}
+.tbl-empty .empty{padding:0}
+.tbl-empty[hidden]{display:none}
+
+/* ── Toast 容器：真实触发，不在组件页里展览 ───────── */
+#toasts{position:fixed;right:26px;bottom:24px;z-index:90;display:flex;flex-direction:column;gap:10px;
+  pointer-events:none}
+#toasts .toast{pointer-events:auto;min-width:290px;max-width:360px;background:var(--white);
+  border:1px solid var(--rule);box-shadow:0 16px 40px rgba(26,26,26,.19);padding:14px 16px;
+  display:flex;gap:12px;align-items:flex-start;animation:toastIn .28s cubic-bezier(.22,.61,.36,1)}
+#toasts .toast--err{border-left:3px solid var(--brand)}
+#toasts .toast:not(.toast--err){border-left:3px solid var(--ink)}
+#toasts .toast b{display:block;font-size:13px;font-weight:500;margin-bottom:3px}
+#toasts .toast span{font-size:11.5px;color:var(--muted);line-height:1.6}
+#toasts .toast.out{opacity:0;transform:translateY(8px);transition:opacity .25s ease,transform .25s ease}
+@keyframes toastIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+/* ── 按钮与表单的完成度 ───────────────────────────── */
+.btn{transition:background .15s ease,border-color .15s ease,color .15s ease,box-shadow .15s ease}
+.btn--line:hover{border-color:var(--ink);background:var(--wash)}
+.txt:hover{color:var(--brand-deep)}
+.ctl:focus,.seg2 button:focus-visible,.pg:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.pager__info{font-size:12px}
+
+@media(max-width:1023px){
+  .hero{grid-template-columns:1fr}
+  .hero__vis{display:none}
+  .gsearch{display:none}
+  .topbar__me span{display:none}
+}
+@media(max-width:719px){
+  .hero__txt{padding:24px}
+  .hero h2{font-size:24px}
+  .hero__meta{gap:18px}
+}
+/* V3 的 .side{position:relative} 只用于顶部品牌带定位，
+   窄屏必须还给抽屉 fixed，否则侧栏会继续占据 254px 布局宽度 */
+@media(max-width:1023px){
+  .side,html[data-lang="en"] .side{position:fixed;width:264px}
+  .hero__vis{display:none}
+}
 </style>
 </head>
 <body>
+<svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
+  <defs>
+    <!-- 统一图标：16 格 / 1.4 描边 / 圆头 -->
+    <symbol id="i-dash" viewBox="0 0 16 16"><rect x="2.2" y="2.2" width="5" height="5"/><rect x="8.8" y="2.2" width="5" height="5"/><rect x="2.2" y="8.8" width="5" height="5"/><rect x="8.8" y="8.8" width="5" height="5"/></symbol>
+    <symbol id="i-styles" viewBox="0 0 16 16"><path d="M8 2.4v2M5.6 4.4a2.4 2.4 0 114.8 0c0 .7-1 1.1-2.4 1.6-1.4.5-2.4.9-2.4 1.6L2 13.6h12l-3.6-6c0-.7-1-1.1-2.4-1.6"/></symbol>
+    <symbol id="i-cat" viewBox="0 0 16 16"><path d="M2.5 3.2h4.2M2.5 8h4.2M2.5 12.8h4.2M2.5 3.2v9.6M6.7 3.2h5.1M6.7 8h5.1M6.7 12.8h5.1"/></symbol>
+    <symbol id="i-stock" viewBox="0 0 16 16"><path d="M8 1.8L14.2 5 8 8.2 1.8 5zM1.8 8.2L8 11.4l6.2-3.2M1.8 11.2L8 14.4l6.2-3.2"/></symbol>
+    <symbol id="i-users" viewBox="0 0 16 16"><circle cx="6.2" cy="5.4" r="2.4"/><path d="M1.8 13.6c0-2.4 2-4 4.4-4s4.4 1.6 4.4 4M11 3.3a2.3 2.3 0 010 4.3M12.2 9.9c1.3.5 2.2 1.8 2.2 3.7"/></symbol>
+    <symbol id="i-orders" viewBox="0 0 16 16"><path d="M3.4 1.8h9.2v12.4l-1.6-1-1.5 1-1.5-1-1.5 1-1.5-1-1.6 1zM5.8 5.4h4.4M5.8 8.4h4.4"/></symbol>
+    <symbol id="i-security" viewBox="0 0 16 16"><path d="M8 1.8l5.2 2v4.3c0 3.1-2.1 5.3-5.2 6.1-3.1-.8-5.2-3-5.2-6.1V3.8zM5.9 7.9l1.5 1.5 2.8-2.8"/></symbol>
+    <symbol id="i-logs" viewBox="0 0 16 16"><path d="M2.6 3.6h10.8M2.6 8h10.8M2.6 12.4h7.2M2.6 3.6v8.8"/></symbol>
+    <symbol id="i-search" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.2"/><path d="M10.1 10.1L13.6 13.6"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 16 16"><path d="M4 11.4V7a4 4 0 018 0v4.4l1.2 1.4H2.8zM6.5 13.4a1.5 1.5 0 003 0"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 16 16"><path d="M8 3v10M3 8h10"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 16 16"><path d="M10.6 2.8l2.6 2.6-7.4 7.4-3.2.6.6-3.2zM9.4 4l2.6 2.6"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 16 16"><path d="M2.8 4.4h10.4M5.6 4.4V2.6h4.8v1.8M4.2 4.4l.7 9h6.2l.7-9M6.6 7v4M9.4 7v4"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 16 16"><rect x="5.4" y="5.4" width="8" height="8"/><path d="M10.6 5.4V2.6H2.6v8h2.8"/></symbol>
+    <symbol id="i-off" viewBox="0 0 16 16"><circle cx="8" cy="8" r="5.8"/><path d="M3.2 3.2l9.6 9.6"/></symbol>
+    <symbol id="i-on" viewBox="0 0 16 16"><circle cx="8" cy="8" r="5.8"/><path d="M5.2 8.1l2 2 3.7-3.9"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 16 16"><path d="M3 8h10M9.4 4.4L13 8l-3.6 3.6"/></symbol>
+    <symbol id="i-check" viewBox="0 0 16 16"><path d="M3.2 8.3l3.1 3.1 6.5-6.8"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.2"/><path d="M8 4.6v4.2M8 11.2v.4"/></symbol>
+    <symbol id="i-box" viewBox="0 0 16 16"><path d="M8 1.8L14 5v6l-6 3.2L2 11V5zM2 5l6 3.2L14 5M8 8.2v6"/></symbol>
+    <symbol id="i-x" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8"/></symbol>
+    <symbol id="i-filter" viewBox="0 0 16 16"><path d="M2 3.4h12L9.4 8.2v4.4l-2.8 1.4V8.2z"/></symbol>
+
+    <!-- 布面明暗：让剪影有体积，而不是平涂图标 -->
+    <linearGradient id="clothShade" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity=".34"/>
+      <stop offset=".38" stop-color="#FFFFFF" stop-opacity=".02"/>
+      <stop offset=".72" stop-color="#000000" stop-opacity=".07"/>
+      <stop offset="1" stop-color="#000000" stop-opacity=".24"/>
+    </linearGradient>
+    <linearGradient id="clothFold" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#000" stop-opacity=".10"/>
+      <stop offset=".25" stop-color="#fff" stop-opacity=".13"/>
+      <stop offset=".5" stop-color="#000" stop-opacity=".05"/>
+      <stop offset=".75" stop-color="#fff" stop-opacity=".10"/>
+      <stop offset="1" stop-color="#000" stop-opacity=".12"/>
+    </linearGradient>
+
+    <!-- 服装母版：一次定义轮廓，两遍叠加（底色 + 明暗） -->
+    <path id="s-turtleneck" d="M15 2.6h10v7.4h-10zM13.4 9.4L6 11.8 1.6 34.8l5.8 1.8 4.2-13.2V48.4h18.4V23.4l4.2 13.2 5.8-1.8L34 11.8l-7.4-2.4-1.7 2.8H15.1z"/>
+    <path id="s-shirt" d="M13 3.8l7 6.2 7-6.2 7.4 3.2 3.6 10.8-5.6 2.2-2.6-5.6V48.4H10V14.4L7.4 20l-5.6-2.2L5.4 7z"/>
+    <path id="s-scarf" d="M7 3h12v31l-2.8 15h-6.4L7 34zM21 3h12v24l-2.8 8h-6.4L21 27z"/>
+    <path id="s-coat" d="M12 3.8l8 8 8-8 8.6 4.2 3.4 11-5.8 2.2-2.6-5.8V48.4H8.4V15.2L5.8 21 0 19l3.4-11z"/>
+    <path id="s-dress" d="M14 3h12l2 5 4.6 3.4-3.2 6.2-2.2-2.4L33.4 49H6.6l6.2-33.8-2.2 2.4-3.2-6.2L12 8z"/>
+    <path id="s-jacket" d="M13 3.8h14l8.4 3.8 3.6 10.8-5.8 2.2-2.6-5.8V42.4H9.4V15L6.8 20.8 1 18.6 4.6 7.6z"/>
+    <path id="s-polo" d="M12.6 3.8h6.2l-2 4h6.4l-2-4h6.2l7 3.2 3.6 10.8-5.6 2.2-2.6-5.8V48.4H10V14.4L7.4 20l-5.6-2.2L5.4 7z"/>
+    <path id="s-socks" d="M11 3h13v24h7.6a2 2 0 012 2v14a2 2 0 01-2 2H11a2 2 0 01-2-2V5a2 2 0 012-2z"/>
+
+    <symbol id="g-turtleneck" viewBox="0 0 40 52">
+      <use href="#s-turtleneck" fill="currentColor"/><use href="#s-turtleneck" fill="url(#clothShade)"/>
+      <path d="M15 3.6h10M15 5.4h10M15 7.4h10M15 9.2h10" stroke="rgba(26,26,26,.15)" stroke-width=".5" fill="none"/>
+      <path d="M13.6 23.6c4 1.2 8.8 1.2 12.8 0M13.6 46.8h12.8" stroke="rgba(255,255,255,.34)" stroke-width=".6" fill="none"/>
+      <path d="M16.4 12c-.5 11-.6 24-.4 35M23.8 12c.5 11 .6 24 .4 35" stroke="url(#clothFold)" stroke-width="2.2" fill="none"/>
+      <path d="M6 11.8L1.6 34.8M34 11.8L38.4 34.8" stroke="rgba(26,26,26,.13)" stroke-width=".6" fill="none"/>
+    </symbol>
+    <symbol id="g-shirt" viewBox="0 0 40 52">
+      <use href="#s-shirt" fill="currentColor"/><use href="#s-shirt" fill="url(#clothShade)"/>
+      <path d="M20 10.2v38M13 3.8l7 6.2 7-6.2" stroke="rgba(255,255,255,.36)" stroke-width=".65" fill="none"/>
+      <path d="M16.6 16c-.4 10-.4 22 0 32M23.4 16c.4 10 .4 22 0 32" stroke="url(#clothFold)" stroke-width="2" fill="none"/>
+      <g fill="rgba(26,26,26,.26)"><circle cx="20" cy="18" r=".85"/><circle cx="20" cy="26" r=".85"/><circle cx="20" cy="34" r=".85"/><circle cx="20" cy="42" r=".85"/></g>
+      <path d="M10 14.4V48M30 14.4V48" stroke="rgba(26,26,26,.12)" stroke-width=".55" fill="none"/>
+    </symbol>
+    <symbol id="g-scarf" viewBox="0 0 40 52">
+      <use href="#s-scarf" fill="currentColor"/><use href="#s-scarf" fill="url(#clothShade)"/>
+      <path d="M7 10.4h12M7 29.8h12M21 10.4h12M21 27h12" stroke="rgba(255,255,255,.3)" stroke-width=".6" fill="none"/>
+      <path d="M12 5c-1 14-1 26 0 42M27 5c1 10 1 18 0 28" stroke="url(#clothFold)" stroke-width="2" fill="none"/>
+      <path d="M9.6 49v-4M12.6 49v-4M15.6 49v-4M23.4 35v-4M26.4 35v-4M29.4 35v-4" stroke="currentColor" stroke-width=".9"/>
+    </symbol>
+    <symbol id="g-coat" viewBox="0 0 40 52">
+      <use href="#s-coat" fill="currentColor"/><use href="#s-coat" fill="url(#clothShade)"/>
+      <path d="M20 11.8v36.4M12 3.8l8 8 8-8" stroke="rgba(255,255,255,.32)" stroke-width=".7" fill="none"/>
+      <path d="M11 26h5M24 26h5M11 30h5M24 30h5" stroke="rgba(26,26,26,.18)" stroke-width=".8" fill="none"/>
+      <path d="M15 16c-.6 11-.6 22 0 32M25 16c.6 11 .6 22 0 32" stroke="url(#clothFold)" stroke-width="2" fill="none"/>
+      <g fill="rgba(26,26,26,.24)"><circle cx="20" cy="20" r=".9"/><circle cx="20" cy="30" r=".9"/><circle cx="20" cy="40" r=".9"/></g>
+    </symbol>
+    <symbol id="g-dress" viewBox="0 0 40 52">
+      <use href="#s-dress" fill="currentColor"/><use href="#s-dress" fill="url(#clothShade)"/>
+      <path d="M20 8.4V49M12 20c3 2 13 2 16 0" stroke="rgba(255,255,255,.32)" stroke-width=".7" fill="none"/>
+      <path d="M15 22l-4.4 25M25 22l4.4 25M18 23l-2 24M22 23l2 24" stroke="url(#clothFold)" stroke-width="1.5" fill="none"/>
+      <path d="M8 46h24" stroke="rgba(26,26,26,.14)" stroke-width=".6" fill="none"/>
+    </symbol>
+    <symbol id="g-jacket" viewBox="0 0 40 52">
+      <use href="#s-jacket" fill="currentColor"/><use href="#s-jacket" fill="url(#clothShade)"/>
+      <path d="M20 7.6v34.6M13 3.8l7 4 7-4" stroke="rgba(255,255,255,.34)" stroke-width=".7" fill="none"/>
+      <path d="M10.6 27h5.8M23.6 27h5.8" stroke="rgba(26,26,26,.2)" stroke-width=".9" fill="none"/>
+      <path d="M15 16c-.5 9-.5 18 0 26M25 16c.5 9 .5 18 0 26" stroke="url(#clothFold)" stroke-width="2" fill="none"/>
+      <path d="M9.4 40h21.2" stroke="rgba(26,26,26,.16)" stroke-width=".8" fill="none"/>
+    </symbol>
+    <symbol id="g-polo" viewBox="0 0 40 52">
+      <use href="#s-polo" fill="currentColor"/><use href="#s-polo" fill="url(#clothShade)"/>
+      <path d="M20 8v14M17 8h6" stroke="rgba(255,255,255,.34)" stroke-width=".7" fill="none"/>
+      <path d="M16 15c-.4 10-.4 22 0 33M24 15c.4 10 .4 22 0 33" stroke="url(#clothFold)" stroke-width="2" fill="none"/>
+      <g fill="rgba(26,26,26,.26)"><circle cx="20" cy="25" r=".85"/><circle cx="20" cy="31" r=".85"/></g>
+      <path d="M10 46h20" stroke="rgba(26,26,26,.13)" stroke-width=".6" fill="none"/>
+    </symbol>
+    <symbol id="g-socks" viewBox="0 0 40 52">
+      <use href="#s-socks" fill="currentColor"/><use href="#s-socks" fill="url(#clothShade)"/>
+      <path d="M9 11h15M9 24h15M24 30h9.6M9 42h24" stroke="rgba(255,255,255,.3)" stroke-width=".6" fill="none"/>
+      <path d="M16 5c-.6 10-.6 18 0 22M26 5c.6 10 .6 18 0 22" stroke="url(#clothFold)" stroke-width="2" fill="none"/>
+      <path d="M11 33.6h22.6" stroke="rgba(26,26,26,.14)" stroke-width=".7" fill="none"/>
+    </symbol>
+  </defs>
+</svg>
+
 
 <div class="proto">
   <b>设计原型</b>
@@ -554,22 +835,22 @@ html[data-lang="en"] .kit-sec p.kd{font-size:11px}
     </div>
 
     <div class="side__group">概览</div>
-    <a class="side__item" href="#" data-nav="console" aria-current="page">控制台</a>
+    <a class="side__item" href="#" data-nav="console" aria-current="page"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><use href="#i-dash"/></svg><span class="i-zh">控制台</span><span class="i-en">Dashboard</span></a>
 
     <div class="side__group">商品</div>
-    <a class="side__item" href="#" data-nav="products">款号维护</a>
-    <a class="side__item" href="#" data-nav="categories">分类维护</a>
-    <a class="side__item" href="#" data-nav="stock">库存与相册</a>
+    <a class="side__item" href="#" data-nav="products"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><use href="#i-styles"/></svg><span class="i-zh">款号维护</span><span class="i-en">Styles</span></a>
+    <a class="side__item" href="#" data-nav="categories"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><use href="#i-cat"/></svg><span class="i-zh">分类维护</span><span class="i-en">Categories</span></a>
+    <a class="side__item" href="#" data-nav="stock"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><use href="#i-stock"/></svg><span class="i-zh">库存与相册</span><span class="i-en">Stock & Gallery</span></a>
 
     <div class="side__group">顾客</div>
-    <a class="side__item" href="#" data-nav="users">账号管理</a>
+    <a class="side__item" href="#" data-nav="users"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><use href="#i-users"/></svg><span class="i-zh">账号管理</span><span class="i-en">Accounts</span></a>
 
     <div class="side__group">交易</div>
-    <a class="side__item" href="#" data-nav="orders">订单管理</a>
+    <a class="side__item" href="#" data-nav="orders"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><use href="#i-orders"/></svg><span class="i-zh">订单管理</span><span class="i-en">Orders</span></a>
 
     <div class="side__group">系统</div>
-    <a class="side__item" href="#" data-nav="security">会话与安全</a>
-    <a class="side__item" href="#" data-nav="logs">操作日志</a>
+    <a class="side__item" href="#" data-nav="security"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><use href="#i-security"/></svg><span class="i-zh">会话与安全</span><span class="i-en">Sessions & Security</span></a>
+    <a class="side__item" href="#" data-nav="logs"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><use href="#i-logs"/></svg><span class="i-zh">操作日志</span><span class="i-en">Audit Log</span></a>
 
     <div class="side__foot">
       <span class="side__ava">沈</span>
@@ -589,14 +870,23 @@ html[data-lang="en"] .kit-sec p.kd{font-size:11px}
         <a href="#" id="crumb-sec">概览</a><i>/</i><b id="crumb-cur" aria-current="page">控制台</b>
       </nav>
       <div class="topbar__tools">
-        <button class="ibtn" aria-label="搜索">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="7" cy="7" r="4.2"/><path d="M10.1 10.1L13.6 13.6"/></svg>
+        <label class="gsearch" for="gkw">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><use href="#i-search"/></svg>
+          <input id="gkw" type="search" placeholder="搜索款号、订单…" />
+          <kbd>/</kbd>
+        </label>
+        <button class="ibtn" data-top="new" aria-label="快捷新建">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><use href="#i-plus"/></svg>
         </button>
-        <button class="ibtn" aria-label="帮助">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="8" r="6.2"/><path d="M6.4 6.1a1.7 1.7 0 013.3.4c0 1.1-1.6 1.4-1.6 2.5M8 11.4v.5"/></svg>
+        <button class="ibtn ibtn--dot" data-top="bell" aria-label="通知">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><use href="#i-bell"/></svg>
+        </button>
+        <button class="ibtn" data-top="help" aria-label="帮助">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M6.4 6.1a1.7 1.7 0 013.3.4c0 1.1-1.6 1.4-1.6 2.5M8 11.4v.5"/><circle cx="8" cy="8" r="6.2"/></svg>
         </button>
         <span class="topbar__sep"></span>
-        <span class="env">演示环境</span>
+        <span class="env"><span class="i-zh">演示环境</span><span class="i-en">Demo</span></span>
+        <div class="topbar__me"><i>沈</i><span><span class="i-zh">沈未染</span><span class="i-en">Shen Weiran</span></span></div>
       </div>
       <div id="progress"></div>
     </div>
@@ -613,6 +903,24 @@ html[data-lang="en"] .kit-sec p.kd{font-size:11px}
               <p>只呈现可由当次查询核对的事项。没有真实数据源的经营指标，这里不画。</p>
             </div>
             <div class="ph__act"><span class="ph__count">2026.11.14 · 周五</span></div>
+          </div>
+
+          <div class="hero">
+            <div class="hero__txt">
+              <div class="hero__k"><span class="i-zh">本期主推 · 2026 秋冬</span><span class="i-en">Featured · AW 2026</span></div>
+              <h2><span class="i-zh">山羊绒高领衫，未染原色</span><span class="i-en">Cashmere Turtleneck, Undyed</span></h2>
+              <p><span class="i-zh">内蒙古 14 微米山羊绒，12 针织造，罗纹领口与袖口。本季 3 色在售。</span><span class="i-en">14-micron cashmere, 12 gauge, ribbed collar. Three colourways this season.</span></p>
+              <div class="hero__meta">
+                <div><b>FL-HM-01A</b><small><span class="i-zh">款号</span><span class="i-en">SKU</span></small></div>
+                <div><b>¥1,280</b><small><span class="i-zh">零售价</span><span class="i-en">RETAIL</span></small></div>
+                <div><b>18</b><small><span class="i-zh">在库</span><span class="i-en">IN STOCK</span></small></div>
+                <div><b>12 gg</b><small><span class="i-zh">克重</span><span class="i-en">GAUGE</span></small></div>
+              </div>
+            </div>
+            <div class="hero__vis">
+              <span class="pimg" style="--tone:#E7DFCF"><svg viewBox="0 0 40 52" aria-hidden="true"><use href="#g-turtleneck"/></svg></span>
+              <em>FABRICLAB / AW 2026</em>
+            </div>
           </div>
 
           <div class="stats">
@@ -746,7 +1054,7 @@ html[data-lang="en"] .kit-sec p.kd{font-size:11px}
             </div>
             <div class="ph__act">
               <span class="ph__count" data-en-html="<b>60</b> in catalogue · <b>54</b> live">在册 <b>60</b> 款 · 在售 <b>54</b></span>
-              <button class="btn">新增款号</button>
+              <button class="btn" data-cmd="new">新增款号</button>
             </div>
           </div>
 
@@ -756,22 +1064,22 @@ html[data-lang="en"] .kit-sec p.kd{font-size:11px}
               <input id="kw" type="search" placeholder="款号或名称" />
             </label>
             <div class="seg" role="group" aria-label="按状态筛选">
-              <button class="on">全部<em>60</em></button>
-              <button>在售<em>54</em></button>
-              <button>草稿<em>6</em></button>
-              <button>售罄<em>0</em></button>
+              <button class="on" data-filter="all">全部<em>60</em></button>
+              <button data-filter="live">在售<em>54</em></button>
+              <button data-filter="draft">草稿<em>6</em></button>
+              <button data-filter="sold">售罄<em>0</em></button>
             </div>
             <div class="toolbar__right">
-              <button class="txt txt--muted">重置筛选</button>
+              <button class="txt txt--muted" data-cmd="reset">重置筛选</button>
             </div>
           </div>
 
           <div class="bulk" id="bulk" hidden>
             <span class="bulk__n" data-en-html="<b id='bulk-n'>0</b> selected">已选 <b id="bulk-n">0</b> 项</span>
             <div class="bulk__act">
-              <button class="txt">批量上架</button>
-              <button class="txt">批量下架</button>
-              <button class="txt txt--muted" id="bulk-clear">取消选择</button>
+              <button class="txt" data-cmd="publish">批量上架</button>
+              <button class="txt" data-cmd="unpublish">批量下架</button>
+              <button class="txt txt--muted" id="bulk-clear" data-cmd="clear">取消选择</button>
             </div>
           </div>
 
@@ -796,89 +1104,14 @@ html[data-lang="en"] .kit-sec p.kd{font-size:11px}
                   <th scope="col">操作</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <td><input class="ck" type="checkbox" aria-label="选择 FL-HM-01" /></td>
-                  <td class="sku"><a href="#">FL-HM-01</a></td>
-                  <td><div class="pcell"><span class="swatch swatch--a"></span><span class="tname"><span class="nm">山羊绒高领衫</span><span class="sub">山羊绒 100% · 12 针</span></span></div></td>
-                  <td class="cat col-md">居家 / 成衣</td>
-                  <td class="n money">¥1,280.00</td>
-                  <td class="n col-md">18</td><td class="date col-md" data-en="13 Nov 2026">2026.11.13</td>
-                  <td><span class="tag tag--live">在售</span></td>
-                  <td><div class="acts"><button class="txt">编辑</button><button class="more" aria-label="更多操作：山羊绒高领衫">···</button></div></td>
-                </tr>
-                <tr>
-                  <td><input class="ck" type="checkbox" aria-label="选择 FL-CT-03" /></td>
-                  <td class="sku"><a href="#">FL-CT-03</a></td>
-                  <td><div class="pcell"><span class="swatch swatch--b"></span><span class="tname"><span class="nm">高支府绸衬衫</span><span class="sub">府绸棉 100% · 60 支</span></span></div></td>
-                  <td class="cat col-md">通勤 / 成衣</td>
-                  <td class="n money">¥429.00</td>
-                  <td class="n col-md">2</td><td class="date col-md" data-en="13 Nov 2026">2026.11.13</td>
-                  <td><span class="tag tag--out">低库存</span></td>
-                  <td><div class="acts"><button class="txt">编辑</button><button class="more" aria-label="更多操作：高支府绸衬衫">···</button></div></td>
-                </tr>
-                <tr>
-                  <td><input class="ck" type="checkbox" aria-label="选择 FL-HM-09" /></td>
-                  <td class="sku"><a href="#">FL-HM-09</a></td>
-                  <td><div class="pcell"><span class="swatch swatch--c"></span><span class="tname"><span class="nm">羊绒围巾</span><span class="sub">羊绒 100% · 200×35</span></span></div></td>
-                  <td class="cat col-md">居家 / 配饰</td>
-                  <td class="n money">¥780.00</td>
-                  <td class="n col-md">0</td><td class="date col-md" data-en="11 Nov 2026">2026.11.11</td>
-                  <td><span class="tag tag--end">售罄</span></td>
-                  <td><div class="acts"><button class="txt">编辑</button><button class="more" aria-label="更多操作：羊绒围巾">···</button></div></td>
-                </tr>
-                <tr>
-                  <td><input class="ck" type="checkbox" aria-label="选择 FL-OD-02" /></td>
-                  <td class="sku"><a href="#">FL-OD-02</a></td>
-                  <td><div class="pcell"><span class="swatch swatch--d"></span><span class="tname"><span class="nm">棉质工装外套</span><span class="sub">斜纹棉 100% · 水洗</span></span></div></td>
-                  <td class="cat col-md">户外 / 成衣</td>
-                  <td class="n money">¥1,180.00</td>
-                  <td class="n col-md">1</td><td class="date col-md" data-en="10 Nov 2026">2026.11.10</td>
-                  <td><span class="tag tag--out">低库存</span></td>
-                  <td><div class="acts"><button class="txt">编辑</button><button class="more" aria-label="更多操作：棉质工装外套">···</button></div></td>
-                </tr>
-                <tr>
-                  <td><input class="ck" type="checkbox" aria-label="选择 FL-EV-04" /></td>
-                  <td class="sku"><a href="#">FL-EV-04</a></td>
-                  <td><div class="pcell"><span class="swatch swatch--b"></span><span class="tname"><span class="nm">丝缎长裙</span><span class="sub">桑蚕丝 100% · 19 姆米</span></span></div></td>
-                  <td class="cat col-md">礼服 / 成衣</td>
-                  <td class="n money">¥2,380.00</td>
-                  <td class="n col-md">6</td><td class="date col-md" data-en="8 Nov 2026">2026.11.08</td>
-                  <td><span class="tag tag--live">在售</span></td>
-                  <td><div class="acts"><button class="txt">编辑</button><button class="more" aria-label="更多操作：丝缎长裙">···</button></div></td>
-                </tr>
-                <tr>
-                  <td><input class="ck" type="checkbox" aria-label="选择 FL-CS-07" /></td>
-                  <td class="sku"><a href="#">FL-CS-07</a></td>
-                  <td><div class="pcell"><span class="swatch swatch--d"></span><span class="tname"><span class="nm">水洗牛仔夹克</span><span class="sub">牛仔 100% · 12 盎司</span></span></div></td>
-                  <td class="cat col-md">休闲 / 成衣</td>
-                  <td class="n money">¥890.00</td>
-                  <td class="n col-md">24</td><td class="date col-md" data-en="6 Nov 2026">2026.11.06</td>
-                  <td><span class="tag tag--idle">草稿</span></td>
-                  <td><div class="acts"><button class="txt">编辑</button><button class="more" aria-label="更多操作：水洗牛仔夹克">···</button></div></td>
-                </tr>
-                <tr>
-                  <td><input class="ck" type="checkbox" aria-label="选择 FL-CS-11" /></td>
-                  <td class="sku"><a href="#">FL-CS-11</a></td>
-                  <td><div class="pcell"><span class="swatch swatch--e"></span><span class="tname"><span class="nm">珠地 Polo</span><span class="sub">珠地棉 100% · 220g</span></span></div></td>
-                  <td class="cat col-md">休闲 / 成衣</td>
-                  <td class="n money">¥460.00</td>
-                  <td class="n col-md">31</td><td class="date col-md" data-en="3 Nov 2026">2026.11.03</td>
-                  <td><span class="tag tag--live">在售</span></td>
-                  <td><div class="acts"><button class="txt">编辑</button><button class="more" aria-label="更多操作：珠地 Polo">···</button></div></td>
-                </tr>
-                <tr>
-                  <td><input class="ck" type="checkbox" aria-label="选择 FL-HM-12" /></td>
-                  <td class="sku"><a href="#">FL-HM-12</a></td>
-                  <td><div class="pcell"><span class="swatch swatch--a"></span><span class="tname"><span class="nm">羊毛混纺针织袜</span><span class="sub">羊毛混纺 · 均码</span></span></div></td>
-                  <td class="cat col-md">居家 / 配饰</td>
-                  <td class="n money">¥128.00</td>
-                  <td class="n col-md">60</td><td class="date col-md" data-en="29 Oct 2026">2026.10.29</td>
-                  <td><span class="tag tag--idle">草稿</span></td>
-                  <td><div class="acts"><button class="txt">编辑</button><button class="more" aria-label="更多操作：羊毛混纺针织袜">···</button></div></td>
-                </tr>
-              </tbody>
+              <tbody></tbody>
             </table>
+          </div>
+
+          <div class="tbl-empty" id="tbl-empty" hidden>
+            <div class="empty"><span class="empty__ic"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><use href="#i-search"/></svg></span>
+              <h3>没有符合条件的记录</h3><p>换个关键词，或清除筛选条件后重试。</p>
+              <button class="btn btn--sm" data-cmd="reset">清除筛选</button></div>
           </div>
 
           <div class="pager">
@@ -1326,6 +1559,15 @@ html[data-lang="en"] .kit-sec p.kd{font-size:11px}
   </div>
 </dialog>
 
+<div id="toasts" aria-live="polite"></div>
+<div class="rowmenu" id="rowmenu" hidden role="menu">
+  <button data-mcmd="edit" role="menuitem"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><use href="#i-edit"/></svg><span class="i-zh">编辑款号</span><span class="i-en">Edit style</span></button>
+  <button data-mcmd="copy" role="menuitem"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><use href="#i-copy"/></svg><span class="i-zh">复制款号</span><span class="i-en">Copy SKU</span></button>
+  <button data-mcmd="toggle" role="menuitem"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><use href="#i-on"/></svg><span class="i-zh">切换上架状态</span><span class="i-en">Toggle publish state</span></button>
+  <hr />
+  <button data-mcmd="del" class="danger" role="menuitem"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><use href="#i-trash"/></svg><span class="i-zh">删除</span><span class="i-en">Delete</span></button>
+</div>
+
 <script>
 /* ═══════════════════════════════════════════════════════
    双语层
@@ -1566,6 +1808,7 @@ function setLang(lang){
   document.querySelectorAll('.proto__lang button').forEach(b => {
     b.classList.toggle('on', b.dataset.lang === lang);
   });
+  if (window.__onLang) window.__onLang();
 }
 
 document.querySelectorAll('.proto__lang button').forEach(b => {
@@ -1665,6 +1908,367 @@ syncHamb(); mq.addEventListener('change', syncHamb);
 
 /* 地址栏带 ?lang=en 时直接进英文，便于分享与截图 */
 if (new URLSearchParams(location.search).get('lang') === 'en') setLang('en');
+
+const DATA = [{"sku":"FL-HM-01A","nz":"山羊绒高领衫","ne":"Cashmere Turtleneck","vz":"燕麦","ve":"Oat","tone":"#D8CFBC","shape":"turtleneck","fz":"山羊绒 100% · 12 针","fe":"100% cashmere · 12 gg","cz":"居家 / 成衣","ce":"Lounge / RTW","price":1280,"stock":12,"dz":"2026.11.13","de":"13 Nov 2026","st":"live"},{"sku":"FL-CT-02A","nz":"高支府绸衬衫","ne":"Fine Poplin Shirt","vz":"燕麦","ve":"Oat","tone":"#D8CFBC","shape":"shirt","fz":"府绸棉 100% · 60 支","fe":"100% poplin cotton · 60s","cz":"通勤 / 成衣","ce":"Tailoring / RTW","price":429,"stock":33,"dz":"2026.11.12","de":"12 Nov 2026","st":"live"},{"sku":"FL-HM-03A","nz":"羊绒围巾","ne":"Cashmere Scarf","vz":"燕麦","ve":"Oat","tone":"#D8CFBC","shape":"scarf","fz":"羊绒 100% · 200×35","fe":"100% cashmere · 200×35 cm","cz":"居家 / 配饰","ce":"Lounge / Acc.","price":780,"stock":54,"dz":"2026.11.11","de":"11 Nov 2026","st":"live"},{"sku":"FL-OD-04A","nz":"棉质工装外套","ne":"Cotton Chore Coat","vz":"燕麦","ve":"Oat","tone":"#D8CFBC","shape":"coat","fz":"斜纹棉 100% · 水洗","fe":"100% twill cotton · washed","cz":"户外 / 成衣","ce":"Outdoor / RTW","price":1180,"stock":28,"dz":"2026.11.10","de":"10 Nov 2026","st":"live"},{"sku":"FL-EV-05A","nz":"丝缎长裙","ne":"Silk Satin Dress","vz":"燕麦","ve":"Oat","tone":"#D8CFBC","shape":"dress","fz":"桑蚕丝 100% · 19 姆米","fe":"100% mulberry silk · 19 momme","cz":"礼服 / 成衣","ce":"Evening / RTW","price":2380,"stock":49,"dz":"2026.11.09","de":"9 Nov 2026","st":"live"},{"sku":"FL-CS-06A","nz":"水洗牛仔夹克","ne":"Washed Denim Jacket","vz":"燕麦","ve":"Oat","tone":"#D8CFBC","shape":"jacket","fz":"牛仔 100% · 12 盎司","fe":"100% denim · 12 oz","cz":"休闲 / 成衣","ce":"Casual / RTW","price":890,"stock":23,"dz":"2026.11.08","de":"8 Nov 2026","st":"live"},{"sku":"FL-CS-07A","nz":"珠地 Polo","ne":"Piqué Polo","vz":"燕麦","ve":"Oat","tone":"#D8CFBC","shape":"polo","fz":"珠地棉 100% · 220g","fe":"100% piqué cotton · 220 gsm","cz":"休闲 / 成衣","ce":"Casual / RTW","price":460,"stock":44,"dz":"2026.11.07","de":"7 Nov 2026","st":"live"},{"sku":"FL-HM-08A","nz":"羊毛混纺针织袜","ne":"Wool-Blend Socks","vz":"燕麦","ve":"Oat","tone":"#D8CFBC","shape":"socks","fz":"羊毛混纺 · 均码","fe":"Wool blend · one size","cz":"居家 / 配饰","ce":"Lounge / Acc.","price":128,"stock":18,"dz":"2026.11.06","de":"6 Nov 2026","st":"live"},{"sku":"FL-CS-09A","nz":"亚麻阔腿裤","ne":"Linen Wide-Leg Trousers","vz":"燕麦","ve":"Oat","tone":"#D8CFBC","shape":"dress","fz":"亚麻 100% · 240g","fe":"100% linen · 240 gsm","cz":"休闲 / 成衣","ce":"Casual / RTW","price":690,"stock":39,"dz":"2026.11.05","de":"5 Nov 2026","st":"live"},{"sku":"FL-CT-10A","nz":"精纺羊毛西装","ne":"Worsted Wool Suit","vz":"燕麦","ve":"Oat","tone":"#D8CFBC","shape":"coat","fz":"精纺羊毛 100% · Super 120s","fe":"100% worsted wool · Super 120s","cz":"通勤 / 成衣","ce":"Tailoring / RTW","price":3280,"stock":13,"dz":"2026.11.04","de":"4 Nov 2026","st":"draft"},{"sku":"FL-CS-11A","nz":"水洗棉衬衫","ne":"Washed Cotton Shirt","vz":"燕麦","ve":"Oat","tone":"#D8CFBC","shape":"shirt","fz":"水洗棉 100% · 40 支","fe":"100% washed cotton · 40s","cz":"休闲 / 成衣","ce":"Casual / RTW","price":520,"stock":34,"dz":"2026.11.03","de":"3 Nov 2026","st":"live"},{"sku":"FL-EV-12A","nz":"醋酸半裙","ne":"Acetate Skirt","vz":"燕麦","ve":"Oat","tone":"#D8CFBC","shape":"dress","fz":"醋酸纤维 100% · 双绉","fe":"100% acetate · double crepe","cz":"礼服 / 成衣","ce":"Evening / RTW","price":980,"stock":55,"dz":"2026.11.02","de":"2 Nov 2026","st":"live"},{"sku":"FL-OD-13A","nz":"灯芯绒马甲","ne":"Corduroy Vest","vz":"燕麦","ve":"Oat","tone":"#D8CFBC","shape":"jacket","fz":"棉灯芯绒 · 8 条","fe":"Cotton corduroy · 8 wale","cz":"户外 / 成衣","ce":"Outdoor / RTW","price":760,"stock":29,"dz":"2026.11.01","de":"1 Nov 2026","st":"live"},{"sku":"FL-CT-14A","nz":"天丝罩衫","ne":"Tencel Blouse","vz":"燕麦","ve":"Oat","tone":"#D8CFBC","shape":"shirt","fz":"天丝 100% · 30 支","fe":"100% Tencel · 30s","cz":"通勤 / 成衣","ce":"Tailoring / RTW","price":640,"stock":50,"dz":"2026.10.31","de":"31 Oct 2026","st":"live"},{"sku":"FL-HM-15A","nz":"羊绒开衫","ne":"Cashmere Cardigan","vz":"燕麦","ve":"Oat","tone":"#D8CFBC","shape":"turtleneck","fz":"山羊绒 100% · 14 针","fe":"100% cashmere · 14 gg","cz":"居家 / 成衣","ce":"Lounge / RTW","price":1680,"stock":24,"dz":"2026.10.30","de":"30 Oct 2026","st":"live"},{"sku":"FL-EV-16A","nz":"桑蚕丝衬衫","ne":"Mulberry Silk Shirt","vz":"燕麦","ve":"Oat","tone":"#D8CFBC","shape":"shirt","fz":"桑蚕丝 100% · 16 姆米","fe":"100% mulberry silk · 16 momme","cz":"礼服 / 成衣","ce":"Evening / RTW","price":1380,"stock":45,"dz":"2026.10.29","de":"29 Oct 2026","st":"live"},{"sku":"FL-OD-17A","nz":"斜纹棉长裤","ne":"Twill Cotton Trousers","vz":"燕麦","ve":"Oat","tone":"#D8CFBC","shape":"dress","fz":"斜纹棉 100% · 260g","fe":"100% twill cotton · 260 gsm","cz":"户外 / 成衣","ce":"Outdoor / RTW","price":720,"stock":19,"dz":"2026.10.28","de":"28 Oct 2026","st":"live"},{"sku":"FL-CT-18A","nz":"亚麻西装外套","ne":"Linen Blazer","vz":"燕麦","ve":"Oat","tone":"#D8CFBC","shape":"coat","fz":"亚麻 55% · 棉 45%","fe":"55% linen · 45% cotton","cz":"通勤 / 成衣","ce":"Tailoring / RTW","price":2180,"stock":40,"dz":"2026.10.27","de":"27 Oct 2026","st":"live"},{"sku":"FL-OD-19A","nz":"羊毛大衣","ne":"Wool Overcoat","vz":"燕麦","ve":"Oat","tone":"#D8CFBC","shape":"coat","fz":"羊毛 90% · 羊绒 10%","fe":"90% wool · 10% cashmere","cz":"户外 / 成衣","ce":"Outdoor / RTW","price":3680,"stock":14,"dz":"2026.10.26","de":"26 Oct 2026","st":"live"},{"sku":"FL-CS-20A","nz":"棉质 T 恤","ne":"Cotton T-Shirt","vz":"燕麦","ve":"Oat","tone":"#D8CFBC","shape":"polo","fz":"精梳棉 100% · 200g","fe":"100% combed cotton · 200 gsm","cz":"休闲 / 成衣","ce":"Casual / RTW","price":280,"stock":35,"dz":"2026.10.25","de":"25 Oct 2026","st":"draft"},{"sku":"FL-HM-01B","nz":"山羊绒高领衫","ne":"Cashmere Turtleneck","vz":"墨","ve":"Ink","tone":"#767B74","shape":"turtleneck","fz":"山羊绒 100% · 12 针","fe":"100% cashmere · 12 gg","cz":"居家 / 成衣","ce":"Lounge / RTW","price":1310,"stock":19,"dz":"2026.10.24","de":"24 Oct 2026","st":"live"},{"sku":"FL-CT-02B","nz":"高支府绸衬衫","ne":"Fine Poplin Shirt","vz":"墨","ve":"Ink","tone":"#767B74","shape":"shirt","fz":"府绸棉 100% · 60 支","fe":"100% poplin cotton · 60s","cz":"通勤 / 成衣","ce":"Tailoring / RTW","price":459,"stock":40,"dz":"2026.10.23","de":"23 Oct 2026","st":"live"},{"sku":"FL-HM-03B","nz":"羊绒围巾","ne":"Cashmere Scarf","vz":"墨","ve":"Ink","tone":"#767B74","shape":"scarf","fz":"羊绒 100% · 200×35","fe":"100% cashmere · 200×35 cm","cz":"居家 / 配饰","ce":"Lounge / Acc.","price":810,"stock":14,"dz":"2026.10.22","de":"22 Oct 2026","st":"draft"},{"sku":"FL-OD-04B","nz":"棉质工装外套","ne":"Cotton Chore Coat","vz":"墨","ve":"Ink","tone":"#767B74","shape":"coat","fz":"斜纹棉 100% · 水洗","fe":"100% twill cotton · washed","cz":"户外 / 成衣","ce":"Outdoor / RTW","price":1210,"stock":35,"dz":"2026.10.21","de":"21 Oct 2026","st":"live"},{"sku":"FL-EV-05B","nz":"丝缎长裙","ne":"Silk Satin Dress","vz":"墨","ve":"Ink","tone":"#767B74","shape":"dress","fz":"桑蚕丝 100% · 19 姆米","fe":"100% mulberry silk · 19 momme","cz":"礼服 / 成衣","ce":"Evening / RTW","price":2410,"stock":0,"dz":"2026.10.20","de":"20 Oct 2026","st":"sold"},{"sku":"FL-CS-06B","nz":"水洗牛仔夹克","ne":"Washed Denim Jacket","vz":"墨","ve":"Ink","tone":"#767B74","shape":"jacket","fz":"牛仔 100% · 12 盎司","fe":"100% denim · 12 oz","cz":"休闲 / 成衣","ce":"Casual / RTW","price":920,"stock":30,"dz":"2026.10.19","de":"19 Oct 2026","st":"live"},{"sku":"FL-CS-07B","nz":"珠地 Polo","ne":"Piqué Polo","vz":"墨","ve":"Ink","tone":"#767B74","shape":"polo","fz":"珠地棉 100% · 220g","fe":"100% piqué cotton · 220 gsm","cz":"休闲 / 成衣","ce":"Casual / RTW","price":490,"stock":51,"dz":"2026.10.18","de":"18 Oct 2026","st":"live"},{"sku":"FL-HM-08B","nz":"羊毛混纺针织袜","ne":"Wool-Blend Socks","vz":"墨","ve":"Ink","tone":"#767B74","shape":"socks","fz":"羊毛混纺 · 均码","fe":"Wool blend · one size","cz":"居家 / 配饰","ce":"Lounge / Acc.","price":158,"stock":25,"dz":"2026.10.17","de":"17 Oct 2026","st":"live"},{"sku":"FL-CS-09B","nz":"亚麻阔腿裤","ne":"Linen Wide-Leg Trousers","vz":"墨","ve":"Ink","tone":"#767B74","shape":"dress","fz":"亚麻 100% · 240g","fe":"100% linen · 240 gsm","cz":"休闲 / 成衣","ce":"Casual / RTW","price":720,"stock":46,"dz":"2026.10.16","de":"16 Oct 2026","st":"live"},{"sku":"FL-CT-10B","nz":"精纺羊毛西装","ne":"Worsted Wool Suit","vz":"墨","ve":"Ink","tone":"#767B74","shape":"coat","fz":"精纺羊毛 100% · Super 120s","fe":"100% worsted wool · Super 120s","cz":"通勤 / 成衣","ce":"Tailoring / RTW","price":3310,"stock":20,"dz":"2026.10.15","de":"15 Oct 2026","st":"live"},{"sku":"FL-CS-11B","nz":"水洗棉衬衫","ne":"Washed Cotton Shirt","vz":"墨","ve":"Ink","tone":"#767B74","shape":"shirt","fz":"水洗棉 100% · 40 支","fe":"100% washed cotton · 40s","cz":"休闲 / 成衣","ce":"Casual / RTW","price":550,"stock":41,"dz":"2026.10.14","de":"14 Oct 2026","st":"live"},{"sku":"FL-EV-12B","nz":"醋酸半裙","ne":"Acetate Skirt","vz":"墨","ve":"Ink","tone":"#767B74","shape":"dress","fz":"醋酸纤维 100% · 双绉","fe":"100% acetate · double crepe","cz":"礼服 / 成衣","ce":"Evening / RTW","price":1010,"stock":15,"dz":"2026.10.13","de":"13 Oct 2026","st":"live"},{"sku":"FL-OD-13B","nz":"灯芯绒马甲","ne":"Corduroy Vest","vz":"墨","ve":"Ink","tone":"#767B74","shape":"jacket","fz":"棉灯芯绒 · 8 条","fe":"Cotton corduroy · 8 wale","cz":"户外 / 成衣","ce":"Outdoor / RTW","price":790,"stock":36,"dz":"2026.10.12","de":"12 Oct 2026","st":"draft"},{"sku":"FL-CT-14B","nz":"天丝罩衫","ne":"Tencel Blouse","vz":"墨","ve":"Ink","tone":"#767B74","shape":"shirt","fz":"天丝 100% · 30 支","fe":"100% Tencel · 30s","cz":"通勤 / 成衣","ce":"Tailoring / RTW","price":670,"stock":57,"dz":"2026.10.11","de":"11 Oct 2026","st":"live"},{"sku":"FL-HM-15B","nz":"羊绒开衫","ne":"Cashmere Cardigan","vz":"墨","ve":"Ink","tone":"#767B74","shape":"turtleneck","fz":"山羊绒 100% · 14 针","fe":"100% cashmere · 14 gg","cz":"居家 / 成衣","ce":"Lounge / RTW","price":1710,"stock":0,"dz":"2026.10.10","de":"10 Oct 2026","st":"sold"},{"sku":"FL-EV-16B","nz":"桑蚕丝衬衫","ne":"Mulberry Silk Shirt","vz":"墨","ve":"Ink","tone":"#767B74","shape":"shirt","fz":"桑蚕丝 100% · 16 姆米","fe":"100% mulberry silk · 16 momme","cz":"礼服 / 成衣","ce":"Evening / RTW","price":1410,"stock":52,"dz":"2026.10.09","de":"9 Oct 2026","st":"live"},{"sku":"FL-OD-17B","nz":"斜纹棉长裤","ne":"Twill Cotton Trousers","vz":"墨","ve":"Ink","tone":"#767B74","shape":"dress","fz":"斜纹棉 100% · 260g","fe":"100% twill cotton · 260 gsm","cz":"户外 / 成衣","ce":"Outdoor / RTW","price":750,"stock":26,"dz":"2026.10.08","de":"8 Oct 2026","st":"live"},{"sku":"FL-CT-18B","nz":"亚麻西装外套","ne":"Linen Blazer","vz":"墨","ve":"Ink","tone":"#767B74","shape":"coat","fz":"亚麻 55% · 棉 45%","fe":"55% linen · 45% cotton","cz":"通勤 / 成衣","ce":"Tailoring / RTW","price":2210,"stock":47,"dz":"2026.10.07","de":"7 Oct 2026","st":"live"},{"sku":"FL-OD-19B","nz":"羊毛大衣","ne":"Wool Overcoat","vz":"墨","ve":"Ink","tone":"#767B74","shape":"coat","fz":"羊毛 90% · 羊绒 10%","fe":"90% wool · 10% cashmere","cz":"户外 / 成衣","ce":"Outdoor / RTW","price":3710,"stock":21,"dz":"2026.10.06","de":"6 Oct 2026","st":"live"},{"sku":"FL-CS-20B","nz":"棉质 T 恤","ne":"Cotton T-Shirt","vz":"墨","ve":"Ink","tone":"#767B74","shape":"polo","fz":"精梳棉 100% · 200g","fe":"100% combed cotton · 200 gsm","cz":"休闲 / 成衣","ce":"Casual / RTW","price":310,"stock":42,"dz":"2026.10.05","de":"5 Oct 2026","st":"live"},{"sku":"FL-HM-01C","nz":"山羊绒高领衫","ne":"Cashmere Turtleneck","vz":"陶土","ve":"Clay","tone":"#C08A6E","shape":"turtleneck","fz":"山羊绒 100% · 12 针","fe":"100% cashmere · 12 gg","cz":"居家 / 成衣","ce":"Lounge / RTW","price":1340,"stock":26,"dz":"2026.10.04","de":"4 Oct 2026","st":"live"},{"sku":"FL-CT-02C","nz":"高支府绸衬衫","ne":"Fine Poplin Shirt","vz":"陶土","ve":"Clay","tone":"#C08A6E","shape":"shirt","fz":"府绸棉 100% · 60 支","fe":"100% poplin cotton · 60s","cz":"通勤 / 成衣","ce":"Tailoring / RTW","price":489,"stock":47,"dz":"2026.10.03","de":"3 Oct 2026","st":"live"},{"sku":"FL-HM-03C","nz":"羊绒围巾","ne":"Cashmere Scarf","vz":"陶土","ve":"Clay","tone":"#C08A6E","shape":"scarf","fz":"羊绒 100% · 200×35","fe":"100% cashmere · 200×35 cm","cz":"居家 / 配饰","ce":"Lounge / Acc.","price":840,"stock":21,"dz":"2026.10.02","de":"2 Oct 2026","st":"live"},{"sku":"FL-OD-04C","nz":"棉质工装外套","ne":"Cotton Chore Coat","vz":"陶土","ve":"Clay","tone":"#C08A6E","shape":"coat","fz":"斜纹棉 100% · 水洗","fe":"100% twill cotton · washed","cz":"户外 / 成衣","ce":"Outdoor / RTW","price":1240,"stock":42,"dz":"2026.10.01","de":"1 Oct 2026","st":"live"},{"sku":"FL-EV-05C","nz":"丝缎长裙","ne":"Silk Satin Dress","vz":"陶土","ve":"Clay","tone":"#C08A6E","shape":"dress","fz":"桑蚕丝 100% · 19 姆米","fe":"100% mulberry silk · 19 momme","cz":"礼服 / 成衣","ce":"Evening / RTW","price":2440,"stock":16,"dz":"2026.09.30","de":"30 Sep 2026","st":"live"},{"sku":"FL-CS-06C","nz":"水洗牛仔夹克","ne":"Washed Denim Jacket","vz":"陶土","ve":"Clay","tone":"#C08A6E","shape":"jacket","fz":"牛仔 100% · 12 盎司","fe":"100% denim · 12 oz","cz":"休闲 / 成衣","ce":"Casual / RTW","price":950,"stock":37,"dz":"2026.09.29","de":"29 Sep 2026","st":"draft"},{"sku":"FL-CS-07C","nz":"珠地 Polo","ne":"Piqué Polo","vz":"陶土","ve":"Clay","tone":"#C08A6E","shape":"polo","fz":"珠地棉 100% · 220g","fe":"100% piqué cotton · 220 gsm","cz":"休闲 / 成衣","ce":"Casual / RTW","price":520,"stock":58,"dz":"2026.09.28","de":"28 Sep 2026","st":"live"},{"sku":"FL-HM-08C","nz":"羊毛混纺针织袜","ne":"Wool-Blend Socks","vz":"陶土","ve":"Clay","tone":"#C08A6E","shape":"socks","fz":"羊毛混纺 · 均码","fe":"Wool blend · one size","cz":"居家 / 配饰","ce":"Lounge / Acc.","price":188,"stock":3,"dz":"2026.09.27","de":"27 Sep 2026","st":"low"},{"sku":"FL-CS-09C","nz":"亚麻阔腿裤","ne":"Linen Wide-Leg Trousers","vz":"陶土","ve":"Clay","tone":"#C08A6E","shape":"dress","fz":"亚麻 100% · 240g","fe":"100% linen · 240 gsm","cz":"休闲 / 成衣","ce":"Casual / RTW","price":750,"stock":53,"dz":"2026.09.26","de":"26 Sep 2026","st":"live"},{"sku":"FL-CT-10C","nz":"精纺羊毛西装","ne":"Worsted Wool Suit","vz":"陶土","ve":"Clay","tone":"#C08A6E","shape":"coat","fz":"精纺羊毛 100% · Super 120s","fe":"100% worsted wool · Super 120s","cz":"通勤 / 成衣","ce":"Tailoring / RTW","price":3340,"stock":27,"dz":"2026.09.25","de":"25 Sep 2026","st":"live"},{"sku":"FL-CS-11C","nz":"水洗棉衬衫","ne":"Washed Cotton Shirt","vz":"陶土","ve":"Clay","tone":"#C08A6E","shape":"shirt","fz":"水洗棉 100% · 40 支","fe":"100% washed cotton · 40s","cz":"休闲 / 成衣","ce":"Casual / RTW","price":580,"stock":48,"dz":"2026.09.24","de":"24 Sep 2026","st":"live"},{"sku":"FL-EV-12C","nz":"醋酸半裙","ne":"Acetate Skirt","vz":"陶土","ve":"Clay","tone":"#C08A6E","shape":"dress","fz":"醋酸纤维 100% · 双绉","fe":"100% acetate · double crepe","cz":"礼服 / 成衣","ce":"Evening / RTW","price":1040,"stock":22,"dz":"2026.09.23","de":"23 Sep 2026","st":"live"},{"sku":"FL-OD-13C","nz":"灯芯绒马甲","ne":"Corduroy Vest","vz":"陶土","ve":"Clay","tone":"#C08A6E","shape":"jacket","fz":"棉灯芯绒 · 8 条","fe":"Cotton corduroy · 8 wale","cz":"户外 / 成衣","ce":"Outdoor / RTW","price":820,"stock":43,"dz":"2026.09.22","de":"22 Sep 2026","st":"live"},{"sku":"FL-CT-14C","nz":"天丝罩衫","ne":"Tencel Blouse","vz":"陶土","ve":"Clay","tone":"#C08A6E","shape":"shirt","fz":"天丝 100% · 30 支","fe":"100% Tencel · 30s","cz":"通勤 / 成衣","ce":"Tailoring / RTW","price":700,"stock":17,"dz":"2026.09.21","de":"21 Sep 2026","st":"live"},{"sku":"FL-HM-15C","nz":"羊绒开衫","ne":"Cashmere Cardigan","vz":"陶土","ve":"Clay","tone":"#C08A6E","shape":"turtleneck","fz":"山羊绒 100% · 14 针","fe":"100% cashmere · 14 gg","cz":"居家 / 成衣","ce":"Lounge / RTW","price":1740,"stock":38,"dz":"2026.09.20","de":"20 Sep 2026","st":"live"},{"sku":"FL-EV-16C","nz":"桑蚕丝衬衫","ne":"Mulberry Silk Shirt","vz":"陶土","ve":"Clay","tone":"#C08A6E","shape":"shirt","fz":"桑蚕丝 100% · 16 姆米","fe":"100% mulberry silk · 16 momme","cz":"礼服 / 成衣","ce":"Evening / RTW","price":1440,"stock":12,"dz":"2026.09.19","de":"19 Sep 2026","st":"draft"},{"sku":"FL-OD-17C","nz":"斜纹棉长裤","ne":"Twill Cotton Trousers","vz":"陶土","ve":"Clay","tone":"#C08A6E","shape":"dress","fz":"斜纹棉 100% · 260g","fe":"100% twill cotton · 260 gsm","cz":"户外 / 成衣","ce":"Outdoor / RTW","price":780,"stock":33,"dz":"2026.09.18","de":"18 Sep 2026","st":"live"},{"sku":"FL-CT-18C","nz":"亚麻西装外套","ne":"Linen Blazer","vz":"陶土","ve":"Clay","tone":"#C08A6E","shape":"coat","fz":"亚麻 55% · 棉 45%","fe":"55% linen · 45% cotton","cz":"通勤 / 成衣","ce":"Tailoring / RTW","price":2240,"stock":3,"dz":"2026.09.17","de":"17 Sep 2026","st":"low"},{"sku":"FL-OD-19C","nz":"羊毛大衣","ne":"Wool Overcoat","vz":"陶土","ve":"Clay","tone":"#C08A6E","shape":"coat","fz":"羊毛 90% · 羊绒 10%","fe":"90% wool · 10% cashmere","cz":"户外 / 成衣","ce":"Outdoor / RTW","price":3740,"stock":28,"dz":"2026.09.16","de":"16 Sep 2026","st":"live"},{"sku":"FL-CS-20C","nz":"棉质 T 恤","ne":"Cotton T-Shirt","vz":"陶土","ve":"Clay","tone":"#C08A6E","shape":"polo","fz":"精梳棉 100% · 200g","fe":"100% combed cotton · 200 gsm","cz":"休闲 / 成衣","ce":"Casual / RTW","price":340,"stock":49,"dz":"2026.09.15","de":"15 Sep 2026","st":"live"}];
+
+/* ══════════════════════════════════════════════════════════════
+   V3 交互层 · 把 91 个死掉的入口接上
+   原则：每个可点元素至少有一个可观察、诚实的反馈；
+   未实现的模块不假装跳转，明确说明落在哪一个任务阶段。
+   ══════════════════════════════════════════════════════════════ */
+const T = (zh, en) => LANG === 'en' ? en : zh;
+const ST = {
+  live:  { zh:'在售',   en:'Live',     cls:'tag--live' },
+  draft: { zh:'草稿',   en:'Draft',    cls:'tag--idle' },
+  sold:  { zh:'售罄',   en:'Sold out', cls:'tag--end'  },
+  low:   { zh:'低库存', en:'Low stock',cls:'tag--act'  }
+};
+const state = { q:'', filter:'all', page:1, size:20, sel:new Set() };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const money = n => '¥' + n.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+
+/* ── Toast ─────────────────────────────────────────── */
+function toast(title, desc, err){
+  const box = document.getElementById('toasts');
+  if (!box) return;
+  const d = document.createElement('div');
+  d.className = 'toast' + (err ? ' toast--err' : '');
+  const b = document.createElement('b'); b.textContent = title;
+  const s = document.createElement('span'); s.textContent = desc || '';
+  const wrap = document.createElement('div'); wrap.append(b, s);
+  const ic = document.createElementNS('http://www.w3.org/2000/svg','svg');
+  ic.setAttribute('width','16'); ic.setAttribute('height','16');
+  ic.setAttribute('viewBox','0 0 16 16'); ic.setAttribute('fill','none');
+  ic.setAttribute('stroke','currentColor'); ic.setAttribute('stroke-width','1.4');
+  ic.style.cssText = 'flex:none;margin-top:2px;color:' + (err ? 'var(--brand-deep)' : 'var(--ink)');
+  const u = document.createElementNS('http://www.w3.org/2000/svg','use');
+  u.setAttribute('href', err ? '#i-alert' : '#i-check'); ic.appendChild(u);
+  d.append(ic, wrap);
+  while (box.children.length >= 3) box.firstElementChild.remove();
+  box.appendChild(d);
+  let timer = setTimeout(close, 4000);
+  d.addEventListener('mouseenter', () => clearTimeout(timer));
+  d.addEventListener('mouseleave', () => { timer = setTimeout(close, 1800); });
+  d.addEventListener('click', close);
+  function close(){
+    d.classList.add('out');
+    setTimeout(() => d.remove(), 260);
+  }
+}
+const demo = label => toast(T('演示环境已响应','Demo response'),
+  T('「' + label + '」已触发；该模块在 T13 起接入真实数据。',
+    '“' + label + '” triggered. Live data lands from T13.'));
+const go = v => document.querySelector('.proto button[data-view="' + v + '"]').click();
+
+/* ── 数据查询 ─────────────────────────────────────── */
+function filtered(){
+  const q = state.q.trim().toLowerCase();
+  return DATA.filter(r => {
+    if (state.filter === 'live'  && !['live','low'].includes(r.st)) return false;
+    if (state.filter === 'draft' && r.st !== 'draft') return false;
+    if (state.filter === 'sold'  && r.st !== 'sold')  return false;
+    if (!q) return true;
+    return [r.sku, r.nz, r.ne, r.vz, r.ve, r.cz, r.ce].join(' ').toLowerCase().includes(q);
+  });
+}
+const counts = () => ({
+  all: DATA.length,
+  live: DATA.filter(r => ['live','low'].includes(r.st)).length,
+  draft: DATA.filter(r => r.st === 'draft').length,
+  sold: DATA.filter(r => r.st === 'sold').length,
+  low: DATA.filter(r => r.st === 'low').length
+});
+
+function rowHTML(r){
+  const st = ST[r.st];
+  const nm = LANG === 'en' ? r.ne + ' · ' + r.ve : r.nz + ' · ' + r.vz;
+  const fab = LANG === 'en' ? r.fe : r.fz;
+  const cat = LANG === 'en' ? r.ce : r.cz;
+  const dt = LANG === 'en' ? r.de : r.dz;
+  const checked = state.sel.has(r.sku) ? ' checked' : '';
+  return `<tr data-sku="${r.sku}" class="${state.sel.has(r.sku)?'sel':''}">
+    <td><input class="ck" type="checkbox" aria-label="${T('选择 ','Select ')+r.sku}"${checked} /></td>
+    <td class="sku"><a href="#" data-cmd="edit">${r.sku}</a></td>
+    <td><div class="pcell">
+      <span class="pimg" style="--tone:${r.tone}"><svg viewBox="0 0 40 52" aria-hidden="true"><use href="#g-${r.shape}"/></svg></span>
+      <span class="tname"><span class="nm">${esc(nm)}</span><span class="sub">${esc(fab)}</span></span>
+    </div></td>
+    <td class="cat col-md">${esc(cat)}</td>
+    <td class="n money">${money(r.price)}</td>
+    <td class="n col-md">${r.stock}</td>
+    <td class="date col-md">${dt}</td>
+    <td><span class="tag ${st.cls}">${LANG==='en'?st.en:st.zh}</span></td>
+    <td><div class="acts">
+      <button class="txt" data-cmd="edit">${T('编辑','Edit')}</button>
+      <button class="more" data-cmd="menu" aria-label="${T('更多操作：','More actions: ')+esc(nm)}">···</button>
+    </div></td>
+  </tr>`;
+}
+
+function render(){
+  const list = filtered();
+  const c = counts();
+  const pages = Math.max(1, Math.ceil(list.length / state.size));
+  if (state.page > pages) state.page = pages;
+  const start = (state.page - 1) * state.size;
+  const pageRows = list.slice(start, start + state.size);
+
+  const tb = document.querySelector('#v-list tbody');
+  tb.innerHTML = pageRows.map(rowHTML).join('');
+
+  const empty = document.getElementById('tbl-empty');
+  empty.hidden = list.length !== 0;
+  empty.querySelector('.empty h3').textContent = T('没有符合条件的记录','Nothing matches these filters');
+  empty.querySelector('.empty p').textContent = T('换个关键词，或清除筛选条件后重试。','Try another keyword, or clear the filters.');
+
+  // 分段器计数
+  document.querySelectorAll('#v-list .seg button').forEach(b => {
+    const k = b.dataset.filter;
+    const em = b.querySelector('em');
+    if (em) em.textContent = c[k];
+    b.classList.toggle('on', k === state.filter);
+  });
+  // 页头 / 分页状态：按当前语言整句写，避免碎片拼接；
+  // 同步 dataset 以免语言切换时用旧模板覆盖实时数字
+  const pc = document.querySelector('#v-list .ph__count');
+  pc.dataset.enHtml = `<b>${c.all}</b> in catalogue · <b>${c.live}</b> live`;
+  pc.dataset.zhHtml = `在册 <b>${c.all}</b> 款 · 在售 <b>${c.live}</b>`;
+  pc.innerHTML = LANG === 'en' ? pc.dataset.enHtml : pc.dataset.zhHtml;
+  const pi = document.querySelector('#v-list .pager__info');
+  pi.dataset.enHtml = `<b>${list.length}</b> styles · page <b>${state.page}</b> of <b>${pages}</b>`;
+  pi.dataset.zhHtml = `共 <b>${list.length}</b> 条 · 第 <b>${state.page}</b> / <b>${pages}</b> 页`;
+  pi.innerHTML = LANG === 'en' ? pi.dataset.enHtml : pi.dataset.zhHtml;
+  document.querySelector('#v-list caption').textContent = LANG === 'en'
+    ? `Style list, ${list.length} records, page ${state.page} of ${pages}, ${state.size} per page`
+    : `款号列表，共 ${list.length} 条，当前第 ${state.page} 页，每页 ${state.size} 条`;
+
+  // 页码
+  const pgs = document.querySelector('#v-list .pgs');
+  let h = '';
+  const dir = n => `<a class="pg pg--dir" href="#" data-page="${n}">${T('下一页','Next')}</a>`;
+  h += state.page <= 1
+    ? `<span class="pg pg--dir off">${T('上一页','Prev')}</span>`
+    : `<a class="pg pg--dir" href="#" data-page="${state.page-1}">${T('上一页','Prev')}</a>`;
+  for (let i = 1; i <= pages; i++)
+    h += `<a class="pg ${i===state.page?'on':''}" href="#" data-page="${i}" ${i===state.page?'aria-current="page"':''}>${i}</a>`;
+  h += state.page >= pages
+    ? `<span class="pg pg--dir off">${T('下一页','Next')}</span>`
+    : dir(state.page + 1);
+  const sel = `<select class="psize" aria-label="${T('每页条数','Rows per page')}">
+    ${[10,20,50].map(n=>`<option value="${n}" ${n===state.size?'selected':''}>${n} ${T('条 / 页','/ page')}</option>`).join('')}
+  </select>`;
+  pgs.innerHTML = h + sel;
+
+  // 批量条：整句重建，避免中英语序把计数节点挤掉
+  const bulkBar = document.getElementById('bulk');
+  bulkBar.hidden = state.sel.size === 0;
+  const bnEl = document.querySelector('#v-list .bulk__n');
+  const n = state.sel.size;
+  bnEl.dataset.enHtml = `<b id='bulk-n'>${n}</b> selected`;
+  bnEl.dataset.zhHtml = `已选 <b id="bulk-n">${n}</b> 项`;
+  bnEl.innerHTML = LANG === 'en' ? bnEl.dataset.enHtml : bnEl.dataset.zhHtml;
+  // 全选框状态
+  const all = document.querySelector('#v-list thead .ck');
+  if (all) {
+    const onPage = pageRows.map(r => r.sku);
+    all.checked = onPage.length > 0 && onPage.every(s => state.sel.has(s));
+    all.indeterminate = !all.checked && onPage.some(s => state.sel.has(s));
+  }
+  // 控制台计数与数据同步
+  const nums = document.querySelectorAll('#v-console .stat__num');
+  if (nums.length >= 3) { nums[0].textContent = c.live; nums[1].textContent = c.draft; nums[2].textContent = c.low; }
+}
+
+/* 语言切换后重绘数据区（数据在 JS 里，不走字典） */
+window.__onLang = () => {
+  render();
+  const tb = document.getElementById('toasts'); if (tb) tb.innerHTML = '';
+  const g = document.getElementById('gkw');
+  if (g) g.placeholder = T('搜索款号、订单…','Search styles, orders…');
+};
+
+/* ── 行菜单 ───────────────────────────────────────── */
+const menu = document.getElementById('rowmenu');
+let menuSku = null;
+function openMenu(btn, sku){
+  menuSku = sku;
+  menu.hidden = false;
+  const r = btn.getBoundingClientRect();
+  const w = menu.offsetWidth, h = menu.offsetHeight;
+  menu.style.left = Math.max(8, Math.min(r.right - w, window.innerWidth - w - 8)) + 'px';
+  menu.style.top = (r.bottom + h + 8 > window.innerHeight ? r.top - h - 4 : r.bottom + 4) + 'px';
+}
+document.addEventListener('click', e => {
+  if (!menu.hidden && !e.target.closest('#rowmenu') && !e.target.closest('[data-cmd="menu"]')) menu.hidden = true;
+});
+
+/* ── 列表页：事件委托 ─────────────────────────────── */
+const vList = document.getElementById('v-list');
+vList.addEventListener('click', e => {
+  const seg = e.target.closest('.seg button');
+  if (seg) { state.filter = seg.dataset.filter; state.page = 1; render(); return; }
+  const pg = e.target.closest('.pg[data-page]');
+  if (pg) { e.preventDefault(); state.page = +pg.dataset.page; render();
+    document.querySelector('.main').scrollTo({top:0,behavior:'smooth'}); return; }
+  const cmd = e.target.closest('[data-cmd]');
+  if (cmd) {
+    e.preventDefault();
+    const sku = cmd.closest('tr') ? cmd.closest('tr').dataset.sku : null;
+    const act = cmd.dataset.cmd;
+    if (act === 'edit')  { openEdit(sku); return; }
+    if (act === 'menu')  { openMenu(cmd, sku); return; }
+    if (act === 'new')   { openEdit(null); return; }
+    if (act === 'reset') { state.q=''; state.filter='all'; state.page=1;
+      document.getElementById('kw').value=''; render(); toast(T('筛选已重置','Filters reset'),T('显示全部 60 条记录。','Showing all 60 records.')); return; }
+    if (act === 'publish' || act === 'unpublish') {
+      if (!state.sel.size) { toast(T('未选择行','Nothing selected'),T('请先勾选要操作的款号。','Select styles first.'),true); return; }
+      state.sel.forEach(s => { const r = DATA.find(x => x.sku === s); if (r)
+        r.st = act === 'publish' ? 'live' : 'draft'; });
+      const n = state.sel.size; state.sel.clear(); render();
+      toast(T('批量操作已生效','Bulk update applied'),
+        T(`${n} 款已${act==='publish'?'上架':'下架'}。`,`${n} styles ${act==='publish'?'published':'unpublished'}.`));
+      return;
+    }
+    if (act === 'clear') { state.sel.clear(); render(); return; }
+  }
+});
+vList.addEventListener('input', e => {
+  if (e.target.id === 'kw') { state.q = e.target.value; state.page = 1; render(); }
+});
+vList.addEventListener('change', e => {
+  if (e.target.classList.contains('psize')) { state.size = +e.target.value; state.page = 1; render(); return; }
+  if (e.target.matches('thead .ck')) {
+    const onPage = filtered().slice((state.page-1)*state.size, state.page*state.size).map(r=>r.sku);
+    if (e.target.checked) onPage.forEach(s => state.sel.add(s));
+    else onPage.forEach(s => state.sel.delete(s));
+    render(); return;
+  }
+  if (e.target.matches('tbody .ck')) {
+    const s = e.target.closest('tr').dataset.sku;
+    if (e.target.checked) state.sel.add(s); else state.sel.delete(s);
+    render();
+  }
+});
+
+/* ── 行菜单命令 ───────────────────────────────────── */
+menu.addEventListener('click', e => {
+  const b = e.target.closest('button[data-mcmd]'); if (!b) return;
+  const r = DATA.find(x => x.sku === menuSku);
+  menu.hidden = true;
+  const c = b.dataset.mcmd;
+  if (c === 'copy') {
+    navigator.clipboard && navigator.clipboard.writeText(menuSku).catch(()=>{});
+    toast(T('款号已复制','SKU copied'), menuSku); return;
+  }
+  if (c === 'edit') { openEdit(menuSku); return; }
+  if (c === 'toggle' && r) {
+    r.st = r.st === 'draft' ? 'live' : 'draft'; render();
+    toast(T('状态已更新','State updated'),
+      T(`${r.sku} 现为${r.st==='live'?'在售':'草稿'}。`,`${r.sku} is now ${r.st==='live'?'live':'draft'}.`)); return;
+  }
+  if (c === 'del') { openDialog('del'); return; }
+});
+
+/* ── 编辑页：真实回填 ─────────────────────────────── */
+function openEdit(sku){
+  const r = DATA.find(x => x.sku === sku);
+  go('edit');
+  if (!r) {
+    toast(T('新建款号','New style'), T('已载入空白表单，保存后写入演示数据。','Blank form loaded; save writes to demo data.'));
+    return;
+  }
+  const set = (sel, val) => { const el = document.querySelector('#v-edit ' + sel); if (el) { el.value = val; el.setAttribute('value', val); } };
+  set('input[value="FL-HM-01"]', r.sku);
+  set('#name', (LANG==='en'?r.ne:r.nz) + ' · ' + (LANG==='en'?r.ve:r.vz));
+  set('input[value="1280.00"]', r.price.toFixed(2));
+  document.querySelector('#v-edit .ph p').textContent = LANG==='en'
+    ? `SKU ${r.sku} · created 2 Oct 2026. The SKU is immutable; each save is guarded by the version column.`
+    : `款号 ${r.sku} · 创建于 2026.10.02。款号创建后不可修改，保存时以 version 校验并发。`;
+  toast(T('已载入款号','Style loaded'), r.sku);
+}
+
+/* ── 弹窗 ─────────────────────────────────────────── */
+function openDialog(id){ const d = document.getElementById(id); if (d && !d.open) d.showModal(); }
+function closeDialog(d){ if (d && d.open) d.close(); }
+
+/* ── 侧栏导航：映射到现有视图，不假装跳转 ─────────── */
+const NAVMAP = {
+  console:'console', products:'list', categories:'list', stock:'edit',
+  users:'list', orders:'order', security:'kit', logs:'kit'
+};
+document.querySelectorAll('.side__item').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const k = a.dataset.nav;
+    document.querySelectorAll('.side__item').forEach(x => x.removeAttribute('aria-current'));
+    a.setAttribute('aria-current','page');
+    go(NAVMAP[k] || 'console');
+    setDrawer(false);
+    if (!['console','products','orders'].includes(k))
+      toast(T('模块占位','Module placeholder'),
+        T(`「${a.textContent.trim()}」在 T13 起接入；此处先展示最接近的页面结构。`,
+          `“${a.textContent.trim()}” lands from T13. Showing the closest screen for now.`));
+  });
+});
+
+/* ── 顶栏 ─────────────────────────────────────────── */
+document.querySelectorAll('.topbar [data-top]').forEach(b => {
+  b.addEventListener('click', () => {
+    const k = b.dataset.top;
+    if (k === 'search') { go('list'); setTimeout(()=>document.getElementById('kw').focus(), 60); return; }
+    if (k === 'new') { openEdit(null); return; }
+    if (k === 'bell') { toast(T('2 条待处理','2 items need attention'),
+      T('订单待发货 2 笔 · 低库存 3 款。','2 orders to ship · 3 styles low in stock.')); return; }
+    if (k === 'help') { toast(T('帮助','Help'), T('键盘：/ 搜索 · ESC 关闭 · Tab 切换焦点。','Keys: / search · ESC close · Tab to move focus.')); return; }
+  });
+});
+const gs = document.getElementById('gkw');
+if (gs) gs.addEventListener('input', () => {
+  state.q = gs.value; state.filter='all'; state.page=1;
+  const kw = document.getElementById('kw'); if (kw) kw.value = gs.value;
+  go('list'); render();
+});
+
+/* ── 全局兜底：任何一个按钮都必须有反馈 ───────────── */
+document.querySelector('.shell').addEventListener('click', e => {
+  const b = e.target.closest('button, a');
+  if (!b || b.closest('.proto')) return;
+  if (b.closest('#v-list') || b.closest('.side') || b.closest('.topbar')) return;
+  if (b.dataset.cmd || b.closest('.rowmenu')) return;
+  const label = (b.textContent || b.getAttribute('aria-label') || '').trim().replace(/\s+/g,' ').slice(0,24);
+  if (!label) return;
+  if (/删除|Delete|确认删除/.test(label)) { openDialog('del'); return; }
+  if (/保存|Save|确认发货|Mark as shipped|新增款号|New style/.test(label)) {
+    toast(T('已保存','Saved'), T('改动已写入演示数据；真实持久化在 T13 起接入。','Saved to demo data; persistence lands from T13.'));
+    document.querySelector('#progress').classList.remove('run');
+    void document.querySelector('#progress').offsetWidth;
+    document.querySelector('#progress').classList.add('run');
+    return;
+  }
+  if (/取消|Cancel/.test(label)) { closeDialog(b.closest('dialog')); go('list'); return; }
+  demo(label);
+});
+
+/* ── 弹窗按钮 ─────────────────────────────────────── */
+document.querySelectorAll('dialog button').forEach(b => {
+  b.addEventListener('click', () => {
+    closeDialog(b.closest('dialog'));
+    if (/确认删除|Confirm delete/.test(b.textContent))
+      toast(T('已删除','Deleted'), T('该分类的 4 款引用已先行迁移。','The 4 references were reassigned first.'));
+    else toast(T('已取消','Cancelled'), T('未产生任何写操作。','No write was performed.'));
+  });
+});
+document.querySelector('.side__out').addEventListener('click', e => {
+  e.preventDefault(); toast(T('退出登录','Sign out'), T('演示原型不结束会话。','The demo session stays open.'));
+});
+document.addEventListener('keydown', e => {
+  if (e.key === '/' && !/INPUT|TEXTAREA/.test(document.activeElement.tagName)) {
+    e.preventDefault(); go('list'); setTimeout(()=>document.getElementById('kw').focus(),60);
+  }
+});
+
+render();
+
 </script>
 </body>
 </html>

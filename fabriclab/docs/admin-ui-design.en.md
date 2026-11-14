@@ -3,6 +3,8 @@
 > Keeps the storefront's three-colour palette and square corners, rebuilt around the typographic logic of a **sample book**. Target directory `fabriclab/admin`, stylesheet `src/main/resources/static/css/admin.css`.
 > Hi-fi prototype: `docs/admin-ui-prototype.html` (single file, five views, toggle ZH / EN in the top bar).
 > Chinese edition: `docs/admin-ui-design.md`.
+>
+> **V3 completion pass (14 Nov 2026)** — a hands-on audit showed v2 had turned "restraint" into "absence": zero product imagery, zero rail icons, and 91 of 103 clickable elements produced no response at all. V3 restores imagery, iconography, brand presence, operational density and working interaction. See **§6.13**; where it conflicts with earlier clauses, §6.13 governs.
 
 ## 1. Design thesis
 
@@ -12,7 +14,7 @@ Six rules follow from that:
 
 1. **Paper, not white cards.** The content area is one sheet (`#FBFAF7`); modules separate by a 1px rule and whitespace. White is spent only on layers that genuinely float — dialogs, toasts, dropdowns. The previous version wrapped every block in a bordered white card, fracturing the page into a dozen boxes that scrolled like a spreadsheet.
 2. **Serif narrates, sans-serif operates, tabular figures count.** Never mixed: headings, block titles, empty-state titles and dialog titles take the serif; body, tables, buttons and tags take the sans; amounts, quantities, SKUs, dates and page numbers take tabular figures with `font-variant-numeric: tabular-nums lining-nums`.
-3. **One signal colour, only for the present.** Terracotta `#B4643A` appears in exactly five places: the active rail indicator, attention dots, destructive buttons, focus rings, link hover. Everything else is ink and grey. The previous version turned the primary button orange on hover and the action column orange outright; when an accent is everywhere it stops being an accent.
+3. **One signal colour, only for the present.** Terracotta `#B4643A` marks the active rail item, attention dots, destructive buttons, focus rings and link hover. **V3 addition:** one large field on the dashboard — the featured-style banner, roughly 3.5% of the first screen — so the brand colour is actually present. Everything else stays ink and grey. The previous version turned the primary button orange on hover and the action column orange outright; when an accent is everywhere it stops being an accent.
 4. **Elevation only for overlays.** Table rows, cards, blocks — no shadow. A shadow means "this layer floats above the sheet," which only `<dialog>` and toast earn.
 5. **One primary action per screen.** At most one solid ink button in the page header; everything else is outlined or plain text. In-row, the resting state is a single "Edit"; `···` appears on hover or keyboard focus.
 6. **Never show a number you cannot query.** Every count, amount and quantity comes from the current SQL statement. Metrics without a real source (conversion, visitors, year-on-year) do not appear — whitespace is preferable to invention.
@@ -158,7 +160,7 @@ Eight-step spacing: `4 / 8 / 12 / 16 / 24 / 32 / 48 / 64`.
 | Active | 2px `--rust` bar at left (inset 8 top and bottom) + `--cream` text |
 | Footer | Top `1px rgba(cream,.1)`; 26×26 avatar square on 14% white; name 11.5px; role `ADMIN` 9.5px tracking `.14em`; sign-out icon at right |
 
-**Icons are gone from the rail.** The previous version carried eight 16px line icons in inconsistent construction — some assembled from rectangles, some hand-drawn paths — which read as found assets. Text-only navigation is quieter and closer to an editorial contents page. Hierarchy is carried by indent, tracking and three colour steps; it does not need pictograms.
+**V3 restores icons, but only after unifying their geometry.** v2 removed every rail icon, leaving a column of grey text with no scanning anchors and a visibly unfinished rail. V3 uses one `<symbol>` library: 16-unit grid, 1.4px stroke, round caps, no fills, eight distinct marks built the same way; 42% opacity at rest, 95% when active. Indent, fill and tracking still carry the hierarchy — the icon is an anchor, not the system.
 
 English edition widens the rail by 14px so two-word items ("Sessions & Security", "Stock & Gallery") stay on one line. Navigation labels use **Title Case** consistently; buttons, tags and body copy use sentence case. Chinese has no case distinction, so this rule exists only in the English build.
 
@@ -317,13 +319,13 @@ Read-only. Four fact groups: cookie name and port, 30-minute timeout, CSRF scope
 | Hover | Full row `--wash`, `.13s` |
 | Selected | Full row `#F1ECDF` |
 | Numerals | Tabular with `tabular-nums`, right-aligned; amounts fixed at two decimals with `¥` |
-| Swatch | `34×44`, flat fill + `inset 0 0 0 1px rgba(26,26,26,.06)`, like a fabric swatch |
+| Thumbnail | **V3**: `40×52` garment silhouette SVG (8 shapes × 3 colourways) with cloth shading, weave, seams, ribbing and a 2px drop shadow; scales 5.5% on row hover |
 | Empty | Head stays; the empty state occupies a full row |
 | Overflow | Container `overflow-x:auto`, table `min-width:900`; the page itself never scrolls sideways |
 
 **The head lost its fill.** The previous version laid `--fill` under the head and then a border on top, so with the card border the table opened with three stacked horizontal lines. This head now sits directly on paper and separates from data with a single `--rule-strong` — closer to a contents page.
 
-**Flat swatches replace faux texture.** The previous version painted `repeating-linear-gradient` diagonals to suggest fabric; at 34×44 it dissolved into grey noise, less convincing than no image at all. A flat fill with a 6% inner border reads as "this cloth is roughly this colour" without pretending to be a photograph.
+**V3 replaces colour blocks with silhouettes.** A flat rectangle reads as "image failed to load" at any size. A garment outline at least answers *what kind of piece is this, in which colour*. Shading and weave give volume without pretending to be photography, and the featured tile holds up at 150×196.
 
 No zebra striping: the row rules already do the work, and both together read as dirt.
 
@@ -333,7 +335,7 @@ No outlined boxes — eight bordered chips in one table become a field of patter
 
 | Meaning | Square | Text | Used for |
 |---|---|---|---|
-| In progress | `--rust` solid 5×5 | `--rust-ink` | Live, paid, awaiting dispatch |
+| In progress | `--rust` solid **7×7** (V3; 5×5 was near-invisible on HiDPI) | `--rust-ink` | Live, paid, awaiting dispatch |
 | Complete | `--ink` solid | `--ink` | Shipped, completed |
 | Neutral / draft | `--faint` solid | `--muted` | Draft, unpaid |
 | Terminal | 26% ink solid | `--faint` | Cancelled, disabled, sold out |
@@ -545,7 +547,7 @@ Copy comes from `messages.properties` / `messages_en.properties` with keys per s
 |---|---|---|
 | Content ground `#EDEAE2`, every module a bordered white card | Content is one sheet `#FBFAF7`; white only for overlays | A dozen white boxes fractured the page into spreadsheet software |
 | Body 13px, titles 26px | Body 14px, titles 34/37px | Everything ran small on a 1440 display: dense but weightless |
-| Eight line icons in the rail | No icons, text only | Icon construction was inconsistent and fought the type |
+| Eight inconsistent icons | v2 removed them → **V3 replaces them with one unified 1.4px library** | Removing them left a grey text column and dropped both scannability and finish |
 | Primary button hovered to terracotta | Hover darkens with an inner border | Two brand colours fighting on one button |
 | Accent spread across seven places | Consolidated to five | An accent everywhere is no accent |
 | Name column `auto`, swallowing the remainder | New "Updated" column, fixed widths | 270px of empty space at the right of every row |
@@ -570,3 +572,31 @@ Copy comes from `messages.properties` / `messages_en.properties` with keys per s
 | AC-28 Buy 2, restock 3 → 11 | 5.5 restock preview "after restock → 13" |
 | AC-29 Shipping an unpaid order is rejected; one shipment after payment | 5.8 "Mark as shipped" renders only for `PAID` |
 | Brief: no fabricated console statistics | 5.2 all four figures come from `COUNT`; no trend charts |
+
+### 6.13 V3 completion pass
+
+**Why it was rebuilt.** v2's typographic logic — paper, rules, chapter numbers — fixed the cheapness of the first version, but three consecutive rounds of subtraction turned *restraint* into *absence*. Evidence from walking the real interaction paths:
+
+| Measure | v2 | What it reads as |
+|---|---|---|
+| Real imagery / product thumbnails | none, 8 flat colour blocks | obviously placeholders |
+| Rail icons | 0 | a column of grey text, no scanning anchors |
+| Brand-colour area | five 5px dots | effectively unused |
+| Clickable elements | 103, **91 with no response at all** | a switchable static drawing, not a hi-fi prototype |
+| Table data | 8 hard-coded rows | filters, search, pagination and bulk actions are props |
+
+The "rushed" feeling was never a palette problem. It was a **completion problem**: the interface stopped at the wireframe stage, and every element looked like content that had not been filled in yet.
+
+**Six corrections.**
+
+1. **Surface hierarchy.** A new `--surface:#FFFFFF` work band (top bar, toolbar, table head, bulk bar) sits against the `--paper` sheet and floating white. These are **continuous horizontal bands, not white cards** — a deliberate guard against falling back to the first version's dozen boxes. The rail moves from flat black to warm `#211E1A` with a 3px terracotta brand rule at the top.
+2. **Brand presence.** The dashboard gains a featured-style banner (terracotta gradient, large serif headline, garment visual, four facts); the active nav item takes a pale terracotta fill with a 3px bar.
+3. **Imagery and iconography.** Eight garment silhouettes (turtleneck / shirt / scarf / coat / dress / jacket / polo / socks) in three colourways, with cloth shading, weave, seams, ribbing and shadow. A single 1.4px icon library returns to rail and top bar.
+4. **Visible operations.** Status squares 5→7px with body-depth labels; `···` moves from hover-only to 55% opacity at rest; the top bar gains global search (`/` focuses), quick-create, notifications and the account chip.
+5. **Real data.** Sixty bilingual records (20 styles × 3 colourways), interleaved by update time so colourways never run together. Filtering, search, pagination, rows-per-page, checkbox selection, bulk publish/unpublish, row menu, editor pre-fill, delete dialog, toasts and empty state all work; counts are derived from the data at render time.
+6. **Honest feedback.** Every clickable element produces an observable response. Modules not yet built do not fake navigation — they state "lands from T13". Toasts cap at three, dismiss after 4s, pause on hover, and are cleared on language switch (transient feedback is not re-translated).
+
+**Verification.** 26 end-to-end cases pass (search / filter / page / rows-per-page / bulk / row menu / editor pre-fill / rail navigation / ship / empty state / ZH⇄EN round trip / no horizontal overflow at 820 and 420); no JS errors. The prototype opens in a usable state, and language switching still follows the three node classes in §6.12.
+
+**Implementation unchanged.** Colour, spacing, component dimensions and the bilingual rules stand. V3 adds a surface layer and an icon library outside the `html[data-lang]` overrides; T13 extends `admin.css` using the class list in §10.1.
+
