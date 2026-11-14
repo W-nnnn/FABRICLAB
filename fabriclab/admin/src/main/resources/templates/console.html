@@ -1,79 +1,195 @@
 <!DOCTYPE html>
-<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments :: head(${brand + ' · 控制台'})}"></head>
-<body class="console-page">
-<header th:replace="~{fragments :: header}"></header>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.toLanguageTag()}">
+<head th:replace="~{fragments :: head('admin.console.title')}"></head>
+<body>
+<a class="skip" href="#main" th:text="#{admin.skip}">跳到主要内容</a>
 
-<main class="admin-main">
-    <section class="page-head">
-        <p class="page-head__eyebrow">控制台</p>
-        <h1 th:text="|你好，${currentAdmin != null ? currentAdmin.displayName : '管理员'}|">你好，管理员</h1>
-        <p class="page-head__note">后台维护商品、库存、顾客与订单；页面只呈现真实查询结果，不展示未经统计的经营指标。</p>
-    </section>
+<div class="shell">
+    <div th:replace="~{fragments :: side('console')}"></div>
+    <div class="scrim" id="scrim"></div>
 
-    <section class="card-grid">
-        <article class="card">
-            <h2>登录身份</h2>
-            <dl class="facts">
-                <dt>账号</dt>
-                <dd th:text="${currentAdmin != null ? currentAdmin.username : '—'}">admin</dd>
-                <dt>显示名</dt>
-                <dd th:text="${currentAdmin != null ? currentAdmin.displayName : '—'}">平台管理员</dd>
-                <dt>角色</dt>
-                <dd>ADMIN</dd>
-                <dt>本次登录</dt>
-                <dd th:text="${signinAt != null ? signinAt : '—'}">2026-11-12 22:00:00</dd>
-            </dl>
-        </article>
+    <div class="wrap">
+        <div th:replace="~{fragments :: topbar(#{admin.nav.overview}, #{admin.console.title})}"></div>
 
-        <article class="card">
-            <h2>会话与访问</h2>
-            <dl class="facts">
-                <dt>会话 Cookie</dt>
-                <dd>ADMINSESSION（与用户端 STORESESSION 相互独立）</dd>
-                <dt>空闲超时</dt>
-                <dd>30 分钟</dd>
-                <dt>访问检查</dt>
-                <dd>每次请求复核角色 ADMIN 与启用状态，不符即失效会话</dd>
-                <dt>写操作防护</dt>
-                <dd>全部 POST 校验会话级表单令牌，缺失或篡改返回 403</dd>
-            </dl>
-        </article>
-    </section>
+        <main class="main" id="main">
+            <div class="page">
+                <div th:replace="~{fragments :: notice}"></div>
 
-    <section class="table-section">
-        <div class="table-section__head">
-            <h2>后台模块范围</h2>
-            <p>入口随对应模块任务启用；未启用的入口不提供链接，也不显示任何数量。</p>
-        </div>
-        <table class="admin-table">
-            <thead>
-            <tr>
-                <th>模块</th>
-                <th>维护内容</th>
-                <th>对应需求</th>
-                <th>状态</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="module : ${modules}">
-                <td>
-                    <a th:if="${module.implemented}" th:href="${module.path}" th:text="${module.name}">模块</a>
-                    <span th:unless="${module.implemented}" th:text="${module.name}">模块</span>
-                </td>
-                <td th:text="${module.scope}">维护内容</td>
-                <td th:text="${module.requirement}">需求编号</td>
-                <td>
-                    <span class="tag tag--live" th:if="${module.implemented}">已启用</span>
-                    <span class="tag" th:unless="${module.implemented}">未启用</span>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-        <p class="empty-note" th:if="${#lists.isEmpty(modules)}">当前版本未交付后台模块入口。</p>
-    </section>
-</main>
+                <div class="ph">
+                    <div>
+                        <div class="ph__eyebrow"><em>01</em><span th:text="#{admin.nav.overview}">概览</span></div>
+                        <h1 th:text="#{admin.console.title}">控制台</h1>
+                        <p th:text="#{admin.console.desc}">只呈现可由当次查询核对的事项。</p>
+                    </div>
+                    <div class="ph__act"><span class="ph__count" th:text="${today}">2026.11.14</span></div>
+                </div>
 
-<footer th:replace="~{fragments :: footer}"></footer>
+                <div class="hero" th:if="${featured != null}">
+                    <div class="hero__txt">
+                        <div class="hero__k">FABRICLAB · AW 2026</div>
+                        <h2 th:text="${tr.t(featured.name)}">山羊绒高领衫 · 燕麦</h2>
+                        <p th:text="${tr.t(featured.summary)}">内蒙古山羊绒，12 针织造。</p>
+                        <div class="hero__meta">
+                            <div><b th:text="${featured.sku}">FL-HM-01A</b><small th:text="#{admin.console.hero.sku}">款号</small></div>
+                            <div><b th:text="'¥' + ${#numbers.formatDecimal(featured.price,1,0)}">¥1,280</b><small th:text="#{admin.console.hero.retail}">RETAIL</small></div>
+                            <div><b th:text="${featured.stock}">18</b><small th:text="#{admin.console.hero.stock}">在库</small></div>
+                            <div><b th:text="${featured.statusLabel}">已上架</b><small th:text="#{admin.console.hero.status}">STATUS</small></div>
+                        </div>
+                    </div>
+                    <div class="hero__vis">
+                        <span class="pimg" style="--tone:#E7DFCF"><svg viewBox="0 0 40 52" aria-hidden="true"><use th:href="|#g-${featured.shape}|" href="#g-turtleneck"/></svg></span>
+                        <em>FABRICLAB / AW 2026</em>
+                    </div>
+                </div>
+
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat__k"><span th:text="#{admin.console.published}">在售款号</span><s>LIVE</s></div>
+                        <div class="stat__v"><span class="stat__num" th:text="${statLive}">52</span><small th:text="#{admin.console.unit.style}">款</small></div>
+                        <div class="stat__n" th:text="#{admin.prod.f.statusHint}">在售状态在用户端可见</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat__k"><span th:text="#{admin.console.draft}">草稿款号</span><s>DRAFT</s></div>
+                        <div class="stat__v"><span class="stat__num" th:text="${statDraft}">6</span><small th:text="#{admin.console.unit.style}">款</small></div>
+                        <div class="stat__n" th:text="#{admin.console.foot.draft}">后台可见</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat__k"><span th:text="#{admin.console.low}">低库存</span><s>&le; 3</s></div>
+                        <div class="stat__v"><span class="stat__num" th:text="${statLow}">2</span><small th:text="#{admin.console.unit.style}">款</small></div>
+                        <div class="stat__n" th:text="#{admin.console.foot.low}">建议尽快补货</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat__k"><span th:text="#{admin.console.toShip}">待发货</span><s>PAID</s></div>
+                        <div class="stat__v"><span class="stat__num" th:text="${statShip}">2</span><small th:text="#{admin.console.unit.order}">笔</small></div>
+                        <div class="stat__n" th:text="#{admin.console.foot.ship}">已支付未发出</div>
+                    </div>
+                </div>
+
+                <div class="cols">
+                    <div>
+                        <section class="block">
+                            <div class="block__head">
+                                <span class="block__no">01</span>
+                                <div>
+                                    <h2 th:text="#{admin.console.needs}">待处理</h2>
+                                    <p th:text="#{admin.console.modulesNote}">按状态实时查出，处理完自动消失。</p>
+                                </div>
+                            </div>
+                            <ul class="ledger">
+                                <li th:each="item : ${needs}">
+                                    <a th:href="${item.href}">
+                                        <span class="tag" th:classappend="${item.accent} ? 'tag--act'" th:text="${item.label}">草稿</span>
+                                        <span class="ledger__t"><b th:text="${item.title}">6 款仍是草稿</b>
+                                            <small th:text="${item.detail}">补齐面料与工艺后即可上架</small></span>
+                                        <span class="ledger__go">
+                                            <span th:text="#{admin.action.view}">查看</span>
+                                            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 8h10M9.4 4.4L13 8l-3.6 3.6"/></svg>
+                                        </span>
+                                    </a>
+                                </li>
+                            </ul>
+                            <p class="empty-note" th:if="${#lists.isEmpty(needs)}" th:text="#{admin.prod.emptyDataText}">暂无待处理事项。</p>
+                        </section>
+
+                        <section class="block">
+                            <div class="block__head">
+                                <span class="block__no">02</span>
+                                <div>
+                                    <h2 th:text="#{admin.console.recent}">最近上架</h2>
+                                    <p th:text="#{admin.console.modulesNote}">按更新时间倒序取三条。</p>
+                                </div>
+                            </div>
+                            <ul class="recent">
+                                <li th:each="r : ${recent}">
+                                    <span class="recent__t" th:text="${r.time}">28 分钟前</span>
+                                    <span class="recent__n"><a th:href="@{/admin/products/{id}/edit(id=${r.id})}" th:text="${r.sku}">FL-HM-01A</a>
+                                        <span th:text="${tr.t(r.name)}">山羊绒高领衫</span></span>
+                                    <span class="tag" th:classappend="${r.live} ? 'tag--live'" th:text="${r.status}">在售</span>
+                                </li>
+                            </ul>
+                        </section>
+
+                        <section class="block">
+                            <div class="block__head">
+                                <span class="block__no">03</span>
+                                <div>
+                                    <h2 th:text="#{admin.console.modules}">后台模块范围</h2>
+                                    <p th:text="#{admin.console.modulesNote}">入口随对应模块任务启用。</p>
+                                </div>
+                            </div>
+                            <div class="tblwrap">
+                                <table class="tbl" style="min-width:0">
+                                    <thead><tr>
+                                        <th th:text="#{admin.console.module}">模块</th>
+                                        <th th:text="#{admin.console.scope}">维护内容</th>
+                                        <th th:text="#{admin.console.requirement}">对应需求</th>
+                                        <th th:text="#{admin.console.state}">状态</th>
+                                    </tr></thead>
+                                    <tbody>
+                                    <tr th:each="module : ${modules}">
+                                        <td>
+                                            <a th:if="${module.implemented}" th:href="${module.path}" th:text="${module.name}">分类与商品</a>
+                                            <span th:unless="${module.implemented}" th:text="${module.name}">库存与相册</span>
+                                        </td>
+                                        <td th:text="${module.scope}">维护内容</td>
+                                        <td th:text="${module.requirement}">FR-A-02</td>
+                                        <td><span class="tag" th:classappend="${module.implemented} ? 'tag--live'"
+                                                  th:text="${module.implemented} ? #{admin.state.enabled} : #{admin.state.disabled}">未启用</span></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <p class="empty-note" th:if="${#lists.isEmpty(modules)}" th:text="#{admin.console.empty}">当前版本未交付后台模块入口。</p>
+                        </section>
+                    </div>
+
+                    <aside class="aside-col">
+                        <div class="aside-sec">
+                            <h3 th:text="#{admin.console.runtime}">运行状态</h3>
+                            <dl class="facts">
+                                <dt th:text="#{admin.console.port}">服务端口</dt><dd>8081</dd>
+                                <dt th:text="#{admin.console.prefix}">路径前缀</dt><dd>/admin</dd>
+                                <dt th:text="#{admin.console.sessionTimeout}">会话超时</dt><dd th:text="#{admin.console.timeoutValue}">30 分钟</dd>
+                                <dt th:text="#{admin.console.csrfOn}">CSRF</dt><dd th:text="#{admin.state.enabled}">已启用</dd>
+                                <dt th:text="#{admin.console.database}">数据库</dt><dd th:text="#{admin.console.connected}">连接正常</dd>
+                            </dl>
+                        </div>
+                        <div class="aside-sec">
+                            <h3 th:text="#{admin.console.identity}">登录身份</h3>
+                            <dl class="facts">
+                                <dt th:text="#{admin.console.username}">账号</dt>
+                                <dd th:text="${currentAdmin != null ? currentAdmin.username : '—'}">admin</dd>
+                                <dt th:text="#{admin.console.displayName}">显示名</dt>
+                                <dd th:text="${currentAdmin != null ? currentAdmin.displayName : '—'}">平台管理员</dd>
+                                <dt th:text="#{admin.console.role}">角色</dt><dd>ADMIN</dd>
+                                <dt th:text="#{admin.console.signinAt}">本次登录</dt>
+                                <dd th:text="${signinAt != null ? signinAt : '—'}">—</dd>
+                            </dl>
+                        </div>
+                        <div class="aside-sec">
+                            <h3 th:text="#{admin.console.session}">会话与访问</h3>
+                            <dl class="facts">
+                                <dt th:text="#{admin.console.cookie}">会话 Cookie</dt>
+                                <dd th:text="#{admin.console.cookieValue}">ADMINSESSION（与用户端 STORESESSION 相互独立）</dd>
+                                <dt th:text="#{admin.console.timeout}">空闲超时</dt><dd th:text="#{admin.console.timeoutValue}">30 分钟</dd>
+                                <dt th:text="#{admin.console.access}">访问检查</dt><dd th:text="#{admin.console.accessValue}">每次请求复核</dd>
+                                <dt th:text="#{admin.console.csrf}">写操作防护</dt><dd th:text="#{admin.console.csrfValue}">全部 POST 校验令牌</dd>
+                            </dl>
+                        </div>
+                        <div class="aside-sec">
+                            <h3 th:text="#{admin.console.note}">说明</h3>
+                            <p style="font-size:11.5px;color:var(--muted);line-height:1.8" th:text="#{admin.console.noteText}">说明文字</p>
+                        </div>
+                    </aside>
+                </div>
+
+                <footer th:replace="~{fragments :: footer}"></footer>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div th:replace="~{fragments :: icons}"></div>
+<script th:replace="~{fragments :: shellJs}"></script>
 </body>
 </html>

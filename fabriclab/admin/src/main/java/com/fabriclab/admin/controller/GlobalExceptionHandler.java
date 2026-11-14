@@ -4,6 +4,8 @@ import com.fabriclab.admin.exception.BusinessException;
 import com.fabriclab.admin.exception.CsrfViolationException;
 import com.fabriclab.admin.exception.NotFoundException;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.dao.DataAccessException;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -16,9 +18,19 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    private final MessageSource messages;
+
+    public GlobalExceptionHandler(MessageSource messages) {
+        this.messages = messages;
+    }
+
+    private String t(String key, String fallback) {
+        return messages.getMessage(key, null, fallback, LocaleContextHolder.getLocale());
+    }
+
     @ExceptionHandler(BusinessException.class)
     public String handleBadRequest(BusinessException e, Model model, HttpServletResponse response) {
-        return render(model, response, 400, "参数错误", e.getMessage());
+        return render(model, response, 400, t("admin.error.badRequest", "参数错误"), e.getMessage());
     }
 
     @ExceptionHandler(NotFoundException.class)
@@ -28,17 +40,23 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CsrfViolationException.class)
     public String handleCsrfViolation(Model model, HttpServletResponse response) {
-        return render(model, response, 403, "无效表单防护请求", "表单校验未通过，请返回重新操作");
+        return render(model, response, 403,
+                t("admin.error.csrf", "无效表单防护请求"),
+                t("admin.error.csrfText", "表单校验未通过，请返回重新操作"));
     }
 
     @ExceptionHandler(DataAccessException.class)
     public String handleDataAccess(Model model, HttpServletResponse response) {
-        return render(model, response, 500, "加载失败", "数据暂时无法读取，请稍后重试");
+        return render(model, response, 500,
+                t("admin.error.loadFailed", "加载失败"),
+                t("admin.error.loadFailedText", "数据暂时无法读取，请稍后重试"));
     }
 
     @ExceptionHandler(Exception.class)
     public String handleUnexpected(Model model, HttpServletResponse response) {
-        return render(model, response, 500, "服务暂时不可用", "发生未知错误，请稍后重试");
+        return render(model, response, 500,
+                t("admin.error.unexpected", "服务暂时不可用"),
+                t("admin.error.unexpectedText", "发生未知错误，请稍后重试"));
     }
 
     private String render(Model model, HttpServletResponse response, int status,

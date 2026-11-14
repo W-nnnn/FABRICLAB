@@ -1,38 +1,245 @@
 <!DOCTYPE html>
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
-<head th:fragment="head(title)">
+<head th:fragment="head(titleKey)">
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title th:text="${title}">FABRICLAB 管理台</title>
+    <title th:text="${brand} + ' · ' + #{${titleKey}}">FABRICLAB 管理台</title>
+    <link rel="icon" href="data:," />
     <link rel="stylesheet" th:href="@{/css/admin.css}" />
 </head>
 <body>
 
-<header class="admin-header" th:fragment="header">
-    <div class="admin-header__inner">
-        <a class="admin-brand" th:href="@{/admin/console}">
-            <img th:src="@{/images/logo.png}" alt="FABRICLAB 标志" />
-            <span><b th:text="${brand}">FABRICLAB</b><small th:text="|${tagline} ${consoleName}|">未染 管理台</small></span>
-        </a>
-        <nav class="admin-session" th:if="${currentAdmin != null}">
-            <span class="admin-session__who">
-                <b th:text="${currentAdmin.displayName}">平台管理员</b>
-                <small th:text="|账号 ${currentAdmin.username} · 角色 ADMIN|">账号 admin · 角色 ADMIN</small>
-            </span>
-            <form th:action="@{/admin/signout}" method="post">
-                <input type="hidden" name="_csrf" th:value="${csrfToken}" />
-                <button type="submit" class="admin-signout">退出</button>
-            </form>
-        </nav>
-    </div>
-</header>
+<!-- 图标与服装剪影：与设计原型同一套 symbol，落地时直接复用 -->
+<svg th:fragment="icons" xmlns="http://www.w3.org/2000/svg"
+     style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
 
-<footer class="admin-footer" th:fragment="footer">
-    <div class="admin-footer__inner">
-        <span th:text="${brand}">FABRICLAB</span>
-        <span th:text="|${tagline} · 管理台 · 端口 8081|">未染 · 管理台</span>
+  <defs>
+    <!-- 统一图标：16 格 / 1.4 描边 / 圆头 -->
+    <symbol id="i-dash" viewBox="0 0 16 16"><rect x="2.2" y="2.2" width="5" height="5"/><rect x="8.8" y="2.2" width="5" height="5"/><rect x="2.2" y="8.8" width="5" height="5"/><rect x="8.8" y="8.8" width="5" height="5"/></symbol>
+    <symbol id="i-styles" viewBox="0 0 16 16"><path d="M8 2.4v2M5.6 4.4a2.4 2.4 0 114.8 0c0 .7-1 1.1-2.4 1.6-1.4.5-2.4.9-2.4 1.6L2 13.6h12l-3.6-6c0-.7-1-1.1-2.4-1.6"/></symbol>
+    <symbol id="i-cat" viewBox="0 0 16 16"><path d="M2.5 3.2h4.2M2.5 8h4.2M2.5 12.8h4.2M2.5 3.2v9.6M6.7 3.2h5.1M6.7 8h5.1M6.7 12.8h5.1"/></symbol>
+    <symbol id="i-stock" viewBox="0 0 16 16"><path d="M8 1.8L14.2 5 8 8.2 1.8 5zM1.8 8.2L8 11.4l6.2-3.2M1.8 11.2L8 14.4l6.2-3.2"/></symbol>
+    <symbol id="i-users" viewBox="0 0 16 16"><circle cx="6.2" cy="5.4" r="2.4"/><path d="M1.8 13.6c0-2.4 2-4 4.4-4s4.4 1.6 4.4 4M11 3.3a2.3 2.3 0 010 4.3M12.2 9.9c1.3.5 2.2 1.8 2.2 3.7"/></symbol>
+    <symbol id="i-orders" viewBox="0 0 16 16"><path d="M3.4 1.8h9.2v12.4l-1.6-1-1.5 1-1.5-1-1.5 1-1.5-1-1.6 1zM5.8 5.4h4.4M5.8 8.4h4.4"/></symbol>
+    <symbol id="i-security" viewBox="0 0 16 16"><path d="M8 1.8l5.2 2v4.3c0 3.1-2.1 5.3-5.2 6.1-3.1-.8-5.2-3-5.2-6.1V3.8zM5.9 7.9l1.5 1.5 2.8-2.8"/></symbol>
+    <symbol id="i-logs" viewBox="0 0 16 16"><path d="M2.6 3.6h10.8M2.6 8h10.8M2.6 12.4h7.2M2.6 3.6v8.8"/></symbol>
+    <symbol id="i-search" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.2"/><path d="M10.1 10.1L13.6 13.6"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 16 16"><path d="M4 11.4V7a4 4 0 018 0v4.4l1.2 1.4H2.8zM6.5 13.4a1.5 1.5 0 003 0"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 16 16"><path d="M8 3v10M3 8h10"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 16 16"><path d="M10.6 2.8l2.6 2.6-7.4 7.4-3.2.6.6-3.2zM9.4 4l2.6 2.6"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 16 16"><path d="M2.8 4.4h10.4M5.6 4.4V2.6h4.8v1.8M4.2 4.4l.7 9h6.2l.7-9M6.6 7v4M9.4 7v4"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 16 16"><rect x="5.4" y="5.4" width="8" height="8"/><path d="M10.6 5.4V2.6H2.6v8h2.8"/></symbol>
+    <symbol id="i-off" viewBox="0 0 16 16"><circle cx="8" cy="8" r="5.8"/><path d="M3.2 3.2l9.6 9.6"/></symbol>
+    <symbol id="i-on" viewBox="0 0 16 16"><circle cx="8" cy="8" r="5.8"/><path d="M5.2 8.1l2 2 3.7-3.9"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 16 16"><path d="M3 8h10M9.4 4.4L13 8l-3.6 3.6"/></symbol>
+    <symbol id="i-check" viewBox="0 0 16 16"><path d="M3.2 8.3l3.1 3.1 6.5-6.8"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.2"/><path d="M8 4.6v4.2M8 11.2v.4"/></symbol>
+    <symbol id="i-box" viewBox="0 0 16 16"><path d="M8 1.8L14 5v6l-6 3.2L2 11V5zM2 5l6 3.2L14 5M8 8.2v6"/></symbol>
+    <symbol id="i-x" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8"/></symbol>
+    <symbol id="i-filter" viewBox="0 0 16 16"><path d="M2 3.4h12L9.4 8.2v4.4l-2.8 1.4V8.2z"/></symbol>
+
+    <!-- 布面明暗：让剪影有体积，而不是平涂图标 -->
+    <linearGradient id="clothShade" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity=".34"/>
+      <stop offset=".38" stop-color="#FFFFFF" stop-opacity=".02"/>
+      <stop offset=".72" stop-color="#000000" stop-opacity=".07"/>
+      <stop offset="1" stop-color="#000000" stop-opacity=".24"/>
+    </linearGradient>
+    <linearGradient id="clothFold" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#000" stop-opacity=".10"/>
+      <stop offset=".25" stop-color="#fff" stop-opacity=".13"/>
+      <stop offset=".5" stop-color="#000" stop-opacity=".05"/>
+      <stop offset=".75" stop-color="#fff" stop-opacity=".10"/>
+      <stop offset="1" stop-color="#000" stop-opacity=".12"/>
+    </linearGradient>
+
+    <!-- 服装母版：一次定义轮廓，两遍叠加（底色 + 明暗） -->
+    <path id="s-turtleneck" d="M15 2.6h10v7.4h-10zM13.4 9.4L6 11.8 1.6 34.8l5.8 1.8 4.2-13.2V48.4h18.4V23.4l4.2 13.2 5.8-1.8L34 11.8l-7.4-2.4-1.7 2.8H15.1z"/>
+    <path id="s-shirt" d="M13 3.8l7 6.2 7-6.2 7.4 3.2 3.6 10.8-5.6 2.2-2.6-5.6V48.4H10V14.4L7.4 20l-5.6-2.2L5.4 7z"/>
+    <path id="s-scarf" d="M7 3h12v31l-2.8 15h-6.4L7 34zM21 3h12v24l-2.8 8h-6.4L21 27z"/>
+    <path id="s-coat" d="M12 3.8l8 8 8-8 8.6 4.2 3.4 11-5.8 2.2-2.6-5.8V48.4H8.4V15.2L5.8 21 0 19l3.4-11z"/>
+    <path id="s-dress" d="M14 3h12l2 5 4.6 3.4-3.2 6.2-2.2-2.4L33.4 49H6.6l6.2-33.8-2.2 2.4-3.2-6.2L12 8z"/>
+    <path id="s-jacket" d="M13 3.8h14l8.4 3.8 3.6 10.8-5.8 2.2-2.6-5.8V42.4H9.4V15L6.8 20.8 1 18.6 4.6 7.6z"/>
+    <path id="s-polo" d="M12.6 3.8h6.2l-2 4h6.4l-2-4h6.2l7 3.2 3.6 10.8-5.6 2.2-2.6-5.8V48.4H10V14.4L7.4 20l-5.6-2.2L5.4 7z"/>
+    <path id="s-socks" d="M11 3h13v24h7.6a2 2 0 012 2v14a2 2 0 01-2 2H11a2 2 0 01-2-2V5a2 2 0 012-2z"/>
+
+    <symbol id="g-turtleneck" viewBox="0 0 40 52">
+      <use href="#s-turtleneck" fill="currentColor"/><use href="#s-turtleneck" fill="url(#clothShade)"/>
+      <path d="M15 3.6h10M15 5.4h10M15 7.4h10M15 9.2h10" stroke="rgba(26,26,26,.15)" stroke-width=".5" fill="none"/>
+      <path d="M13.6 23.6c4 1.2 8.8 1.2 12.8 0M13.6 46.8h12.8" stroke="rgba(255,255,255,.34)" stroke-width=".6" fill="none"/>
+      <path d="M16.4 12c-.5 11-.6 24-.4 35M23.8 12c.5 11 .6 24 .4 35" stroke="url(#clothFold)" stroke-width="2.2" fill="none"/>
+      <path d="M6 11.8L1.6 34.8M34 11.8L38.4 34.8" stroke="rgba(26,26,26,.13)" stroke-width=".6" fill="none"/>
+    </symbol>
+    <symbol id="g-shirt" viewBox="0 0 40 52">
+      <use href="#s-shirt" fill="currentColor"/><use href="#s-shirt" fill="url(#clothShade)"/>
+      <path d="M20 10.2v38M13 3.8l7 6.2 7-6.2" stroke="rgba(255,255,255,.36)" stroke-width=".65" fill="none"/>
+      <path d="M16.6 16c-.4 10-.4 22 0 32M23.4 16c.4 10 .4 22 0 32" stroke="url(#clothFold)" stroke-width="2" fill="none"/>
+      <g fill="rgba(26,26,26,.26)"><circle cx="20" cy="18" r=".85"/><circle cx="20" cy="26" r=".85"/><circle cx="20" cy="34" r=".85"/><circle cx="20" cy="42" r=".85"/></g>
+      <path d="M10 14.4V48M30 14.4V48" stroke="rgba(26,26,26,.12)" stroke-width=".55" fill="none"/>
+    </symbol>
+    <symbol id="g-scarf" viewBox="0 0 40 52">
+      <use href="#s-scarf" fill="currentColor"/><use href="#s-scarf" fill="url(#clothShade)"/>
+      <path d="M7 10.4h12M7 29.8h12M21 10.4h12M21 27h12" stroke="rgba(255,255,255,.3)" stroke-width=".6" fill="none"/>
+      <path d="M12 5c-1 14-1 26 0 42M27 5c1 10 1 18 0 28" stroke="url(#clothFold)" stroke-width="2" fill="none"/>
+      <path d="M9.6 49v-4M12.6 49v-4M15.6 49v-4M23.4 35v-4M26.4 35v-4M29.4 35v-4" stroke="currentColor" stroke-width=".9"/>
+    </symbol>
+    <symbol id="g-coat" viewBox="0 0 40 52">
+      <use href="#s-coat" fill="currentColor"/><use href="#s-coat" fill="url(#clothShade)"/>
+      <path d="M20 11.8v36.4M12 3.8l8 8 8-8" stroke="rgba(255,255,255,.32)" stroke-width=".7" fill="none"/>
+      <path d="M11 26h5M24 26h5M11 30h5M24 30h5" stroke="rgba(26,26,26,.18)" stroke-width=".8" fill="none"/>
+      <path d="M15 16c-.6 11-.6 22 0 32M25 16c.6 11 .6 22 0 32" stroke="url(#clothFold)" stroke-width="2" fill="none"/>
+      <g fill="rgba(26,26,26,.24)"><circle cx="20" cy="20" r=".9"/><circle cx="20" cy="30" r=".9"/><circle cx="20" cy="40" r=".9"/></g>
+    </symbol>
+    <symbol id="g-dress" viewBox="0 0 40 52">
+      <use href="#s-dress" fill="currentColor"/><use href="#s-dress" fill="url(#clothShade)"/>
+      <path d="M20 8.4V49M12 20c3 2 13 2 16 0" stroke="rgba(255,255,255,.32)" stroke-width=".7" fill="none"/>
+      <path d="M15 22l-4.4 25M25 22l4.4 25M18 23l-2 24M22 23l2 24" stroke="url(#clothFold)" stroke-width="1.5" fill="none"/>
+      <path d="M8 46h24" stroke="rgba(26,26,26,.14)" stroke-width=".6" fill="none"/>
+    </symbol>
+    <symbol id="g-jacket" viewBox="0 0 40 52">
+      <use href="#s-jacket" fill="currentColor"/><use href="#s-jacket" fill="url(#clothShade)"/>
+      <path d="M20 7.6v34.6M13 3.8l7 4 7-4" stroke="rgba(255,255,255,.34)" stroke-width=".7" fill="none"/>
+      <path d="M10.6 27h5.8M23.6 27h5.8" stroke="rgba(26,26,26,.2)" stroke-width=".9" fill="none"/>
+      <path d="M15 16c-.5 9-.5 18 0 26M25 16c.5 9 .5 18 0 26" stroke="url(#clothFold)" stroke-width="2" fill="none"/>
+      <path d="M9.4 40h21.2" stroke="rgba(26,26,26,.16)" stroke-width=".8" fill="none"/>
+    </symbol>
+    <symbol id="g-polo" viewBox="0 0 40 52">
+      <use href="#s-polo" fill="currentColor"/><use href="#s-polo" fill="url(#clothShade)"/>
+      <path d="M20 8v14M17 8h6" stroke="rgba(255,255,255,.34)" stroke-width=".7" fill="none"/>
+      <path d="M16 15c-.4 10-.4 22 0 33M24 15c.4 10 .4 22 0 33" stroke="url(#clothFold)" stroke-width="2" fill="none"/>
+      <g fill="rgba(26,26,26,.26)"><circle cx="20" cy="25" r=".85"/><circle cx="20" cy="31" r=".85"/></g>
+      <path d="M10 46h20" stroke="rgba(26,26,26,.13)" stroke-width=".6" fill="none"/>
+    </symbol>
+    <symbol id="g-socks" viewBox="0 0 40 52">
+      <use href="#s-socks" fill="currentColor"/><use href="#s-socks" fill="url(#clothShade)"/>
+      <path d="M9 11h15M9 24h15M24 30h9.6M9 42h24" stroke="rgba(255,255,255,.3)" stroke-width=".6" fill="none"/>
+      <path d="M16 5c-.6 10-.6 18 0 22M26 5c.6 10 .6 18 0 22" stroke="url(#clothFold)" stroke-width="2" fill="none"/>
+      <path d="M11 33.6h22.6" stroke="rgba(26,26,26,.14)" stroke-width=".7" fill="none"/>
+    </symbol>
+  </defs>
+
+</svg>
+
+<aside class="side" id="side" th:fragment="side(active)">
+    <div class="side__brand">
+        <span class="side__mark" th:text="${isEn != null && isEn ? 'F' : '未'}">未</span>
+        <span>
+            <b th:text="${brand}">FABRICLAB</b>
+            <small th:text="#{admin.brand.sub}">MANAGEMENT</small>
+        </span>
     </div>
+
+    <h2 class="side__group" th:text="#{admin.nav.overview}">概览</h2>
+    <a class="side__item" th:href="@{/admin/console}"
+       th:attr="aria-current=${active == 'console'} ? 'page' : null">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><use href="#i-dash"/></svg>
+        <span th:text="#{admin.nav.dashboard}">控制台</span>
+    </a>
+
+    <h2 class="side__group" th:text="#{admin.nav.products}">商品</h2>
+    <a class="side__item" th:href="@{/admin/categories}"
+       th:attr="aria-current=${active == 'categories'} ? 'page' : null">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><use href="#i-cat"/></svg>
+        <span th:text="#{admin.nav.categories}">分类维护</span>
+    </a>
+    <a class="side__item" th:href="@{/admin/products}"
+       th:attr="aria-current=${active == 'products'} ? 'page' : null">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><use href="#i-styles"/></svg>
+        <span th:text="#{admin.nav.styles}">款号维护</span>
+    </a>
+
+    <div class="side__foot">
+        <span class="side__ava" th:text="${isEn != null && isEn ? 'S' : (currentAdmin != null ? #strings.substring(currentAdmin.displayName,0,1) : 'A')}">沈</span>
+        <span class="side__who">
+            <b th:text="${currentAdmin != null ? currentAdmin.displayName : '—'}">平台管理员</b>
+            <small>ADMIN</small>
+        </span>
+        <form th:action="@{/admin/signout}" method="post">
+            <input type="hidden" name="_csrf" th:value="${csrfToken}" />
+            <button type="submit" class="side__out" th:aria-label="#{admin.top.signout}">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M6.2 2.4H3v11.2h3.2M10 5.2l2.8 2.8L10 10.8M12.6 8H6"/></svg>
+            </button>
+        </form>
+    </div>
+</aside>
+
+<div class="topbar" th:fragment="topbar(section,current)">
+    <button class="ibtn hamb" id="hamb" type="button" th:aria-label="#{admin.top.openNav}" aria-expanded="false" style="display:none">
+        <svg width="17" height="17" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2.4 4.6h11.2M2.4 8h11.2M2.4 11.4h11.2"/></svg>
+    </button>
+    <nav class="crumb" th:aria-label="#{admin.nav.breadcrumb}">
+        <span th:text="${section}" th:remove="tag">商品</span>
+        <i th:if="${current != null}">/</i>
+        <b th:if="${current != null}" th:text="${current}" aria-current="page">款号维护</b>
+    </nav>
+    <div class="topbar__tools">
+        <form class="gsearch" th:action="@{/admin/products}" method="get">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><use href="#i-search"/></svg>
+            <input type="search" name="kw" th:placeholder="#{admin.top.search}" th:value="${kw}" />
+            <kbd>/</kbd>
+        </form>
+        <a class="ibtn" th:href="@{/admin/products/new}" th:aria-label="#{admin.top.new}" th:title="#{admin.top.new}">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><use href="#i-plus"/></svg>
+        </a>
+        <button class="ibtn ibtn--dot" type="button" th:aria-label="#{admin.top.notify}" th:title="#{admin.top.notify}">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><use href="#i-bell"/></svg>
+        </button>
+        <span class="topbar__sep"></span>
+        <span class="env" th:text="#{admin.top.demo}">演示环境</span>
+        <div class="lang" th:aria-label="#{admin.lang.label}" role="group">
+            <a th:href="${langZhUrl}" th:classappend="${isEn == null || !isEn} ? 'on'" th:text="#{admin.lang.zh}">中文</a>
+            <a th:href="${langEnUrl}" th:classappend="${isEn} ? 'on'" th:text="#{admin.lang.en}">EN</a>
+        </div>
+        <div class="topbar__me">
+            <i th:text="${isEn != null && isEn ? 'S' : '沈'}">沈</i>
+            <span th:text="${currentAdmin != null ? currentAdmin.displayName : '—'}">沈未染</span>
+        </div>
+    </div>
+    <div id="progress"></div>
+</div>
+
+<footer class="colophon" th:fragment="footer">
+    <span th:text="#{admin.footer.left}">FABRICLAB 未染 · 管理台</span>
+    <span th:text="#{admin.footer.right}">会话 30 分钟空闲失效 · 全部写操作计入日志</span>
 </footer>
+
+<div class="alert" th:fragment="notice" th:if="${notice != null}"
+     th:classappend="${noticeKind == 'err'} ? 'alert--err' : 'alert--ok'"
+     th:attr="role=${noticeKind == 'err'} ? 'alert' : 'status'">
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" style="flex:none;margin-top:2px">
+        <use th:href="${noticeKind == 'err'} ? '#i-alert' : '#i-check'" href="#i-check"/>
+    </svg>
+    <span th:text="${notice}">已保存</span>
+    <button type="button" class="alert__x" aria-label="关闭" onclick="this.closest('.alert').remove()">×</button>
+</div>
+
+<script th:fragment="shellJs">
+(function () {
+    var side = document.getElementById('side');
+    var scrim = document.getElementById('scrim');
+    var hamb = document.getElementById('hamb');
+    if (!side || !hamb) return;
+    var mq = window.matchMedia('(max-width:1023px)');
+    function setDrawer(on) {
+        side.classList.toggle('open', on);
+        scrim.classList.toggle('on', on);
+        hamb.setAttribute('aria-expanded', on ? 'true' : 'false');
+    }
+    function sync() { hamb.style.display = mq.matches ? 'grid' : 'none'; if (!mq.matches) setDrawer(false); }
+    hamb.addEventListener('click', function () { setDrawer(!side.classList.contains('open')); });
+    scrim.addEventListener('click', function () { setDrawer(false); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setDrawer(false); });
+    document.querySelectorAll('.side__item').forEach(function (a) { a.addEventListener('click', function () { setDrawer(false); }); });
+    sync();
+    mq.addEventListener('change', sync);
+    document.addEventListener('keydown', function (e) {
+        if (e.key === '/' && !/INPUT|TEXTAREA/.test(document.activeElement.tagName)) {
+            var g = document.querySelector('.gsearch input');
+            if (g) { e.preventDefault(); g.focus(); }
+        }
+    });
+})();
+</script>
 
 </body>
 </html>

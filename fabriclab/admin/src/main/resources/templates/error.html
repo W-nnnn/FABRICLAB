@@ -1,20 +1,14 @@
 <!DOCTYPE html>
-<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FABRICLAB · 提示</title>
-    <link rel="stylesheet" th:href="@{/css/admin.css}" />
-</head>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.toLanguageTag()}">
+<head th:replace="~{fragments :: head('admin.error.fallbackTitle')}"></head>
 <body class="error-page">
 <main class="error-main">
-    <p class="error-code"
-       th:text="${statusCode != null ? statusCode : (status != null ? status : 500)}">400</p>
-    <h1 th:text="${errorTitle != null ? errorTitle : (error != null ? error : '请求无法完成')}">提示</h1>
-    <p th:text="${errorMessage != null ? errorMessage : (message != null ? message : '请求的资源不存在或暂时无法访问')}">说明</p>
+    <p class="error-code" th:text="${statusCode != null ? statusCode : (status != null ? status : 500)}">400</p>
+    <h1 th:text="${errorTitle != null ? errorTitle : (error != null ? error : #messages.msg('admin.error.fallbackTitle'))}">提示</h1>
+    <p th:text="${errorMessage != null ? errorMessage : (message != null ? message : #messages.msg('admin.error.fallbackText'))}">说明</p>
     <div class="error-actions">
-        <a th:href="@{/admin/console}">返回控制台</a>
-        <a th:href="@{/admin/signon}">重新登录</a>
+        <a th:href="@{/admin/console}" th:text="#{admin.error.back}">返回控制台</a>
+        <a th:href="@{/admin/signon}" th:text="#{admin.error.relogin}">重新登录</a>
     </div>
 </main>
 </body>

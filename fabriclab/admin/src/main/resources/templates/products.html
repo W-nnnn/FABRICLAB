@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.toLanguageTag()}">
+<head th:replace="~{fragments :: head('admin.prod.title')}"></head>
+<body>
+<a class="skip" href="#main" th:text="#{admin.skip}">跳到主要内容</a>
+<div class="shell">
+    <div th:replace="~{fragments :: side('products')}"></div>
+    <div class="scrim" id="scrim"></div>
+    <div class="wrap">
+        <div th:replace="~{fragments :: topbar(#{admin.nav.products}, #{admin.prod.title})}"></div>
+        <main class="main" id="main">
+            <div class="page">
+                <div th:replace="~{fragments :: notice}"></div>
+
+                <div class="ph">
+                    <div>
+                        <div class="ph__eyebrow"><em>02</em><span th:text="#{admin.nav.products}">商品</span></div>
+                        <h1 th:text="#{admin.prod.title}">款号维护</h1>
+                        <p th:text="#{admin.prod.note}">维护款号、面料工艺、价格与上架状态。</p>
+                    </div>
+                    <div class="ph__act">
+                        <span class="ph__count"
+                              th:text="#{admin.prod.countLine(${result.allCount},${result.liveCount})}">在册 60 款 · 在售 54</span>
+                        <a class="btn" th:href="@{/admin/products/new}" th:text="#{admin.prod.new}">新增款号</a>
+                    </div>
+                </div>
+
+                <div class="toolbar">
+                    <form class="search" th:action="@{/admin/products}" method="get">
+                        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><use href="#i-search"/></svg>
+                        <input type="search" name="kw" th:value="${kw}" th:placeholder="#{admin.prod.search}" />
+                        <input type="hidden" name="filter" th:value="${filter}" />
+                        <input type="hidden" name="size" th:value="${pageSize}" />
+                    </form>
+                    <div class="seg" role="group">
+                        <a th:href="@{/admin/products(kw=${kw},filter='all',size=${pageSize})}"
+                           th:classappend="${filter == 'all'} ? 'on'" ><span th:text="#{admin.prod.filterAll}">全部</span><em th:text="${result.allCount}">60</em></a>
+                        <a th:href="@{/admin/products(kw=${kw},filter='live',size=${pageSize})}"
+                           th:classappend="${filter == 'live' or filter == 'ON_SALE'} ? 'on'" ><span th:text="#{admin.prod.filterLive}">在售</span><em th:text="${result.liveCount}">52</em></a>
+                        <a th:href="@{/admin/products(kw=${kw},filter='draft',size=${pageSize})}"
+                           th:classappend="${filter == 'draft' or filter == 'DRAFT'} ? 'on'" ><span th:text="#{admin.prod.filterDraft}">草稿</span><em th:text="${result.draftCount}">6</em></a>
+                        <a th:href="@{/admin/products(kw=${kw},filter='sold',size=${pageSize})}"
+                           th:classappend="${filter == 'sold'} ? 'on'" ><span th:text="#{admin.prod.filterSold}">售罄</span><em th:text="${result.soldCount}">2</em></a>
+                    </div>
+                    <div class="toolbar__right">
+                        <a class="txt txt--muted" th:href="@{/admin/products}" th:text="#{admin.action.resetFilter}">重置筛选</a>
+                    </div>
+                </div>
+
+                <form id="listForm" th:action="@{/admin/products/batch}" method="post">
+                    <input type="hidden" name="_csrf" th:value="${csrfToken}" />
+                    <div class="bulk" id="bulk" hidden>
+                        <span class="bulk__n"><b id="bulkN">0</b> <span th:text="#{admin.prod.selected}">已选</span></span>
+                        <div class="bulk__act">
+                            <button type="submit" class="txt" name="target" value="ON_SALE" th:text="#{admin.action.publishBatch}">批量上架</button>
+                            <button type="submit" class="txt" name="target" value="DRAFT" th:text="#{admin.action.unpublishBatch}">批量下架</button>
+                            <button type="button" class="txt txt--muted" id="bulkClear" th:text="#{admin.action.clearSelect}">取消选择</button>
+                        </div>
+                    </div>
+
+                    <div class="empty" id="emptyState" th:if="${result.total == 0}">
+                        <span class="empty__ic"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><use href="#i-search"/></svg></span>
+                        <h3 th:text="${kw != null and !#strings.isEmpty(kw)} ? #{admin.prod.emptyTitle} : #{admin.prod.emptyDataTitle}">没有符合条件的记录</h3>
+                        <p th:text="#{admin.prod.emptyText}">换个关键词，或清除筛选条件后重试。</p>
+                        <a class="btn btn--sm" th:href="@{/admin/products}" th:text="#{admin.action.clear}">清除</a>
+                    </div>
+
+                    <div class="tblwrap" th:unless="${result.total == 0}">
+                        <table class="tbl">
+                            <caption class="sr-only"
+                                     th:text="#{admin.prod.caption(${result.total},${currentPage},${pageSize})}">款号列表</caption>
+                            <colgroup>
+                                <col style="width:40px" /><col style="width:110px" /><col />
+                                <col class="col-md col-cat" style="width:120px" />
+                                <col style="width:110px" /><col class="col-md" style="width:70px" />
+                                <col class="col-md" style="width:100px" />
+                                <col style="width:86px" /><col style="width:110px" />
+                            </colgroup>
+                            <thead><tr>
+                                <th><input class="ck" type="checkbox" id="allCk" th:aria-label="#{admin.action.selectAll}" /></th>
+                                <th th:text="#{admin.prod.colSku}">款号</th>
+                                <th th:text="#{admin.prod.colName}">名称 / 面料</th>
+                                <th class="col-md" th:text="#{admin.prod.colCategory}">品类</th>
+                                <th class="n" th:text="#{admin.prod.colPrice}">价格</th>
+                                <th class="n col-md" th:text="#{admin.prod.colStock}">库存</th>
+                                <th class="col-md" th:text="#{admin.prod.colUpdated}">更新</th>
+                                <th th:text="#{admin.prod.colStatus}">状态</th>
+                                <th th:text="#{admin.prod.colActions}">操作</th>
+                            </tr></thead>
+                            <tbody>
+                            <tr th:each="r : ${result.rows}">
+                                <td><input class="ck rowCk" type="checkbox" name="ids" th:value="${r.id}"
+                                           th:aria-label="|#{admin.action.selectAll} ${r.sku}|" /></td>
+                                <td class="sku"><a th:href="@{/admin/products/{id}/edit(id=${r.id})}" th:text="${r.sku}">FL-HM-01A</a></td>
+                                <td><div class="pcell">
+                                    <span class="pimg" th:style="|--tone:${r.tone}|"><svg viewBox="0 0 40 52" aria-hidden="true"><use th:href="|#g-${r.shape}|" href="#g-shirt"/></svg></span>
+                                    <span class="tname"><span class="nm" th:text="${tr.t(r.name)}">山羊绒高领衫</span>
+                                        <span class="sub" th:text="${tr.t(r.fabricLine)}">山羊绒 100%</span></span>
+                                </div></td>
+                                <td class="cat col-md" th:text="${tr.t(r.categoryName)}">居家 / 成衣</td>
+                                <td class="n money" th:text="'¥' + ${#numbers.formatDecimal(r.price,1,2)}">¥1,280.00</td>
+                                <td class="n col-md" th:text="${r.stock}">18</td>
+                                <td class="date col-md" th:text="${r.updatedAt}">2026.11.13</td>
+                                <td><span class="tag" th:classappend="${r.statusClass}" th:text="${r.statusLabel}">在售</span></td>
+                                <td><div class="acts">
+                                    <a class="txt" th:href="@{/admin/products/{id}/edit(id=${r.id})}" th:text="#{admin.action.edit}">编辑</a>
+                                    <button type="button" class="more"
+                                            th:attr="data-id=${r.id},data-name=${r.name},data-target=${r.status == 'ON_SALE'} ? 'DRAFT' : 'ON_SALE',data-label=${r.status == 'ON_SALE'} ? #{admin.action.unpublish} : #{admin.action.publish}"
+                                            onclick="openRowMenu(this)" th:aria-label="#{admin.action.more}">···</button>
+                                </div></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="pager" th:unless="${result.total == 0}">
+                        <div class="pager__info"
+                             th:text="#{admin.prod.pager(${result.total},${currentPage},${result.pages})}">共 60 条</div>
+                        <div class="pgs">
+                            <a class="pg pg--dir" th:if="${currentPage > 1}"
+                               th:href="@{/admin/products(kw=${kw},filter=${filter},size=${pageSize},page=${currentPage - 1})}"
+                               th:text="#{admin.action.prev}">上一页</a>
+                            <span class="pg pg--dir off" th:unless="${currentPage > 1}" th:text="#{admin.action.prev}">上一页</span>
+                            <a class="pg" th:each="i : ${#numbers.sequence(1, result.pages)}"
+                               th:classappend="${i == currentPage} ? 'on'" th:text="${i}"
+                               th:href="@{/admin/products(kw=${kw},filter=${filter},size=${pageSize},page=${i})}">1</a>
+                            <a class="pg pg--dir" th:if="${currentPage < result.pages}"
+                               th:href="@{/admin/products(kw=${kw},filter=${filter},size=${pageSize},page=${currentPage + 1})}"
+                               th:text="#{admin.action.next}">下一页</a>
+                            <span class="pg pg--dir off" th:unless="${currentPage < result.pages}" th:text="#{admin.action.next}">下一页</span>
+                            <select class="psize" name="size" onchange="this.form.method='get';this.form.action='/admin/products';this.form.submit()"
+                                    th:aria-label="#{admin.prod.perPage}">
+                                <option th:each="n : ${ {10,20,50} }" th:value="${n}" th:selected="${n == pageSize}"
+                                        th:text="${n} + ' ' + #{admin.prod.perPage}">20 条 / 页</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="rowmenu" id="rowMenu" hidden>
+                    <button type="submit" form="listForm" id="menuStatus" name="target" value="DRAFT" th:text="#{admin.action.unpublish}">下架</button>
+                    <hr />
+                    <button type="button" id="menuDel" class="danger" th:text="#{admin.action.delete}">删除</button>
+                </div>
+
+                <footer th:replace="~{fragments :: footer}"></footer>
+            </div>
+        </main>
+    </div>
+</div>
+
+<dialog id="del">
+    <form id="delForm" method="post" th:action="@{/admin/products/0/delete}">
+        <input type="hidden" name="_csrf" th:value="${csrfToken}" />
+        <div class="dlg__body">
+            <h2 th:text="#{admin.prod.deleteTitle}">删除该款号</h2>
+            <p id="delText" th:text="#{admin.prod.deleteConsequence}">删除后不可恢复。</p>
+            <div class="dlg__meta" th:text="#{admin.err.prod.soldOutHint}">停售请使用下架，而不是删除</div>
+        </div>
+        <div class="dlg__foot">
+            <button type="button" class="btn btn--line" onclick="document.getElementById('del').close()" th:text="#{admin.action.cancel}">取消</button>
+            <button type="submit" class="btn btn--danger" th:text="#{admin.action.confirmDelete}">确认删除</button>
+        </div>
+    </form>
+</dialog>
+
+<div th:replace="~{fragments :: icons}"></div>
+<script th:replace="~{fragments :: shellJs}"></script>
+<script>
+(function () {
+    var form = document.getElementById('listForm');
+    var bulk = document.getElementById('bulk');
+    var bulkN = document.getElementById('bulkN');
+    var all = document.getElementById('allCk');
+    var clear = document.getElementById('bulkClear');
+    function sync() {
+        var boxes = Array.prototype.slice.call(form.querySelectorAll('.rowCk'));
+        var n = boxes.filter(function (c) { return c.checked; }).length;
+        bulk.hidden = n === 0;
+        bulkN.textContent = n;
+        if (all) {
+            all.checked = boxes.length > 0 && n === boxes.length;
+            all.indeterminate = n > 0 && n < boxes.length;
+        }
+    }
+    if (form) {
+        form.addEventListener('change', function (e) {
+            if (e.target === all) {
+                form.querySelectorAll('.rowCk').forEach(function (c) { c.checked = all.checked; });
+            }
+            sync();
+        });
+        if (clear) clear.addEventListener('click', function () {
+            form.querySelectorAll('.rowCk').forEach(function (c) { c.checked = false; });
+            sync();
+        });
+        sync();
+    }
+    var rowMenu = document.getElementById('rowMenu');
+    window.openRowMenu = function (btn) {
+        var id = btn.getAttribute('data-id');
+        var status = document.getElementById('menuStatus');
+        status.formAction = '/admin/products/' + id + '/status';
+        status.value = btn.getAttribute('data-target');
+        status.textContent = btn.getAttribute('data-label');
+        document.getElementById('menuDel').setAttribute('data-id', id);
+        rowMenu.hidden = false;
+        var r = btn.getBoundingClientRect();
+        rowMenu.style.left = Math.max(8, r.right - rowMenu.offsetWidth) + 'px';
+        rowMenu.style.top = (r.bottom + rowMenu.offsetHeight + 8 > window.innerHeight
+                ? r.top - rowMenu.offsetHeight - 4 : r.bottom + 4) + 'px';
+    };
+    document.getElementById('menuDel').addEventListener('click', function () {
+        rowMenu.hidden = true;
+        document.getElementById('delForm').action = '/admin/products/' + this.getAttribute('data-id') + '/delete';
+        document.getElementById('del').showModal();
+    });
+    document.addEventListener('click', function (e) {
+        if (!rowMenu.hidden && !e.target.closest('#rowMenu') && !e.target.closest('.more')) {
+            rowMenu.hidden = true;
+        }
+    });
+})();
+</script>
+</body>
+</html>

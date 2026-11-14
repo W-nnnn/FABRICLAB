@@ -6,6 +6,8 @@ import com.fabriclab.admin.service.AdminAuthService;
 import com.fabriclab.admin.service.AdminSessionService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,10 +24,13 @@ public class AdminSignonController {
 
     private final AdminAuthService adminAuthService;
     private final AdminSessionService adminSessionService;
+    private final MessageSource messages;
 
-    public AdminSignonController(AdminAuthService adminAuthService, AdminSessionService adminSessionService) {
+    public AdminSignonController(AdminAuthService adminAuthService, AdminSessionService adminSessionService,
+                                 MessageSource messages) {
         this.adminAuthService = adminAuthService;
         this.adminSessionService = adminSessionService;
+        this.messages = messages;
     }
 
     @GetMapping("/admin/signon")
@@ -46,7 +51,12 @@ public class AdminSignonController {
             AdminUser admin = adminAuthService.login(username, password, request);
             return "redirect:" + adminAuthService.safeReturnPath(returnTo);
         } catch (BusinessException e) {
-            model.addAttribute("error", e.getMessage());
+            String text = e.getMessage();
+            if (AdminAuthService.UNIFIED_FAILURE.equals(text)) {
+                text = messages.getMessage("admin.signon.failed", null, text,
+                        LocaleContextHolder.getLocale());
+            }
+            model.addAttribute("error", text);
             if (username != null) {
                 model.addAttribute("inputUsername", username.trim());
             }

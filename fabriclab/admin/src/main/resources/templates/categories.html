@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.toLanguageTag()}">
+<head th:replace="~{fragments :: head('admin.cat.title')}"></head>
+<body>
+<a class="skip" href="#main" th:text="#{admin.skip}">跳到主要内容</a>
+<div class="shell">
+    <div th:replace="~{fragments :: side('categories')}"></div>
+    <div class="scrim" id="scrim"></div>
+    <div class="wrap">
+        <div th:replace="~{fragments :: topbar(#{admin.nav.products}, #{admin.cat.title})}"></div>
+        <main class="main" id="main">
+            <div class="page">
+                <div th:replace="~{fragments :: notice}"></div>
+                <div class="ph">
+                    <div>
+                        <div class="ph__eyebrow"><em>02</em><span th:text="#{admin.nav.products}">商品</span></div>
+                        <h1 th:text="#{admin.cat.title}">分类维护</h1>
+                        <p th:text="#{admin.cat.note}">两级分类，编码与层级创建后不可修改。</p>
+                    </div>
+                    <div class="ph__act">
+                        <span class="ph__count"><span th:text="#{admin.cat.count}">在册</span> <b th:text="${#lists.size(nodes)}">5</b></span>
+                        <a class="btn" th:href="@{/admin/categories/new}" th:text="#{admin.cat.new}">新增分类</a>
+                    </div>
+                </div>
+
+                <section class="block">
+                    <div class="block__head">
+                        <span class="block__no">01</span>
+                        <div><h2 th:text="#{admin.cat.title}">分类维护</h2>
+                            <p th:text="#{admin.cat.note}">有引用时不可删除。</p></div>
+                    </div>
+
+                    <div class="empty" th:if="${#lists.isEmpty(nodes)}">
+                        <span class="empty__ic"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><use href="#i-cat"/></svg></span>
+                        <h3 th:text="#{admin.cat.emptyTitle}">还没有分类</h3>
+                        <p th:text="#{admin.cat.emptyText}">新增第一个一级分类后，二级分类与商品才能归属。</p>
+                        <a class="btn btn--sm" th:href="@{/admin/categories/new}" th:text="#{admin.cat.new}">新增分类</a>
+                    </div>
+
+                    <div class="tblwrap" th:unless="${#lists.isEmpty(nodes)}">
+                        <table class="tbl" style="min-width:760px">
+                            <thead><tr>
+                                <th style="width:140px" th:text="#{admin.cat.colCode}">编码</th>
+                                <th th:text="#{admin.cat.colName}">名称</th>
+                                <th style="width:90px" th:text="#{admin.cat.colLevel}">层级</th>
+                                <th class="n" style="width:80px" th:text="#{admin.cat.colSort}">排序</th>
+                                <th class="n" style="width:90px" th:text="#{admin.cat.colProducts}">款数</th>
+                                <th style="width:150px" th:text="#{admin.cat.colActions}">操作</th>
+                            </tr></thead>
+                            <tbody>
+                            <th:block th:each="node : ${nodes}">
+                                <tr style="background:var(--wash)">
+                                    <td class="sku" th:text="${node.code}">HOME</td>
+                                    <td><b th:text="${tr.t(node.name)}" style="font-weight:500">居家舒适</b></td>
+                                    <td><span class="tag" th:text="#{admin.cat.level1}">一级</span></td>
+                                    <td class="n" th:text="${node.sortOrder}">50</td>
+                                    <td class="n" th:text="${node.productCount}">0</td>
+                                    <td><div class="acts">
+                                        <a class="txt" th:href="@{/admin/categories/{id}/edit(id=${node.id})}" th:text="#{admin.action.edit}">编辑</a>
+                                        <button type="button" class="txt txt--danger" th:attr="data-id=${node.id},data-name=${node.name}"
+                                                onclick="openDel(this)" th:text="#{admin.action.delete}">删除</button>
+                                    </div></td>
+                                </tr>
+                                <tr th:each="child : ${node.children}">
+                                    <td class="sku" th:text="${child.code}" style="padding-left:24px">HOME_GAR</td>
+                                    <td style="padding-left:24px"><span style="color:var(--faint)">└</span> <span th:text="${tr.t(child.name)}">居家成衣</span></td>
+                                    <td><span class="tag" th:text="#{admin.cat.level2}">二级</span></td>
+                                    <td class="n" th:text="${child.sortOrder}">10</td>
+                                    <td class="n" th:text="${child.productCount}">12</td>
+                                    <td><div class="acts">
+                                        <a class="txt" th:href="@{/admin/categories/{id}/edit(id=${child.id})}" th:text="#{admin.action.edit}">编辑</a>
+                                        <button type="button" class="txt txt--danger" th:attr="data-id=${child.id},data-name=${child.name}"
+                                                onclick="openDel(this)" th:text="#{admin.action.delete}">删除</button>
+                                    </div></td>
+                                </tr>
+                            </th:block>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <footer th:replace="~{fragments :: footer}"></footer>
+            </div>
+        </main>
+    </div>
+</div>
+
+<dialog id="del">
+    <form id="delForm" method="post" th:action="@{/admin/categories/0/delete}">
+        <input type="hidden" name="_csrf" th:value="${csrfToken}" />
+        <div class="dlg__body">
+            <h2 th:text="#{admin.cat.deleteTitle}">删除该分类</h2>
+            <p th:text="#{admin.cat.deleteConsequence}">该分类下有子分类或商品引用。</p>
+            <div class="dlg__meta" th:text="#{admin.cat.deleteAlt}">可替代做法：改名归档</div>
+        </div>
+        <div class="dlg__foot">
+            <button type="button" class="btn btn--line" onclick="document.getElementById('del').close()" th:text="#{admin.action.cancel}">取消</button>
+            <button type="submit" class="btn btn--danger" th:text="#{admin.action.confirmDelete}">确认删除</button>
+        </div>
+    </form>
+</dialog>
+
+<div th:replace="~{fragments :: icons}"></div>
+<script th:replace="~{fragments :: shellJs}"></script>
+<script>
+window.openDel = function (btn) {
+    document.getElementById('delForm').action = '/admin/categories/' + btn.getAttribute('data-id') + '/delete';
+    document.getElementById('del').showModal();
+};
+</script>
+</body>
+</html>
