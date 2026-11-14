@@ -59,9 +59,9 @@ public class ConsoleService {
                 new AdminModule(m("admin.console.module.catalog"), "/admin/products",
                         m("admin.console.module.catalog.scope"), "FR-A-02、FR-A-03", true),
                 new AdminModule(m("admin.console.module.stock"), "/admin/products",
-                        m("admin.console.module.stock.scope"), "FR-A-04、FR-A-07", false),
+                        m("admin.console.module.stock.scope"), "FR-A-04、FR-A-07", true),
                 new AdminModule(m("admin.console.module.accounts"), "/admin/users",
-                        m("admin.console.module.accounts.scope"), "FR-A-07", false),
+                        m("admin.console.module.accounts.scope"), "FR-A-07", true),
                 new AdminModule(m("admin.console.module.orders"), "/admin/orders",
                         m("admin.console.module.orders.scope"), "FR-A-05、FR-A-06", false));
     }

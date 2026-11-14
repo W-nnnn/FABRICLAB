@@ -44,6 +44,6 @@ public class ConsoleController {
     @GetMapping("/health")
     @ResponseBody
     public Map<String, String> health() {
-        return Map.of("status", "UP", "app", "fabriclab-admin", "stage", "T14");
+        return Map.of("status", "UP", "app", "fabriclab-admin", "stage", "T15");
     }
 }
