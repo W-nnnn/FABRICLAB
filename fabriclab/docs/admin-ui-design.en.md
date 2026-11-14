@@ -180,7 +180,7 @@ Height 60, `--paper` ground, bottom `1px --rule`, horizontal padding follows the
 | Overview | Dashboard | `/admin/console` | Counts / needs attention / recently published / runtime |
 | Products | Styles | `/admin/products` | List / new / edit |
 | Products | Categories | `/admin/categories` | Two-level tree + inline edit |
-| Products | Stock & Gallery | `/admin/products/{id}/stock`, `/images` | Restock, gallery |
+| Products | Stock & Gallery | `/admin/products/{id}/album` (restock lives in the row menu and editor dialog) | Three groups, set cover, incremental restock |
 | Clients | Accounts | `/admin/users` | List / edit / reset / enable |
 | Commerce | Orders | `/admin/orders` | List / detail / amend / ship |
 | System | Sessions & Security | `/admin/security` | Read-only policy |
@@ -269,24 +269,33 @@ Two columns: main `minmax(0,1fr)`, aside 300, gap 64.
   - `02 Fabric & craft`: fabric, gauge, fit, craft. The craft field carries the error-state example.
   - `03 Copy`: description, 5-row `textarea`.
   - Per field: label 11px at `.1em` (en 10.5px at `.08em`), required asterisk in `--rust` immediately after the label (`margin-right:auto` pushes the remainder away), input 42px, help text 11px `--faint` with a character count at the right.
-- **Four aside blocks** (no card; `border-left:1px --rule` + `padding-left:40`, `position:sticky; top:0`):
+- **Three aside blocks** (no card; `border-left:1px --rule` + `padding-left:40`, `position:sticky; top:0`):
   - Publish state: `.seg2` split evenly (Live / Draft) with a one-sentence consequence below.
-  - Stock: 32px tabular figure + "increases only through restock" + an outlined small button.
-  - Gallery: three 1:1 thumbs (`grid` 3) + count + type note + button.
+  - Stock: 32px tabular figure + "increases only through restock" + two outlined small buttons, Restock and Album · N (edit mode only).
   - Metadata: created / updated / `version`, `grid auto 1fr`, values right-aligned with `word-break:break-all` so long references never escape the column.
 - **Action bar**: outside the scroll container, height 64, top `1px --rule-strong`; "Changes apply only after saving" at left, Cancel and Save changes at right, aligned to the 1440 measure.
 
-New and edit share one template. On create the SKU is editable and the gallery and metadata blocks are absent.
+New and edit share one template. On create the SKU is editable and the aside holds only publish state — no restock, album or metadata.
 
-### 5.5 Restock `/admin/products/{id}/stock`
+### 5.5 Restock dialog
 
-Single column, 560. Three read-only facts (current stock 30px tabular / last restock / `version`), one quantity input (`number min=1 step=1`), a live preview "after restock → 13", and "Confirm restock".
+Two entry points: the Restock item in the row menu, and the Restock button in the editor's stock block. One `<dialog>` (460 wide) rather than a separate page.
 
-Restock is incremental — it never overwrites stock. Concurrency is guarded by a `version` predicate; on failure the message is "This style was updated elsewhere. Reload to continue."
+- Contents: current stock (tabular figure), "Units to add" (`number min=1 step=1`), a live "After restock → N", and one line of terms: positive increments only, added to the latest stock, `version` bumped, price, status and album untouched.
+- Posts to `POST /admin/products/{id}/restock`, PRG back to the source page with a one-shot notice; the list entry pre-fills from that row.
+- Zero, negatives, non-integers and anything above 9999 are rejected without touching stock: "Restock quantity must be a positive whole number".
 
-### 5.6 Gallery `/admin/products/{id}/images`
+### 5.6 Album `/admin/products/{id}/album`
 
-Top: an add row (path, type: flat / on-body / detail, source note, rank). Bottom: existing entries, each a 1:1 thumb plus path, type, rank and "Move up / Move down / Delete". Reordering uses buttons; no drag library.
+Two columns: main `minmax(0,1fr)`, aside 320 (add form + display order), gap 56; single column at 1023 and below.
+
+- A product strip `.phead` under the header: 52×68 silhouette, SKU, name, category; price / stock / status in three cells at right.
+- Three blocks `01 Flat lays` `02 On body` `03 Details` with the count at the right of each head; each card `.shot` uses a 4:5 frame (`object-fit:cover; object-position:center top` so worn shots are not decapitated) and the cover is a black label at the top right.
+- Three lines of card meta: credit (shows "No credit recorded" when empty), alt text (up to two lines — long English names are not truncated), path (9.5px tabular).
+- Action row: Edit (dialog), Set as cover (shows the current state and disables when it already is), Delete (dialog confirmation).
+- Empty groups do not get a large empty state: a dashed rule, "No images in this group yet", and "Add image" which preselects the type in the aside and focuses the path input.
+- Aside: type as a three-way `.pick`, image path, credit and licence, alt text, order, and a solid "Add image" button; below it a display-order note (with images: `sort_order`, `id` ascending; without: the fallback cover path).
+- When the whole album is empty, a fallback notice sits under the header: the storefront will show cover X.
 
 ### 5.7 Account editor `/admin/users/{id}`
 
