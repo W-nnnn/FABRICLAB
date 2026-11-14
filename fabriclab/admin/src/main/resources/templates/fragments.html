@@ -155,6 +155,13 @@
         <span th:text="#{admin.nav.accounts}">账号管理</span>
     </a>
 
+    <h2 class="side__group" th:text="#{admin.nav.trade}">交易</h2>
+    <a class="side__item" th:href="@{/admin/orders}"
+       th:attr="aria-current=${active == 'orders'} ? 'page' : null">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><use href="#i-orders"/></svg>
+        <span th:text="#{admin.nav.orders}">订单管理</span>
+    </a>
+
     <div class="side__foot">
         <span class="side__ava" th:text="${isEn != null && isEn ? 'S' : (currentAdmin != null ? #strings.substring(currentAdmin.displayName,0,1) : 'A')}">沈</span>
         <span class="side__who">

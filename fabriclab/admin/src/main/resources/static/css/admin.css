@@ -564,3 +564,15 @@ html[lang="en"] .help{font-size:10.5px}
   .topbar{gap:10px}
   .crumb{font-size:11.5px;gap:7px}
 }
+
+/* T16 订单详情：明细合计行、流转时间线 */
+.tbl tfoot td{border-top:1px solid var(--rule-strong);font-weight:600;background:transparent}
+.tfoot-amt{font-size:17px}
+.tl{list-style:none;margin:4px 0 0;padding:0}
+.tl__it{display:flex;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid var(--hair)}
+.tl__it:last-child{border-bottom:0}
+.tl__dot{width:7px;height:7px;flex:none;border:1px solid var(--rule-strong);background:var(--white)}
+.tl__dot.on{background:var(--rust);border-color:var(--rust)}
+.tl__label{font-size:13px;min-width:52px}
+.tl__it.off .tl__label{color:var(--muted)}
+.tl__date{margin-left:auto;font-family:var(--f-num);font-size:12px;color:var(--muted)}
