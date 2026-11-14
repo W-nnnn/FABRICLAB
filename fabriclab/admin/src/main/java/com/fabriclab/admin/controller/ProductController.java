@@ -7,6 +7,7 @@ import com.fabriclab.admin.model.ProductPage;
 import com.fabriclab.admin.model.ProductQuery;
 import com.fabriclab.admin.service.AdminProductService;
 import com.fabriclab.admin.service.CatalogService;
+import com.fabriclab.admin.service.ProductAlbumService;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
@@ -24,12 +25,14 @@ public class ProductController {
 
     private final AdminProductService productService;
     private final CatalogService catalogService;
+    private final ProductAlbumService albumService;
     private final MessageSource messages;
 
     public ProductController(AdminProductService productService, CatalogService catalogService,
-                             MessageSource messages) {
+                             ProductAlbumService albumService, MessageSource messages) {
         this.productService = productService;
         this.catalogService = catalogService;
+        this.albumService = albumService;
         this.messages = messages;
     }
 
@@ -69,6 +72,7 @@ public class ProductController {
         model.addAttribute("updatedAt", p.getUpdatedAt() == null ? null : p.getUpdatedAt().format(fmt));
         model.addAttribute("form", productService.form(id));
         model.addAttribute("editing", true);
+        model.addAttribute("albumCount", albumService.count(id));
         model.addAttribute("categories", catalogService.secondLevels());
         return "product-form";
     }
@@ -147,8 +151,50 @@ public class ProductController {
         model.addAttribute("form", form);
         model.addAttribute("editing", editing);
         model.addAttribute("error", error);
+        model.addAttribute("albumCount", editing && form.id() != null ? albumService.count(form.id()) : 0);
         model.addAttribute("categories", catalogService.secondLevels());
         return "product-form";
+    }
+
+    /** 增量补货：编辑页与列表行菜单共用，正整数增量，成功后回到来源页。 */
+    @PostMapping("/{id}/restock")
+    public String restock(@PathVariable long id,
+                          @RequestParam(required = false) String delta,
+                          @RequestHeader(value = "Referer", required = false) String referer,
+                          RedirectAttributes ra) {
+        try {
+            int stock = productService.restock(id, delta(delta));
+            ra.addFlashAttribute("notice", t("admin.ok.stock.restocked") + " · " + stock);
+        } catch (BusinessException | NotFoundException e) {
+            ra.addFlashAttribute("notice", e.getMessage());
+            ra.addFlashAttribute("noticeKind", "err");
+        }
+        return "redirect:" + back(referer);
+    }
+
+    private Integer delta(String raw) {
+        if (raw == null || raw.isBlank()) throw new BusinessException(t("admin.err.stock.deltaInvalid"));
+        try {
+            return Integer.valueOf(raw.trim());
+        } catch (NumberFormatException e) {
+            throw new BusinessException(t("admin.err.stock.deltaInvalid"));
+        }
+    }
+
+    /** 只接受站内商品路径，避免把 Referer 当成开放跳转。 */
+    private String back(String referer) {
+        if (referer != null) {
+            int start = referer.indexOf("/admin/products");
+            if (start >= 0) {
+                String path = referer.substring(start);
+                int q = path.indexOf('?');
+                if (q >= 0) path = path.substring(0, q);
+                if (path.equals("/admin/products") || path.startsWith("/admin/products/")) {
+                    return path;
+                }
+            }
+        }
+        return "/admin/products";
     }
 
     @PostMapping("/{id}/status")

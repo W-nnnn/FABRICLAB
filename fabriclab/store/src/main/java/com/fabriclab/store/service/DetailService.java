@@ -97,7 +97,7 @@ public class DetailService {
                                 .orderByAsc(ProductImage::getSortOrder)
                                 .orderByAsc(ProductImage::getId))
                 .stream()
-                .map(image -> new GalleryImage(image.getImagePath(), image.getAltText()))
+                .map(image -> new GalleryImage(image.getImagePath(), AlbumCaption.alt(image.getAltText())))
                 .toList();
         if (!album.isEmpty()) {
             return album;

@@ -126,7 +126,7 @@ fabriclab/admin/                         后台工程，端口 8081，独立会�
 | `GET /admin/signon`、`POST /admin/signon` | 允许 | 拒绝（统一失败提示） | 允许 |
 | `POST /admin/signout` | 403 / 重定向 | 重定向登录页 | 允许 |
 | `GET /admin/console` | 302 → 登录页 | 302 → 登录页（并失效会话） | 允许 |
-| `/admin/categories/**`、`/admin/products/**`、`/admin/images/**` | 302 → 登录页 | 302 → 登录页 | 允许 |
+| `/admin/categories/**`、`/admin/products/**` | 302 → 登录页 | 302 → 登录页 | 允许 |
 | `/admin/users/**` | 302 → 登录页 | 302 → 登录页 | 允许 |
 | `/admin/orders/**` | 302 → 登录页 | 302 → 登录页 | 允许 |
 | 用户端 `/main`、`/category`、`/product` | 允许 | 允许 | 用户端独立校验拒绝 |
@@ -171,6 +171,13 @@ fabriclab/admin/                         后台工程，端口 8081，独立会�
 | AC-25 | 后台新增分类、商品并上架后用户端一致 | UC-A3、UC-A4、第九节第 1 条 |
 | AC-26 | 删除有子分类或有下架商品引用的分类被拒 | UC-A3 异常列 |
 | AC-27 | 后台读取旧商品表单，用户购买或取消后保存 → 版本冲突 | 5.3 并发与版本 |
-| AC-28 | 两工程并发购买 2 件与补货 3 件，初始 10 → 11 | UC-A5、第九节第 3 条 |
+| AC-28 | 两工程并发购买 2 件与补货 3 件，初始 10 → 11 | UC-A5、第九节第 3 条、第十一节 |
 | AC-29 | 待支付发货被拒，支付后发货一次，重复发货不改首次时间 | UC-A10、5.2 状态迁移 |
 | AC-07 延用 | 账号停用后受保护请求被拒 | 权限矩阵、5.2 账号状态 |
+
+## 十一、T14 实现口径（库存与相册）
+
+- 补货：`POST /admin/products/{id}/restock`。只收正整数增量（1—9999），服务端重查最新 `stock` 与 `version` 后条件更新 `stock = stock + n, version = version + 1`，影响 0 行即提示「库存刚被其他操作更新，请重新加载后再补货」。商品保存不再接收库存，编辑页库存只读。
+- 相册：`/admin/products/{id}/album`，子动作 `/{imageId}`（改）、`/delete`、`/cover`。不新增表、不改 DDL：图类型（F 平铺 / W 上身 / D 细节）与来源许可编进 `product_image.alt_text`，格式 `F|来源|替代文本`，由 `AlbumText` 编解码；用户端 `AlbumCaption` 只取替代文本，历史数据按「平铺图、无来源、原文即替代文本」兼容。
+- 封面与回退：设为封面写 `product.cover_image` 并推 `version`；相册为空时用户端回退封面，封面为空再用缺省图，后台在相册页写明这条回退。
+- 预览图：后台相册页使用与用户端同路径的 320px 缩略图（`admin/static/images/products`），仅用于后台预览，用户端仍用原图。

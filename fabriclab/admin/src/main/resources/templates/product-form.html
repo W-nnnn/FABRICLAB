@@ -144,6 +144,12 @@
                             <div class="bignum" th:text="${form.stock}">18</div>
                             <p style="font-size:11px;color:var(--faint);margin-top:8px;line-height:1.7"
                                th:text="#{admin.prod.f.stockHint}">库存只能通过补货入口增加</p>
+                            <div style="display:flex;gap:8px;margin-top:16px" th:if="${editing}">
+                                <button class="btn btn--sm btn--line" type="button" onclick="openRestock()"
+                                        th:text="#{admin.stock.restock}">补货</button>
+                                <a class="btn btn--sm btn--line" th:href="@{/admin/products/{id}/album(id=${form.id})}"
+                                   th:text="${#messages.msg('admin.prod.album') + ' · ' + albumCount}">相册 · 4</a>
+                            </div>
                         </div>
                         <div class="aside-sec">
                             <h3 th:text="#{admin.prod.section.meta}">元信息</h3>
@@ -167,7 +173,52 @@
         </div>
     </div>
 </div>
+<dialog id="restockDlg" th:if="${editing}">
+    <form id="restockForm" method="post" th:action="@{/admin/products/{id}/restock(id=${form.id})}">
+        <input type="hidden" name="_csrf" th:value="${csrfToken}" />
+        <div class="dlg__body">
+            <h2 th:text="#{admin.stock.title}">增量补货</h2>
+            <p><span th:text="#{admin.stock.current}">当前库存</span>
+                <b class="num" th:text="${form.stock}">18</b>
+                <span th:text="#{admin.stock.unit}">件</span></p>
+            <div class="field" style="margin-top:22px">
+                <label for="delta"><span th:text="#{admin.stock.delta}">本次补货数量</span><em>*</em></label>
+                <input class="ctl" id="delta" name="delta" type="number" min="1" step="1" value="1" />
+            </div>
+            <div class="dlg__meta">
+                <span th:text="#{admin.stock.after}">补货后</span>
+                <b class="num" id="afterStock">19</b>
+                <span th:text="#{admin.stock.unit}">件</span>
+                <span style="display:block;margin-top:8px" th:text="#{admin.stock.note}">只接受正整数增量。</span>
+            </div>
+        </div>
+        <div class="dlg__foot">
+            <button type="button" class="btn btn--line" onclick="document.getElementById('restockDlg').close()"
+                    th:text="#{admin.action.cancel}">取消</button>
+            <button type="submit" class="btn" th:text="#{admin.stock.confirm}">确认补货</button>
+        </div>
+    </form>
+</dialog>
+
 <div th:replace="~{fragments :: icons}"></div>
 <script th:replace="~{fragments :: shellJs}"></script>
+<script th:inline="javascript">
+(function () {
+    var base = /*[[${form.stock}]]*/ 0;
+    var input = document.getElementById('delta');
+    var after = document.getElementById('afterStock');
+    if (!input || !after) return;
+    function sync() {
+        var n = parseInt(input.value, 10);
+        after.textContent = base + (isNaN(n) ? 0 : n);
+    }
+    input.addEventListener('input', sync);
+    window.openRestock = function () {
+        input.value = 1;
+        sync();
+        document.getElementById('restockDlg').showModal();
+    };
+})();
+</script>
 </body>
 </html>

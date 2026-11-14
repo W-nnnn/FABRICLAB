@@ -105,7 +105,7 @@
                                 <td><div class="acts">
                                     <a class="txt" th:href="@{/admin/products/{id}/edit(id=${r.id})}" th:text="#{admin.action.edit}">编辑</a>
                                     <button type="button" class="more"
-                                            th:attr="data-id=${r.id},data-name=${r.name},data-target=${r.status == 'ON_SALE'} ? 'DRAFT' : 'ON_SALE',data-label=${r.status == 'ON_SALE'} ? #{admin.action.unpublish} : #{admin.action.publish}"
+                                            th:attr="data-id=${r.id},data-stock=${r.stock},data-target=${r.status == 'ON_SALE'} ? 'DRAFT' : 'ON_SALE',data-label=${r.status == 'ON_SALE'} ? #{admin.action.unpublish} : #{admin.action.publish}"
                                             onclick="openRowMenu(this)" th:aria-label="#{admin.action.more}">···</button>
                                 </div></td>
                             </tr>
@@ -138,6 +138,9 @@
                 </form>
 
                 <div class="rowmenu" id="rowMenu" hidden>
+                    <button type="button" id="menuAlbum" th:text="#{admin.prod.album}">相册</button>
+                    <button type="button" id="menuRestock" th:text="#{admin.stock.restock}">补货</button>
+                    <hr />
                     <button type="submit" form="listForm" id="menuStatus" name="target" value="DRAFT" th:text="#{admin.action.unpublish}">下架</button>
                     <hr />
                     <button type="button" id="menuDel" class="danger" th:text="#{admin.action.delete}">删除</button>
@@ -160,6 +163,34 @@
         <div class="dlg__foot">
             <button type="button" class="btn btn--line" onclick="document.getElementById('del').close()" th:text="#{admin.action.cancel}">取消</button>
             <button type="submit" class="btn btn--danger" th:text="#{admin.action.confirmDelete}">确认删除</button>
+        </div>
+    </form>
+</dialog>
+
+<dialog id="restockDlg">
+    <form id="restockForm" method="post">
+        <input type="hidden" name="_csrf" th:value="${csrfToken}" />
+        <div class="dlg__body">
+            <h2 th:text="#{admin.stock.title}">增量补货</h2>
+            <p><b id="rsName">—</b></p>
+            <p style="margin-top:6px"><span th:text="#{admin.stock.current}">当前库存</span>
+                <b class="num" id="rsNow">0</b>
+                <span th:text="#{admin.stock.unit}">件</span></p>
+            <div class="field" style="margin-top:22px">
+                <label for="rsDelta"><span th:text="#{admin.stock.delta}">本次补货数量</span><em>*</em></label>
+                <input class="ctl" id="rsDelta" name="delta" type="number" min="1" step="1" value="1" />
+            </div>
+            <div class="dlg__meta">
+                <span th:text="#{admin.stock.after}">补货后</span>
+                <b class="num" id="rsAfter">1</b>
+                <span th:text="#{admin.stock.unit}">件</span>
+                <span style="display:block;margin-top:8px" th:text="#{admin.stock.note}">只接受正整数增量。</span>
+            </div>
+        </div>
+        <div class="dlg__foot">
+            <button type="button" class="btn btn--line" onclick="document.getElementById('restockDlg').close()"
+                    th:text="#{admin.action.cancel}">取消</button>
+            <button type="submit" class="btn" th:text="#{admin.stock.confirm}">确认补货</button>
         </div>
     </form>
 </dialog>
@@ -197,7 +228,9 @@
         sync();
     }
     var rowMenu = document.getElementById('rowMenu');
+    var rowBtn = null;
     window.openRowMenu = function (btn) {
+        rowBtn = btn;
         var id = btn.getAttribute('data-id');
         var status = document.getElementById('menuStatus');
         status.formAction = '/admin/products/' + id + '/status';
@@ -210,6 +243,32 @@
         rowMenu.style.top = (r.bottom + rowMenu.offsetHeight + 8 > window.innerHeight
                 ? r.top - rowMenu.offsetHeight - 4 : r.bottom + 4) + 'px';
     };
+    document.getElementById('menuAlbum').addEventListener('click', function () {
+        rowMenu.hidden = true;
+        location.href = '/admin/products/' + rowBtn.getAttribute('data-id') + '/album';
+    });
+    var rsBase = 0;
+    var rsDelta = document.getElementById('rsDelta');
+    var rsAfter = document.getElementById('rsAfter');
+    function rsSync() {
+        var n = parseInt(rsDelta.value, 10);
+        rsAfter.textContent = rsBase + (isNaN(n) ? 0 : n);
+    }
+    rsDelta.addEventListener('input', rsSync);
+    document.getElementById('menuRestock').addEventListener('click', function () {
+        rowMenu.hidden = true;
+        rsBase = parseInt(rowBtn.getAttribute('data-stock'), 10) || 0;
+        document.getElementById('restockForm').action =
+            '/admin/products/' + rowBtn.getAttribute('data-id') + '/restock';
+        var row = rowBtn.closest('tr');
+        var nm = row.querySelector('.nm').textContent.trim();
+        var sku = row.querySelector('.sku').textContent.trim();
+        document.getElementById('rsName').textContent = nm + ' · ' + sku;
+        document.getElementById('rsNow').textContent = rsBase;
+        rsDelta.value = 1;
+        rsSync();
+        document.getElementById('restockDlg').showModal();
+    });
     document.getElementById('menuDel').addEventListener('click', function () {
         rowMenu.hidden = true;
         document.getElementById('delForm').action = '/admin/products/' + this.getAttribute('data-id') + '/delete';
