@@ -1,46 +1,45 @@
 <!DOCTYPE html>
-<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title th:text="|${brand} · 后台登录|">FABRICLAB · 后台登录</title>
-    <link rel="stylesheet" th:href="@{/css/admin.css}" />
-</head>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.toLanguageTag()}">
+<head th:replace="~{fragments :: head('admin.signon.title')}"></head>
 <body class="signon-page">
 <main class="signon">
     <section class="signon__aside">
         <div class="signon__brand">
-            <img th:src="@{/images/logo.png}" alt="FABRICLAB 标志" />
-            <span><b th:text="${brand}">FABRICLAB</b><small th:text="${tagline}">未染</small></span>
+            <img th:src="@{/images/logo.png}" alt="FABRICLAB" />
+            <span><b th:text="${brand}">FABRICLAB</b><small th:text="#{admin.brand.sub}">MANAGEMENT</small></span>
         </div>
-        <h1 th:text="|${brand} ${consoleName}|">FABRICLAB 管理台</h1>
-        <p>分类与商品、库存与相册、顾客账号、全站订单，均在此维护。</p>
+        <h1 th:text="${brand} + ' ' + #{admin.app}">FABRICLAB 管理台</h1>
+        <p th:text="#{admin.signon.intro}">分类与商品、库存与相册、顾客账号、全站订单，均在此维护。</p>
         <ul class="signon__rules">
-            <li>仅启用的管理员账号可登录</li>
-            <li>后台会话与用户端相互独立</li>
-            <li>每次请求复核角色与启用状态</li>
+            <li th:text="#{admin.signon.rule1}">仅启用的管理员账号可登录</li>
+            <li th:text="#{admin.signon.rule2}">后台会话与用户端相互独立</li>
+            <li th:text="#{admin.signon.rule3}">每次请求复核角色与启用状态</li>
         </ul>
     </section>
 
     <section class="signon__panel">
-        <h2>管理员登录</h2>
+        <h2 th:text="#{admin.signon.title}">管理员登录</h2>
         <p class="signon__error" th:if="${error != null}" th:text="${error}">错误提示</p>
         <form class="signon__form" th:action="@{/admin/signon}" method="post">
             <input type="hidden" name="_csrf" th:value="${csrfToken}" />
             <input type="hidden" name="returnTo" th:value="${returnTo}" />
             <label>
-                账号
+                <span th:text="#{admin.signon.username}">账号</span>
                 <input type="text" name="username" maxlength="50" required autocomplete="username"
-                       th:value="${inputUsername}" aria-label="管理员账号" />
+                       th:value="${inputUsername}" th:aria-label="#{admin.signon.username}" />
             </label>
             <label>
-                口令
+                <span th:text="#{admin.signon.password}">口令</span>
                 <input type="password" name="password" required autocomplete="current-password"
-                       aria-label="管理员口令" />
+                       th:aria-label="#{admin.signon.password}" />
             </label>
-            <button type="submit">进入管理台</button>
+            <button type="submit" th:text="#{admin.signon.submit}">进入管理台</button>
         </form>
-        <p class="signon__note">顾客账号请在用户端（8080）登录，不能进入后台。</p>
+        <p class="signon__note" th:text="#{admin.signon.note}">顾客账号请在用户端（8080）登录。</p>
+        <div class="lang" style="margin-top:24px;border:0;padding:0" th:aria-label="#{admin.lang.label}" role="group">
+            <a th:href="${langZhUrl}" th:classappend="${isEn == null || !isEn} ? 'on'" th:text="#{admin.lang.zh}">中文</a>
+            <a th:href="${langEnUrl}" th:classappend="${isEn} ? 'on'" th:text="#{admin.lang.en}">EN</a>
+        </div>
     </section>
 </main>
 </body>
