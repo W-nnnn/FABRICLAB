@@ -301,14 +301,16 @@ Two columns: main `minmax(0,1fr)`, aside 320 (add form + display order), gap 56;
 
 Fields: username (read-only), role (read-only tag), display name, email, phone. Three separate actions never mixed into save: `Save`, `Reset password` (dialog), `Disable / Enable` (dialog, stating "the account's current session expires on its next request"). The reset dialog does not show a new-password field.
 
-### 5.8 Order detail `/admin/orders/{orderNo}`
+### 5.8 Orders `/admin/orders`、`/admin/orders/{orderNo}`
 
-**The only page whose `h1` is a document number**, because an order is a document.
+**List** follows the 5.3 skeleton: order number (tabular link), receiver, amount (right), status, placed (right), actions (Detail + "Ship" on `PAID` rows only). Six segments — All / Pending / Paid / Shipped / Completed / Cancelled — with live counts; search accepts the complete order number only; page size defaults to 10. A rejected ship lands back with a one-shot notice.
 
-- Header: eyebrow `04 Commerce · Orders` → `h1.code` order number (27px tabular at `.05em`) → description "Placed … · paid … · 2 items". Right: status tag + "Edit delivery" (outlined) + "Mark as shipped" (solid).
-- Main: `01 Line snapshot` (SKU + name on two lines, unit price, qty, subtotal, `tfoot` total at 17px) + `02 History` (timeline, 6px squares, unmet nodes hollow).
-- Aside: delivery, payment, notes. Long references break-all and right-align.
-- A delete entry appears only when the order is cancelled and carries no payment reference: red text button plus a confirmation dialog.
+**Detail is the only page whose `h1` is a document number**, because an order is a document.
+
+- Header: eyebrow `04 Commerce` → `h1.code` order number (27px tabular at `.05em`) → "Placed … · paid … · N items". Right: status tag + "Mark as shipped" (solid, `PAID` only) + "Back to orders" (outlined).
+- Main: `01 Line snapshot` (`.tbl--mini`: SKU, item, unit price, qty, subtotal; `tfoot` total at 17px) + `02 Timeline` (7px squares, unmet nodes hollow with muted text).
+- Aside: delivery info (an "Edit delivery info" outlined button appears only for pending-payment / awaiting-shipment, opening a three-field dialog), payment (buyer, mock method, reference break-all and right-aligned), and a delete block that exists only for cancelled orders without a payment reference (`btn--danger` plus a confirmation dialog).
+- Three actions each submit from their own dialog and return by PRG; rejections surface as one-shot notices without changing page state.
 
 ### 5.9 Sessions & Security `/admin/security`
 
