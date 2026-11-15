@@ -7,7 +7,7 @@
     <div th:replace="~{fragments :: side('products')}"></div>
     <div class="scrim" id="scrim"></div>
     <div class="wrap">
-        <div th:replace="~{fragments :: topbar(#{admin.nav.products}, #{admin.prod.title})}"></div>
+        <div th:replace="~{fragments :: topbar(#{admin.nav.products}, #{admin.prod.title}, @{/admin/products})}"></div>
         <main class="main" id="main">
             <div class="page">
                 <div class="ph">
@@ -19,7 +19,7 @@
                     <div class="ph__act" th:if="${editing}"><span class="ph__count" th:text="${form.sku}">FL-HM-01A</span></div>
                 </div>
 
-                <div class="alert alert--err" th:if="${error != null}" role="alert">
+                <div class="alert alert--err" th:if="${error != null and errorField == null}" role="alert">
                     <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" style="flex:none"><use href="#i-alert"/></svg>
                     <span th:text="${error}">错误</span>
                 </div>
@@ -27,58 +27,100 @@
                 <div class="cols">
                     <div>
                         <form id="productForm" method="post"
-                              th:action="${editing} ? @{/admin/products/{id}(id=${form.id})} : @{/admin/products}">
+                              th:action="${editing} ? @{/admin/products/{id}/edit(id=${form.id})} : @{/admin/products/new}">
                             <input type="hidden" name="_csrf" th:value="${csrfToken}" />
                             <input type="hidden" name="version" th:value="${form.version}" />
+                            <input type="hidden" name="returnTo" th:value="${returnTo}" />
 
                             <section class="block">
                                 <div class="block__head">
                                     <span class="block__no">01</span>
                                     <div><h2 th:text="#{admin.prod.section.basics}">基本信息</h2>
-                                        <p th:text="#{admin.prod.f.skuHint}">创建后不可修改</p></div>
+                                        <p th:text="#{admin.prod.f.skuLocked}">款号与分类创建后锁定</p></div>
                                 </div>
                                 <div class="frow">
                                     <div class="field">
                                         <label th:for="sku"><span th:text="#{admin.prod.f.sku}">款号</span><em>*</em></label>
                                         <input class="ctl" id="sku" name="sku" maxlength="40" th:value="${form.sku}"
-                                               th:readonly="${editing}" th:classappend="${editing} ? 'ctl--ro'" />
-                                        <div class="help"><span th:text="#{admin.prod.f.skuHint}">创建后不可修改</span></div>
+                                               th:readonly="${editing}" th:classappend="${editing} ? 'ctl--ro' : (${errorField == 'sku'} ? 'error' : '')"
+                                               th:attr="aria-invalid=${errorField == 'sku'} ? 'true' : null,autofocus=${errorField == 'sku'} ? 'autofocus' : null" />
+                                        <div class="errmsg" th:if="${errorField == 'sku'}" th:text="${error}">错误</div>
                                     </div>
                                     <div class="field">
                                         <label th:for="categoryId"><span th:text="#{admin.prod.f.category}">所属分类</span><em>*</em></label>
-                                        <select class="ctl" id="categoryId" name="categoryId" th:disabled="${editing}">
+                                        <select class="ctl" id="categoryId" name="categoryId" th:disabled="${editing}"
+                                                th:classappend="${errorField == 'categoryId'} ? 'error'"
+                                                th:attr="aria-invalid=${errorField == 'categoryId'} ? 'true' : null">
                                             <option th:each="c : ${categories}" th:value="${c.id}" th:text="${tr.t(c.name)}"
                                                     th:selected="${form.categoryId != null and form.categoryId == c.id}">—</option>
                                         </select>
                                         <input th:if="${editing}" type="hidden" name="categoryId" th:value="${form.categoryId}" />
                                         <div class="help"><span th:text="#{admin.prod.f.categoryHint}">只能选二级分类</span></div>
+                                        <div class="errmsg" th:if="${errorField == 'categoryId'}" th:text="${error}">错误</div>
                                     </div>
                                 </div>
                                 <div class="field">
                                     <label th:for="name"><span th:text="#{admin.prod.f.name}">名称</span><em>*</em></label>
-                                    <input class="ctl" id="name" name="name" maxlength="120" th:value="${form.name}" />
+                                    <input class="ctl" id="name" name="name" maxlength="120" th:value="${form.name}"
+                                           th:classappend="${errorField == 'name'} ? 'error'"
+                                           th:attr="aria-invalid=${errorField == 'name'} ? 'true' : null,autofocus=${errorField == 'name'} ? 'autofocus' : null" />
                                     <div class="help"><span th:text="#{admin.prod.f.nameHint}">尺码与配色写在名称里</span></div>
+                                    <div class="errmsg" th:if="${errorField == 'name'}" th:text="${error}">错误</div>
                                 </div>
                                 <div class="frow">
                                     <div class="field">
                                         <label th:for="price"><span th:text="#{admin.prod.f.price}">价格（元）</span><em>*</em></label>
-                                        <input class="ctl" id="price" name="price" inputmode="decimal" th:value="${form.price}" />
+                                        <input class="ctl" id="price" name="price" inputmode="decimal" th:value="${form.price}"
+                                               th:classappend="${errorField == 'price'} ? 'error'"
+                                               th:attr="aria-invalid=${errorField == 'price'} ? 'true' : null,autofocus=${errorField == 'price'} ? 'autofocus' : null" />
                                         <div class="help"><span th:text="#{admin.prod.f.priceHint}">两位小数</span></div>
+                                        <div class="errmsg" th:if="${errorField == 'price'}" th:text="${error}">错误</div>
                                     </div>
                                     <div class="field">
                                         <label th:for="sortOrder"><span th:text="#{admin.prod.f.sort}">排序</span></label>
-                                        <input class="ctl" id="sortOrder" name="sortOrder" type="number" min="0" th:value="${form.sortOrder}" />
+                                        <input class="ctl" id="sortOrder" name="sortOrder" type="number" min="0" th:value="${form.sortOrder}"
+                                               th:classappend="${errorField == 'sortOrder'} ? 'error'" />
                                         <div class="help"><span th:text="#{admin.prod.f.sortHint}">数值越小越靠前</span></div>
+                                        <div class="errmsg" th:if="${errorField == 'sortOrder'}" th:text="${error}">错误</div>
                                     </div>
                                 </div>
                                 <div class="field" th:unless="${editing}">
                                     <label th:for="stock"><span th:text="#{admin.prod.f.stock}">当前库存</span></label>
-                                    <input class="ctl" id="stock" name="stock" type="number" min="0" th:value="${form.stock}" />
+                                    <input class="ctl" id="stock" name="stock" type="number" min="0" th:value="${form.stock}"
+                                           th:classappend="${errorField == 'stock'} ? 'error'" />
                                     <div class="help"><span th:text="#{admin.prod.f.stockHint}">编辑页不提供直接改写</span></div>
+                                    <div class="errmsg" th:if="${errorField == 'stock'}" th:text="${error}">错误</div>
                                 </div>
+
                                 <div class="field">
-                                    <label th:for="coverImage"><span th:text="#{admin.prod.f.cover}">封面路径</span><em>*</em></label>
-                                    <input class="ctl" id="coverImage" name="coverImage" th:value="${form.coverImage}" />
+                                    <label><span th:text="#{admin.prod.f.cover}">封面</span><em>*</em></label>
+                                    <div class="cover" th:classappend="${errorField == 'coverImage'} ? 'is-error'">
+                                        <span class="cover__frame" th:classappend="${#strings.isEmpty(form.coverImage)} ? 'is-empty'">
+                                            <img th:if="${!#strings.isEmpty(form.coverImage)}" id="coverImg"
+                                                 th:src="@{|/${form.coverImage}|}" alt="" />
+                                            <span th:if="${#strings.isEmpty(form.coverImage)}" class="cover__none"
+                                                  th:text="#{admin.prod.cover.none}">未设置封面</span>
+                                        </span>
+                                        <div class="cover__act">
+                                            <div class="cover__btns">
+                                                <button type="button" class="btn btn--sm btn--line" th:if="${editing}"
+                                                        onclick="openPicker()" th:text="#{admin.prod.cover.pick}">从相册选择</button>
+                                                <label class="btn btn--sm btn--line">
+                                                    <span th:text="#{admin.prod.cover.upload}">上传图片</span>
+                                                    <input type="file" id="coverFile" accept="image/jpeg,image/png,image/webp" hidden />
+                                                </label>
+                                            </div>
+                                            <span class="cover__hint" id="coverHint"
+                                                  th:text="#{admin.prod.cover.formats}">JPEG / PNG / WebP，单张不超过 5 MB</span>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" id="coverImage" name="coverImage" th:value="${form.coverImage}" />
+                                    <details class="adv">
+                                        <summary th:text="#{admin.prod.cover.advanced}">高级：直接填写路径</summary>
+                                        <input class="ctl" id="coverPathInput" th:value="${form.coverImage}"
+                                               placeholder="images/products/FL-XX-01/1.jpg" />
+                                    </details>
+                                    <div class="errmsg" th:if="${errorField == 'coverImage'}" th:text="${error}">错误</div>
                                 </div>
                             </section>
 
@@ -136,14 +178,12 @@
                                 <option value="ON_SALE" th:selected="${form.status == 'ON_SALE'}" th:text="#{admin.prod.publishLive}">在售</option>
                                 <option value="DRAFT" th:selected="${form.status != 'ON_SALE'}" th:text="#{admin.prod.publishDraft}">草稿</option>
                             </select>
-                            <p style="font-size:11px;color:var(--faint);margin-top:10px;line-height:1.7"
-                               th:text="#{admin.prod.f.statusHint}">在售状态在用户端可见</p>
+                            <p class="aside-note" style="margin-top:10px" th:text="#{admin.prod.f.statusHint}">在售状态在用户端可见</p>
                         </div>
                         <div class="aside-sec">
                             <h3 th:text="#{admin.prod.section.stock}">库存</h3>
                             <div class="bignum" th:text="${form.stock}">18</div>
-                            <p style="font-size:11px;color:var(--faint);margin-top:8px;line-height:1.7"
-                               th:text="#{admin.prod.f.stockHint}">库存只能通过补货入口增加</p>
+                            <p class="aside-note" style="margin-top:8px" th:text="#{admin.prod.f.stockHint}">库存只能通过补货入口增加</p>
                             <div style="display:flex;gap:8px;margin-top:16px" th:if="${editing}">
                                 <button class="btn btn--sm btn--line" type="button" onclick="openRestock()"
                                         th:text="#{admin.stock.restock}">补货</button>
@@ -154,7 +194,6 @@
                         <div class="aside-sec">
                             <h3 th:text="#{admin.prod.section.meta}">元信息</h3>
                             <dl class="facts">
-                                <dt th:text="#{admin.prod.f.version}">version</dt><dd th:text="${form.version}">0</dd>
                                 <dt th:text="#{admin.prod.f.created}">创建</dt><dd th:text="${createdAt != null ? createdAt : '—'}">—</dd>
                                 <dt th:text="#{admin.prod.f.updated}">更新</dt><dd th:text="${updatedAt != null ? updatedAt : '—'}">—</dd>
                             </dl>
@@ -167,15 +206,34 @@
         <div class="actions-bar">
             <span class="actions-bar__note" th:text="#{admin.prod.saveHint}">修改仅在点击保存后生效</span>
             <div class="actions-bar__act">
-                <a class="btn btn--line" th:href="@{/admin/products}" th:text="#{admin.action.cancel}">取消</a>
+                <a class="btn btn--line" th:href="${returnTo != null ? returnTo : '/admin/products'}" th:text="#{admin.action.cancel}">取消</a>
                 <button class="btn" type="submit" form="productForm" th:text="#{admin.action.save}">保存修改</button>
             </div>
         </div>
     </div>
 </div>
+
+<dialog id="pickerDlg" th:if="${editing}">
+    <div class="dlg__body">
+        <h2 th:text="#{admin.prod.cover.picker}">选择一张已有图片作为封面</h2>
+        <p class="aside-note" th:if="${#lists.isEmpty(coverOptions)}" th:text="#{admin.prod.cover.pickerEmpty}">该款号还没有图片</p>
+        <div class="picker" th:unless="${#lists.isEmpty(coverOptions)}">
+            <button type="button" class="picker__it" th:each="path : ${coverOptions}"
+                    th:attr="data-path=${path}" onclick="pickCover(this)">
+                <img th:src="@{|/${path}|}" alt="" loading="lazy" />
+            </button>
+        </div>
+    </div>
+    <div class="dlg__foot">
+        <button type="button" class="btn btn--line" onclick="document.getElementById('pickerDlg').close()"
+                th:text="#{admin.action.cancel}">取消</button>
+    </div>
+</dialog>
+
 <dialog id="restockDlg" th:if="${editing}">
     <form id="restockForm" method="post" th:action="@{/admin/products/{id}/restock(id=${form.id})}">
         <input type="hidden" name="_csrf" th:value="${csrfToken}" />
+        <input type="hidden" name="returnTo" th:value="${returnTo}" />
         <div class="dlg__body">
             <h2 th:text="#{admin.stock.title}">增量补货</h2>
             <p><span th:text="#{admin.stock.current}">当前库存</span>
@@ -204,19 +262,79 @@
 <script th:replace="~{fragments :: shellJs}"></script>
 <script th:inline="javascript">
 (function () {
+    var CSRF = /*[[${csrfToken}]]*/ '';
+    var EDITING = /*[[${editing}]]*/ false;
     var base = /*[[${form.stock}]]*/ 0;
     var input = document.getElementById('delta');
     var after = document.getElementById('afterStock');
-    if (!input || !after) return;
-    function sync() {
-        var n = parseInt(input.value, 10);
-        after.textContent = base + (isNaN(n) ? 0 : n);
+    if (input && after) {
+        var sync = function () {
+            var n = parseInt(input.value, 10);
+            after.textContent = base + (isNaN(n) ? 0 : n);
+        };
+        input.addEventListener('input', sync);
+        window.openRestock = function () {
+            input.value = 1;
+            sync();
+            document.getElementById('restockDlg').showModal();
+        };
     }
-    input.addEventListener('input', sync);
-    window.openRestock = function () {
-        input.value = 1;
-        sync();
-        document.getElementById('restockDlg').showModal();
+
+    var coverInput = document.getElementById('coverImage');
+    var coverImg = document.getElementById('coverImg');
+    var coverHint = document.getElementById('coverHint');
+    var hintBase = coverHint ? coverHint.textContent : '';
+    var coverPathInput = document.getElementById('coverPathInput');
+    function setCover(path) {
+        coverInput.value = path || '';
+        coverPathInput.value = path || '';
+        if (coverHint) coverHint.textContent = hintBase;
+        if (!coverImg) {
+            var frame = document.querySelector('.cover__frame');
+            coverImg = document.createElement('img');
+            coverImg.id = 'coverImg';
+            coverImg.alt = '';
+            frame.innerHTML = '';
+            frame.classList.remove('is-empty');
+            frame.appendChild(coverImg);
+        }
+        coverImg.src = '/' + path;
+    }
+    if (coverPathInput) {
+        coverPathInput.addEventListener('change', function () { setCover(coverPathInput.value.trim()); });
+    }
+    var file = document.getElementById('coverFile');
+    if (file) {
+        file.addEventListener('change', function () {
+            if (!file.files || !file.files[0]) return;
+            var sku = (document.getElementById('sku') || {}).value || '';
+            if (!sku.trim()) {
+                alert(/*[[#{admin.err.upload.sku}]]*/ '请先填写款号再上传图片');
+                file.value = '';
+                return;
+            }
+            var fd = new FormData();
+            fd.append('_csrf', CSRF);
+            fd.append('sku', sku.trim());
+            fd.append('file', file.files[0]);
+            coverHint.textContent = '…';
+            fetch('/admin/products/image', { method: 'POST', body: fd, credentials: 'same-origin' })
+                .then(function (r) { return r.json().then(function (b) { return { ok: r.ok, body: b }; }); })
+                .then(function (res) {
+                    if (!res.ok) { alert(res.body.error || '上传失败'); coverHint.textContent = hintBase; return; }
+                    setCover(res.body.path);
+                })
+                .catch(function () { alert('上传失败'); coverHint.textContent = hintBase; })
+                .finally(function () { file.value = ''; });
+        });
+    }
+    window.openPicker = function () {
+        var dlg = document.getElementById('pickerDlg');
+        if (dlg) dlg.showModal();
+    };
+    window.pickCover = function (btn) {
+        setCover(btn.getAttribute('data-path'));
+        document.getElementById('pickerDlg').close();
     };
 })();
 </script>

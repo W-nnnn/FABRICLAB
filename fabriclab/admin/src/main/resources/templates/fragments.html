@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title th:text="${brand} + ' · ' + #{${titleKey}}">FABRICLAB 管理台</title>
     <link rel="icon" href="data:," />
-    <link rel="stylesheet" th:href="@{/css/admin.css}" />
+    <link rel="stylesheet" th:href="@{/css/admin.css?v=20261114b}" />
 </head>
 <body>
 
@@ -177,37 +177,71 @@
     </div>
 </aside>
 
-<div class="topbar" th:fragment="topbar(section,current)">
+<div class="topbar" th:fragment="topbar(section, current, sectionHref)">
     <button class="ibtn hamb" id="hamb" type="button" th:aria-label="#{admin.top.openNav}" aria-expanded="false" style="display:none">
         <svg width="17" height="17" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2.4 4.6h11.2M2.4 8h11.2M2.4 11.4h11.2"/></svg>
     </button>
     <nav class="crumb" th:aria-label="#{admin.nav.breadcrumb}">
-        <span th:text="${section}" th:remove="tag">商品</span>
+        <a th:href="${sectionHref}" th:text="${section}">商品</a>
         <i th:if="${current != null}">/</i>
         <b th:if="${current != null}" th:text="${current}" aria-current="page">款号维护</b>
     </nav>
     <div class="topbar__tools">
-        <form class="gsearch" th:action="@{/admin/products}" method="get">
+        <form class="gsearch" th:action="@{/admin/search}" method="get">
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><use href="#i-search"/></svg>
             <input type="search" name="kw" th:placeholder="#{admin.top.search}" th:value="${kw}" />
+            <select class="gsearch__scope" name="scope" th:aria-label="#{admin.top.scope}">
+                <option value="style" th:text="#{admin.top.scopeStyle}">款号</option>
+                <option value="order" th:text="#{admin.top.scopeOrder}">订单</option>
+            </select>
             <kbd>/</kbd>
         </form>
-        <a class="ibtn" th:href="@{/admin/products/new}" th:aria-label="#{admin.top.new}" th:title="#{admin.top.new}">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><use href="#i-plus"/></svg>
-        </a>
-        <button class="ibtn ibtn--dot" type="button" th:aria-label="#{admin.top.notify}" th:title="#{admin.top.notify}">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><use href="#i-bell"/></svg>
-        </button>
-        <span class="topbar__sep"></span>
-        <span class="env" th:text="#{admin.top.demo}">演示环境</span>
-        <div class="lang" th:aria-label="#{admin.lang.label}" role="group">
-            <a th:href="${langZhUrl}" th:classappend="${isEn == null || !isEn} ? 'on'" th:text="#{admin.lang.zh}">中文</a>
-            <a th:href="${langEnUrl}" th:classappend="${isEn} ? 'on'" th:text="#{admin.lang.en}">EN</a>
-        </div>
-        <div class="topbar__me">
-            <i th:text="${isEn != null && isEn ? 'S' : '沈'}">沈</i>
-            <span th:text="${currentAdmin != null ? tr.t(currentAdmin.displayName) : '—'}">沈未染</span>
-        </div>
+
+        <details class="pop" id="bell">
+            <summary class="ibtn" th:classappend="${badgeCount > 0} ? 'ibtn--dot'"
+                     th:aria-label="#{admin.top.notify}" th:title="#{admin.top.notify}">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><use href="#i-bell"/></svg>
+            </summary>
+            <div class="pop__panel pop__panel--bell">
+                <div class="pop__head" th:text="#{admin.top.notifyTitle}">待处理</div>
+                <a class="pop__item" th:href="@{/admin/orders(status='paid')}">
+                    <span th:text="#{admin.console.toShip}">待发货</span>
+                    <b class="num" th:text="${shipCount}">0</b>
+                </a>
+                <a class="pop__item" th:href="@{/admin/products(filter='low')}">
+                    <span th:text="#{admin.console.low}">低库存</span>
+                    <b class="num" th:text="${lowCount}">0</b>
+                </a>
+                <a class="pop__all" th:href="@{/admin/orders}" th:text="#{admin.top.notifyAll}">查看订单</a>
+            </div>
+        </details>
+
+        <details class="pop" id="me">
+            <summary class="me__btn">
+                <i th:text="${isEn != null && isEn ? 'S' : '沈'}">沈</i>
+                <span th:text="${currentAdmin != null ? tr.t(currentAdmin.displayName) : '—'}">沈未染</span>
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M4.4 6.4L8 10l3.6-3.6"/></svg>
+            </summary>
+            <div class="pop__panel">
+                <a class="pop__item" th:href="@{/admin/console}" th:text="#{admin.nav.dashboard}">控制台</a>
+                <a class="pop__item" th:href="@{/admin/users}" th:text="#{admin.nav.accounts}">账号管理</a>
+                <div class="pop__row">
+                    <span th:text="#{admin.lang.label}">语言</span>
+                    <span class="pop__lang">
+                        <a th:href="${langZhUrl}" th:classappend="${isEn == null || !isEn} ? 'on'" th:text="#{admin.lang.zh}">中文</a>
+                        <a th:href="${langEnUrl}" th:classappend="${isEn} ? 'on'" th:text="#{admin.lang.en}">EN</a>
+                    </span>
+                </div>
+                <p class="pop__env" th:title="#{admin.top.demoTitle}">
+                    <span class="pop__tag" th:text="#{admin.top.demo}">演示环境</span>
+                    <span th:text="#{admin.top.demoHint}">本地演示数据，非生产环境</span>
+                </p>
+                <form th:action="@{/admin/signout}" method="post">
+                    <input type="hidden" name="_csrf" th:value="${csrfToken}" />
+                    <button type="submit" class="pop__item pop__item--btn" th:text="#{admin.top.signout}">退出登录</button>
+                </form>
+            </div>
+        </details>
     </div>
     <div id="progress"></div>
 </div>
@@ -251,6 +285,19 @@
             var g = document.querySelector('.gsearch input');
             if (g) { e.preventDefault(); g.focus(); }
         }
+    });
+    // 顶栏两个弹层：点外面或按 Esc 收起，同一时间只开一个
+    var pops = Array.prototype.slice.call(document.querySelectorAll('.pop'));
+    pops.forEach(function (d) {
+        d.addEventListener('toggle', function () {
+            if (d.open) pops.forEach(function (o) { if (o !== d) o.open = false; });
+        });
+    });
+    document.addEventListener('click', function (e) {
+        pops.forEach(function (d) { if (d.open && !d.contains(e.target)) d.open = false; });
+    });
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') pops.forEach(function (d) { d.open = false; });
     });
 })();
 </script>

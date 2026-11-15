@@ -7,7 +7,7 @@
     <div th:replace="~{fragments :: side('orders')}"></div>
     <div class="scrim" id="scrim"></div>
     <div class="wrap">
-        <div th:replace="~{fragments :: topbar(#{admin.nav.trade}, #{admin.nav.orders})}"></div>
+        <div th:replace="~{fragments :: topbar(#{admin.nav.trade}, #{admin.nav.orders}, @{/admin/orders})}"></div>
         <main class="main" id="main">
             <div class="page">
                 <div th:replace="~{fragments :: notice}"></div>
@@ -34,15 +34,20 @@
                     <div class="seg" role="group">
                         <a th:href="@{/admin/orders(kw=${kw},status='all',size=${pageSize})}"
                            th:classappend="${status == 'all'} ? 'on'"><span th:text="#{admin.order.filterAll}">全部</span><em th:text="${result.allCount}">8</em></a>
-                        <a th:href="@{/admin/orders(kw=${kw},status='pending',size=${pageSize})}"
+                        <a th:if="${result.pendingCount > 0 or status == 'pending' or status == 'PENDING_PAYMENT'}"
+                           th:href="@{/admin/orders(kw=${kw},status='pending',size=${pageSize})}"
                            th:classappend="${status == 'pending' or status == 'PENDING_PAYMENT'} ? 'on'"><span th:text="#{admin.order.statusPending}">待支付</span><em th:text="${result.pendingCount}">1</em></a>
-                        <a th:href="@{/admin/orders(kw=${kw},status='paid',size=${pageSize})}"
+                        <a th:if="${result.paidCount > 0 or status == 'paid' or status == 'PAID'}"
+                           th:href="@{/admin/orders(kw=${kw},status='paid',size=${pageSize})}"
                            th:classappend="${status == 'paid' or status == 'PAID'} ? 'on'"><span th:text="#{admin.order.statusPaid}">已支付</span><em th:text="${result.paidCount}">2</em></a>
-                        <a th:href="@{/admin/orders(kw=${kw},status='shipped',size=${pageSize})}"
+                        <a th:if="${result.shippedCount > 0 or status == 'shipped' or status == 'SHIPPED'}"
+                           th:href="@{/admin/orders(kw=${kw},status='shipped',size=${pageSize})}"
                            th:classappend="${status == 'shipped' or status == 'SHIPPED'} ? 'on'"><span th:text="#{admin.order.statusShipped}">已发货</span><em th:text="${result.shippedCount}">2</em></a>
-                        <a th:href="@{/admin/orders(kw=${kw},status='completed',size=${pageSize})}"
+                        <a th:if="${result.completedCount > 0 or status == 'completed' or status == 'COMPLETED'}"
+                           th:href="@{/admin/orders(kw=${kw},status='completed',size=${pageSize})}"
                            th:classappend="${status == 'completed' or status == 'COMPLETED'} ? 'on'"><span th:text="#{admin.order.statusCompleted}">已完成</span><em th:text="${result.completedCount}">2</em></a>
-                        <a th:href="@{/admin/orders(kw=${kw},status='cancelled',size=${pageSize})}"
+                        <a th:if="${result.cancelledCount > 0 or status == 'cancelled' or status == 'CANCELLED'}"
+                           th:href="@{/admin/orders(kw=${kw},status='cancelled',size=${pageSize})}"
                            th:classappend="${status == 'cancelled' or status == 'CANCELLED'} ? 'on'"><span th:text="#{admin.order.statusCancelled}">已取消</span><em th:text="${result.cancelledCount}">1</em></a>
                     </div>
                     <div class="toolbar__right">
@@ -83,8 +88,10 @@
                             <td class="date col-md" th:text="${r.createdAt}">2026.11.13 08:10</td>
                             <td><div class="acts">
                                 <a class="txt" th:href="@{/admin/orders/{no}(no=${r.orderNo})}" th:text="#{admin.order.detail}">详情</a>
-                                <form th:if="${r.canShip}" method="post"
-                                      th:action="@{/admin/orders/{no}/ship(no=${r.orderNo})}" style="display:contents">
+                                <span class="acts__sep" th:if="${r.canShip}"></span>
+                                <form th:if="${r.canShip}" method="post" class="js-ship"
+                                      th:action="@{/admin/orders/{no}/ship(no=${r.orderNo})}"
+                                      th:attr="data-no=${r.orderNo}" style="display:contents">
                                     <input type="hidden" name="_csrf" th:value="${csrfToken}" />
                                     <button type="submit" class="txt" th:text="#{admin.order.ship}">发货</button>
                                 </form>
@@ -97,7 +104,7 @@
                 <div class="pager" th:unless="${result.total == 0}">
                     <div class="pager__info"
                          th:text="#{admin.order.pager(${result.total},${currentPage},${result.pages})}">共 8 条</div>
-                    <div class="pgs">
+                    <div class="pgs" th:if="${result.pages > 1}">
                         <a class="pg pg--dir" th:if="${currentPage > 1}"
                            th:href="@{/admin/orders(kw=${kw},status=${status},size=${pageSize},page=${currentPage - 1})}"
                            th:text="#{admin.action.prev}">上一页</a>
@@ -109,16 +116,16 @@
                            th:href="@{/admin/orders(kw=${kw},status=${status},size=${pageSize},page=${currentPage + 1})}"
                            th:text="#{admin.action.next}">下一页</a>
                         <span class="pg pg--dir off" th:unless="${currentPage < result.pages}" th:text="#{admin.action.next}">下一页</span>
-                        <form method="get" th:action="@{/admin/orders}" style="display:contents">
-                            <input type="hidden" name="kw" th:value="${kw}" />
-                            <input type="hidden" name="status" th:value="${status}" />
-                            <select class="psize" name="size" onchange="this.form.submit()"
-                                    th:aria-label="#{admin.order.perPage}">
-                                <option th:each="n : ${ {10,20,50} }" th:value="${n}" th:selected="${n == pageSize}"
-                                        th:text="${n} + ' ' + #{admin.order.perPage}">10 条 / 页</option>
-                            </select>
-                        </form>
                     </div>
+                    <form method="get" th:action="@{/admin/orders}" class="psize-form">
+                        <input type="hidden" name="kw" th:value="${kw}" />
+                        <input type="hidden" name="status" th:value="${status}" />
+                        <select class="psize" name="size" onchange="this.form.submit()"
+                                th:aria-label="#{admin.order.perPage}">
+                            <option th:each="n : ${ {10,20,50} }" th:value="${n}" th:selected="${n == pageSize}"
+                                    th:text="${n} + ' ' + #{admin.order.perPage}">10 条 / 页</option>
+                        </select>
+                    </form>
                 </div>
 
                 <footer th:replace="~{fragments :: footer}"></footer>
@@ -127,7 +134,38 @@
     </div>
 </div>
 
+<dialog id="shipDlg">
+    <form id="shipForm" method="post">
+        <input type="hidden" name="_csrf" th:value="${csrfToken}" />
+        <div class="dlg__body">
+            <h2 th:text="#{admin.order.shipTitle}">确认发货</h2>
+            <p><b class="num" id="shipNo">—</b></p>
+            <p style="margin-top:10px" th:text="#{admin.order.shipText}">发货后订单状态变为已发货，并记录首次发货时间；该操作不可撤销。</p>
+        </div>
+        <div class="dlg__foot">
+            <button type="button" class="btn btn--line" onclick="document.getElementById('shipDlg').close()"
+                    th:text="#{admin.action.cancel}">取消</button>
+            <button type="submit" class="btn" th:text="#{admin.order.ship}">确认发货</button>
+        </div>
+    </form>
+</dialog>
+
 <div th:replace="~{fragments :: icons}"></div>
 <script th:replace="~{fragments :: shellJs}"></script>
+<script>
+(function () {
+    var dlg = document.getElementById('shipDlg');
+    var form = document.getElementById('shipForm');
+    var no = document.getElementById('shipNo');
+    document.querySelectorAll('form.js-ship').forEach(function (f) {
+        f.addEventListener('submit', function (e) {
+            e.preventDefault();
+            form.action = f.getAttribute('action');
+            no.textContent = f.getAttribute('data-no');
+            dlg.showModal();
+        });
+    });
+})();
+</script>
 </body>
 </html>

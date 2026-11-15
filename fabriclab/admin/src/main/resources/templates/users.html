@@ -7,7 +7,7 @@
     <div th:replace="~{fragments :: side('users')}"></div>
     <div class="scrim" id="scrim"></div>
     <div class="wrap">
-        <div th:replace="~{fragments :: topbar(#{admin.nav.clients}, #{admin.nav.accounts})}"></div>
+        <div th:replace="~{fragments :: topbar(#{admin.nav.clients}, #{admin.nav.accounts}, @{/admin/users})}"></div>
         <main class="main" id="main">
             <div class="page">
                 <div th:replace="~{fragments :: notice}"></div>
@@ -51,18 +51,32 @@
                     <a class="btn btn--sm" th:href="@{/admin/users}" th:text="#{admin.action.clear}">清除</a>
                 </div>
 
+                <form id="bulkForm" th:action="@{/admin/users/batch}" method="post">
+                    <input type="hidden" name="_csrf" th:value="${csrfToken}" />
+                </form>
+                <div class="bulk" id="bulk" hidden>
+                    <span class="bulk__n"><b id="bulkN">0</b> <span th:text="#{admin.user.selected}">已选</span></span>
+                    <div class="bulk__act">
+                        <button type="submit" class="txt" form="bulkForm" name="target" value="DISABLED" th:text="#{admin.user.batchDisable}">批量停用</button>
+                        <button type="submit" class="txt" form="bulkForm" name="target" value="ENABLED" th:text="#{admin.user.batchEnable}">批量启用</button>
+                        <button type="button" class="txt txt--muted" id="bulkClear" th:text="#{admin.action.clearSelect}">取消选择</button>
+                    </div>
+                </div>
+
                 <div class="tblwrap" th:unless="${result.total == 0}">
                     <table class="tbl">
                         <caption class="sr-only"
                                  th:text="#{admin.user.caption(${result.total},${currentPage},${pageSize})}">顾客账号列表</caption>
                         <colgroup>
+                            <col style="width:40px" />
                             <col style="width:120px" /><col />
                             <col class="col-md" style="width:200px" />
                             <col style="width:70px" /><col class="col-md" style="width:120px" />
                             <col class="col-md" style="width:100px" />
-                            <col style="width:86px" /><col style="width:110px" />
+                            <col style="width:86px" /><col style="width:120px" />
                         </colgroup>
                         <thead><tr>
+                            <th><label class="ckcell"><input class="ck" type="checkbox" id="allCk" th:aria-label="#{admin.action.selectAll}" /></label></th>
                             <th th:text="#{admin.user.colUsername}">用户名</th>
                             <th th:text="#{admin.user.colName}">显示名</th>
                             <th class="col-md" th:text="#{admin.user.colEmail}">邮箱</th>
@@ -74,6 +88,8 @@
                         </tr></thead>
                         <tbody>
                         <tr th:each="r : ${result.rows}">
+                            <td><label class="ckcell"><input class="ck rowCk" type="checkbox" name="ids" th:value="${r.id}" form="bulkForm"
+                                       th:aria-label="|#{admin.action.selectAll} ${r.username}|" /></label></td>
                             <td class="sku"><a th:href="@{/admin/users/{id}(id=${r.id})}" th:text="${r.username}">alice</a></td>
                             <td><div class="ucell">
                                 <span class="uava" th:text="${#strings.substring(tr.t(r.displayName),0,1)}">林</span>
@@ -190,13 +206,48 @@
     window.openRowMenu = function (btn) {
         rowBtn = btn;
         rowMenu.hidden = false;
+        // 先显示再量：隐藏状态下高度为 0，菜单会一直向下弹并溢出视口
+        var h = rowMenu.offsetHeight;
+        var w = rowMenu.offsetWidth;
         var r = btn.getBoundingClientRect();
-        rowMenu.style.left = Math.max(8, r.right - rowMenu.offsetWidth) + 'px';
-        rowMenu.style.top = (r.bottom + rowMenu.offsetHeight + 8 > window.innerHeight
-                ? r.top - rowMenu.offsetHeight - 4 : r.bottom + 4) + 'px';
+        var top = r.bottom + 4;
+        if (top + h > window.innerHeight - 8) {
+            top = Math.max(8, Math.min(r.top - h - 4, window.innerHeight - h - 8));
+        }
+        rowMenu.style.left = Math.max(8, Math.min(r.right - w, window.innerWidth - w - 8)) + 'px';
+        rowMenu.style.top = top + 'px';
         document.getElementById('menuStatus').textContent =
             btn.getAttribute('data-target') === 'DISABLED' ? labels.disable : labels.enable;
     };
+    // 批量停用：勾选后出现操作条，一次处理完残留账号
+    var bulk = document.getElementById('bulk');
+    var bulkN = document.getElementById('bulkN');
+    var all = document.getElementById('allCk');
+    function syncBulk() {
+        var boxes = Array.prototype.slice.call(document.querySelectorAll('.rowCk'));
+        var n = boxes.filter(function (c) { return c.checked; }).length;
+        if (bulk) bulk.hidden = n === 0;
+        if (bulkN) bulkN.textContent = n;
+        if (all) {
+            all.checked = boxes.length > 0 && n === boxes.length;
+            all.indeterminate = n > 0 && n < boxes.length;
+        }
+    }
+    if (all) {
+        all.addEventListener('change', function () {
+            document.querySelectorAll('.rowCk').forEach(function (c) { c.checked = all.checked; });
+            syncBulk();
+        });
+        document.querySelectorAll('.rowCk').forEach(function (c) {
+            c.addEventListener('change', syncBulk);
+        });
+        var clear = document.getElementById('bulkClear');
+        if (clear) clear.addEventListener('click', function () {
+            document.querySelectorAll('.rowCk').forEach(function (c) { c.checked = false; });
+            syncBulk();
+        });
+        syncBulk();
+    }
     document.getElementById('menuReset').addEventListener('click', function () {
         rowMenu.hidden = true;
         document.getElementById('resetForm').action =

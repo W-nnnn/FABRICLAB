@@ -8,7 +8,9 @@
     <p th:text="${errorMessage != null ? errorMessage : (message != null ? message : #messages.msg('admin.error.fallbackText'))}">说明</p>
     <div class="error-actions">
         <a th:href="@{/admin/console}" th:text="#{admin.error.back}">返回控制台</a>
-        <a th:href="@{/admin/signon}" th:text="#{admin.error.relogin}">重新登录</a>
+        <!-- 404 是地址问题，不是会话问题，不给「重新登录」这条误导性出口 -->
+        <a th:unless="${statusCode != null and statusCode == 404}" th:href="@{/admin/signon}"
+           th:text="#{admin.error.relogin}">重新登录</a>
     </div>
 </main>
 </body>

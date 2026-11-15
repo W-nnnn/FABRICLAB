@@ -7,7 +7,7 @@
     <div th:replace="~{fragments :: side('products')}"></div>
     <div class="scrim" id="scrim"></div>
     <div class="wrap">
-        <div th:replace="~{fragments :: topbar(#{admin.nav.products}, #{admin.album.title})}"></div>
+        <div th:replace="~{fragments :: topbar(#{admin.nav.products}, #{admin.album.title}, @{/admin/products})}"></div>
         <main class="main" id="main">
             <div class="page">
                 <div th:replace="~{fragments :: notice}"></div>
@@ -26,7 +26,8 @@
                 </div>
 
                 <div class="phead">
-                    <span class="pimg" th:style="|--tone:${tone}|"><svg viewBox="0 0 40 52" aria-hidden="true"><use th:href="|#g-${shape}|" href="#g-shirt"/></svg></span>
+                    <span class="pimg"><img th:src="@{|/${product.coverImage}|}" th:alt="${product.sku}"
+                                            onerror="if(!this.dataset.f){this.dataset.f=1;this.src='/images/logo.png'}" /></span>
                     <div class="phead__id">
                         <span class="sku" th:text="${product.sku}">FL-CM-01</span>
                         <b th:text="${tr.t(product.name)}">山羊绒高领衫</b>
@@ -46,7 +47,7 @@
                 <div class="alert alert--ok" th:if="${total == 0}">
                     <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" style="flex:none;margin-top:2px"><use href="#i-box"/></svg>
                     <span><b th:text="#{admin.album.fallbackTitle}">相册为空时回退封面</b>
-                        <span th:text="${' · ' + #messages.msg('admin.album.fallbackText', product.coverImage)}"></span></span>
+                        <span th:text="${' · ' + #messages.msg('admin.album.fallbackText')}"></span></span>
                 </div>
 
                 <div class="cols cols--album">
@@ -68,12 +69,23 @@
                                         <span class="shot__flag" th:if="${img.cover}" th:text="#{admin.album.isCover}">当前封面</span>
                                     </a>
                                     <div class="shot__meta">
-                                        <span class="shot__credit" th:classappend="${#strings.isEmpty(img.credit)} ? 'is-empty'"
-                                              th:text="${#strings.isEmpty(img.credit) ? #messages.msg('admin.album.noCredit') : img.credit}">© FABRICLAB</span>
                                         <span class="shot__alt" th:classappend="${#strings.isEmpty(img.alt)} ? 'is-empty'"
                                               th:text="${#strings.isEmpty(img.alt) ? #messages.msg('admin.album.noAlt') : tr.t(img.alt)}">正面平铺</span>
-                                        <span class="shot__path" th:text="${img.path}">images/products/FL-CM-01/1.jpg</span>
+                                        <span class="shot__credit" th:if="${!#strings.isEmpty(img.credit)}" th:text="${img.credit}">© FABRICLAB</span>
                                     </div>
+                                    <form class="shot__group" th:action="@{/admin/products/{id}/album/{imageId}(id=${product.id},imageId=${img.id})}" method="post">
+                                        <input type="hidden" name="_csrf" th:value="${csrfToken}" />
+                                        <input type="hidden" name="moved" value="1" />
+                                        <input type="hidden" name="path" th:value="${img.path}" />
+                                        <input type="hidden" name="credit" th:value="${img.credit}" />
+                                        <input type="hidden" name="alt" th:value="${img.alt}" />
+                                        <input type="hidden" name="sortOrder" th:value="${img.sortOrder}" />
+                                        <select class="shot__kind" name="kind" onchange="this.form.submit()"
+                                                th:aria-label="#{admin.album.move}">
+                                            <option th:each="k : ${kinds}" th:value="${k}" th:selected="${k == img.kind}"
+                                                    th:text="${#messages.msg('admin.album.kind.' + (k == 'F' ? 'flat' : (k == 'W' ? 'worn' : 'detail')))}">平铺</option>
+                                        </select>
+                                    </form>
                                     <div class="shot__acts">
                                         <button type="button" class="txt" th:text="#{admin.album.edit}"
                                                 th:attr="data-id=${img.id},data-kind=${img.kind},data-path=${img.path},data-credit=${img.credit},data-alt=${img.alt},data-sort=${img.sortOrder}"
@@ -100,7 +112,8 @@
                     <aside class="aside-col aside-col--album">
                         <div class="aside-sec">
                             <h3 th:text="#{admin.album.newTitle}">新增一张</h3>
-                            <form th:action="@{/admin/products/{id}/album(id=${product.id})}" method="post">
+                            <form th:action="@{/admin/products/{id}/album/upload(id=${product.id})}" method="post"
+                                  enctype="multipart/form-data">
                                 <input type="hidden" name="_csrf" th:value="${csrfToken}" />
                                 <div class="field">
                                     <label><span th:text="#{admin.album.f.kind}">图类型</span></label>
@@ -113,10 +126,10 @@
                                     </div>
                                 </div>
                                 <div class="field">
-                                    <label for="path"><span th:text="#{admin.album.f.path}">图片路径</span><em>*</em></label>
-                                    <input class="ctl" id="path" name="path" maxlength="255"
-                                           th:placeholder="#{admin.album.f.pathHint}" />
-                                    <div class="help"><span th:text="#{admin.album.f.pathRule}">不得以 / 开头，也不含 ..</span></div>
+                                    <label for="file"><span th:text="#{admin.album.uploadPick}">选择图片文件</span><em>*</em></label>
+                                    <input class="file" id="file" name="file" type="file"
+                                           accept="image/jpeg,image/png,image/webp" required />
+                                    <div class="help"><span th:text="#{admin.album.uploadHint}">JPG / PNG / WebP，单张不超过 5 MB</span></div>
                                 </div>
                                 <div class="field">
                                     <label for="credit"><span th:text="#{admin.album.f.credit}">来源与许可</span></label>
@@ -134,13 +147,34 @@
                                     <div class="help"><span th:text="#{admin.album.f.sortHint}">数值越小越靠前</span></div>
                                 </div>
                                 <button class="btn btn--lg" type="submit" style="width:100%"
-                                        th:text="#{admin.album.new}">新增图片</button>
+                                        th:text="#{admin.album.upload}">上传一张</button>
                             </form>
+
+                            <details class="adv">
+                                <summary th:text="#{admin.album.f.path}">图片路径（高级）</summary>
+                                <form th:action="@{/admin/products/{id}/album(id=${product.id})}" method="post">
+                                    <input type="hidden" name="_csrf" th:value="${csrfToken}" />
+                                    <div class="field">
+                                        <label for="path"><span th:text="#{admin.album.f.path}">图片路径</span><em>*</em></label>
+                                        <input class="ctl" id="path" name="path" maxlength="255"
+                                               th:placeholder="#{admin.album.f.pathHint}" />
+                                        <div class="help"><span th:text="#{admin.album.f.pathRule}">不得以 / 开头，也不含 ..</span></div>
+                                    </div>
+                                    <div class="field">
+                                        <label for="pathKind"><span th:text="#{admin.album.f.kind}">图类型</span></label>
+                                        <select class="ctl" id="pathKind" name="kind">
+                                            <option th:each="k : ${kinds}" th:value="${k}" th:text="${#messages.msg('admin.album.kind.' + (k == 'F' ? 'flat' : (k == 'W' ? 'worn' : 'detail')))}">平铺</option>
+                                        </select>
+                                    </div>
+                                    <button class="btn btn--sm btn--line" type="submit" style="width:100%"
+                                            th:text="#{admin.album.new}">新增图片</button>
+                                </form>
+                            </details>
                         </div>
                         <div class="aside-sec">
                             <h3 th:text="#{admin.album.orderTitle}">出图顺序</h3>
                             <p class="aside-note"
-                               th:text="${total == 0} ? #{admin.album.fallbackText(${product.coverImage})} : #{admin.album.orderNote(${product.coverImage})}">用户端按 sort_order 出图。</p>
+                               th:text="${total == 0} ? #{admin.album.fallbackText} : #{admin.album.orderNote}">用户端按分组与排序值出图。</p>
                         </div>
                     </aside>
                 </div>

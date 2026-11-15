@@ -7,7 +7,7 @@
     <div th:replace="~{fragments :: side('users')}"></div>
     <div class="scrim" id="scrim"></div>
     <div class="wrap">
-        <div th:replace="~{fragments :: topbar(#{admin.nav.clients}, #{admin.nav.accounts})}"></div>
+        <div th:replace="~{fragments :: topbar(#{admin.nav.clients}, #{admin.nav.accounts}, @{/admin/users})}"></div>
         <main class="main" id="main">
             <div class="page">
                 <div th:replace="~{fragments :: notice}"></div>
@@ -61,7 +61,6 @@
                                     <div class="field">
                                         <label th:for="usernameRo"><span th:text="#{admin.user.f.username}">用户名</span></label>
                                         <input class="ctl ctl--ro" id="usernameRo" th:value="${u.username}" readonly />
-                                        <div class="help"><span th:text="#{admin.user.f.usernameHint}">登录名，创建后不可修改</span></div>
                                     </div>
                                     <div class="field">
                                         <label th:for="roleRo"><span th:text="#{admin.user.f.role}">角色</span></label>
@@ -162,7 +161,8 @@
             </div>
         </main>
         <div class="actions-bar">
-            <span class="actions-bar__note" th:text="#{admin.user.saveHint}">修改仅在点击保存后生效；用户名与角色不可改</span>
+            <span class="actions-bar__note" th:text="#{admin.user.saveHint}">只保存左侧「身份 / 联系方式」；右侧停用与重置是独立操作</span>
+            <span id="dirtyMsg" hidden th:text="#{admin.user.dirtyWarn}">左侧有未保存的修改，继续该动作会丢弃它们。</span>
             <div class="actions-bar__act">
                 <a class="btn btn--line" th:href="@{/admin/users}" th:text="#{admin.action.cancel}">取消</a>
                 <button class="btn" type="submit" form="userForm" th:text="#{admin.action.save}">保存修改</button>
@@ -217,6 +217,37 @@
 (function () {
     window.openReset = function () { document.getElementById('resetDlg').showModal(); };
     window.openStatus = function () { document.getElementById('statusDlg').showModal(); };
+
+    // 左侧资料表单与右侧「停用 / 重置」各自提交：有未保存修改时先拦一次，避免改完资料点右侧按钮把修改丢掉
+    var form = document.getElementById('userForm');
+    var msg = document.getElementById('dirtyMsg');
+    var bar = document.querySelector('.actions-bar__note');
+    var dirty = false;
+    function mark(e) {
+        // 只认用户真实操作：浏览器回填、脚本赋值触发的 change 不算改过
+        if (dirty || (e && e.isTrusted === false)) return;
+        dirty = true;
+        bar.textContent = msg.textContent;
+        bar.classList.add('is-dirty');
+    }
+    form.addEventListener('input', mark);
+    form.addEventListener('change', mark);
+    form.addEventListener('submit', function () { dirty = false; });
+    Array.prototype.forEach.call(document.querySelectorAll('dialog form'), function (f) {
+        f.addEventListener('submit', function () { dirty = false; });
+    });
+    ['openReset', 'openStatus'].forEach(function (k) {
+        var fn = window[k];
+        window[k] = function () {
+            if (dirty && !window.confirm(msg.textContent)) return;
+            return fn.apply(this, arguments);
+        };
+    });
+    window.addEventListener('beforeunload', function (e) {
+        if (!dirty) return;
+        e.preventDefault();
+        e.returnValue = '';
+    });
 })();
 </script>
 </body>
