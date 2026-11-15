@@ -786,3 +786,104 @@ html[lang="en"] .help{font-size:12px}
   .svc-detail-grid{grid-template-columns:minmax(0,1fr);gap:8px}
   .svc-msg{max-width:100%}
 }
+
+/* ══════════════════════════════════════════════════════════════
+   控制台分区重设计（作用域 .console，不波及其它页面）
+   画布加深 → 模块变独立白卡 → 语义色条/编号徽章区分职责
+   ══════════════════════════════════════════════════════════════ */
+.main--console{background:var(--canvas)}
+.console .ph{border-bottom:0;padding:32px 0 18px}
+.console .ph__eyebrow::before{background:var(--rust)}
+
+/* 主推款：陶土色块保留，补一圈实边与间距 */
+.console .hero{margin:18px 0 22px;border:1px solid rgba(26,26,26,.16)}
+
+/* 四个指标：独立白卡 + 顶部语义色条（墨 / 灰 / 陶土 / 陶土） */
+.console .stats{
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;
+  border-bottom:0;margin:0 0 26px;
+}
+.console .stats .stat{
+  position:relative;overflow:hidden;background:var(--white);
+  border:1px solid var(--rule-strong);padding:20px 20px 18px;
+  transition:box-shadow .18s ease,transform .18s ease;
+}
+.console .stats .stat:hover{box-shadow:0 6px 18px rgba(26,26,26,.09);transform:translateY(-2px)}
+.console .stats .stat::before{
+  content:"";position:absolute;left:0;top:0;right:0;height:4px;background:var(--ink);
+}
+.console .stats .stat:nth-child(2)::before{background:#A9A196}
+.console .stats .stat:nth-child(3)::before,
+.console .stats .stat:nth-child(4)::before{background:var(--rust)}
+.console .stat__k{justify-content:space-between}
+.console .stat__k::after{display:none}
+.console .stat__k s{
+  font-size:10px;letter-spacing:.1em;color:var(--faint);
+  border:1px solid var(--rule);padding:2px 6px;line-height:1.4;
+}
+.console .stat__v{margin-top:16px;font-size:36px}
+.console .stats .stat:nth-child(3) .stat__num,
+.console .stats .stat:nth-child(4) .stat__num{color:var(--rust-ink)}
+.console .stat__n{margin-top:9px}
+
+/* 左栏三个模块：白卡 + 实边 + 编号徽章，区块之间用留白而非淡线 */
+.console .cols{grid-template-columns:minmax(0,1fr) 292px;gap:22px;align-items:start}
+.console .cols > div > .block,
+.console .cols > div > .block:first-of-type{
+  background:var(--white);border:1px solid var(--rule-strong);
+  padding:22px 24px 20px;margin:0 0 18px;
+}
+.console .block__head{
+  grid-template-columns:34px minmax(0,1fr) auto;gap:14px;align-items:start;
+  margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--rule);
+}
+.console .block__no{
+  width:30px;height:30px;display:grid;place-items:center;padding:0;
+  background:var(--rust);color:var(--cream);
+  font-size:12px;letter-spacing:0;
+}
+.console .cols > div > .block:nth-child(2) .block__no{background:var(--ink)}
+.console .cols > div > .block:nth-child(3) .block__no{background:#8A8378}
+.console .block__head h2{font-size:20px}
+.console .ledger a,.console .recent li{border-bottom-color:var(--rule-strong)}
+.console .ledger a:hover{background:var(--wash)}
+.console .tbl thead th{background:var(--wash);border-bottom-color:var(--rule-strong)}
+
+/* 右栏：墨色身份卡 + 白色系统卡，与工作台形成明确色块对比 */
+.console .aside-col{
+  border-left:0;padding-left:0;display:flex;flex-direction:column;gap:18px;
+}
+.console .aside-sec,
+.console .aside-sec:last-child{
+  background:var(--white);border:1px solid var(--rule-strong);
+  padding:20px 22px;margin:0;
+}
+.console .aside-sec h3{
+  font-size:12px;letter-spacing:.16em;color:var(--ink);
+  padding-bottom:12px;border-bottom:1px solid var(--rule-strong);margin-bottom:16px;
+}
+.console .aside-col > .aside-sec:first-child{
+  background:var(--rail);border-color:var(--rail);color:var(--cream);
+}
+.console .aside-col > .aside-sec:first-child h3{
+  color:var(--cream);border-bottom-color:rgba(242,239,233,.28);
+}
+.console .aside-col > .aside-sec:first-child .facts dt{color:rgba(242,239,233,.62)}
+.console .aside-col > .aside-sec:first-child .facts dd{color:var(--cream)}
+.console .aside-fold > summary{
+  letter-spacing:.16em;color:var(--ink);
+  border-bottom-color:var(--rule-strong);
+}
+.console .aside-fold[open] > summary{color:var(--ink)}
+.console .aside-fold > summary::after{color:var(--rust)}
+
+@media(max-width:1023px){
+  .console .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .console .cols{grid-template-columns:1fr;gap:0}
+  .console .aside-col{margin-top:18px}
+  .console .hero{grid-template-columns:1fr}
+  .console .hero__vis{display:none}
+}
+@media(max-width:719px){
+  .console .stats{grid-template-columns:1fr}
+}
