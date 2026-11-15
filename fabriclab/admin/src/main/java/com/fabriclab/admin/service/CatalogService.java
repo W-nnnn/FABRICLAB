@@ -64,6 +64,12 @@ public class CatalogService {
                 if (parent != null) parent.getChildren().add(node);
             }
         }
+        // 商品只挂二级分类，一级分类的款数按子树汇总，避免一级永远显示 0
+        for (CategoryNode root : roots) {
+            long sum = 0;
+            for (CategoryNode child : root.getChildren()) sum += child.getProductCount();
+            if (sum > 0) root.addChildProducts(sum);
+        }
         return roots;
     }
 

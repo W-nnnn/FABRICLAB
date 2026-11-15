@@ -91,14 +91,14 @@ class T16OrderListTest {
     }
 
     @Test
-    void defaultPageSizeIsTen() {
+    void defaultPageSizeMatchesOtherLists() {
         Long userId = jdbc.queryForObject("SELECT id FROM store_user WHERE username = 't16list'", Long.class);
-        for (int i = 0; i < 12; i++) {
+        for (int i = 0; i < 24; i++) {
             pending("T16-L-BULK" + i, userId, "10.00", i);
         }
         OrderPage page = orders.page(OrderQuery.of(null, null, 1, null));
-        assertEquals(10, page.size());
-        assertEquals(10, page.rows().size());
+        assertEquals(20, page.size());
+        assertEquals(20, page.rows().size());
         assertTrue(page.pages() >= 2);
         assertTrue(page.total() >= 12);
     }

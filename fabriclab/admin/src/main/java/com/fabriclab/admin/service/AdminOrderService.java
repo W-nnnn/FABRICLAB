@@ -234,6 +234,15 @@ public class AdminOrderService {
         return current == null || current.getStatus() == null ? "" : current.getStatus();
     }
 
+    /** 顶栏搜索用：订单号是否存在；不抛异常，交给调用方决定去哪里。 */
+    public boolean exists(String orderNo) {
+        String no = orderNo == null ? "" : orderNo.trim();
+        if (no.isEmpty() || no.length() > ORDER_NO_MAX) return false;
+        Long n = orderMapper.selectCount(new LambdaQueryWrapper<SalesOrder>()
+                .eq(SalesOrder::getOrderNo, no));
+        return n != null && n > 0;
+    }
+
     private SalesOrder requireOrder(String orderNo) {
         String no = orderNo == null ? "" : orderNo.trim();
         if (no.isEmpty()) {

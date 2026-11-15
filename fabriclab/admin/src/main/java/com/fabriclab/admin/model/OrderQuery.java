@@ -7,7 +7,7 @@ public record OrderQuery(String kw, String status, int page, int size) {
         String q = kw == null ? "" : kw.trim();
         String s = status == null || status.isBlank() ? "all" : status.trim();
         int p = page == null || page < 1 ? 1 : page;
-        int z = size == null ? 10 : size;
+        int z = size == null ? 20 : size;
         return new OrderQuery(q, s, p, z);
     }
 }

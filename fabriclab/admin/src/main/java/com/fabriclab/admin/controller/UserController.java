@@ -2,6 +2,7 @@ package com.fabriclab.admin.controller;
 
 import com.fabriclab.admin.exception.BusinessException;
 import com.fabriclab.admin.exception.NotFoundException;
+import com.fabriclab.admin.model.PageSize;
 import com.fabriclab.admin.model.UserForm;
 import com.fabriclab.admin.model.UserPage;
 import com.fabriclab.admin.model.UserQuery;
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
 
 /**
  * 顾客账号（UC-A7）：列表筛选分页、资料修改、口令重置、启停。
@@ -38,9 +41,11 @@ public class UserController {
     public String list(@RequestParam(required = false) String kw,
                        @RequestParam(required = false) String status,
                        @RequestParam(required = false) Integer page,
-                       @RequestParam(required = false) Integer size,
+                       jakarta.servlet.http.HttpServletRequest request,
+                       jakarta.servlet.http.HttpServletResponse response,
                        Model model) {
-        UserQuery q = UserQuery.of(kw, status, page, size);
+        PageSize.remember(response, request);
+        UserQuery q = UserQuery.of(kw, status, page, PageSize.resolve(request));
         UserPage result = userService.page(q);
         model.addAttribute("result", result);
         model.addAttribute("kw", q.kw());
@@ -94,6 +99,29 @@ public class UserController {
             ra.addFlashAttribute("noticeKind", "err");
         }
         return "redirect:/admin/users/" + id;
+    }
+
+    /** 批量停用 / 启用：清理测试残留账号不必逐个点开。 */
+    @PostMapping("/batch")
+    public String batch(@RequestParam(required = false) List<Long> ids,
+                        @RequestParam(required = false) String target,
+                        RedirectAttributes ra) {
+        if (ids == null || ids.isEmpty()) {
+            ra.addFlashAttribute("notice", t("admin.err.user.noneSelected"));
+            ra.addFlashAttribute("noticeKind", "err");
+            return "redirect:/admin/users";
+        }
+        int n = 0;
+        for (Long id : ids) {
+            try {
+                if (userService.setStatus(id, target)) n++;
+            } catch (BusinessException | NotFoundException ignored) {
+            }
+        }
+        ra.addFlashAttribute("notice", t(AdminUserService.DISABLED.equalsIgnoreCase(
+                target == null ? "" : target.trim())
+                ? "admin.ok.user.batchDisabled" : "admin.ok.user.batchEnabled") + " · " + n);
+        return "redirect:/admin/users";
     }
 
     @PostMapping("/{id}/status")

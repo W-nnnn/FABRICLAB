@@ -1,34 +1,39 @@
 package com.fabriclab.admin.controller;
 
+import com.fabriclab.admin.entity.Product;
 import com.fabriclab.admin.exception.BusinessException;
 import com.fabriclab.admin.exception.NotFoundException;
 import com.fabriclab.admin.model.AlbumImage;
 import com.fabriclab.admin.service.AdminProductService;
 import com.fabriclab.admin.service.CatalogService;
 import com.fabriclab.admin.service.ProductAlbumService;
+import com.fabriclab.admin.service.ProductImageStorage;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.Map;
 
-/** 服装相册维护（UC-A6）：三组图片的增改删与设为封面，来源许可逐张记录。 */
+/** 服装相册维护（UC-A6）：三组图片的上传、增改删与设为封面，来源许可逐张记录。 */
 @Controller
 @RequestMapping("/admin/products/{id}/album")
 public class AlbumController {
 
     private final ProductAlbumService albumService;
     private final CatalogService catalogService;
+    private final ProductImageStorage imageStorage;
     private final MessageSource messages;
 
     public AlbumController(ProductAlbumService albumService, CatalogService catalogService,
-                           MessageSource messages) {
+                           ProductImageStorage imageStorage, MessageSource messages) {
         this.albumService = albumService;
         this.catalogService = catalogService;
+        this.imageStorage = imageStorage;
         this.messages = messages;
     }
 
@@ -78,6 +83,39 @@ public class AlbumController {
         return "redirect:/admin/products/" + id + "/album";
     }
 
+    /** 上传一张：文件名与目录由服务端按款号生成，用户不再手打路径。 */
+    @PostMapping("/upload")
+    public String upload(@PathVariable long id,
+                         @RequestParam(required = false) String kind,
+                         @RequestParam(required = false) String credit,
+                         @RequestParam(required = false) String alt,
+                         @RequestParam(required = false) Integer sortOrder,
+                         @RequestParam(required = false) MultipartFile file,
+                         RedirectAttributes ra) {
+        try {
+            Product product = albumService.require(id);
+            String path = imageStorage.store(product.getSku(), file);
+            albumService.add(id, kind, path, credit, alt, sortOrder);
+            ra.addFlashAttribute("notice", t("admin.ok.album.uploaded"));
+        } catch (IllegalArgumentException e) {
+            ra.addFlashAttribute("notice", t(uploadKey(e)));
+            ra.addFlashAttribute("noticeKind", "err");
+        } catch (BusinessException | NotFoundException e) {
+            ra.addFlashAttribute("notice", e.getMessage());
+            ra.addFlashAttribute("noticeKind", "err");
+        }
+        return "redirect:/admin/products/" + id + "/album";
+    }
+
+    private String uploadKey(IllegalArgumentException ex) {
+        return switch (ex.getMessage() == null ? "" : ex.getMessage()) {
+            case "size" -> "admin.err.upload.size";
+            case "type" -> "admin.err.upload.type";
+            case "sku" -> "admin.err.upload.sku";
+            default -> "admin.err.upload.empty";
+        };
+    }
+
     @PostMapping("/{imageId}")
     public String update(@PathVariable long id, @PathVariable long imageId,
                          @RequestParam(required = false) String kind,
@@ -85,10 +123,11 @@ public class AlbumController {
                          @RequestParam(required = false) String credit,
                          @RequestParam(required = false) String alt,
                          @RequestParam(required = false) Integer sortOrder,
+                         @RequestParam(required = false) String moved,
                          RedirectAttributes ra) {
         try {
             albumService.update(id, imageId, kind, path, credit, alt, sortOrder);
-            ra.addFlashAttribute("notice", t("admin.ok.album.updated"));
+            ra.addFlashAttribute("notice", t(moved != null ? "admin.ok.album.moved" : "admin.ok.album.updated"));
         } catch (BusinessException | NotFoundException e) {
             ra.addFlashAttribute("notice", e.getMessage());
             ra.addFlashAttribute("noticeKind", "err");

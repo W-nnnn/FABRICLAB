@@ -45,6 +45,26 @@ public class GlobalExceptionHandler {
                 t("admin.error.csrfText", "表单校验未通过，请返回重新操作"));
     }
 
+    @ExceptionHandler(org.springframework.web.servlet.resource.NoResourceFoundException.class)
+    public String handleNoResource(Model model, HttpServletResponse response) {
+        return render(model, response, 404,
+                t("admin.error.notFound", "页面不存在"),
+                t("admin.error.notFoundText", "地址可能已变更，或该记录已被删除。"));
+    }
+
+    @ExceptionHandler(org.springframework.web.server.ResponseStatusException.class)
+    public String handleStatus(org.springframework.web.server.ResponseStatusException e,
+                               Model model, HttpServletResponse response) {
+        int status = e.getStatusCode().value();
+        if (status == 404) {
+            return render(model, response, 404,
+                    t("admin.error.notFound", "页面不存在"),
+                    t("admin.error.notFoundText", "地址可能已变更，或该记录已被删除。"));
+        }
+        return render(model, response, status,
+                t("admin.error.badRequest", "参数错误"), e.getReason());
+    }
+
     @ExceptionHandler(DataAccessException.class)
     public String handleDataAccess(Model model, HttpServletResponse response) {
         return render(model, response, 500,
