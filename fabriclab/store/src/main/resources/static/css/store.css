@@ -28,6 +28,8 @@
     --rust-ink: #A0552F;
     --card: #FFFFFF;
     --linen: #E6DFD2;
+    /* 页脚底色：比纸色主体深一档，避免底部与主体糊成一片 */
+    --foot: #D9D0BE;
     --line: rgba(26, 26, 26, .14);
     --line2: rgba(26, 26, 26, .26);
     --mute: rgba(26, 26, 26, .64);
@@ -341,7 +343,7 @@ body.lang-en .lead, body.lang-en .tiny, body.lang-en .eyebrow { letter-spacing: 
 }
 
 /* ------------------------------------------------------------ 页脚 */
-.foot { border-top: 1px solid var(--line); padding: 58px var(--gx) 30px; }
+.foot { background: var(--foot); border-top: 2px solid var(--ink); padding: 58px var(--gx) 30px; }
 .foot .top { display: grid; grid-template-columns: 1.55fr 1fr 1fr .95fr; gap: 44px; }
 .foot .c b.t {
     font-family: var(--f-body); display: block; font-size: 11.5px; letter-spacing: .16em;
@@ -355,9 +357,9 @@ body.lang-en .lead, body.lang-en .tiny, body.lang-en .eyebrow { letter-spacing: 
 .foot .c .mark img { height: 22px; }
 .foot .c .mark b { font-family: var(--f-din); font-size: 13px; letter-spacing: .22em; font-weight: 700; }
 .foot .sub {
-    border-top: 1px solid var(--line); margin-top: 44px; padding-top: 18px;
+    border-top: 1px solid rgba(26, 26, 26, .22); margin-top: 44px; padding-top: 18px;
     display: flex; align-items: center;
-    font-family: var(--f-body); font-size: 11px; letter-spacing: .14em; color: var(--faint);
+    font-family: var(--f-body); font-size: 11px; letter-spacing: .14em; color: var(--mute);
 }
 .foot .sub .r { margin-left: auto; display: flex; gap: 26px; }
 .subscribe {
