@@ -4,17 +4,34 @@
 
 ## 导入顺序
 
-空库按顺序整文件执行两个脚本：
+空库按顺序整文件执行三个脚本：
 
-1. 建表 DDL：仓库根目录 `01-schema.sql`
+1. 建表 DDL：仓库根目录 `01-schema.sql`（课程规定的七张表）
 2. 种子数据：本目录 `seed-data.sql`（仅 INSERT，不含 DDL）
+3. 客服扩展：本目录 `customer-service.sql`（两张咨询扩展表 + 演示数据，可重复执行）
 
 ```bash
 mysql -u root -p < 01-schema.sql
 mysql -u root -p < fabriclab/store/src/main/resources/db/seed-data.sql
+mysql -u root -p < fabriclab/store/src/main/resources/db/customer-service.sql
 ```
 
-种子脚本面向空库一次性导入；已有同名账号/SKU/订单号时会在主键或唯一键处报错停止，请勿对已导入库重复执行。
+第 3 步是可选扩展：不导入时客服页面不可用，但控制台、铃铛与其余七张表的功能不受影响。种子脚本面向空库一次性导入；已有同名账号/SKU/订单号时会在主键或唯一键处报错停止，请勿对已导入库重复执行。客服扩展脚本按编号与消息内容判重，可安全重复执行。
+
+## 测试库隔离（必须）
+
+集成测试会清空并重建订单、购物车等 fixture，**禁止对 `MyPetStore` 演示库执行 `mvn test`**。两个工程的 `maven-surefire-plugin` 已把测试的 `MYSQL_DATABASE` 固定为 `mypetstoretest`，需要改库名用 `-Dfl.test.database=<库名>`。首次执行前在 3307 临时实例建库（root 无口令）：
+
+```bash
+M="mysql -h127.0.0.1 -P3307 -uroot"
+MYSQL_PWD= $M -e "DROP DATABASE IF EXISTS mypetstoretest; CREATE DATABASE mypetstoretest CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;"
+for f in 01-schema.sql fabriclab/store/src/main/resources/db/seed-data.sql fabriclab/store/src/main/resources/db/customer-service.sql; do
+  sed 's/CREATE DATABASE IF NOT EXISTS MyPetStore$/CREATE DATABASE IF NOT EXISTS mypetstoretest/; s/USE MyPetStore;/USE mypetstoretest;/' "$f" | MYSQL_PWD= $M
+done
+MYSQL_PWD= $M mypetstoretest -e "DELETE FROM service_message; DELETE FROM service_thread;"
+```
+
+测试库不带客服演示会话，客服列表/搜索断言才不受演示数据干扰；演示库始终保持上表的完整数据。
 
 ## 演示账号
 
@@ -34,10 +51,12 @@ mysql -u root -p < fabriclab/store/src/main/resources/db/seed-data.sql
 | store_user | 4 | 见上演示账号 |
 | category | 15 | 一级 5 + 二级 10 |
 | product | 60 | SKU = FL-<CM/LS/OD/OC/HM>-01..12 |
-| product_image | 100 | 10 款 4 图 + 20 款 1 图 |
-| cart_item | 10 | alice 6 项 / bob 4 项 |
+| product_image | 79 | 初始 100 张，「一致性修正」删去 21 张，部分款号相册不满 4 图 |
+| cart_item | 11 | alice 6 项 / bob 5 项 |
 | sales_order | 10 | AL-01~05 / BO-01~05 |
 | sales_order_item | 20 | 每单 2 条 |
+| service_thread | 4 | 客服扩展：待回复 2 / 已回复 1 / 已关闭 1 |
+| service_message | 9 | 客服扩展：含客服回复与会员追问 |
 
 ### 场景覆盖
 

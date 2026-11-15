@@ -26,7 +26,14 @@ public class AdminSearchController {
                          @RequestParam(required = false) String scope) {
         String q = kw == null ? "" : kw.trim();
         if (q.isEmpty()) {
-            return "order".equals(scope) ? "redirect:/admin/orders" : "redirect:/admin/products";
+            return switch (scope == null ? "" : scope) {
+                case "order" -> "redirect:/admin/orders";
+                case "service" -> "redirect:/admin/service";
+                default -> "redirect:/admin/products";
+            };
+        }
+        if ("service".equals(scope)) {
+            return "redirect:/admin/service?kw=" + enc(q);
         }
         if ("order".equals(scope)) {
             if (q.matches("FL[0-9]{8,}") && orderService.exists(q)) {

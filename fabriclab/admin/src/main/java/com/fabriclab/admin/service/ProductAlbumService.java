@@ -85,6 +85,17 @@ public class ProductAlbumService {
         return n == null ? 0 : n.intValue();
     }
 
+    /** 相册列表页：一次取回全部引用按款号汇总，避免逐行查库，也不展示估算值。 */
+    public Map<Long, Integer> counts() {
+        List<ProductImage> rows = imageMapper.selectList(null);
+        Map<Long, Integer> out = new LinkedHashMap<>();
+        if (rows == null) return out;
+        for (ProductImage image : rows) {
+            if (image.getProductId() != null) out.merge(image.getProductId(), 1, Integer::sum);
+        }
+        return out;
+    }
+
     public ProductImage add(long productId, String kind, String path, String credit, String alt,
                             Integer sortOrder) {
         require(productId);

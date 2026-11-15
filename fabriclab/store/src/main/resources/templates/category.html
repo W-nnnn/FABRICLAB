@@ -5,7 +5,7 @@
     <link rel="icon" type="image/png" th:href="@{/images/mark.png}"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="|#{nav.brand} · #{shop.title}|">FABRICLAB · 全部商品</title>
-    <link rel="stylesheet" th:href="@{/css/store.css?v=20261114a}"/>
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261115b}"/>
 </head>
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
@@ -52,9 +52,32 @@
     </div>
     <div style="margin:0 var(--gx);height:1px;background:var(--ink)"></div>
 
-    <!-- 计数 + 排序 -->
-    <div style="padding:20px var(--gx) 0;display:flex;align-items:center;gap:14px">
+    <!-- 计数 + 搜索 + 排序：搜索放在首屏工具条，输入即时筛选 -->
+    <div class="cattools" style="padding:20px var(--gx) 0;display:flex;align-items:center;gap:18px;flex-wrap:wrap">
         <span class="tiny" th:text="#{shop.range}">FW26 第七辑</span>
+
+        <form class="csearch" action="/category" method="get" role="search" data-search>
+            <input type="hidden" name="category" th:if="${result.scope().entry() != null}"
+                   th:value="${result.scope().entry().id}"/>
+            <input type="hidden" name="productType" th:value="${query.productTypeParam()}"/>
+            <input type="hidden" name="sort"
+                   th:value="${query.sort().name() == 'DEFAULT' ? '' : query.sort().name()}"/>
+            <svg class="csearch__ico" width="14" height="14" viewBox="0 0 16 16" fill="none"
+                 stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <circle cx="6.8" cy="6.8" r="4.6"/><path d="M10.3 10.3L14 14"/>
+            </svg>
+            <input class="csearch__in" type="text" name="keyword" maxlength="120"
+                   th:value="${query.keyword()}" th:placeholder="#{shop.search.hint}"
+                   th:aria-label="#{shop.search.hint}" autocomplete="off"/>
+            <button type="button" class="csearch__clear" th:if="${query.keyword() != null}"
+                    th:aria-label="#{shop.search.clear}" th:title="#{shop.search.clear}">×</button>
+            <span class="csearch__state" th:text="#{shop.search.busy}">查找中</span>
+            <button type="submit" class="csearch__go" th:aria-label="#{nav.search}" th:title="#{nav.search}">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor"
+                     stroke-width="1.3" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4"/></svg>
+            </button>
+        </form>
+
         <div style="margin-left:auto;display:flex;align-items:center;gap:22px;
                     font-family:var(--f-body);font-size:11px;letter-spacing:.14em;color:var(--mute)">
             <span th:text="#{shop.sort}">排序</span>
@@ -99,7 +122,7 @@
         <a class="tlink mute plain" style="font-size:11px;color:var(--rust-ink);margin-left:6px"
            th:href="@{/category}" th:text="#{shop.clear}">清除</a>
         <span class="tiny" style="margin-left:auto;letter-spacing:.16em"
-              th:text="|#{shop.showing} ${result.page.total}|">共 42 件</span>
+              th:text="${query.keyword() != null} ? #{shop.search.result(${result.page.total})} : |#{shop.showing} ${result.page.total}|">共 42 件</span>
     </div>
 
     <!-- 两栏：目录面板 + 商品网格 -->
@@ -150,18 +173,6 @@
                 </div>
             </div>
 
-            <form th:action="@{/category}" method="get" style="margin-top:24px">
-                <input type="hidden" name="category" th:if="${result.scope().entry() != null}"
-                       th:value="${result.scope().entry().id}"/>
-                <input type="hidden" name="productType" th:value="${query.productTypeParam()}"/>
-                <div class="cap" th:text="#{shop.f.keyword}">关键字</div>
-                <div class="field" style="margin-bottom:14px;padding-bottom:8px">
-                    <input type="text" name="keyword" maxlength="120" th:value="${query.keyword()}"
-                           th:placeholder="#{nav.search}" th:aria-label="#{shop.f.keyword}"/>
-                </div>
-                <button type="submit" class="tlink" style="font-size:11px" th:text="#{shop.apply}">查询</button>
-            </form>
-
             <div style="border-top:1px solid var(--line);padding-top:16px;margin-top:22px">
                 <a class="tlink mute" style="font-size:11px" th:href="@{/category}"
                    th:text="#{shop.clear.all}">清除筛选</a>
@@ -190,7 +201,8 @@
             </div>
         </div>
 
-        <div style="flex:1;min-width:0">
+        <div class="catcol" style="flex:1;min-width:0">
+            <div class="catgrid">
             <div class="g4" th:if="${!result.page.records.isEmpty()}">
                 <th:block th:each="p, s : ${result.page.records}">
                     <a th:replace="~{fragments :: card(${p}, ${#numbers.formatInteger(s.count, 2)})}"></a>
@@ -208,7 +220,9 @@
                 </div>
             </div>
 
-            <div style="margin-top:52px;display:flex;align-items:center;gap:24px;
+            </div><!-- /catgrid：分页移到滚动区外，滚到底仍是整行商品 -->
+
+            <div class="catpager" style="margin-top:52px;display:flex;align-items:center;gap:24px;
                         font-family:var(--f-din);font-size:11px;letter-spacing:.18em">
                 <a class="pglink" data-nav="prev" th:if="${query.page() > 1}"
                    th:href="@{/category(category=${result.scope().entry() != null ? result.scope().entry().id : null},

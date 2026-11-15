@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.toLanguageTag()}">
+<head th:replace="~{fragments :: head('admin.svc.title')}"></head>
+<body>
+<a class="skip" href="#main" th:text="#{admin.skip}">跳到主要内容</a>
+<div class="shell">
+    <div th:replace="~{fragments :: side('service')}"></div>
+    <div class="scrim" id="scrim"></div>
+    <div class="wrap">
+        <div th:replace="~{fragments :: topbar(#{admin.nav.clients}, #{admin.svc.title}, @{/admin/service})}"></div>
+        <main class="main" id="main">
+            <div class="page">
+                <div th:replace="~{fragments :: notice}"></div>
+
+                <div class="ph">
+                    <div>
+                        <div class="ph__eyebrow"><em>04</em><span th:text="#{admin.nav.clients}">顾客</span></div>
+                        <h1 th:text="#{admin.svc.title}">客服咨询</h1>
+                        <p th:text="#{admin.svc.note}">会员的选购咨询与客服回复在同一条对话里，按最后活动倒序。</p>
+                    </div>
+                    <div class="ph__act">
+                        <span class="ph__count" th:text="#{admin.svc.countLine(${result.allCount},${result.openCount})}">共 4 条 · 待回复 2 条</span>
+                    </div>
+                </div>
+
+                <div class="toolbar">
+                    <form class="search" th:action="@{/admin/service}" method="get">
+                        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><use href="#i-search"/></svg>
+                        <input type="search" name="kw" th:value="${kw}" maxlength="80" th:placeholder="#{admin.svc.search}"/>
+                        <input type="hidden" name="status" th:value="${status}"/>
+                        <input type="hidden" name="size" th:value="${pageSize}"/>
+                    </form>
+                    <div class="seg" role="group">
+                        <a th:href="@{/admin/service(kw=${kw},status='all',size=${pageSize})}"
+                           th:classappend="${status == 'all'} ? 'on'">
+                            <span th:text="#{admin.svc.filterAll}">全部</span><em th:text="${result.allCount}">4</em></a>
+                        <a th:href="@{/admin/service(kw=${kw},status='open',size=${pageSize})}"
+                           th:classappend="${status == 'open'} ? 'on'">
+                            <span th:text="#{admin.svc.status.open}">待回复</span><em th:text="${result.openCount}">2</em></a>
+                        <a th:href="@{/admin/service(kw=${kw},status='replied',size=${pageSize})}"
+                           th:classappend="${status == 'replied'} ? 'on'">
+                            <span th:text="#{admin.svc.status.replied}">已回复</span><em th:text="${result.repliedCount}">1</em></a>
+                        <a th:href="@{/admin/service(kw=${kw},status='closed',size=${pageSize})}"
+                           th:classappend="${status == 'closed'} ? 'on'">
+                            <span th:text="#{admin.svc.status.closed}">已关闭</span><em th:text="${result.closedCount}">1</em></a>
+                    </div>
+                    <div class="toolbar__right">
+                        <a class="txt txt--muted" th:href="@{/admin/service}" th:text="#{admin.action.resetFilter}">重置筛选</a>
+                    </div>
+                </div>
+
+                <div class="empty" th:if="${result.total == 0}">
+                    <span class="empty__ic"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><use href="#i-chat"/></svg></span>
+                    <h3 th:text="${kw != null and !#strings.isEmpty(kw)} ? #{admin.svc.emptyTitle} : #{admin.svc.emptyDataTitle}">没有符合条件的咨询</h3>
+                    <p th:text="#{admin.svc.emptyText}">换个编号、主题或会员名，或清除状态筛选后重试。</p>
+                    <a class="btn btn--sm" th:href="@{/admin/service}" th:text="#{admin.action.clear}">清除</a>
+                </div>
+
+                <div class="tblwrap" th:unless="${result.total == 0}">
+                    <table class="tbl">
+                        <caption class="sr-only" th:text="#{admin.svc.caption(${result.total},${currentPage},${pageSize})}">客服咨询列表</caption>
+                        <colgroup>
+                            <col style="width:190px"/><col/>
+                            <col style="width:150px"/><col class="col-md" style="width:120px"/>
+                            <col style="width:100px"/><col style="width:70px"/>
+                            <col class="col-md" style="width:140px"/><col style="width:76px"/>
+                        </colgroup>
+                        <thead><tr>
+                            <th th:text="#{admin.svc.colNo}">咨询编号</th>
+                            <th th:text="#{admin.svc.colSubject}">主题 / 最后一条消息</th>
+                            <th th:text="#{admin.svc.colUser}">会员</th>
+                            <th class="col-md" th:text="#{admin.svc.colCategory}">类别</th>
+                            <th th:text="#{admin.svc.colStatus}">状态</th>
+                            <th class="n" th:text="#{admin.svc.colMessages}">消息</th>
+                            <th class="date col-md" th:text="#{admin.svc.colActivity}">最后活动</th>
+                            <th th:text="#{admin.svc.colActions}">操作</th>
+                        </tr></thead>
+                        <tbody>
+                        <tr th:each="r : ${result.rows}">
+                            <td class="sku"><a th:href="@{/admin/service/{id}(id=${r.id},returnTo=${listUrl})}"
+                                               th:text="${r.threadNo}">FL-S…</a></td>
+                            <td>
+                                <div class="svc-subj" th:text="${r.subject}">咨询主题</div>
+                                <div class="svc-snip" th:text="${r.lastSnippet}">最后一条消息摘要</div>
+                            </td>
+                            <td><div class="ucell">
+                                <span class="uava" th:text="${#strings.substring(tr.t(r.displayName),0,1)}">林</span>
+                                <span class="tname"><span class="nm" th:text="${r.username}">alice</span>
+                                    <span class="sub" th:text="${tr.t(r.displayName)}">林晓</span></span>
+                            </div></td>
+                            <td class="col-md" th:text="#{__${r.categoryKey}__}">尺码版型</td>
+                            <td><span class="tag"
+                                      th:classappend="${r.status == 'OPEN'} ? 'tag--act' : (${r.status == 'REPLIED'} ? 'tag--done' : 'tag--end')"
+                                      th:text="#{__${r.statusKey}__}">待回复</span></td>
+                            <td class="n" th:text="${r.messageCount}">3</td>
+                            <td class="date col-md" th:text="${r.activityText}">2026.11.15 20:10</td>
+                            <td><a class="txt" th:href="@{/admin/service/{id}(id=${r.id},returnTo=${listUrl})}"
+                                   th:text="#{admin.svc.actionView}">查看</a></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="pager" th:unless="${result.total == 0}">
+                    <div class="pager__info" th:text="#{admin.svc.pager(${result.total},${currentPage},${result.pages})}">共 4 条</div>
+                    <div class="pgs">
+                        <a class="pg pg--dir" th:if="${currentPage > 1}"
+                           th:href="@{/admin/service(kw=${kw},status=${status},size=${pageSize},page=${currentPage - 1})}"
+                           th:text="#{admin.action.prev}">上一页</a>
+                        <span class="pg pg--dir off" th:unless="${currentPage > 1}" th:text="#{admin.action.prev}">上一页</span>
+                        <a class="pg" th:each="i : ${#numbers.sequence(1, result.pages)}"
+                           th:classappend="${i == currentPage} ? 'on'" th:text="${i}"
+                           th:href="@{/admin/service(kw=${kw},status=${status},size=${pageSize},page=${i})}">1</a>
+                        <a class="pg pg--dir" th:if="${currentPage < result.pages}"
+                           th:href="@{/admin/service(kw=${kw},status=${status},size=${pageSize},page=${currentPage + 1})}"
+                           th:text="#{admin.action.next}">下一页</a>
+                        <span class="pg pg--dir off" th:unless="${currentPage < result.pages}" th:text="#{admin.action.next}">下一页</span>
+                        <form method="get" th:action="@{/admin/service}" style="display:contents">
+                            <input type="hidden" name="kw" th:value="${kw}"/>
+                            <input type="hidden" name="status" th:value="${status}"/>
+                            <select class="psize" name="size" onchange="this.form.submit()"
+                                    th:aria-label="#{admin.svc.perPage}">
+                                <option th:each="n : ${ {10,20,50} }" th:value="${n}" th:selected="${n == pageSize}"
+                                        th:text="${n} + ' ' + #{admin.svc.perPage}">20 条 / 页</option>
+                            </select>
+                        </form>
+                    </div>
+                </div>
+
+                <footer th:replace="~{fragments :: footer}"></footer>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div th:replace="~{fragments :: icons}"></div>
+<script th:replace="~{fragments :: shellJs}"></script>
+</body>
+</html>
