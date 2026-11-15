@@ -424,9 +424,16 @@
     if ((atTop && e.deltaY < 0) || (atBottom && e.deltaY > 0)) e.preventDefault();
   }, { passive: false });
 
+  /* 首次访问（还没有会话 Cookie）时 Thymeleaf 会把会话号写进路径：
+     /category;STORESESSION=xxx。它不是真实路径，不剥掉就会被当成「换页」，
+     排序与筛选全部退回整页跳转，即时反馈也就永远不会出现。 */
+  function cleanPath(path) {
+    return String(path).replace(/;[A-Za-z]+SESSION=[^/?]*/i, '');
+  }
+
   /* 同一路径才算「换筛选」；/product 等属于换页，交给页面过渡 */
   function samePath(url) {
-    try { return new URL(url, location.href).pathname === location.pathname; }
+    try { return cleanPath(new URL(url, location.href).pathname) === cleanPath(location.pathname); }
     catch (e) { return false; }
   }
 
@@ -437,7 +444,7 @@
       Array.from(u.searchParams.keys()).forEach(function (k) {
         if (!u.searchParams.get(k)) u.searchParams.delete(k);
       });
-      return u.pathname + u.search;
+      return cleanPath(u.pathname) + u.search;
     } catch (e) { return url; }
   }
 
@@ -447,10 +454,10 @@
     return Math.max(0, region.getBoundingClientRect().top + window.pageYOffset - off - 10);
   }
 
-  function load(url, mode, force, quiet) {
+  function load(url, mode, force, quiet, hold) {
     url = tidy(url);
     if (!force && url === location.pathname + location.search) return; /* 条件没变，不重取 */
-    if (busy) { pending = { url: url, mode: mode, quiet: quiet }; return; } /* 连点：记住最后一击，结束后再来 */
+    if (busy) { pending = { url: url, mode: mode, quiet: quiet, hold: hold }; return; } /* 连点：记住最后一击，结束后再来 */
     busy = true;
     var mine = ++seq;
     var t0 = Date.now();
@@ -462,8 +469,8 @@
       .then(function (html) {
         if (mine !== seq) return;
         var next = new DOMParser().parseFromString(html, 'text/html').getElementById('catalog');
-        /* 最快路径下也留住一小段暗场，否则暗一下又亮回，本身就成了闪 */
-        var wait = Math.max(0, 130 - (Date.now() - t0));
+        /* 最快路径下也留住一小段暗场；排序留得更久，让「正在应用」看得见 */
+        var wait = Math.max(0, (hold || 130) - (Date.now() - t0));
         setTimeout(function () {
           /* 局部取的内容可能与当前节点数不同：内容在暗场期间换掉，看不出跳变 */
           var keepFocus = document.activeElement
@@ -490,7 +497,7 @@
           busy = false;
           var nx = pending; /* 等待期间的点击只在最后生效，不丢操作 */
           pending = null;
-          if (nx) load(nx.url, nx.mode, true, nx.quiet);
+          if (nx) load(nx.url, nx.mode, true, nx.quiet, nx.hold);
         }, wait);
       })
       .catch(function () {
@@ -532,7 +539,14 @@
     /* 置位 defaultPrevented 后，document 上的页面退出动画会自动跳过 */
     e.preventDefault();
     if (a.href === location.href) return;
-    load(a.href, 'push');
+    var isSort = a.classList.contains('sortlink');
+    if (isSort) {
+      if (tidy(a.href) === location.pathname + location.search) return; /* 条件没变，不给假反馈 */
+      /* 按下的这一刻就反馈：按钮进入待应用态，状态行显示「正在应用排序…」 */
+      a.classList.add('sortlink--pending');
+      region.classList.add('busy');
+    }
+    load(a.href, 'push', false, false, isSort ? 260 : 0);
     if (a.classList.contains('pglink')) {
       window.scrollTo({ top: topOf(), behavior: reduce ? 'auto' : 'smooth' });
     }
