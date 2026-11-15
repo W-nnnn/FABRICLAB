@@ -23,9 +23,9 @@
             <div class="acts">
                 <a class="lang" th:href="${langHref + (lang == 'en' ? 'lang=zh' : 'lang=en')}"
                    th:aria-label="#{lang.switch}">
-                    <b th:if="${lang == 'en'}">EN</b><span th:unless="${lang == 'en'}">EN</span>
+                    <b class="lang__opt" th:classappend="${lang == 'en'} ? 'on'">EN</b>
                     <i>/</i>
-                    <b th:if="${lang != 'en'}">中文</b><span th:unless="${lang != 'en'}">中文</span>
+                    <b class="lang__opt" th:classappend="${lang != 'en'} ? 'on'">中文</b>
                 </a>
                 <form class="inline" th:action="@{/category}" method="get" role="search">
                     <input type="text" name="keyword" maxlength="120" th:placeholder="#{nav.search}"

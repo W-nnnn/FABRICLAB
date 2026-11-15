@@ -33,9 +33,9 @@
         <div style="flex:1;padding:42px 96px 44px;display:flex;flex-direction:column">
             <div style="display:flex;justify-content:flex-end">
                 <a class="lang" th:href="${langHref + (lang == 'en' ? 'lang=zh' : 'lang=en')}">
-                    <b th:if="${lang == 'en'}">EN</b><span th:unless="${lang == 'en'}">EN</span>
+                    <b class="lang__opt" th:classappend="${lang == 'en'} ? 'on'">EN</b>
                     <i>/</i>
-                    <b th:if="${lang != 'en'}">中文</b><span th:unless="${lang != 'en'}">中文</span>
+                    <b class="lang__opt" th:classappend="${lang != 'en'} ? 'on'">中文</b>
                 </a>
             </div>
 
