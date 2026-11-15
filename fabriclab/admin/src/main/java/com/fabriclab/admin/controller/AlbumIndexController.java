@@ -12,8 +12,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 服装相册二级入口（UC-A6）：按款号列出真实相册张数，逐款进入相册维护页。
- * 款号维护行菜单里的「相册」链接保持原样，两条路径都能到同一个详情页。
+ * 服装相册二级入口（UC-A6）：按款号列出真实相册张数，逐款进入 /admin/albums/{id} 维护页。
+ * 款号维护里保留 /admin/products/{id}/album 跳转页，两条路径共用同一详情页且各自留在原模块。
  */
 @Controller
 public class AlbumIndexController {

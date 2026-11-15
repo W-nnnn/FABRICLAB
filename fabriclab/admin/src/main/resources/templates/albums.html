@@ -62,14 +62,14 @@
                                 <span class="pimg"><img th:src="@{|/${r.coverImage}|}" th:alt="${r.sku}" loading="lazy"
                                                         onerror="if(!this.dataset.f){this.dataset.f=1;this.src='/images/logo.png'}" /></span>
                             </td>
-                            <td class="sku"><a th:href="@{/admin/products/{id}/album(id=${r.id})}" th:text="${r.sku}">FL-CM-01</a></td>
+                            <td class="sku"><a th:href="@{/admin/albums/{id}(id=${r.id})}" th:text="${r.sku}">FL-CM-01</a></td>
                             <td><span class="tname">
                                 <span class="nm" th:text="${tr.t(r.name)}">山羊绒高领衫</span>
                                 <span class="sub" th:text="${tr.t(r.fabricLine)}">山羊绒 100%</span>
                             </span></td>
                             <td class="cat col-md" th:text="${tr.t(r.categoryName)}">居家 / 成衣</td>
                             <td class="n" th:text="${counts.get(r.id)}">0</td>
-                            <td><a class="txt" th:href="@{/admin/products/{id}/album(id=${r.id})}"
+                            <td><a class="txt" th:href="@{/admin/albums/{id}(id=${r.id})}"
                                    th:text="#{admin.albums.open}">查看相册</a></td>
                         </tr>
                         </tbody>
