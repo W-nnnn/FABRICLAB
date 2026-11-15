@@ -379,8 +379,51 @@
   if (!region) return;
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var busy = false, seq = 0, fitTimer = null, pending = null;
+  var gridResizeTimer = null, gridObserver = null, observedGrid = null;
 
-  /* 商品网格随整页滚动，不存在第二层滚动容器；局部刷新只换 DOM，不改高度 */
+  /* 双层滚动的商品区：高度按实测卡片行高写成整 3 行，边界不切半张卡片。
+     图片尺寸变化会改行高，用 ResizeObserver 重算；无结果时不写高度，避免留下空框。 */
+  function fitGrid() {
+    var box = region.querySelector('.catgrid');
+    if (!box) return;
+    if (window.matchMedia && window.matchMedia('(max-width: 1024px)').matches) {
+      box.style.height = ''; /* 窄屏由 CSS 恢复单层滚动 */
+      return;
+    }
+    var grid = box.querySelector('.g4');
+    var card = grid && grid.querySelector('.card');
+    if (!card) { box.style.height = ''; return; }
+    var h = card.getBoundingClientRect().height;
+    var gap = parseFloat(getComputedStyle(grid).rowGap) || 0;
+    if (!h) return;
+    var rows = 3;
+    box.style.height = Math.round(rows * h + (rows - 1) * gap) + 2 + 'px';
+    if (window.ResizeObserver && grid !== observedGrid) {
+      if (gridObserver) gridObserver.disconnect();
+      gridObserver = new ResizeObserver(function () { fitGrid(); });
+      gridObserver.observe(grid);
+      observedGrid = grid;
+    }
+  }
+  function refitGrid() {
+    clearTimeout(gridResizeTimer);
+    gridResizeTimer = setTimeout(fitGrid, 120);
+  }
+  fitGrid();
+  window.addEventListener('load', fitGrid);
+  window.addEventListener('resize', refitGrid);
+
+  /* 滚轮归属：落在商品网格内才滚商品，滚到顶/底也不把这一下转交给整页；
+     落在网格外的滚轮由整页接管，商品区内部位置保持不动（CSS overflow-anchor:none）。 */
+  region.addEventListener('wheel', function (e) {
+    var box = region.querySelector('.catgrid');
+    if (!box || !box.contains(e.target)) return;
+    if (getComputedStyle(box).overflowY !== 'auto') return;
+    var atTop = box.scrollTop <= 0;
+    var atBottom = box.scrollTop + box.clientHeight >= box.scrollHeight - 1;
+    if ((atTop && e.deltaY < 0) || (atBottom && e.deltaY > 0)) e.preventDefault();
+  }, { passive: false });
+
   /* 同一路径才算「换筛选」；/product 等属于换页，交给页面过渡 */
   function samePath(url) {
     try { return new URL(url, location.href).pathname === location.pathname; }
@@ -426,7 +469,7 @@
           var keepFocus = document.activeElement
             && document.activeElement.closest
             && document.activeElement.closest('form[data-search]');
-          if (next) { region.innerHTML = next.innerHTML; }
+          if (next) { region.innerHTML = next.innerHTML; fitGrid(); }
           /* 即时搜索会重建输入框，把焦点与光标接回去，用户能连续输入 */
           if (keepFocus) {
             var ni = region.querySelector('form[data-search] input[name=keyword]');

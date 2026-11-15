@@ -822,6 +822,32 @@ body.lang-en .lead, body.lang-en .tiny, body.lang-en .eyebrow { letter-spacing: 
 }
 .csearch__clear:hover, .csearch__go:hover { color: var(--rust-ink); background: var(--wall); }
 .csearch__go { border-left: 1px solid var(--line); }
+
+/* 排序：选中态做成实心按钮并带 ×，再点一次即取消；点击有按下态与进度反馈 */
+.sortgroup { display: flex; align-items: center; gap: 8px; }
+.sortlink {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 8px 12px; border: 1px solid var(--line2);
+    background: transparent; color: var(--mute);
+    font-family: var(--f-body); font-size: 11px; letter-spacing: .1em;
+    white-space: nowrap;
+    transition: background .18s ease, color .18s ease, border-color .18s ease, transform .12s ease;
+}
+.sortlink:hover { color: var(--ink); border-color: var(--rust); background: var(--wall); }
+.sortlink:active { transform: translateY(1px); }
+.sortlink.on { background: var(--ink); border-color: var(--ink); color: var(--wall); }
+.sortlink.on:hover { background: var(--rust-ink); border-color: var(--rust-ink); }
+.sortlink__x { display: none; font-size: 13px; line-height: 1; opacity: .75; }
+.sortlink.on .sortlink__x { display: inline; }
+.sortstate {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--f-body); font-size: 11px; letter-spacing: .06em;
+    color: var(--rust-ink);
+}
+.sortstate__busy { opacity: 0; transition: opacity .15s ease; }
+#catalog.busy .sortstate__txt { opacity: .35; }
+#catalog.busy .sortstate__busy { opacity: 1; }
+#catalog.busy .sortlink { pointer-events: none; }
 .csearch__state {
     flex: none; font-family: var(--f-body); font-size: 11px; letter-spacing: .08em;
     color: var(--rust-ink); white-space: nowrap;
@@ -834,10 +860,18 @@ body.lang-en .lead, body.lang-en .tiny, body.lang-en .eyebrow { letter-spacing: 
     animation: catProgress .8s cubic-bezier(.4, 0, .2, 1) infinite;
 }
 
-/* 商品网格回到普通文档流：整页只有一个滚动条，滚轮落在任何位置都是同一条滚动。
-   不再固定高度、不再内部滚动，商品按页全部铺开，卡片不会被容器边界切半行，
-   网格与分页之间也不会留出一段空容器。左侧目录面板继续 sticky 跟随。 */
-.catgrid { height: auto; min-height: 0; overflow: visible; }
+/* 双层滚动：商品网格自身是独立的滚动区，高度由 app.js 按实测行高写成整 3 行，
+   边界不切半张卡片；鼠标落在网格内只滚商品、落在网格外滚整页，互不带转。
+   无图片/无结果时 JS 会清空内联高度，容器恢复 auto，不会留一块空框。 */
+.catgrid {
+    height: auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    overflow-anchor: none;
+    scrollbar-width: none;
+}
+.catgrid::-webkit-scrollbar { display: none; }
 
 /* 侧栏目录面板（分类页） */
 .catpanel {
@@ -896,6 +930,8 @@ body.lang-en .lead, body.lang-en .tiny, body.lang-en .eyebrow { letter-spacing: 
         width: 100% !important; max-width: none !important; margin-left: 0 !important;
     }
     .catpanel { position: static !important; width: 100% !important; }
+    /* 窄屏恢复整页单层滚动，避免小视口出现两层滚动 */
+    .catgrid { height: auto !important; overflow: visible; }
     .csearch { width: 100%; max-width: none; }
     .g4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .g3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }

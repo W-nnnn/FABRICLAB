@@ -5,7 +5,7 @@
     <link rel="icon" type="image/png" th:href="@{/images/mark.png}"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="|#{nav.brand} · #{shop.title}|">FABRICLAB · 全部商品</title>
-    <link rel="stylesheet" th:href="@{/css/store.css?v=20261115c}"/>
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261115d}"/>
 </head>
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
@@ -78,30 +78,33 @@
             </button>
         </form>
 
-        <div style="margin-left:auto;display:flex;align-items:center;gap:22px;
-                    font-family:var(--f-body);font-size:11px;letter-spacing:.14em;color:var(--mute)">
-            <span th:text="#{shop.sort}">排序</span>
-            <a th:href="@{/category(category=${result.scope().entry() != null ? result.scope().entry().id : null},
-                        productType=${query.productTypeParam()}, keyword=${query.keyword()}, size=${query.size()},
-                        sort='NEWEST')}"
-               th:style="${query.sort().name() == 'NEWEST'}
-                         ? 'color:var(--ink);border-bottom:1px solid var(--ink);padding-bottom:4px'
-                         : 'padding-bottom:4px'"
-               th:text="#{shop.sort.new}">新品优先</a>
-            <a th:href="@{/category(category=${result.scope().entry() != null ? result.scope().entry().id : null},
-                        productType=${query.productTypeParam()}, keyword=${query.keyword()}, size=${query.size()},
-                        sort='PRICE_ASC')}"
-               th:style="${query.sort().name() == 'PRICE_ASC'}
-                         ? 'color:var(--ink);border-bottom:1px solid var(--ink);padding-bottom:4px'
-                         : 'padding-bottom:4px'"
-               th:text="#{shop.sort.asc}">价格升序</a>
-            <a th:href="@{/category(category=${result.scope().entry() != null ? result.scope().entry().id : null},
-                        productType=${query.productTypeParam()}, keyword=${query.keyword()}, size=${query.size()},
-                        sort='PRICE_DESC')}"
-               th:style="${query.sort().name() == 'PRICE_DESC'}
-                         ? 'color:var(--ink);border-bottom:1px solid var(--ink);padding-bottom:4px'
-                         : 'padding-bottom:4px'"
-               th:text="#{shop.sort.desc}">价格降序</a>
+        <!-- 排序：点一下选中，再点同一项即取消；选中态、按下态与进度线都是即时反馈 -->
+        <div class="sortgroup" style="margin-left:auto">
+            <span class="tiny" style="letter-spacing:.14em;color:var(--mute)" th:text="#{shop.sort}">排序</span>
+            <a class="sortlink" data-sort="NEWEST"
+               th:classappend="${query.sort().name() == 'NEWEST'} ? 'on'"
+               th:attr="aria-pressed=${query.sort().name() == 'NEWEST'}"
+               th:href="@{/category(category=${result.scope().entry() != null ? result.scope().entry().id : null},
+                           productType=${query.productTypeParam()}, keyword=${query.keyword()}, size=${query.size()},
+                           sort=${query.sort().name() == 'NEWEST' ? '' : 'NEWEST'})}">
+                <span th:text="#{shop.sort.new}">新品优先</span><span class="sortlink__x" aria-hidden="true">×</span>
+            </a>
+            <a class="sortlink" data-sort="PRICE_ASC"
+               th:classappend="${query.sort().name() == 'PRICE_ASC'} ? 'on'"
+               th:attr="aria-pressed=${query.sort().name() == 'PRICE_ASC'}"
+               th:href="@{/category(category=${result.scope().entry() != null ? result.scope().entry().id : null},
+                           productType=${query.productTypeParam()}, keyword=${query.keyword()}, size=${query.size()},
+                           sort=${query.sort().name() == 'PRICE_ASC' ? '' : 'PRICE_ASC'})}">
+                <span th:text="#{shop.sort.asc}">价格升序</span><span class="sortlink__x" aria-hidden="true">×</span>
+            </a>
+            <a class="sortlink" data-sort="PRICE_DESC"
+               th:classappend="${query.sort().name() == 'PRICE_DESC'} ? 'on'"
+               th:attr="aria-pressed=${query.sort().name() == 'PRICE_DESC'}"
+               th:href="@{/category(category=${result.scope().entry() != null ? result.scope().entry().id : null},
+                           productType=${query.productTypeParam()}, keyword=${query.keyword()}, size=${query.size()},
+                           sort=${query.sort().name() == 'PRICE_DESC' ? '' : 'PRICE_DESC'})}">
+                <span th:text="#{shop.sort.desc}">价格降序</span><span class="sortlink__x" aria-hidden="true">×</span>
+            </a>
         </div>
     </div>
 
@@ -121,7 +124,18 @@
         <span class="chip" th:if="${query.keyword() != null}" th:text="|#{shop.keyword} ${query.keyword()}|">关键字</span>
         <a class="tlink mute plain" style="font-size:11px;color:var(--rust-ink);margin-left:6px"
            th:href="@{/category}" th:text="#{shop.clear}">清除</a>
-        <span class="tiny" style="margin-left:auto;letter-spacing:.16em"
+        <span class="sortstate" style="margin-left:auto">
+            <span class="sortstate__txt" th:if="${query.sort().name() == 'DEFAULT'}"
+                  th:text="#{shop.sort.default}">默认排序 · 点击右侧切换</span>
+            <span class="sortstate__txt" th:if="${query.sort().name() == 'NEWEST'}"
+                  th:text="|#{shop.sort.applied} #{shop.sort.new} · #{shop.sort.toggle}|">已按 新品优先 · 再点一次取消</span>
+            <span class="sortstate__txt" th:if="${query.sort().name() == 'PRICE_ASC'}"
+                  th:text="|#{shop.sort.applied} #{shop.sort.asc} · #{shop.sort.toggle}|">已按 价格升序 · 再点一次取消</span>
+            <span class="sortstate__txt" th:if="${query.sort().name() == 'PRICE_DESC'}"
+                  th:text="|#{shop.sort.applied} #{shop.sort.desc} · #{shop.sort.toggle}|">已按 价格降序 · 再点一次取消</span>
+            <span class="sortstate__busy" th:text="#{shop.sort.busy}">正在应用排序…</span>
+        </span>
+        <span class="tiny" style="margin-left:18px;letter-spacing:.16em"
               th:text="${query.keyword() != null} ? #{shop.search.result(${result.page.total})} : |#{shop.showing} ${result.page.total}|">共 42 件</span>
     </div>
 
