@@ -5,7 +5,7 @@
     <link rel="icon" type="image/png" th:href="@{/images/mark.png}"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="|#{nav.brand} · #{shop.title}|">FABRICLAB · 全部商品</title>
-    <link rel="stylesheet" th:href="@{/css/store.css?v=20261115b}"/>
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261115c}"/>
 </head>
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
@@ -32,13 +32,13 @@
     </div>
 
     <!-- 页头 -->
-    <div style="padding:26px var(--gx) 30px;display:flex;align-items:flex-end">
+    <div style="padding:18px var(--gx) 20px;display:flex;align-items:flex-end">
         <div>
             <div class="eyebrow" th:text="#{shop.eyebrow}">全部商品 / FW26</div>
-            <h1 class="h2" style="margin-top:12px;font-size:38px"
+            <h1 class="h2" style="margin-top:10px;font-size:34px"
                 th:if="${result.scope().selectedLine() != null}"
                 th:text="${tr.t(result.scope().selectedLine().name)}">全部商品</h1>
-            <h1 class="h2" style="margin-top:12px;font-size:38px"
+            <h1 class="h2" style="margin-top:10px;font-size:34px"
                 th:unless="${result.scope().selectedLine() != null}"
                 th:text="#{shop.all}">全部商品</h1>
         </div>
@@ -53,7 +53,7 @@
     <div style="margin:0 var(--gx);height:1px;background:var(--ink)"></div>
 
     <!-- 计数 + 搜索 + 排序：搜索放在首屏工具条，输入即时筛选 -->
-    <div class="cattools" style="padding:20px var(--gx) 0;display:flex;align-items:center;gap:18px;flex-wrap:wrap">
+    <div class="cattools" style="padding:12px var(--gx) 0;display:flex;align-items:center;gap:18px;flex-wrap:wrap">
         <span class="tiny" th:text="#{shop.range}">FW26 第七辑</span>
 
         <form class="csearch" action="/category" method="get" role="search" data-search>
@@ -106,7 +106,7 @@
     </div>
 
     <!-- 当前条件 -->
-    <div style="padding:16px var(--gx) 0;display:flex;align-items:center;gap:8px">
+    <div style="padding:10px var(--gx) 0;display:flex;align-items:center;gap:8px">
         <span class="tiny" style="letter-spacing:.18em;margin-right:8px" th:text="#{shop.filtered}">已筛选</span>
         <span class="chip on" th:if="${result.scope().selectedLine() != null}">
             <span th:text="${tr.t(result.scope().selectedLine().name)}">通勤</span>
@@ -126,7 +126,7 @@
     </div>
 
     <!-- 两栏：目录面板 + 商品网格 -->
-    <div class="cols" style="display:flex;padding:30px var(--gx) 0;gap:48px;align-items:flex-start">
+    <div class="cols" style="display:flex;padding:20px var(--gx) 0;gap:48px;align-items:flex-start">
         <div class="catpanel">
             <div>
                 <div class="cap" th:text="#{shop.f.category}">系列线</div>
@@ -220,9 +220,9 @@
                 </div>
             </div>
 
-            </div><!-- /catgrid：分页移到滚动区外，滚到底仍是整行商品 -->
+            </div><!-- /catgrid：商品按页全部铺开，随整页滚动 -->
 
-            <div class="catpager" style="margin-top:52px;display:flex;align-items:center;gap:24px;
+            <div class="catpager" style="margin-top:28px;display:flex;align-items:center;gap:24px;
                         font-family:var(--f-din);font-size:11px;letter-spacing:.18em">
                 <a class="pglink" data-nav="prev" th:if="${query.page() > 1}"
                    th:href="@{/category(category=${result.scope().entry() != null ? result.scope().entry().id : null},
@@ -244,7 +244,6 @@
 
     </div><!-- /#catalog -->
 
-    <div style="height:86px"></div>
     <th:block th:replace="~{fragments :: footer}"></th:block>
 </div>
 </body>

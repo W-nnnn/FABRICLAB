@@ -378,33 +378,9 @@
   var region = document.getElementById('catalog');
   if (!region) return;
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var busy = false, seq = 0, fitTimer = null, pending = null, gridResizeTimer = null;
+  var busy = false, seq = 0, fitTimer = null, pending = null;
 
-  /* 商品区按整行高度显示：普通屏 2 行、高屏 3 行，容器边界不切半张卡片 */
-  function fitGrid() {
-    var box = region.querySelector('.catgrid');
-    if (!box) return;
-    if (window.matchMedia && window.matchMedia('(max-width: 1024px)').matches) {
-      box.style.height = ''; /* 窄屏由 CSS 恢复整页滚动 */
-      return;
-    }
-    var grid = box.querySelector('.g4');
-    var card = grid && grid.querySelector('.card');
-    if (!card) return;
-    var h = card.getBoundingClientRect().height;
-    var gap = parseFloat(getComputedStyle(grid).rowGap) || 0;
-    if (!h) return;
-    var rows = window.innerHeight >= 1180 ? 3 : 2;
-    box.style.height = Math.round(rows * h + (rows - 1) * gap) + 2 + 'px';
-  }
-  function refitGrid() {
-    clearTimeout(gridResizeTimer);
-    gridResizeTimer = setTimeout(fitGrid, 120);
-  }
-  fitGrid();
-  window.addEventListener('load', fitGrid);
-  window.addEventListener('resize', refitGrid);
-
+  /* 商品网格随整页滚动，不存在第二层滚动容器；局部刷新只换 DOM，不改高度 */
   /* 同一路径才算「换筛选」；/product 等属于换页，交给页面过渡 */
   function samePath(url) {
     try { return new URL(url, location.href).pathname === location.pathname; }
@@ -450,7 +426,7 @@
           var keepFocus = document.activeElement
             && document.activeElement.closest
             && document.activeElement.closest('form[data-search]');
-          if (next) { region.innerHTML = next.innerHTML; fitGrid(); }
+          if (next) { region.innerHTML = next.innerHTML; }
           /* 即时搜索会重建输入框，把焦点与光标接回去，用户能连续输入 */
           if (keepFocus) {
             var ni = region.querySelector('form[data-search] input[name=keyword]');

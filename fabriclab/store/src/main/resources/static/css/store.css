@@ -834,18 +834,10 @@ body.lang-en .lead, body.lang-en .tiny, body.lang-en .eyebrow { letter-spacing: 
     animation: catProgress .8s cubic-bezier(.4, 0, .2, 1) infinite;
 }
 
-/* 滚轮落在商品网格内 → 只滚商品；落在网格外 → 整页滚动。
-   容器留在文档流里，外壳（页头 / 侧栏 / 页脚）仍由整页滚动带动。 */
-/* 高度由 app.js 按实际卡片行高写成 2 行（高屏 3 行）整高，容器边界不再切半行卡片；
-   滚动能力保留但滚动条隐藏，右侧不再出现那一长条。 */
-.catgrid {
-    height: 858px;
-    min-height: 0;
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    scrollbar-width: none;
-}
-.catgrid::-webkit-scrollbar { display: none; }
+/* 商品网格回到普通文档流：整页只有一个滚动条，滚轮落在任何位置都是同一条滚动。
+   不再固定高度、不再内部滚动，商品按页全部铺开，卡片不会被容器边界切半行，
+   网格与分页之间也不会留出一段空容器。左侧目录面板继续 sticky 跟随。 */
+.catgrid { height: auto; min-height: 0; overflow: visible; }
 
 /* 侧栏目录面板（分类页） */
 .catpanel {
@@ -904,8 +896,6 @@ body.lang-en .lead, body.lang-en .tiny, body.lang-en .eyebrow { letter-spacing: 
         width: 100% !important; max-width: none !important; margin-left: 0 !important;
     }
     .catpanel { position: static !important; width: 100% !important; }
-    /* 单栏时恢复整页滚动，避免窄屏出现两层滚动 */
-    .catgrid { height: auto; min-height: 0; overflow: visible; padding-right: 0; }
     .csearch { width: 100%; max-width: none; }
     .g4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .g3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
