@@ -22,6 +22,7 @@ public class SeriesController {
     @GetMapping("/fabrics")
     public String fabrics(Model model) {
         model.addAttribute("groups", seriesService.fabrics());
+        model.addAttribute("samples", seriesService.fabricSamples(8));
         return "fabrics";
     }
 

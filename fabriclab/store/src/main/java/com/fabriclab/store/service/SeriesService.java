@@ -67,6 +67,26 @@ public class SeriesService {
         return onSaleProducts().stream().limit(limit).toList();
     }
 
+    /**
+     * 面料档案页尾摘录：四类纤维轮流取样，避免八件全落在同一类。
+     * 不足 limit 时由件数较多的类别继续补足，数量始终真实取自 onSaleProducts。
+     */
+    public List<Product> fabricSamples(int limit) {
+        List<List<Product>> buckets = fabrics().stream().map(FabricGroup::products).toList();
+        List<Product> out = new ArrayList<>();
+        for (int round = 0; out.size() < limit; round++) {
+            boolean added = false;
+            for (List<Product> bucket : buckets) {
+                if (round < bucket.size() && out.size() < limit) {
+                    out.add(bucket.get(round));
+                    added = true;
+                }
+            }
+            if (!added) break;
+        }
+        return out;
+    }
+
     /** 系列专题：只认一级系列；非数字 400，不存在或二级分类 404。 */
     public SeriesView series(String rawId) {
         long id;

@@ -5,14 +5,17 @@
     <link rel="icon" type="image/png" th:href="@{/images/mark.png}"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="|#{nav.brand} · #{fabrics.title}|">FABRICLAB · 面料档案</title>
-    <link rel="stylesheet" th:href="@{/css/store.css?v=20261114a}"/>
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261115e}"/>
 </head>
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
 
-    <th:block th:replace="~{fragments :: header('shop')}"></th:block>
+    <th:block th:replace="~{fragments :: header('fabrics')}"></th:block>
 
     <span id="main" tabindex="-1"></span>
+
+    <!-- 阅读进度：紧贴双层吸顶头部下方 -->
+    <div class="fa-progress" aria-hidden="true"><i></i></div>
 
     <div class="crumb">
         <a th:href="@{/main}" th:text="#{nav.home}">首页</a>
@@ -20,43 +23,213 @@
         <span th:text="#{fabrics.title}">面料档案</span>
     </div>
 
-    <!-- 页头 -->
-    <div style="padding:26px var(--gx) 30px">
-        <div class="eyebrow" th:text="#{fabrics.eyebrow}">FABRIC ARCHIVE</div>
-        <h1 class="h2" style="margin-top:12px;font-size:38px" th:text="#{fabrics.title}">面料档案</h1>
-        <div class="lead" style="margin-top:14px;width:460px;font-size:12px;line-height:1.95"
-             th:text="#{fabrics.lead}">档案按纤维归为四类，与商品详情的洗护建议同一套判定；每一类下面是当季在售的相关款。</div>
-    </div>
-    <div style="margin:0 var(--gx);height:1px;background:var(--ink)"></div>
-
-    <!-- 四类纤维 -->
-    <th:block th:each="g, st : ${groups}">
-        <section style="padding:44px var(--gx) 50px;border-bottom:1px solid var(--line)">
-            <div style="display:flex;align-items:baseline;gap:16px">
-                <span class="din" style="font-size:13px;color:var(--mute)"
-                      th:text="${#numbers.formatInteger(st.count, 2)}">01</span>
-                <h2 class="h3" style="font-size:22px" th:text="#{__${g.titleKey}__}">丝</h2>
-                <span class="tiny" style="margin-left:auto" th:text="#{fabrics.count(${#lists.size(g.products)})}">N 件在售</span>
-            </div>
-            <p class="lead" style="margin-top:12px;max-width:560px;font-size:12px;line-height:1.95"
-               th:text="#{__${g.introKey}__}">档案介绍</p>
-            <div style="margin-top:10px;display:flex;align-items:center;gap:12px">
-                <span class="tiny" style="letter-spacing:.18em;color:var(--mute)" th:text="#{care.title}">洗护</span>
-                <span style="font-size:12px;color:var(--ink)" th:text="#{__${g.careKey}__}">洗护建议</span>
+    <!-- ==================================================== 开场：纤维，不是颜色 -->
+    <section class="fa-hero" id="fa-top">
+        <div class="fa-hero__grid">
+            <div class="fa-hero__text">
+                <div class="eyebrow fa-reveal" style="--d:0ms" th:text="#{fabrics.eyebrow}">FABRIC ARCHIVE / 档案</div>
+                <h1 class="fa-hero__title fa-reveal" style="--d:90ms"><span th:text="#{fabrics.title}">面料档案</span></h1>
+                <div class="fa-hero__kicker fa-reveal" style="--d:170ms" th:text="#{fabrics.hero.kicker}">四种纤维 · 四段来路</div>
+                <p class="fa-hero__lead fa-reveal" style="--d:250ms" th:text="#{fabrics.hero.lead}">我们做衣服不从颜色开始，从一根纤维开始。</p>
+                <div class="fa-hero__meta fa-reveal" style="--d:330ms">
+                    <b class="din">04</b>
+                    <span th:text="#{fabrics.hero.metricLabel}">类纤维 · 四种本色</span>
+                </div>
+                <div class="fa-hero__scroll fa-reveal" style="--d:420ms">
+                    <span th:text="#{fabrics.hero.scroll}">向下翻阅</span>
+                    <i aria-hidden="true"></i>
+                </div>
             </div>
 
-            <div class="g4" style="margin-top:28px" th:if="${!#lists.isEmpty(g.products)}">
-                <th:block th:each="p, s : ${g.products}">
-                    <a th:replace="~{fragments :: card(${p}, ${#numbers.formatInteger(s.count, 2)})}"></a>
-                </th:block>
+            <!-- 经纬画布：CSS 织纹 + SVG 丝线，缓慢流动并随鼠标做小幅视差 -->
+            <div class="fa-hero__art fa-reveal" style="--d:180ms" aria-hidden="true">
+                <div class="fa-weave">
+                    <div class="fa-weave__grid"></div>
+                    <div class="fa-weave__sheen"></div>
+                    <svg class="fa-weave__threads" viewBox="0 0 520 600" preserveAspectRatio="xMidYMid slice">
+                        <path class="fa-thread fa-thread--1" d="M-40 470 C 120 400 170 250 290 220 S 450 120 570 60"/>
+                        <path class="fa-thread fa-thread--2" d="M-40 520 C 130 470 210 330 320 300 S 470 190 570 140"/>
+                        <path class="fa-thread fa-thread--3" d="M-40 575 C 140 545 230 420 350 385 S 480 285 570 235"/>
+                    </svg>
+                    <div class="fa-weave__seal">
+                        <span>UNDYED</span><b>01—04</b><span>NATURAL FIBRE</span>
+                    </div>
+                    <span class="fa-weave__corner fa-weave__corner--tl"></span>
+                    <span class="fa-weave__corner fa-weave__corner--br"></span>
+                </div>
             </div>
-            <p class="tiny" style="margin-top:24px" th:if="${#lists.isEmpty(g.products)}"
-               th:text="#{fabrics.empty}">本季没有该类在售款。</p>
+        </div>
+        <div class="fa-hero__rule"><span th:text="#{fabrics.hero.kicker}">四种纤维 · 四段来路</span><i></i><b class="din">01 / 04</b></div>
+    </section>
+
+    <!-- ==================================================== 吸顶章节索引 -->
+    <nav class="fa-index" th:aria-label="#{fabrics.index}">
+        <span class="fa-index__label" th:text="#{fabrics.index}">纤维索引</span>
+        <div class="fa-index__items">
+            <a class="fa-index__item" th:each="g, st : ${groups}" th:attr="href=${'#ch' + st.count}, data-ch=${st.count}"
+               th:classappend="${st.count == 1} ? 'on'">
+                <i class="din" th:text="${#numbers.formatInteger(st.count, 2)}">01</i>
+                <span th:text="#{__${g.titleKey}__}">丝</span>
+            </a>
+        </div>
+        <span class="fa-index__hint din">FIBRE / 04</span>
+    </nav>
+
+    <!-- ==================================================== 四章：讲清楚纤维本身 -->
+    <main class="fa-chapters">
+        <section class="fa-chapter" th:each="g, st : ${groups}"
+                 th:with="k=${'fabrics.f' + st.count}"
+                 th:attr="id=${'ch' + st.count}, data-ch=${st.count}"
+                 th:style="|--fa-accent:${st.count == 1 ? '#B9AE9C' : (st.count == 2 ? '#A8896B' : (st.count == 3 ? '#C9BFA9' : '#B4643A'))}|"
+                 th:classappend="${st.count % 2 == 0} ? 'fa-chapter--rev'">
+
+            <!-- 巨大编号水印：随滚动做视差 -->
+            <div class="fa-chapter__ghost din" aria-hidden="true" th:text="${#numbers.formatInteger(st.count, 2)}">01</div>
+
+            <div class="fa-chapter__inner">
+                <header class="fa-chapter__head">
+                    <div class="fa-chapter__idx fa-reveal">
+                        <span class="din" th:text="${#numbers.formatInteger(st.count, 2)}">01</span>
+                        <i></i>
+                        <span class="eyebrow" th:text="#{fabrics.fig}">FIBRE / 纤维</span>
+                    </div>
+                    <div class="fa-chapter__title">
+                        <h2 class="fa-h2 fa-reveal" style="--d:80ms" th:text="#{__${g.titleKey}__}">丝</h2>
+                        <div class="fa-latin fa-reveal" style="--d:160ms" th:text="#{__${k}__.latin}">SILK · Bombyx mori</div>
+                    </div>
+                    <div class="fa-chapter__count fa-reveal" style="--d:220ms">
+                        <b class="din" th:text="${#lists.size(g.products)}">12</b>
+                        <span th:text="#{fabrics.count.unit}">件在售</span>
+                    </div>
+                </header>
+
+                <div class="fa-chapter__grid">
+                    <!-- 主叙述：引语 + 两段故事 -->
+                    <div class="fa-story">
+                        <p class="fa-quote fa-reveal" style="--d:100ms" th:text="#{__${k}__.quote}">光泽不是加上去的，是纤维自己带的。</p>
+                        <p class="fa-para fa-reveal" style="--d:170ms" th:text="#{__${k}__.story1}">故事正文一</p>
+                        <p class="fa-para fa-reveal" style="--d:240ms" th:text="#{__${k}__.story2}">故事正文二</p>
+                        <a class="fa-inline-link fa-reveal" style="--d:310ms" th:href="@{/category}"
+                           th:text="#{fabrics.chapter.link}">看本类在售款 →</a>
+                    </div>
+
+                    <!-- 本色样本 + 洗护：视觉侧，不摆商品图 -->
+                    <aside class="fa-side">
+                        <div class="fa-side__head fa-reveal" style="--d:140ms">
+                            <span class="eyebrow" th:text="#{fabrics.swatches}">NATURAL SWATCHES / 本色样本</span>
+                            <span class="tiny" th:text="#{fabrics.swatches.note}">未染色 · 同批色差被保留</span>
+                        </div>
+                        <div class="fa-swatches fa-reveal" style="--d:210ms">
+                            <div class="fa-swatch"><span class="din">01</span></div>
+                            <div class="fa-swatch"><span class="din">02</span></div>
+                            <div class="fa-swatch"><span class="din">03</span></div>
+                            <div class="fa-swatch"><span class="din">04</span></div>
+                        </div>
+                        <div class="fa-care fa-reveal" style="--d:280ms">
+                            <span class="eyebrow" th:text="#{fabrics.care}">洗护与存放</span>
+                            <p th:text="#{__${g.careKey}__}">洗护建议</p>
+                        </div>
+                    </aside>
+                </div>
+
+                <!-- 三张事实卡 -->
+                <div class="fa-facts">
+                    <div class="fa-fact fa-reveal" style="--d:60ms">
+                        <span class="fa-fact__no din">01</span>
+                        <b th:text="#{fabrics.fact.1.label}">来路</b>
+                        <p th:text="#{__${k}__.f1}">来路说明</p>
+                    </div>
+                    <div class="fa-fact fa-reveal" style="--d:150ms">
+                        <span class="fa-fact__no din">02</span>
+                        <b th:text="#{fabrics.fact.2.label}">织法</b>
+                        <p th:text="#{__${k}__.f2}">织法说明</p>
+                    </div>
+                    <div class="fa-fact fa-reveal" style="--d:240ms">
+                        <span class="fa-fact__no din">03</span>
+                        <b th:text="#{fabrics.fact.3.label}">本色</b>
+                        <p th:text="#{__${k}__.f3}">本色说明</p>
+                    </div>
+                </div>
+
+                <!-- 四条手感：线条随章节进入时展开（纯视觉节奏，不伪造数值） -->
+                <div class="fa-traits">
+                    <div class="fa-traits__head fa-reveal">
+                        <span class="eyebrow" th:text="#{fabrics.traits}">手感与性格</span>
+                        <span class="tiny" th:text="#{fabrics.traits.note}">同一双手，四种反应</span>
+                    </div>
+                    <div class="fa-trait fa-reveal" style="--d:60ms">
+                        <span class="fa-trait__lb" th:text="#{fabrics.trait.1.label}">光泽</span>
+                        <div class="fa-bar"><i style="--w:42%"></i></div>
+                        <p th:text="#{__${k}__.t1}">光泽描述</p>
+                    </div>
+                    <div class="fa-trait fa-reveal" style="--d:130ms">
+                        <span class="fa-trait__lb" th:text="#{fabrics.trait.2.label}">垂坠</span>
+                        <div class="fa-bar"><i style="--w:66%"></i></div>
+                        <p th:text="#{__${k}__.t2}">垂坠描述</p>
+                    </div>
+                    <div class="fa-trait fa-reveal" style="--d:200ms">
+                        <span class="fa-trait__lb" th:text="#{fabrics.trait.3.label}">透气</span>
+                        <div class="fa-bar"><i style="--w:86%"></i></div>
+                        <p th:text="#{__${k}__.t3}">透气描述</p>
+                    </div>
+                    <div class="fa-trait fa-reveal" style="--d:270ms">
+                        <span class="fa-trait__lb" th:text="#{fabrics.trait.4.label}">耐穿</span>
+                        <div class="fa-bar"><i style="--w:58%"></i></div>
+                        <p th:text="#{__${k}__.t4}">耐穿描述</p>
+                    </div>
+                </div>
+            </div>
         </section>
-    </th:block>
+    </main>
 
-    <div style="height:86px"></div>
+    <!-- ==================================================== 页尾：只放两行商品 -->
+    <section class="fa-samples" id="fa-pieces">
+        <div class="fa-samples__head fa-reveal">
+            <div>
+                <span class="eyebrow" th:text="#{fabrics.pieces.eyebrow}">ON SALE / 当季在售</span>
+                <h2 class="fa-samples__title" th:text="#{fabrics.samples}">当季在售 · 摘录</h2>
+                <p class="fa-samples__lead" th:text="#{fabrics.samples.lead}">八件，来自上面四类纤维。完整目录与筛选在选购页。</p>
+            </div>
+            <div class="fa-samples__count">
+                <b class="din" th:text="${#lists.size(samples)}">08</b>
+                <span th:text="#{fabrics.count.unit}">件在售</span>
+            </div>
+        </div>
+
+        <div class="g4 fa-samples__grid" th:if="${!#lists.isEmpty(samples)}">
+            <th:block th:each="p, s : ${samples}">
+                <a th:replace="~{fragments :: card(${p}, ${#numbers.formatInteger(s.count, 2)})}"></a>
+            </th:block>
+        </div>
+        <p class="tiny" th:if="${#lists.isEmpty(samples)}" th:text="#{fabrics.empty}">本季暂无在售款。</p>
+
+        <div class="fa-samples__foot">
+            <span class="tiny" th:text="#{fabrics.samples.note}">这里只放一件摘录，选衣服请到选购页。</span>
+            <a class="fa-all" th:href="@{/category}" data-nav="next">
+                <span th:text="#{fabrics.all}">查看全部商品 →</span>
+                <i aria-hidden="true"></i>
+            </a>
+        </div>
+    </section>
+
+    <!-- ==================================================== 结语 -->
+    <section class="fa-closing">
+        <div class="fa-closing__mark" aria-hidden="true">
+            <svg viewBox="0 0 240 120" preserveAspectRatio="xMidYMid meet">
+                <path d="M0 30 C 70 30 70 90 120 90 S 170 30 240 30"/>
+                <path d="M0 90 C 70 90 70 30 120 30 S 170 90 240 90"/>
+            </svg>
+        </div>
+        <div class="fa-closing__body fa-reveal">
+            <span class="eyebrow" th:text="#{fabrics.closing.eyebrow}">MATERIAL FIRST</span>
+            <h2 th:text="#{fabrics.closing.line}">一件衣服的寿命，从纤维开始算。</h2>
+            <p th:text="#{fabrics.closing.sub}">不过染缸，不上整理剂。</p>
+            <a class="tlink rust" th:href="@{/crafts}" th:text="#{crafts.more}">看工艺说明 →</a>
+        </div>
+    </section>
+
     <th:block th:replace="~{fragments :: footer}"></th:block>
 </div>
+<script th:src="@{/js/fabric-story.js?v=20261115e}"></script>
 </body>
 </html>

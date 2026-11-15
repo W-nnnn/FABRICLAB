@@ -19,6 +19,10 @@
                    th:text="#{nav.home}">首页</a>
                 <a class="hn" th:href="@{/category}" th:classappend="${active == 'shop'} ? 'on'"
                    th:text="#{nav.all}">全部商品</a>
+                <a class="hn" th:href="@{/fabrics}" th:classappend="${active == 'fabrics'} ? 'on'"
+                   th:text="#{fabrics.title}">面料档案</a>
+                <a class="hn" th:href="@{/crafts}" th:classappend="${active == 'crafts'} ? 'on'"
+                   th:text="#{crafts.title}">工艺说明</a>
             </nav>
             <div class="acts">
                 <a class="lang" th:href="${langHref + (lang == 'en' ? 'lang=zh' : 'lang=en')}"
