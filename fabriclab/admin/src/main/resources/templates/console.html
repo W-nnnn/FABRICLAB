@@ -9,7 +9,7 @@
     <div class="scrim" id="scrim"></div>
 
     <div class="wrap">
-        <div th:replace="~{fragments :: topbar(#{admin.nav.overview}, #{admin.console.title})}"></div>
+        <div th:replace="~{fragments :: topbar(#{admin.nav.overview}, #{admin.console.title}, @{/admin/console})}"></div>
 
         <main class="main" id="main">
             <div class="page">
@@ -19,14 +19,13 @@
                     <div>
                         <div class="ph__eyebrow"><em>01</em><span th:text="#{admin.nav.overview}">概览</span></div>
                         <h1 th:text="#{admin.console.title}">控制台</h1>
-                        <p th:text="#{admin.console.desc}">只呈现可由当次查询核对的事项。</p>
+                        <p th:text="${statShip + statLow > 0} ? #{admin.console.todo(${statShip},${statLow})} : #{admin.console.todoNone}">今日待办：1 笔待发货、3 款低库存</p>
                     </div>
                     <div class="ph__act"><span class="ph__count" th:text="${today}">2026.11.14</span></div>
                 </div>
 
                 <div class="hero" th:if="${featured != null}">
                     <div class="hero__txt">
-                        <div class="hero__k">FABRICLAB · AW 2026</div>
                         <h2 th:text="${tr.t(featured.name)}">山羊绒高领衫 · 燕麦</h2>
                         <p th:text="${tr.t(featured.summary)}">内蒙古山羊绒，12 针织造。</p>
                         <div class="hero__meta">
@@ -37,8 +36,8 @@
                         </div>
                     </div>
                     <div class="hero__vis">
-                        <span class="pimg" style="--tone:#E7DFCF"><svg viewBox="0 0 40 52" aria-hidden="true"><use th:href="|#g-${featured.shape}|" href="#g-turtleneck"/></svg></span>
-                        <em>FABRICLAB / AW 2026</em>
+                        <img th:src="@{|/${featured.coverImage}|}" th:alt="${featured.sku}" loading="lazy"
+                             onerror="if(!this.dataset.f){this.dataset.f=1;this.src='/images/logo.png'}" />
                     </div>
                 </div>
 
@@ -122,7 +121,6 @@
                                     <thead><tr>
                                         <th th:text="#{admin.console.module}">模块</th>
                                         <th th:text="#{admin.console.scope}">维护内容</th>
-                                        <th th:text="#{admin.console.requirement}">对应需求</th>
                                         <th th:text="#{admin.console.state}">状态</th>
                                     </tr></thead>
                                     <tbody>
@@ -132,7 +130,6 @@
                                             <span th:unless="${module.implemented}" th:text="${module.name}">库存与相册</span>
                                         </td>
                                         <td th:text="${module.scope}">维护内容</td>
-                                        <td th:text="${module.requirement}">FR-A-02</td>
                                         <td><span class="tag" th:classappend="${module.implemented} ? 'tag--live'"
                                                   th:text="${module.implemented} ? #{admin.state.enabled} : #{admin.state.disabled}">未启用</span></td>
                                     </tr>
@@ -145,16 +142,6 @@
 
                     <aside class="aside-col">
                         <div class="aside-sec">
-                            <h3 th:text="#{admin.console.runtime}">运行状态</h3>
-                            <dl class="facts">
-                                <dt th:text="#{admin.console.port}">服务端口</dt><dd>8081</dd>
-                                <dt th:text="#{admin.console.prefix}">路径前缀</dt><dd>/admin</dd>
-                                <dt th:text="#{admin.console.sessionTimeout}">会话超时</dt><dd th:text="#{admin.console.timeoutValue}">30 分钟</dd>
-                                <dt th:text="#{admin.console.csrfOn}">CSRF</dt><dd th:text="#{admin.state.enabled}">已启用</dd>
-                                <dt th:text="#{admin.console.database}">数据库</dt><dd th:text="#{admin.console.connected}">连接正常</dd>
-                            </dl>
-                        </div>
-                        <div class="aside-sec">
                             <h3 th:text="#{admin.console.identity}">登录身份</h3>
                             <dl class="facts">
                                 <dt th:text="#{admin.console.username}">账号</dt>
@@ -166,20 +153,18 @@
                                 <dd th:text="${signinAt != null ? signinAt : '—'}">—</dd>
                             </dl>
                         </div>
-                        <div class="aside-sec">
-                            <h3 th:text="#{admin.console.session}">会话与访问</h3>
+                        <details class="aside-sec aside-fold">
+                            <summary th:text="#{admin.console.system}">系统信息</summary>
                             <dl class="facts">
-                                <dt th:text="#{admin.console.cookie}">会话 Cookie</dt>
-                                <dd th:text="#{admin.console.cookieValue}">ADMINSESSION（与用户端 STORESESSION 相互独立）</dd>
+                                <dt th:text="#{admin.console.port}">服务端口</dt><dd>8081</dd>
+                                <dt th:text="#{admin.console.prefix}">路径前缀</dt><dd>/admin</dd>
+                                <dt th:text="#{admin.console.database}">数据库</dt><dd th:text="#{admin.console.connected}">连接正常</dd>
+                                <dt th:text="#{admin.console.csrfOn}">CSRF</dt><dd th:text="#{admin.state.enabled}">已启用</dd>
+                                <dt th:text="#{admin.console.cookie}">会话 Cookie</dt><dd th:text="#{admin.console.cookieValue}">ADMINSESSION</dd>
                                 <dt th:text="#{admin.console.timeout}">空闲超时</dt><dd th:text="#{admin.console.timeoutValue}">30 分钟</dd>
                                 <dt th:text="#{admin.console.access}">访问检查</dt><dd th:text="#{admin.console.accessValue}">每次请求复核</dd>
-                                <dt th:text="#{admin.console.csrf}">写操作防护</dt><dd th:text="#{admin.console.csrfValue}">全部 POST 校验令牌</dd>
                             </dl>
-                        </div>
-                        <div class="aside-sec">
-                            <h3 th:text="#{admin.console.note}">说明</h3>
-                            <p style="font-size:11.5px;color:var(--muted);line-height:1.8" th:text="#{admin.console.noteText}">说明文字</p>
-                        </div>
+                        </details>
                     </aside>
                 </div>
 

@@ -27,7 +27,8 @@ import java.util.Locale;
 public class ConsoleService {
 
     public record Featured(String sku, String name, String summary, BigDecimal price,
-                           int stock, String status, String statusLabel, String shape) {}
+                           int stock, String status, String statusLabel, String shape,
+                           String coverImage) {}
     public record Recent(long id, String sku, String name, String status, String time, boolean live) {}
     public record Need(String label, String title, String detail, String href, boolean accent) {}
     public record Dashboard(Featured featured, long live, long draft, long low, long ship,
@@ -76,12 +77,13 @@ public class ConsoleService {
         long ship = count("SELECT COUNT(*) FROM sales_order WHERE status='PAID'");
 
         Featured featured = jdbc().query(
-                "SELECT sku, name, summary, price, stock, status FROM product " +
+                "SELECT sku, name, summary, price, stock, status, cover_image FROM product " +
                         "WHERE status='ON_SALE' ORDER BY updated_at DESC, id DESC LIMIT 1",
                 rs -> rs.next() ? new Featured(rs.getString("sku"), rs.getString("name"),
                         rs.getString("summary"), rs.getBigDecimal("price"),
                         rs.getInt("stock"), rs.getString("status"),
-                        m("admin.prod.hero.live"), shape(rs.getString("name"))) : null);
+                        m("admin.prod.hero.live"), shape(rs.getString("name")),
+                        rs.getString("cover_image")) : null);
 
         List<Recent> recent = jdbc().query(
                 "SELECT id, sku, name, status, updated_at FROM product ORDER BY updated_at DESC, id DESC LIMIT 3",

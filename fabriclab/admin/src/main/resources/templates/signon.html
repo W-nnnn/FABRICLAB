@@ -4,11 +4,12 @@
 <body class="signon-page">
 <main class="signon">
     <section class="signon__aside">
+        <span class="signon__photo" aria-hidden="true"></span>
         <div class="signon__brand">
             <img th:src="@{/images/logo.png}" alt="FABRICLAB" />
             <span><b th:text="${brand}">FABRICLAB</b><small th:text="#{admin.brand.sub}">MANAGEMENT</small></span>
         </div>
-        <h1 th:text="${brand} + ' ' + #{admin.app}">FABRICLAB 管理台</h1>
+        <h1 th:text="#{admin.app}">FABRICLAB 管理台</h1>
         <p th:text="#{admin.signon.intro}">分类与商品、库存与相册、顾客账号、全站订单，均在此维护。</p>
         <ul class="signon__rules">
             <li th:text="#{admin.signon.rule1}">仅启用的管理员账号可登录</li>
@@ -30,17 +31,49 @@
             </label>
             <label>
                 <span th:text="#{admin.signon.password}">口令</span>
-                <input type="password" name="password" required autocomplete="current-password"
-                       th:aria-label="#{admin.signon.password}" />
+                <span class="signon__pw">
+                    <input type="password" name="password" id="signon-password" required autocomplete="current-password"
+                           th:aria-label="#{admin.signon.password}" />
+                    <button type="button" class="signon__pw-toggle" data-pw-toggle="signon-password"
+                            aria-pressed="false" aria-controls="signon-password"
+                            th:attr="aria-label=#{admin.signon.showPassword},data-label-show=#{admin.signon.showPassword},data-label-hide=#{admin.signon.hidePassword}">
+                        <svg class="i-eye" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                            <path d="M1.8 12S5.7 6 12 6s10.2 6 10.2 6-3.9 6-10.2 6S1.8 12 1.8 12Z"
+                                  fill="none" stroke="currentColor" stroke-width="1.6"/>
+                            <circle cx="12" cy="12" r="3.1" fill="none" stroke="currentColor" stroke-width="1.6"/>
+                        </svg>
+                        <svg class="i-eye-off" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                            <path d="M4.4 7.6C2.8 9.2 1.8 12 1.8 12S5.7 18 12 18c2 0 3.8-.7 5.3-1.6M9.9 6.3C10.6 6.1 11.3 6 12 6c6.3 0 10.2 6 10.2 6s-.7 1.1-1.9 2.3"
+                                  fill="none" stroke="currentColor" stroke-width="1.6"/>
+                            <path d="M3.2 3.2l17.6 17.6" fill="none" stroke="currentColor" stroke-width="1.6"/>
+                        </svg>
+                    </button>
+                </span>
             </label>
             <button type="submit" th:text="#{admin.signon.submit}">进入管理台</button>
         </form>
         <p class="signon__note" th:text="#{admin.signon.note}">顾客账号请在用户端（8080）登录。</p>
-        <div class="lang" style="margin-top:24px;border:0;padding:0" th:aria-label="#{admin.lang.label}" role="group">
+        <div class="lang" th:aria-label="#{admin.lang.label}" role="group">
             <a th:href="${langZhUrl}" th:classappend="${isEn == null || !isEn} ? 'on'" th:text="#{admin.lang.zh}">中文</a>
             <a th:href="${langEnUrl}" th:classappend="${isEn} ? 'on'" th:text="#{admin.lang.en}">EN</a>
         </div>
     </section>
 </main>
+<script>
+    (function () {
+        var btn = document.querySelector('[data-pw-toggle]');
+        if (!btn) return;
+        var input = document.getElementById(btn.getAttribute('data-pw-toggle'));
+        if (!input) return;
+        btn.addEventListener('click', function () {
+            var shown = input.type === 'text';
+            input.type = shown ? 'password' : 'text';
+            btn.setAttribute('aria-pressed', shown ? 'false' : 'true');
+            btn.setAttribute('aria-label', shown ? btn.dataset.labelShow : btn.dataset.labelHide);
+            btn.classList.toggle('is-on', !shown);
+            input.focus({ preventScroll: true });
+        });
+    })();
+</script>
 </body>
 </html>

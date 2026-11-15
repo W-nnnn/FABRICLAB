@@ -140,13 +140,15 @@ html, body { overflow-x: clip; }
 .hn.on { color: var(--rust-ink); }
 .acts { margin-left: auto; display: flex; align-items: center; gap: 22px; }
 .lang {
-    display: flex; align-items: center; gap: 7px;
+    display: flex; align-items: center; gap: 4px;
     font-family: var(--f-body); font-size: 11px; letter-spacing: .12em;
-    border: 1px solid var(--line2); padding: 5px 10px; color: var(--mute);
+    border: 1px solid var(--line2); padding: 4px 6px; color: var(--mute);
 }
-.lang b { font-weight: 500; color: var(--ink); }
-.lang i { font-style: normal; opacity: .4; }
-.lang span { font-weight: 400; }
+.lang i { font-style: normal; opacity: .35; }
+.lang__opt { font-weight: 400; color: var(--mute); padding: 2px 7px; line-height: 1.6;
+    transition: background .18s ease, color .18s ease; }
+.lang__opt.on { background: var(--ink); color: var(--cream); font-weight: 500; }
+.lang:hover .lang__opt:not(.on) { color: var(--ink); }
 .ico {
     display: flex; align-items: center; gap: 7px;
     font-family: var(--f-body); font-weight: 400; font-size: 11.5px;

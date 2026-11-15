@@ -9,7 +9,7 @@ public class CategoryNode {
     private final String code;
     private final String name;
     private final int sortOrder;
-    private final long productCount;
+    private long productCount;
     private final boolean topLevel;
     private final List<CategoryNode> children = new ArrayList<>();
 
@@ -25,5 +25,8 @@ public class CategoryNode {
     public int getSortOrder() { return sortOrder; }
     public long getProductCount() { return productCount; }
     public boolean isTopLevel() { return topLevel; }
+    /** 一级分类的款数按子树汇总：商品只挂二级，父级也要给出真实总数。 */
+    public void addChildProducts(long n) { this.productCount += n; }
+
     public List<CategoryNode> getChildren() { return children; }
 }

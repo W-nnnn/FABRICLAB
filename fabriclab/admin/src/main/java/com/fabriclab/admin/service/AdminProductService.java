@@ -37,7 +37,6 @@ public class AdminProductService {
 
     public static final String DRAFT = "DRAFT";
     public static final String ON_SALE = "ON_SALE";
-    public static final String DEFAULT_COVER = "images/logo.png";
     private static final DateTimeFormatter ZH = DateTimeFormatter.ofPattern("yyyy.MM.dd");
     private static final String[] MONTHS = {"Jan","Feb","Mar","Apr","May","Jun",
             "Jul","Aug","Sep","Oct","Nov","Dec"};
@@ -46,15 +45,17 @@ public class AdminProductService {
     private final CategoryMapper categoryMapper;
     private final ProductImageMapper imageMapper;
     private final SalesOrderItemMapper itemMapper;
+    private final ProductImageStorage imageStorage;
     private final MessageSource messages;
 
     public AdminProductService(ProductMapper productMapper, CategoryMapper categoryMapper,
                                ProductImageMapper imageMapper, SalesOrderItemMapper itemMapper,
-                               MessageSource messages) {
+                               ProductImageStorage imageStorage, MessageSource messages) {
         this.productMapper = productMapper;
         this.categoryMapper = categoryMapper;
         this.imageMapper = imageMapper;
         this.itemMapper = itemMapper;
+        this.imageStorage = imageStorage;
         this.messages = messages;
     }
 
@@ -85,7 +86,13 @@ public class AdminProductService {
                     .between(Product::getStock, 1, 3);
             default -> { }
         }
-        w.orderByDesc(Product::getUpdatedAt).orderByDesc(Product::getId);
+        switch (q.sort()) {
+            case "price" -> w.orderBy(true, "asc".equals(q.dir()), Product::getPrice);
+            case "stock" -> w.orderBy(true, "asc".equals(q.dir()), Product::getStock);
+            case "updated" -> w.orderBy(true, "asc".equals(q.dir()), Product::getUpdatedAt);
+            default -> w.orderByDesc(Product::getUpdatedAt);
+        }
+        w.orderByDesc(Product::getId);
         Page<Product> result = productMapper.selectPage(new Page<>(q.page(), size), w);
 
         Map<Long, String> categoryNames = categoryMapper.selectList(null).stream()
@@ -120,7 +127,7 @@ public class AdminProductService {
                 DescriptionText.fabricLine(f, p.getSummary()),
                 cats.getOrDefault(p.getCategoryId(), "—"),
                 p.getPrice(), stock, p.getStatus(), label, cls,
-                date(p.getUpdatedAt()), shape(p.getName()), tone(p.getName()));
+                date(p.getUpdatedAt()), p.getCoverImage(), shape(p.getName()), tone(p.getName()));
     }
 
     private String date(LocalDateTime at) {
@@ -155,8 +162,9 @@ public class AdminProductService {
         return p;
     }
 
+    /** 新建表单不预填封面：必须从相册选或上传一张，避免把占位图当封面存进库。 */
     public ProductForm blankForm() {
-        return new ProductForm(null, "", null, "", "", "", 0, DRAFT, DEFAULT_COVER, 0,
+        return new ProductForm(null, "", null, "", "", "", 0, DRAFT, "", 0,
                 "", "", "", "", "", 0L);
     }
 
@@ -170,17 +178,17 @@ public class AdminProductService {
     }
 
     public Product create(ProductForm f) {
-        String sku = text(f.sku(), "admin.err.prod.skuRequired", 40, "admin.err.prod.skuLength");
-        String name = text(f.name(), "admin.err.prod.nameRequired", 120, "admin.err.prod.nameLength");
+        String sku = text("sku", f.sku(), "admin.err.prod.skuRequired", 40, "admin.err.prod.skuLength");
+        String name = text("name", f.name(), "admin.err.prod.nameRequired", 120, "admin.err.prod.nameLength");
         BigDecimal price = price(f.price());
         String status = status(f.status());
         String cover = cover(f.coverImage());
         int sort = sort(f.sortOrder());
         int stock = f.stock() == null ? 0 : f.stock();
-        if (stock < 0) throw new BusinessException(t("admin.err.prod.stockInvalid"));
+        if (stock < 0) throw new BusinessException("stock", t("admin.err.prod.stockInvalid"));
         requireSecondLevel(f.categoryId());
         if (count(new LambdaQueryWrapper<Product>().eq(Product::getSku, sku)) > 0) {
-            throw new BusinessException(t("admin.err.prod.skuExists"));
+            throw new BusinessException("sku", t("admin.err.prod.skuExists"));
         }
         Product p = new Product();
         p.setSku(sku); p.setCategoryId(f.categoryId()); p.setName(name);
@@ -194,13 +202,13 @@ public class AdminProductService {
     /** AC-27：version 条件更新，影响 0 行即为旧表单，拒绝而不是覆盖。 */
     public void update(long id, ProductForm f) {
         Product existing = require(id);
-        String sku = text(f.sku(), "admin.err.prod.skuRequired", 40, "admin.err.prod.skuLength");
-        String name = text(f.name(), "admin.err.prod.nameRequired", 120, "admin.err.prod.nameLength");
+        String sku = text("sku", f.sku(), "admin.err.prod.skuRequired", 40, "admin.err.prod.skuLength");
+        String name = text("name", f.name(), "admin.err.prod.nameRequired", 120, "admin.err.prod.nameLength");
         if (!sku.equals(existing.getSku())) {
-            throw new BusinessException(t("admin.err.prod.skuImmutable"));
+            throw new BusinessException("sku", t("admin.err.prod.skuImmutable"));
         }
         if (!Objects.equals(f.categoryId(), existing.getCategoryId())) {
-            throw new BusinessException(t("admin.err.prod.categoryImmutable"));
+            throw new BusinessException("categoryId", t("admin.err.prod.categoryImmutable"));
         }
         BigDecimal price = price(f.price());
         String status = status(f.status());
@@ -276,53 +284,65 @@ public class AdminProductService {
     }
 
     private void requireSecondLevel(Long categoryId) {
-        if (categoryId == null) throw new BusinessException(t("admin.err.prod.categoryRequired"));
+        if (categoryId == null) {
+            throw new BusinessException("categoryId", t("admin.err.prod.categoryRequired"));
+        }
         Category c = categoryMapper.selectById(categoryId);
-        if (c == null) throw new BusinessException(t("admin.err.prod.categoryMissing"));
+        if (c == null) {
+            throw new BusinessException("categoryId", t("admin.err.prod.categoryMissing"));
+        }
         if (c.getParentId() == null) {
-            throw new BusinessException(t("admin.err.prod.categoryLevel"));
+            throw new BusinessException("categoryId", t("admin.err.prod.categoryLevel"));
         }
     }
 
-    private String text(String raw, String requiredKey, int max, String lengthKey) {
+    private String text(String field, String raw, String requiredKey, int max, String lengthKey) {
         String v = raw == null ? "" : raw.trim();
-        if (v.isEmpty()) throw new BusinessException(t(requiredKey));
-        if (v.length() > max) throw new BusinessException(t(lengthKey));
+        if (v.isEmpty()) throw new BusinessException(field, t(requiredKey));
+        if (v.length() > max) throw new BusinessException(field, t(lengthKey));
         return v;
+    }
+
+    private String text(String raw, String requiredKey, int max, String lengthKey) {
+        return text(null, raw, requiredKey, max, lengthKey);
     }
 
     private BigDecimal price(String raw) {
         if (raw == null || raw.isBlank()) {
-            throw new BusinessException(t("admin.err.prod.priceRequired"));
+            throw new BusinessException("price", t("admin.err.prod.priceRequired"));
         }
         try {
             BigDecimal v = new BigDecimal(raw.trim());
             if (v.signum() <= 0 || v.stripTrailingZeros().scale() > 2) {
-                throw new BusinessException(t("admin.err.prod.priceInvalid"));
+                throw new BusinessException("price", t("admin.err.prod.priceInvalid"));
             }
             return v.setScale(2);
         } catch (NumberFormatException e) {
-            throw new BusinessException(t("admin.err.prod.priceInvalid"));
+            throw new BusinessException("price", t("admin.err.prod.priceInvalid"));
         }
     }
 
     private String status(String raw) {
         String v = raw == null ? DRAFT : raw.trim();
         if (!DRAFT.equals(v) && !ON_SALE.equals(v)) {
-            throw new BusinessException(t("admin.err.prod.statusInvalid"));
+            throw new BusinessException("status", t("admin.err.prod.statusInvalid"));
         }
         return v;
     }
 
+    /** 封面必须是站内真实存在的图片：路径写错在保存时就挡住，而不是到用户端才发现。 */
     private String cover(String raw) {
         String v = raw == null ? "" : raw.trim();
-        if (v.isEmpty()) throw new BusinessException(t("admin.err.prod.coverRequired"));
-        return v.length() > 255 ? v.substring(0, 255) : v;
+        if (v.isEmpty()) throw new BusinessException("coverImage", t("admin.err.prod.coverRequired"));
+        if (v.length() > 255 || !imageStorage.exists(v)) {
+            throw new BusinessException("coverImage", t("admin.err.prod.coverMissing"));
+        }
+        return v;
     }
 
     private int sort(Integer value) {
         int v = value == null ? 0 : value;
-        if (v < 0) throw new BusinessException(t("admin.err.prod.sortNegative"));
+        if (v < 0) throw new BusinessException("sortOrder", t("admin.err.prod.sortNegative"));
         return v;
     }
 

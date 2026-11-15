@@ -7,7 +7,7 @@
     <div th:replace="~{fragments :: side('orders')}"></div>
     <div class="scrim" id="scrim"></div>
     <div class="wrap">
-        <div th:replace="~{fragments :: topbar(#{admin.nav.trade}, #{admin.order.detailTitle})}"></div>
+        <div th:replace="~{fragments :: topbar(#{admin.nav.trade}, #{admin.order.detailTitle}, @{/admin/orders})}"></div>
         <main class="main" id="main">
             <div class="page">
                 <div th:replace="~{fragments :: notice}"></div>
@@ -15,8 +15,10 @@
                 <div class="ph">
                     <div>
                         <div class="ph__eyebrow"><em>04</em><span th:text="#{admin.nav.trade}">交易</span></div>
-                        <h1 class="code" th:text="${o.orderNo}">FL20261114A1B2C3</h1>
-                        <p th:text="#{admin.order.headMeta(${o.createdAt},${o.paidAt},${#lists.size(o.items)})}">下单 2026.11.13 08:10 · 支付 — · 共 2 项</p>
+                        <h1 th:text="|${o.receiverName} · ${o.totalAmount} · ${o.statusLabel}|">林晓 · ¥1,280.00 · 已支付</h1>
+                        <p><b class="num" th:text="${o.orderNo}">FL20261114A1B2C3</b>
+                            <span th:text="| · ${o.createdAt} · |"></span>
+                            <span th:text="#{admin.order.headItems(${#lists.size(o.items)})}">共 2 项</span></p>
                     </div>
                     <div class="ph__act">
                         <span class="tag" th:classappend="${o.statusClass}" th:text="${o.statusLabel}">已支付</span>
@@ -69,12 +71,14 @@
                                     <p th:text="#{admin.order.timelineNote}">状态迁移由操作发生时记录；未发生的节点留空。</p></div>
                             </div>
                             <ol class="tl">
-                                <li class="tl__it" th:each="s : ${o.timeline}">
-                                    <span class="tl__dot" th:classappend="${s.done} ? 'on'"></span>
+                                <li class="tl__it" th:each="s : ${o.timeline}" th:if="${s.done}">
+                                    <span class="tl__dot on"></span>
                                     <span class="tl__label" th:text="${s.label}">支付</span>
-                                    <span class="tl__date" th:text="${s.done} ? ${s.date} : #{admin.order.tl.pending}">—</span>
+                                    <span class="tl__date" th:text="${s.date}">2026.11.13 08:12</span>
                                 </li>
                             </ol>
+                            <p class="tl__rest" th:if="${#lists.size(o.timeline.?[!done]) > 0}"
+                               th:text="#{admin.order.tl.rest}">发货与完成尚未发生。</p>
                         </section>
                     </div>
 
@@ -90,8 +94,8 @@
                                     th:if="${o.canEditReceiver}" onclick="openReceiver()"
                                     th:text="#{admin.order.editReceiver}">修改收货信息</button>
                         </div>
-                        <div class="aside-sec">
-                            <h3 th:text="#{admin.order.section.payment}">支付信息</h3>
+                        <details class="aside-sec aside-fold">
+                            <summary th:text="#{admin.order.section.payment}">支付信息</summary>
                             <dl class="facts">
                                 <dt th:text="#{admin.order.f.buyer}">买家</dt><dd th:text="${o.buyer}">林晓 · @alice</dd>
                                 <dt th:text="#{admin.order.f.method}">支付方式</dt><dd th:text="${o.paymentMethodLabel}">模拟支付</dd>
@@ -99,7 +103,7 @@
                                 <dd class="num" style="word-break:break-all" th:text="${o.paymentNo}">MOCK2026…</dd>
                                 <dt th:text="#{admin.order.f.paidAt}">支付时间</dt><dd th:text="${o.paidAt}">—</dd>
                             </dl>
-                        </div>
+                        </details>
                         <div class="aside-sec" th:if="${o.canDelete}">
                             <h3 th:text="#{admin.order.delete}">删除订单</h3>
                             <p class="aside-note" th:text="#{admin.order.deleteText}">仅已取消且无支付凭证的教学演示订单可以删除。</p>

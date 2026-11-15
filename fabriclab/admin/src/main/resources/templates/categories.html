@@ -7,7 +7,7 @@
     <div th:replace="~{fragments :: side('categories')}"></div>
     <div class="scrim" id="scrim"></div>
     <div class="wrap">
-        <div th:replace="~{fragments :: topbar(#{admin.nav.products}, #{admin.cat.title})}"></div>
+        <div th:replace="~{fragments :: topbar(#{admin.nav.products}, #{admin.cat.title}, @{/admin/categories})}"></div>
         <main class="main" id="main">
             <div class="page">
                 <div th:replace="~{fragments :: notice}"></div>
@@ -26,8 +26,7 @@
                 <section class="block">
                     <div class="block__head">
                         <span class="block__no">01</span>
-                        <div><h2 th:text="#{admin.cat.title}">分类维护</h2>
-                            <p th:text="#{admin.cat.note}">有引用时不可删除。</p></div>
+                        <div><h2 th:text="#{admin.cat.tree}">分类结构</h2></div>
                     </div>
 
                     <div class="empty" th:if="${#lists.isEmpty(nodes)}">
@@ -40,7 +39,7 @@
                     <div class="tblwrap" th:unless="${#lists.isEmpty(nodes)}">
                         <table class="tbl" style="min-width:760px">
                             <thead><tr>
-                                <th style="width:140px" th:text="#{admin.cat.colCode}">编码</th>
+                                <th style="width:178px" th:text="#{admin.cat.colCode}">编码</th>
                                 <th th:text="#{admin.cat.colName}">名称</th>
                                 <th style="width:90px" th:text="#{admin.cat.colLevel}">层级</th>
                                 <th class="n" style="width:80px" th:text="#{admin.cat.colSort}">排序</th>
@@ -57,7 +56,8 @@
                                     <td class="n" th:text="${node.productCount}">0</td>
                                     <td><div class="acts">
                                         <a class="txt" th:href="@{/admin/categories/{id}/edit(id=${node.id})}" th:text="#{admin.action.edit}">编辑</a>
-                                        <button type="button" class="txt txt--danger" th:attr="data-id=${node.id},data-name=${node.name}"
+                                        <button type="button" class="txt txt--danger"
+                                                th:attr="data-id=${node.id},data-name=${node.name},data-locked=${!#lists.isEmpty(node.children) or node.productCount > 0}"
                                                 onclick="openDel(this)" th:text="#{admin.action.delete}">删除</button>
                                     </div></td>
                                 </tr>
@@ -69,7 +69,8 @@
                                     <td class="n" th:text="${child.productCount}">12</td>
                                     <td><div class="acts">
                                         <a class="txt" th:href="@{/admin/categories/{id}/edit(id=${child.id})}" th:text="#{admin.action.edit}">编辑</a>
-                                        <button type="button" class="txt txt--danger" th:attr="data-id=${child.id},data-name=${child.name}"
+                                        <button type="button" class="txt txt--danger"
+                                                th:attr="data-id=${child.id},data-name=${child.name},data-locked=${child.productCount > 0}"
                                                 onclick="openDel(this)" th:text="#{admin.action.delete}">删除</button>
                                     </div></td>
                                 </tr>
@@ -90,12 +91,13 @@
         <input type="hidden" name="_csrf" th:value="${csrfToken}" />
         <div class="dlg__body">
             <h2 th:text="#{admin.cat.deleteTitle}">删除该分类</h2>
-            <p th:text="#{admin.cat.deleteConsequence}">该分类下有子分类或商品引用。</p>
-            <div class="dlg__meta" th:text="#{admin.cat.deleteAlt}">可替代做法：改名归档</div>
+            <p id="delText" th:text="#{admin.cat.deleteConsequence}">该分类下有子分类或商品引用。</p>
+            <div class="dlg__meta" id="delLocked" hidden th:text="#{admin.cat.locked}">该分类仍有子分类或商品引用，不能删除</div>
         </div>
         <div class="dlg__foot">
+            <a class="btn btn--line" id="delArchive" href="#" hidden th:text="#{admin.cat.archive}">改名归档</a>
             <button type="button" class="btn btn--line" onclick="document.getElementById('del').close()" th:text="#{admin.action.cancel}">取消</button>
-            <button type="submit" class="btn btn--danger" th:text="#{admin.action.confirmDelete}">确认删除</button>
+            <button type="submit" class="btn btn--danger" id="delConfirm" th:text="#{admin.action.confirmDelete}">确认删除</button>
         </div>
     </form>
 </dialog>
@@ -104,7 +106,14 @@
 <script th:replace="~{fragments :: shellJs}"></script>
 <script>
 window.openDel = function (btn) {
-    document.getElementById('delForm').action = '/admin/categories/' + btn.getAttribute('data-id') + '/delete';
+    var id = btn.getAttribute('data-id');
+    var locked = btn.getAttribute('data-locked') === 'true';
+    document.getElementById('delForm').action = '/admin/categories/' + id + '/delete';
+    document.getElementById('delLocked').hidden = !locked;
+    document.getElementById('delConfirm').disabled = locked;
+    var archive = document.getElementById('delArchive');
+    archive.hidden = !locked;
+    if (locked) archive.href = '/admin/categories/' + id + '/edit';
     document.getElementById('del').showModal();
 };
 </script>

@@ -5,6 +5,7 @@ import com.fabriclab.admin.exception.NotFoundException;
 import com.fabriclab.admin.model.OrderPage;
 import com.fabriclab.admin.model.OrderQuery;
 import com.fabriclab.admin.model.OrderView;
+import com.fabriclab.admin.model.PageSize;
 import com.fabriclab.admin.model.ReceiverForm;
 import com.fabriclab.admin.service.AdminOrderService;
 import org.springframework.context.MessageSource;
@@ -38,9 +39,11 @@ public class OrderController {
     public String list(@RequestParam(required = false) String kw,
                        @RequestParam(required = false) String status,
                        @RequestParam(required = false) Integer page,
-                       @RequestParam(required = false) Integer size,
+                       jakarta.servlet.http.HttpServletRequest request,
+                       jakarta.servlet.http.HttpServletResponse response,
                        Model model) {
-        OrderQuery q = OrderQuery.of(kw, status, page, size);
+        PageSize.remember(response, request);
+        OrderQuery q = OrderQuery.of(kw, status, page, PageSize.resolve(request));
         OrderPage result = orderService.page(q);
         model.addAttribute("result", result);
         model.addAttribute("kw", q.kw());
