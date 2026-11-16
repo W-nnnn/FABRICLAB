@@ -2,15 +2,57 @@
 
 # FABRICLAB
 
-[Chinese edition](README.md)
+[中文版](README.md)
 
-FABRICLAB is the implementation of Lab 1 for the Software Development Architecture and Platform course. It consists of two independent Spring Boot applications sharing one MySQL database, covering product browsing, accounts, cart, orders, mock payment, pre-purchase inquiries, and administration.
+The implementation of Lab 1 for the Software Development Architecture and Platform course: two independent Spring Boot applications sharing one MySQL database, covering product browsing, accounts, cart, orders, mock payment, pre-purchase inquiries, and administration.
 
-## Brand
+The mark is built from interlocking pattern pieces. Brand colors: Ink `#1A1A1A`, Ecru `#F2EFE9`, Clay `#B4643A`. Product image sources and licenses are listed in the [database notes](fabriclab/store/src/main/resources/db/README.md).
 
-The transparent mark is based on two interlocking pattern pieces. Colors: Ink `#1A1A1A`, Ecru `#F2EFE9`, Clay `#B4643A`.
+## Environments
 
-Product image sources and licenses are listed in the [database notes](fabriclab/store/src/main/resources/db/README.md).
+| Component | Version | Notes |
+|---|---|---|
+| JDK | Temurin 25.0.5+8 | Compile and runtime target `java.version=25` |
+| Maven | 3.9.16 | Build tool |
+| Spring Boot | 3.5.16 | Application framework for both apps |
+| MyBatis-Plus | 3.5.18 | Data access |
+| MySQL | 8.4 (port 3306) | Demo database `FABRICLAB`, test database `FABRICLAB_TEST` |
+| Thymeleaf | Bundled with Spring Boot | Server-side rendering, no front-end build step |
+
+## Run
+
+One-time database preparation (creating the databases, the connection account, and importing the schema plus the two seed scripts) is documented in the [database and seed data notes](fabriclab/store/src/main/resources/db/README.md). The customer-service extension script is idempotent by thread ID and message body; without it only the service page is unavailable.
+
+Connection settings are baked into both `application.yml` defaults (database `FABRICLAB`, account `fabriclab` / `fabriclab`, port 3306), so starting needs no environment variables:
+
+```bash
+cd fabriclab/store && mvn spring-boot:run   # storefront · 8080
+cd fabriclab/admin && mvn spring-boot:run   # admin · 8081
+```
+
+| URL | Purpose |
+|---|---|
+| `http://localhost:8080/main` | Storefront home |
+| `http://localhost:8081/admin` | Admin entry; redirects to sign-on when logged out |
+
+Demo accounts (password `Passw0rd!2026` for all, local teaching only):
+
+| Account | Role | Purpose |
+|---|---|---|
+| `alice`, `bob` | Customer | Cart and order demo data |
+| `disabled` | Customer (disabled) | Sign-in blocking scenario |
+| `admin` | Administrator | Admin sign-on |
+
+Tests run against the isolated database `FABRICLAB_TEST` (pom default in both projects); integration tests need the connection credentials:
+
+```bash
+export MYSQL_USER=fabriclab
+export MYSQL_PASSWORD=fabriclab
+cd fabriclab/store && mvn test
+cd fabriclab/admin && mvn test
+```
+
+Never point tests at the demo database `FABRICLAB`: integration tests clear and rebuild carts, orders, and other fixtures.
 
 ## Features
 
@@ -21,7 +63,7 @@ Product image sources and licenses are listed in the [database notes](fabriclab/
 - Accounts: registration, sign-on, server-side captcha, BCrypt, session checks, and an allowlist for return paths.
 - Cart and orders: the cart is stored in the database; checkout verifies a server-side snapshot; orders are managed by state; cancellation restores stock through conditional updates.
 - Mock payment: the amount comes only from `sales_order.total_amount`. Failures write nothing, and repeated success keeps the first receipt.
-- Customer service: a standalone entry in the top navigation, `/service` as a single page. Guests see FAQs; members start and view inquiries. Service is kept separate from the account center.
+- Customer service: a standalone entry in the top navigation, `/service` as a single page. Guests see FAQs; members start and view inquiries.
 
 **Admin · 8081**
 
@@ -35,43 +77,10 @@ Customer service handles pre-purchase questions only. The admin console does not
 
 ## Technical conventions
 
-- JDK 25, Maven 3.9.16, Spring Boot 3.5.16, MyBatis-Plus 3.5.18.
-- MySQL 8.4 (local instance on 3306), demo database `FABRICLAB`, test database `FABRICLAB_TEST`, with 7 course business tables and 2 customer-service extension tables. Course-required table and column names and requirement IDs are retained; visible pages, copy, sample data, and comments use apparel semantics.
-- Thymeleaf server-side rendering, with no front-end build step.
+- 7 course business tables plus 2 customer-service extension tables. Course-required table and column names and requirement IDs are retained; visible pages, copy, sample data, and comments use apparel semantics.
 - `STORESESSION` and `ADMINSESSION` are cookie-only. Every POST is checked for CSRF; protected routes recheck role and status on each request.
 - Money uses `BigDecimal`; order items keep transaction snapshots. Payment and cancellation are mutually exclusive through conditional updates; restocking uses `stock + version` to avoid overwrites.
 - `CheckoutFaultPoint` and `CancelFaultPoint` are empty in production and are used only in acceptance scenarios.
-
-## Run
-
-Requirements: JDK 25, Maven 3.9.16, and MySQL 8.4.
-
-One-time database preparation (creating `FABRICLAB` / `FABRICLAB_TEST`, the connection account, and importing the schema and the two seed scripts) is documented in the [database notes](fabriclab/store/src/main/resources/db/README.md). The customer-service extension script is idempotent by thread ID and message body. Without it, only the service page is unavailable.
-
-Connection settings are baked into both `application.yml` defaults (database `FABRICLAB`, account `fabriclab/fabriclab`), so starting needs no environment variables:
-
-```bash
-cd fabriclab/store && mvn spring-boot:run
-cd fabriclab/admin && mvn spring-boot:run
-```
-
-| URL | Purpose |
-|---|---|
-| `http://localhost:8080/main` | Storefront home |
-| `http://localhost:8081/admin` | Admin entry; redirects to sign-on when logged out |
-
-The demo password is `Passw0rd!2026`, for local teaching only. `alice` and `bob` are customers, `disabled` is a blocked example, and `admin` is the administrator.
-
-Run the tests:
-
-```bash
-export MYSQL_USER=fabriclab
-export MYSQL_PASSWORD=fabriclab
-cd fabriclab/store && mvn test
-cd fabriclab/admin && mvn test
-```
-
-Both projects pin their test database to `FABRICLAB_TEST` (pom default). Integration tests need the connection password; without it the affected cases are skipped. Never point tests at the demo database `FABRICLAB`: integration tests clear and rebuild orders, carts, and other fixtures.
 
 ## Verification
 
@@ -92,12 +101,13 @@ The walkthrough covers a full purchase, payment, cancellation, service handoff, 
 | `fabriclab/store/` | Storefront application, templates, styles, images, tests |
 | `fabriclab/admin/` | Admin application, bilingual copy, admin tests |
 | `fabriclab/docs/` | Admin design, admin visual specification, service design |
-| `01-schema.sql` | Course schema script (database name `MyPetStore`, replaced with `FABRICLAB` on import) |
+| `01-schema.sql` | Course schema script (database name `MyPetStore`, replace with `FABRICLAB` on import) |
 | `02-schema-with-demo.sql` | Course comparison script, not executed |
+| `实验一实施方案.md` | Task breakdown and delivery checklist |
 | `MyPetStore-PRD.pdf` | Course requirement specification |
-| Course UI reference directory | Original course mockups |
+| `MyPetstore用户端参考UI/` | Course UI reference |
 
-Course handouts with Chinese filenames remain in the repository root. All code lives under `fabriclab/`; the IntelliJ project root is `fabriclab/`, with configuration in `fabriclab/.idea/`.
+All code lives under `fabriclab/`; the IntelliJ project root is `fabriclab/`, with configuration in `fabriclab/.idea/`.
 
 ## Documentation
 
@@ -106,3 +116,4 @@ Course handouts with Chinese filenames remain in the repository root. All code l
 - [Database and seed data](fabriclab/store/src/main/resources/db/README.md)
 - [Admin design](fabriclab/docs/admin-design.md)
 - [Service design](fabriclab/docs/service-design.md)
+- [Lab 1 implementation plan](实验一实施方案.md)
