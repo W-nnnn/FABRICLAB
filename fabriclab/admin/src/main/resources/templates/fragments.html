@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title th:text="${brand} + ' · ' + #{${titleKey}}">FABRICLAB 管理台</title>
     <link rel="icon" type="image/png" href="/images/mark.png" />
-    <link rel="stylesheet" th:href="@{/css/admin.css?v=20261116b}" />
+    <link rel="stylesheet" th:href="@{/css/admin.css?v=20261116g}" />
 </head>
 <body>
 
@@ -262,11 +262,6 @@
     </div>
     <div id="progress"></div>
 </div>
-
-<footer class="colophon" th:fragment="footer">
-    <span th:text="#{admin.footer.left}">FABRICLAB 未染 · 管理台</span>
-    <span th:text="#{admin.footer.right}">会话 30 分钟空闲失效 · 全部写操作计入日志</span>
-</footer>
 
 <div class="alert" th:fragment="notice" th:if="${notice != null}"
      th:classappend="${noticeKind == 'err'} ? 'alert--err' : 'alert--ok'"

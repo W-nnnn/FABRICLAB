@@ -22,8 +22,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
-
 /**
  * 客服咨询管理（后台）：列表、详情、回复、关闭与重开。
  * /admin/** 由 AdminAuthInterceptor 统一检查 ADMIN 身份；全部写操作 POST + CSRF + PRG，
@@ -76,7 +74,6 @@ public class SupportController {
         long threadId = parseId(id);
         model.addAttribute("view", supportService.view(threadId));
         model.addAttribute("returnTo", safeReturn(returnTo));
-        model.addAttribute("quicks", List.of("admin.svc.quick1", "admin.svc.quick2", "admin.svc.quick3"));
         return "support-detail";
     }
 

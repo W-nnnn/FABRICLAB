@@ -76,8 +76,11 @@ class T18ServicePageTest {
     void listAndDetailRenderRealData() throws Exception {
         MvcResult list = mockMvc.perform(get("/admin/service").session(session)).andReturn();
         assertEquals(200, list.getResponse().getStatus());
-        assertTrue(html(list).contains("T18-C-01"));
-        assertTrue(html(list).contains("T18 页面验收"));
+        String listHtml = html(list);
+        assertTrue(listHtml.contains("T18-C-01"));
+        assertTrue(listHtml.contains("T18 页面验收"));
+        assertFalse(listHtml.contains("??"), "列表页存在未解析文案键");
+        assertTrue(listHtml.contains("1 条消息"), "消息数文案缺失");
 
         MvcResult detail = mockMvc.perform(get("/admin/service/" + threadId).session(session)).andReturn();
         assertEquals(200, detail.getResponse().getStatus());
