@@ -5,7 +5,7 @@
     <link rel="icon" type="image/png" th:href="@{/images/mark.png}"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="|#{nav.brand} · #{svc.myThreads}|">FABRICLAB · 我的咨询</title>
-    <link rel="stylesheet" th:href="@{/css/store.css?v=20261116k}"/>
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261116m}"/>
 </head>
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
@@ -13,81 +13,68 @@
     <th:block th:replace="~{fragments :: header('account')}"></th:block>
     <span id="main" tabindex="-1"></span>
 
-    <section class="svc-band">
-        <div>
-            <div class="eyebrow" th:text="#{svc.bandEyebrow}">CLIENT CARE / 我的咨询</div>
-            <div class="svc-band__name" th:text="|#{account.no} · ${currentUser.displayName()}|">会员 · 林晓</div>
-        </div>
-        <div class="svc-band__n">
-            <div class="n" th:text="${result.total}">4</div>
-            <div class="l" th:text="#{svc.bandTotal}">条咨询</div>
-        </div>
-        <div class="svc-band__n">
-            <div class="n" th:text="${openCount}">2</div>
-            <div class="l" th:text="#{svc.bandOpen}">待回复</div>
-        </div>
-    </section>
+    <div class="crumb">
+        <a th:href="@{/service}" th:text="#{svc.title}">客服中心</a><span> / </span>
+        <span th:text="#{svc.myThreads}">我的咨询</span>
+    </div>
 
-    <div class="svc-layout">
-        <nav class="svc-nav" th:aria-label="#{account.center}">
-            <a th:href="@{/orders}"><span class="no">01</span><span class="nm" th:text="#{orders.heading}">我的订单</span></a>
-            <a class="on" th:href="@{/service/threads}"><span class="no">02</span><span class="nm" th:text="#{svc.myThreads}">我的咨询</span></a>
-            <a th:href="@{/service}"><span class="no">03</span><span class="nm" th:text="#{svc.title}">客服中心</span></a>
-        </nav>
-
-        <div class="svc-main">
-            <div class="svc-notice" role="status" th:if="${notice != null}"
-                 th:classappend="${noticeKind == 'err'} ? 'svc-notice--err'" th:text="${notice}">已提交</div>
-
-            <div class="svc-sec__head">
-                <h2 class="h2" th:text="#{svc.myThreads}">我的咨询</h2>
-                <a class="btn sm" th:href="@{/service/threads/new}" th:text="#{svc.ask}">发起咨询</a>
+    <section class="svc-page">
+        <div class="svc-head">
+            <div>
+                <div class="eyebrow" th:text="#{svc.bandEyebrow}">CLIENT CARE / 我的咨询</div>
+                <h1 th:text="#{svc.myThreads}">我的咨询</h1>
+                <p th:text="#{svc.listLead(${result.total}, ${openCount})}">共 2 条 · 待回复 1 条</p>
             </div>
-
-            <!-- 状态筛选 -->
-            <div class="svc-tabs">
-                <a th:classappend="${query.status() == null} ? 'on'"
-                   th:href="@{/service/threads(size=${query.size()})}" th:text="#{svc.all}">全部</a>
-                <a th:each="s : ${statuses}" th:classappend="${query.status() == s} ? 'on'"
-                   th:href="@{/service/threads(status=${s.name()},size=${query.size()})}"
-                   th:text="#{__${s.labelKey()}__}">待回复</a>
+            <div class="svc-head__act">
+                <a class="btn" th:href="@{/service/threads/new}" th:text="#{svc.ask}">发起咨询</a>
             </div>
+        </div>
 
-            <div class="svc-empty" th:if="${result.total == 0}">
-                <h3 th:text="#{svc.emptyTitle}">还没有咨询记录</h3>
-                <p th:text="#{svc.emptyText}">尺码、面料或下单有疑问，留一条咨询，客服会在这里回复。</p>
-                <a class="btn ghost sm" th:href="@{/service/threads/new}" th:text="#{svc.ask}">发起咨询</a>
-            </div>
+        <div class="svc-notice" role="status" th:if="${notice != null}"
+             th:classappend="${noticeKind == 'err'} ? 'svc-notice--err'" th:text="${notice}">已提交</div>
 
-            <div class="svc-list" th:unless="${result.total == 0}">
-                <a class="svc-card" th:each="r : ${rows}" th:href="@{/service/threads/{id}(id=${r.thread.id})}">
-                    <div class="svc-card__top">
-                        <span class="svc-card__no" th:text="${r.thread.threadNo}">FL-S202611150001</span>
-                        <span class="svc-st" th:classappend="|svc-st--${#strings.toLowerCase(r.thread.status)}|"
-                              th:text="#{__${r.statusKey}__}">待回复</span>
-                    </div>
+        <div class="svc-tabs">
+            <a th:classappend="${query.status() == null} ? 'on'"
+               th:href="@{/service/threads(size=${query.size()})}" th:text="#{svc.all}">全部</a>
+            <a th:each="s : ${statuses}" th:classappend="${query.status() == s} ? 'on'"
+               th:href="@{/service/threads(status=${s.name()},size=${query.size()})}"
+               th:text="#{__${s.labelKey()}__}">待回复</a>
+        </div>
+
+        <div class="svc-empty" th:if="${result.total == 0}">
+            <h3 th:text="#{svc.emptyTitle}">还没有咨询记录</h3>
+            <p th:text="#{svc.emptyText}">尺码、面料或下单有疑问，留一条咨询，客服会在这里回复。</p>
+            <a class="btn ghost sm" th:href="@{/service/threads/new}" th:text="#{svc.ask}">发起咨询</a>
+        </div>
+
+        <div class="svc-list" th:unless="${result.total == 0}">
+            <a class="svc-card" th:each="r : ${rows}" th:href="@{/service/threads/{id}(id=${r.thread.id})}">
+                <span class="svc-st" th:classappend="|svc-st--${#strings.toLowerCase(r.thread.status)}|"
+                      th:text="#{__${r.statusKey}__}">待回复</span>
+                <div>
+                    <span class="svc-card__no" th:text="${r.thread.threadNo}">FL-S202611150001</span>
                     <h3 th:text="${r.thread.subject}">咨询主题</h3>
                     <p th:text="${r.lastSnippet}">最后一条消息摘要</p>
-                    <div class="svc-card__foot">
-                        <span th:text="#{__${r.categoryKey}__}">尺码版型</span>
-                        <span th:text="#{svc.msgCount(${r.messageCount})}">3 条消息</span>
-                        <span th:text="${r.activityText}">2026.11.15 20:10</span>
-                        <span class="svc-card__go" th:text="#{svc.view}">查看对话 →</span>
-                    </div>
-                </a>
-            </div>
-
-            <div class="pager" th:if="${result.pages > 1}" style="margin-top:32px">
-                <a class="pg" th:classappend="${result.current > 1} ? '' : 'off'"
-                   th:href="@{/service/threads(status=${query.statusParam()},page=${result.current - 1},size=${query.size()})}"
-                   th:text="#{svc.prev}">上一页</a>
-                <span class="pg on" th:text="|${result.current} / ${result.pages}|">1 / 2</span>
-                <a class="pg next" th:if="${result.current < result.pages}"
-                   th:href="@{/service/threads(status=${query.statusParam()},page=${result.current + 1},size=${query.size()})}"
-                   th:text="#{svc.next}">下一页</a>
-            </div>
+                </div>
+                <div class="svc-card__foot">
+                    <span th:text="#{__${r.categoryKey}__}">尺码版型</span>
+                    <span th:text="#{svc.msgCount(${r.messageCount})}">3 条消息</span>
+                    <span th:text="${r.activityText}">2026.11.15 20:10</span>
+                </div>
+                <span class="svc-card__go" th:text="#{svc.view}">查看对话 →</span>
+            </a>
         </div>
-    </div>
+
+        <div class="pager" th:if="${result.pages > 1}" style="margin-top:32px">
+            <a class="pg" th:classappend="${result.current > 1} ? '' : 'off'"
+               th:href="@{/service/threads(status=${query.statusParam()},page=${result.current - 1},size=${query.size()})}"
+               th:text="#{svc.prev}">上一页</a>
+            <span class="pg on" th:text="|${result.current} / ${result.pages}|">1 / 2</span>
+            <a class="pg next" th:if="${result.current < result.pages}"
+               th:href="@{/service/threads(status=${query.statusParam()},page=${result.current + 1},size=${query.size()})}"
+               th:text="#{svc.next}">下一页</a>
+        </div>
+    </section>
 
     <div style="height:86px"></div>
     <th:block th:replace="~{fragments :: footer}"></th:block>
