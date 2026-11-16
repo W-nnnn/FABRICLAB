@@ -122,6 +122,17 @@
 (function () {
     var box = document.getElementById('reply');
     if (!box) return;
+    /* 打开详情即定位到回复框，少一次点击 */
+    window.addEventListener('load', function () {
+        box.focus({ preventScroll: true });
+    });
+    /* Ctrl/Cmd + Enter 直接发送 */
+    box.addEventListener('keydown', function (e) {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+            var form = box.closest('form');
+            if (form) form.requestSubmit ? form.requestSubmit() : form.submit();
+        }
+    });
     document.querySelectorAll('[data-quick]').forEach(function (btn) {
         btn.addEventListener('click', function () {
             var text = btn.getAttribute('data-text') || '';

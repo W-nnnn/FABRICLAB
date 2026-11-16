@@ -56,49 +56,33 @@
                     <a class="btn btn--sm" th:href="@{/admin/service}" th:text="#{admin.action.clear}">清除</a>
                 </div>
 
-                <div class="tblwrap" th:unless="${result.total == 0}">
-                    <table class="tbl">
-                        <caption class="sr-only" th:text="#{admin.svc.caption(${result.total},${currentPage},${pageSize})}">客服咨询列表</caption>
-                        <colgroup>
-                            <col style="width:190px"/><col/>
-                            <col style="width:150px"/><col class="col-md" style="width:120px"/>
-                            <col style="width:100px"/><col style="width:70px"/>
-                            <col class="col-md" style="width:140px"/><col style="width:76px"/>
-                        </colgroup>
-                        <thead><tr>
-                            <th th:text="#{admin.svc.colNo}">咨询编号</th>
-                            <th th:text="#{admin.svc.colSubject}">主题 / 最后一条消息</th>
-                            <th th:text="#{admin.svc.colUser}">会员</th>
-                            <th class="col-md" th:text="#{admin.svc.colCategory}">类别</th>
-                            <th th:text="#{admin.svc.colStatus}">状态</th>
-                            <th class="n" th:text="#{admin.svc.colMessages}">消息</th>
-                            <th class="date col-md" th:text="#{admin.svc.colActivity}">最后活动</th>
-                            <th th:text="#{admin.svc.colActions}">操作</th>
-                        </tr></thead>
-                        <tbody>
-                        <tr th:each="r : ${result.rows}">
-                            <td class="sku"><a th:href="@{/admin/service/{id}(id=${r.id},returnTo=${listUrl})}"
-                                               th:text="${r.threadNo}">FL-S…</a></td>
-                            <td>
-                                <div class="svc-subj" th:text="${r.subject}">咨询主题</div>
-                                <div class="svc-snip" th:text="${r.lastSnippet}">最后一条消息摘要</div>
-                            </td>
-                            <td><div class="ucell">
-                                <span class="uava" th:text="${#strings.substring(tr.t(r.displayName),0,1)}">林</span>
-                                <span class="tname"><span class="nm" th:text="${r.username}">alice</span>
-                                    <span class="sub" th:text="${tr.t(r.displayName)}">林晓</span></span>
-                            </div></td>
-                            <td class="col-md" th:text="#{__${r.categoryKey}__}">尺码版型</td>
-                            <td><span class="tag"
+                <div class="svc-inbox" th:unless="${result.total == 0}">
+                    <a class="svc-row" th:each="r : ${result.rows}"
+                       th:classappend="${r.status == 'OPEN'} ? 'svc-row--open'"
+                       th:href="@{/admin/service/{id}(id=${r.id},returnTo=${listUrl})}">
+                        <span class="svc-row__flag" aria-hidden="true"></span>
+                        <span class="svc-row__main">
+                            <span class="svc-row__subj">
+                                <b th:text="${r.subject}">咨询主题</b>
+                                <span class="tag"
                                       th:classappend="${r.status == 'OPEN'} ? 'tag--act' : (${r.status == 'REPLIED'} ? 'tag--done' : 'tag--end')"
-                                      th:text="#{__${r.statusKey}__}">待回复</span></td>
-                            <td class="n" th:text="${r.messageCount}">3</td>
-                            <td class="date col-md" th:text="${r.activityText}">2026.11.15 20:10</td>
-                            <td><a class="txt" th:href="@{/admin/service/{id}(id=${r.id},returnTo=${listUrl})}"
-                                   th:text="#{admin.svc.actionView}">查看</a></td>
-                        </tr>
-                        </tbody>
-                    </table>
+                                      th:text="#{__${r.statusKey}__}">待回复</span>
+                            </span>
+                            <span class="svc-row__snip" th:text="${r.lastSnippet}">最后一条消息摘要</span>
+                        </span>
+                        <span class="svc-row__side">
+                            <span class="svc-row__user">
+                                <span class="uava" th:text="${#strings.substring(tr.t(r.displayName),0,1)}">林</span>
+                                <span class="nm" th:text="${r.username}">alice</span>
+                            </span>
+                            <span class="svc-row__meta">
+                                <span class="num" th:text="${r.threadNo}">FL-S…</span>
+                                <span th:text="#{__${r.categoryKey}__}">尺码版型</span>
+                                <span class="num" th:text="#{admin.svc.msgCount(${r.messageCount})}">3 条</span>
+                                <span class="num" th:text="${r.activityText}">2026.11.15 20:10</span>
+                            </span>
+                        </span>
+                    </a>
                 </div>
 
                 <div class="pager" th:unless="${result.total == 0}">
