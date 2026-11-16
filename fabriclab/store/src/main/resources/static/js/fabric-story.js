@@ -1,5 +1,5 @@
-/* FABRICLAB 面料档案：滚动入场、章节索引联动、阅读进度、编号视差、织纹鼠标视差。
-   只在 /fabrics 引入；脚本失效或系统开启「减少动态效果」时，页面内容全部保持可读。 */
+/* FABRICLAB 面料档案 / 工艺说明：滚动入场、章节索引联动、阅读进度、编号视差、织纹鼠标视差。
+   脚本失效或系统开启「减少动态效果」时，页面内容全部保持可读。 */
 (function () {
   'use strict';
   if (window.__flFabric) return;
@@ -11,7 +11,7 @@
 
   var reveals = Array.prototype.slice.call(document.querySelectorAll('.fa-reveal'));
   var chapters = Array.prototype.slice.call(document.querySelectorAll('.fa-chapter'));
-  var items = Array.prototype.slice.call(document.querySelectorAll('.fa-index__item'));
+  var items = Array.prototype.slice.call(document.querySelectorAll('.fa-index__item, .fa-rail__stop'));
   var progress = document.querySelector('.fa-progress i');
   var weave = document.querySelector('.fa-weave');
 

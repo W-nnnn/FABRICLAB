@@ -1398,7 +1398,7 @@ body.lang-en .lead, body.lang-en .tiny, body.lang-en .eyebrow { letter-spacing: 
 
 /* ------------------------------------------------------------ 章节侧轨（替代传统吸顶索引条）
    右缘竖排四道刻度：编号常驻，章名仅在悬停/当前章滑出；
-   滚动经 app.js 点亮当前章（赭色 + 刻度伸长），点击平滑跳章。
+   滚动经 fabric-story.js 点亮当前章（赭色 + 刻度伸长），点击平滑跳章。
    只在右侧留白足够的宽屏出现（≥1366px），窄屏跟随线性阅读不导航。 */
 .fa-rail {
     position: fixed; right: 20px; top: 50%; transform: translateY(-50%);
