@@ -31,6 +31,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new CsrfInterceptor(csrfService));
+        registry.addInterceptor(new PageNoCacheInterceptor())
+                // 页面禁用缓存，静态资源保留协商缓存
+                .excludePathPatterns("/css/**", "/js/**", "/images/**", "/webjars/**", "/favicon.ico");
         registry.addInterceptor(new AuthInterceptor(storeUserMapper, currentUserService))
                 // 客服中心 /service 匿名可看常见问题；我的咨询与全部写操作必须登录
                 .addPathPatterns("/cart/**", "/checkout/**", "/orders/**", "/payment/**", "/account/**",
