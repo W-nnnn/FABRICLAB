@@ -5,7 +5,7 @@
     <link rel="icon" type="image/png" th:href="@{/images/mark.png}"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="|#{nav.brand} · #{fabrics.title}|">FABRICLAB · 面料档案</title>
-    <link rel="stylesheet" th:href="@{/css/store.css?v=20261116a}"/>
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261116b}"/>
 </head>
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
@@ -102,6 +102,40 @@
                         <span th:text="#{fabrics.count.unit}">件在售</span>
                     </div>
                 </header>
+
+                <!-- 材质实拍：每类各两张，图注写清是哪一种料 -->
+                <figure class="fa-material"
+                        th:with="imgA=${st.count == 1 ? '/images/fibres/silk-01.jpg'
+                                    : (st.count == 2 ? '/images/fibres/wool-01.jpg'
+                                    : (st.count == 3 ? '/images/fibres/cotton-01.jpg'
+                                    : '/images/fibres/other-01.jpg'))},
+                                 imgB=${st.count == 1 ? '/images/fibres/silk-02.jpg'
+                                    : (st.count == 2 ? '/images/fibres/wool-02.jpg'
+                                    : (st.count == 3 ? '/images/fibres/linen-01.jpg'
+                                    : '/images/fibres/other-02.jpg'))}">
+                    <div class="fa-material__plate fa-reveal" style="--d:90ms">
+                        <div class="fa-material__frame">
+                            <img th:src="@{${imgA}}" loading="lazy"
+                                 th:alt="${#messages.msg('fabrics.f' + st.count + '.img1')}"/>
+                            <span class="fa-material__no din">01</span>
+                            <span class="fa-material__src din" th:text="#{fabrics.photo.src}">PEXELS</span>
+                        </div>
+                        <figcaption>
+                            <span th:text="${#messages.msg('fabrics.f' + st.count + '.img1')}">图注</span>
+                        </figcaption>
+                    </div>
+                    <div class="fa-material__plate fa-reveal" style="--d:180ms">
+                        <div class="fa-material__frame">
+                            <img th:src="@{${imgB}}" loading="lazy"
+                                 th:alt="${#messages.msg('fabrics.f' + st.count + '.img2')}"/>
+                            <span class="fa-material__no din">02</span>
+                            <span class="fa-material__src din" th:text="#{fabrics.photo.src}">PEXELS</span>
+                        </div>
+                        <figcaption>
+                            <span th:text="${#messages.msg('fabrics.f' + st.count + '.img2')}">图注</span>
+                        </figcaption>
+                    </div>
+                </figure>
 
                 <div class="fa-chapter__grid">
                     <!-- 主叙述：引语 + 两段故事 -->
@@ -230,6 +264,6 @@
 
     <th:block th:replace="~{fragments :: footer}"></th:block>
 </div>
-<script th:src="@{/js/fabric-story.js?v=20261115e}"></script>
+<script th:src="@{/js/fabric-story.js?v=20261116b}"></script>
 </body>
 </html>

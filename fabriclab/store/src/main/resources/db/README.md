@@ -90,4 +90,22 @@ MYSQL_PWD= $M mypetstoretest -e "DELETE FROM service_message; DELETE FROM servic
 | FL-HM-01 | 素色棉质睡衣套装 | [51教习网·棉布](https://yyld.51jiaoxi.com/bixiusan/wyb_danci.html) / [Sanyu·棉织流程](https://sanyubabies.com/what-is-cotton-made-of-how-cotton-is-made-a-comprehensive-guide-from-seed-to-shelf/) / [知乎专栏·织物](https://zhuanlan.zhihu.com/p/52757598) / [知乎专栏·斜纹](https://zhuanlan.zhihu.com/p/634187050) |
 | FL-HM-07 | 香薰蜡烛助眠套装 | [什么值得买·香薰评测](https://post.smzdm.com/p/azo9204o/) ①②③ / [知乎问答·蜡烛](https://www.zhihu.com/question/296849891) |
 
+### 面料档案：材质实拍
+
+`store/src/main/resources/static/images/fibres/` 下的九张图用于 `/fabrics` 四类纤维与 `/crafts` 前两道工序，全部取自 [Pexels](https://www.pexels.com/license/) 的公开摄影（免费使用、无需署名，**非 AI 生成**），按纤维归类，不做合成或重绘。
+
+| 文件 | 画面 | 来源页 |
+|---|---|---|
+| cotton-01.jpg | 原棉 · 未轧的棉铃 | https://www.pexels.com/photo/6168152/ |
+| cotton-02.jpg | 本白棉布 · 未染布面 | https://www.pexels.com/photo/7232397/ |
+| linen-01.jpg | 雨露麻 · 平纹织面 | https://www.pexels.com/photo/7794365/ |
+| silk-01.jpg | 桑蚕丝 · 本色缎面 | https://www.pexels.com/photo/8465943/ |
+| silk-02.jpg | 生丝 · 折叠后的光泽 | https://www.pexels.com/photo/14935628/ |
+| wool-01.jpg | 未染羊毛 · 针织组织 | https://www.pexels.com/photo/6275937/ |
+| wool-02.jpg | 粗纺羊毛 · 经纬与绒毛 | https://www.pexels.com/photo/32984627/ |
+| other-01.jpg | 加厚帆布 · 辅料平纹 | https://www.pexels.com/photo/7533979/ |
+| other-02.jpg | 帆布边缘 · 组织与密度 | https://www.pexels.com/photo/7533973/ |
+
+工艺页第三、四道用 `images/look/lb-07.jpg`、`lb-03.jpg`（成衣上身），与本项目其他 `look/` 大片同批次采集，页面上标注为 ARCHIVE。
+
 以上图片用于课程作业的教学演示，均已注明来源页；如版权方提出异议将整体替换。

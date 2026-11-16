@@ -5,7 +5,7 @@
     <link rel="icon" type="image/png" th:href="@{/images/mark.png}"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="|#{nav.brand} · #{crafts.title}|">FABRICLAB · 工艺说明</title>
-    <link rel="stylesheet" th:href="@{/css/store.css?v=20261116a}"/>
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261116b}"/>
 </head>
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
@@ -14,58 +14,196 @@
 
     <span id="main" tabindex="-1"></span>
 
+    <div class="fa-progress" aria-hidden="true"><i></i></div>
+
     <div class="crumb">
         <a th:href="@{/main}" th:text="#{nav.home}">首页</a>
         <span> / </span>
         <span th:text="#{crafts.title}">工艺说明</span>
     </div>
 
-    <!-- 页头 -->
-    <div style="padding:26px var(--gx) 30px">
-        <div class="eyebrow" th:text="#{crafts.eyebrow}">CRAFT NOTES</div>
-        <h1 class="h2" style="margin-top:12px;font-size:38px" th:text="#{crafts.title}">工艺说明</h1>
-        <div class="lead" style="margin-top:14px;width:460px;font-size:12px;line-height:1.95"
-             th:text="#{crafts.lead}">染、织、裁、缝四步，是每一件成衣经过的完整路径；页尾是当季在售的成品。</div>
-    </div>
-    <div style="margin:0 var(--gx);height:1px;background:var(--ink)"></div>
-
-    <!-- 四段工艺 -->
-    <th:block th:each="n, st : ${#numbers.sequence(1, 4)}">
-        <section style="padding:44px var(--gx) 50px;border-bottom:1px solid var(--line);
-                        display:grid;grid-template-columns:120px minmax(0,1fr);gap:28px"
-                 th:with="k=${'crafts.n' + n}">
-            <div>
-                <div class="disp" style="font-size:44px;line-height:1.1"
-                     th:text="#{home.craft__${n}__.t}">染</div>
-                <div class="tiny" style="margin-top:10px;letter-spacing:.18em"
-                     th:text="#{home.craft__${n}__.d}">不过染缸</div>
+    <!-- ==================================================== 开场：四道工序 -->
+    <section class="fa-hero">
+        <div class="fa-hero__grid">
+            <div class="fa-hero__text">
+                <div class="eyebrow fa-reveal" style="--d:0ms" th:text="#{crafts.eyebrow}">CRAFT NOTES / 工坊</div>
+                <h1 class="fa-hero__title fa-reveal" style="--d:90ms"><span th:text="#{crafts.title}">工艺说明</span></h1>
+                <div class="fa-hero__kicker fa-reveal" style="--d:170ms" th:text="#{crafts.hero.kicker}">染 · 织 · 裁 · 缝</div>
+                <p class="fa-hero__lead fa-reveal" style="--d:250ms" th:text="#{crafts.hero.lead}">四道工序，每一道都有可查的标准。</p>
+                <div class="fa-hero__meta fa-reveal" style="--d:330ms">
+                    <b class="din">04</b>
+                    <span th:text="#{crafts.hero.metricLabel}">道工序 · 从纱线到修补</span>
+                </div>
+                <div class="fa-hero__scroll fa-reveal" style="--d:420ms">
+                    <span th:text="#{crafts.hero.scroll}">向下翻阅</span>
+                    <i aria-hidden="true"></i>
+                </div>
             </div>
-            <div style="max-width:560px">
-                <div class="tiny" style="letter-spacing:.18em;color:var(--mute)"
-                     th:text="${#numbers.formatInteger(st.count, 2)}">01</div>
-                <p class="lead" style="margin-top:14px;font-size:12.5px;line-height:1.95"
-                   th:text="#{__${k}__}">工艺说明正文</p>
-            </div>
-        </section>
-    </th:block>
-
-    <!-- 在售成品条 -->
-    <section style="padding:44px var(--gx) 50px">
-        <div style="display:flex;align-items:baseline;gap:16px">
-            <h2 class="h3" style="font-size:20px" th:text="#{crafts.samples}">当季在售</h2>
-            <div class="r" style="margin-left:auto">
-                <a class="tlink mute" th:href="@{/category}" th:text="#{crafts.all}">看全部商品 →</a>
+            <div class="fa-hero__art fa-reveal" style="--d:180ms" aria-hidden="true">
+                <div class="fa-weave">
+                    <div class="fa-weave__grid"></div>
+                    <div class="fa-weave__sheen"></div>
+                    <svg class="fa-weave__threads" viewBox="0 0 520 600" preserveAspectRatio="xMidYMid slice">
+                        <path class="fa-thread fa-thread--1" d="M-40 470 C 120 400 170 250 290 220 S 450 120 570 60"/>
+                        <path class="fa-thread fa-thread--2" d="M-40 520 C 130 470 210 330 320 300 S 470 190 570 140"/>
+                        <path class="fa-thread fa-thread--3" d="M-40 575 C 140 545 230 420 350 385 S 480 285 570 235"/>
+                    </svg>
+                    <div class="fa-weave__seal">
+                        <span>IN HOUSE</span><b>01—04</b><span>CRAFT NOTES</span>
+                    </div>
+                    <span class="fa-weave__corner fa-weave__corner--tl"></span>
+                    <span class="fa-weave__corner fa-weave__corner--br"></span>
+                </div>
             </div>
         </div>
-        <div class="g4" style="margin-top:26px" th:if="${!#lists.isEmpty(samples)}">
+        <div class="fa-hero__rule">
+            <span th:text="#{crafts.hero.kicker}">染 · 织 · 裁 · 缝</span><i></i><b class="din">01 / 04</b>
+        </div>
+    </section>
+
+    <!-- ==================================================== 工序索引 -->
+    <nav class="fa-index" th:aria-label="#{crafts.index}">
+        <span class="fa-index__label" th:text="#{crafts.index}">工序索引</span>
+        <div class="fa-index__items">
+            <a class="fa-index__item" th:each="n, st : ${#numbers.sequence(1, 4)}"
+               th:attr="href=${'#ch' + st.count}, data-ch=${st.count}"
+               th:classappend="${st.count == 1} ? 'on'">
+                <i class="din" th:text="${#numbers.formatInteger(st.count, 2)}">01</i>
+                <span th:text="#{home.craft__${n}__.t}">染</span>
+            </a>
+        </div>
+        <span class="fa-index__hint din">STEP / 04</span>
+    </nav>
+
+    <!-- ==================================================== 四道工序 -->
+    <main class="fa-chapters">
+        <section class="fa-chapter" th:each="n, st : ${#numbers.sequence(1, 4)}"
+                 th:with="k=${'crafts.c' + st.count},
+                          img=${st.count == 1 ? '/images/fibres/cotton-02.jpg'
+                               : (st.count == 2 ? '/images/fibres/linen-01.jpg'
+                               : (st.count == 3 ? '/images/look/lb-07.jpg' : '/images/look/lb-03.jpg'))},
+                          src=${st.count <= 2 ? 'PEXELS' : 'ARCHIVE'}"
+                 th:attr="id=${'ch' + st.count}, data-ch=${st.count}"
+                 th:style="|--fa-accent:${st.count == 1 ? '#B9AE9C' : (st.count == 2 ? '#A8896B' : (st.count == 3 ? '#C9BFA9' : '#B4643A'))}|"
+                 th:classappend="${st.count % 2 == 0} ? 'fa-chapter--rev'">
+
+            <div class="fa-chapter__ghost din" aria-hidden="true" th:text="${#numbers.formatInteger(st.count, 2)}">01</div>
+
+            <div class="fa-chapter__inner">
+                <header class="fa-chapter__head">
+                    <div class="fa-chapter__idx fa-reveal">
+                        <span class="din" th:text="${#numbers.formatInteger(st.count, 2)}">01</span>
+                        <i></i>
+                        <span class="eyebrow" th:text="#{crafts.fig}">STEP / 工序</span>
+                    </div>
+                    <div class="fa-chapter__title">
+                        <h2 class="fa-h2 fa-reveal" style="--d:80ms" th:text="#{home.craft__${n}__.t}">染</h2>
+                        <span class="cr-tag fa-reveal" style="--d:120ms"
+                              th:text="#{home.craft__${n}__.d}">不过染缸</span>
+                        <div class="fa-latin fa-reveal" style="--d:160ms" th:text="#{__${k}__.latin}">NO DYE VAT</div>
+                    </div>
+                    <div class="fa-chapter__count fa-reveal" style="--d:220ms">
+                        <b class="din" th:text="${#numbers.formatInteger(st.count, 2)}">01</b>
+                        <span th:text="#{crafts.count.unit}">道工序</span>
+                    </div>
+                </header>
+
+                <div class="fa-chapter__grid">
+                    <div class="fa-story">
+                        <p class="fa-quote fa-reveal" style="--d:100ms" th:text="#{__${k}__.quote}">这一道工序的一句话。</p>
+                        <p class="fa-para fa-reveal" style="--d:170ms" th:text="#{__${k}__.story1}">正文一</p>
+                        <p class="fa-para fa-reveal" style="--d:240ms" th:text="#{__${k}__.story2}">正文二</p>
+                        <a class="fa-inline-link fa-reveal" style="--d:310ms" th:href="@{/category}"
+                           th:text="#{crafts.chapter.link}">看本季成衣 →</a>
+                    </div>
+
+                    <aside class="fa-side cr-side">
+                        <figure class="cr-figure fa-reveal" style="--d:140ms">
+                            <div class="fa-material__frame">
+                                <img th:src="@{${img}}" loading="lazy"
+                                     th:alt="#{__${k}__.imgcap}"/>
+                                <span class="fa-material__src din" th:text="${src}">PEXELS</span>
+                            </div>
+                            <figcaption>
+                                <span th:text="#{__${k}__.imgcap}">工序实拍</span>
+                            </figcaption>
+                        </figure>
+                        <div class="fa-care fa-reveal" style="--d:230ms">
+                            <span class="eyebrow" th:text="#{crafts.check}">这一道的验收点</span>
+                            <p th:text="#{__${k}__.check}">验收点</p>
+                        </div>
+                    </aside>
+                </div>
+
+                <div class="fa-facts">
+                    <div class="fa-fact fa-reveal" style="--d:60ms">
+                        <span class="fa-fact__no din">01</span>
+                        <b th:text="#{crafts.fact.1.label}">标准</b>
+                        <p th:text="#{__${k}__.f1}">标准说明</p>
+                    </div>
+                    <div class="fa-fact fa-reveal" style="--d:150ms">
+                        <span class="fa-fact__no din">02</span>
+                        <b th:text="#{crafts.fact.2.label}">耗时</b>
+                        <p th:text="#{__${k}__.f2}">耗时说明</p>
+                    </div>
+                    <div class="fa-fact fa-reveal" style="--d:240ms">
+                        <span class="fa-fact__no din">03</span>
+                        <b th:text="#{crafts.fact.3.label}">谁在做</b>
+                        <p th:text="#{__${k}__.f3}">说明</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ==================================================== 页尾：两行成品 -->
+    <section class="fa-samples" id="craft-pieces">
+        <div class="fa-samples__head fa-reveal">
+            <div>
+                <span class="eyebrow" th:text="#{crafts.samples.eyebrow}">ON SALE / 当季在售</span>
+                <h2 class="fa-samples__title" th:text="#{crafts.samples}">当季在售 · 摘录</h2>
+                <p class="fa-samples__lead" th:text="#{crafts.samples.lead}">八件，四道工序之后的成品。完整目录与筛选在选购页。</p>
+            </div>
+            <div class="fa-samples__count">
+                <b class="din" th:text="${#lists.size(samples)}">08</b>
+                <span th:text="#{fabrics.count.unit}">件在售</span>
+            </div>
+        </div>
+
+        <div class="g4 fa-samples__grid" th:if="${!#lists.isEmpty(samples)}">
             <th:block th:each="p, s : ${samples}">
                 <a th:replace="~{fragments :: card(${p}, ${#numbers.formatInteger(s.count, 2)})}"></a>
             </th:block>
         </div>
+        <p class="tiny" th:if="${#lists.isEmpty(samples)}" th:text="#{fabrics.empty}">本季暂无在售款。</p>
+
+        <div class="fa-samples__foot">
+            <span class="tiny" th:text="#{crafts.samples.note}">工序写在页面上，成品在选购页。</span>
+            <a class="fa-all" th:href="@{/category}" data-nav="next">
+                <span th:text="#{fabrics.all}">查看全部商品 →</span>
+                <i aria-hidden="true"></i>
+            </a>
+        </div>
     </section>
 
-    <div style="height:86px"></div>
+    <!-- ==================================================== 结语 -->
+    <section class="fa-closing">
+        <div class="fa-closing__mark" aria-hidden="true">
+            <svg viewBox="0 0 240 120" preserveAspectRatio="xMidYMid meet">
+                <path d="M0 30 C 70 30 70 90 120 90 S 170 30 240 30"/>
+                <path d="M0 90 C 70 90 70 30 120 30 S 170 90 240 90"/>
+            </svg>
+        </div>
+        <div class="fa-closing__body fa-reveal">
+            <span class="eyebrow" th:text="#{crafts.closing.eyebrow}">MADE TO LAST</span>
+            <h2 th:text="#{crafts.closing.line}">工序写在纸上，寿命落在针脚上。</h2>
+            <p th:text="#{crafts.closing.sub}">同一间工坊，从纺纱到修补。</p>
+            <a class="tlink rust" th:href="@{/fabrics}" th:text="#{crafts.closing.link}">看面料档案 →</a>
+        </div>
+    </section>
+
     <th:block th:replace="~{fragments :: footer}"></th:block>
 </div>
+<script th:src="@{/js/fabric-story.js?v=20261116b}"></script>
 </body>
 </html>
