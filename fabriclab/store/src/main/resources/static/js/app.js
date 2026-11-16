@@ -547,7 +547,8 @@
       region.classList.add('busy');
     }
     load(a.href, 'push', false, false, isSort ? 260 : 0);
-    if (a.classList.contains('pglink')) {
+    if (a.classList.contains('pglink') || a.classList.contains('ln')) {
+      /* 换页与换系列线：内容整块更换，视口回到这块的顶部，避免标题被顶出视野 */
       window.scrollTo({ top: topOf(), behavior: reduce ? 'auto' : 'smooth' });
     }
   }
@@ -601,7 +602,7 @@
     if (!a || a.closest('#catalog') || !takeable(a) || a.href === location.href) return;
     e.preventDefault();
     load(a.href, 'push');
-    if (a.classList.contains('nitem') || a.classList.contains('hn')) {
+    if (a.classList.contains('nitem') || a.classList.contains('hn') || a.classList.contains('ln')) {
       window.scrollTo({ top: topOf(), behavior: reduce ? 'auto' : 'smooth' });
     }
   }, true);

@@ -257,7 +257,7 @@
 
             </div><!-- /catgrid：商品按页全部铺开，随整页滚动 -->
 
-            <div class="catpager" style="margin-top:28px;display:flex;align-items:center;gap:24px;
+            <div class="catpager" style="margin-top:52px;display:flex;align-items:center;gap:24px;
                         font-family:var(--f-din);font-size:11px;letter-spacing:.18em">
                 <a class="pglink" data-nav="prev" th:if="${query.page() > 1}"
                    th:href="@{/category(category=${result.scope().entry() != null ? result.scope().entry().id : null},
@@ -279,6 +279,7 @@
 
     </div><!-- /#catalog -->
 
+    <div style="height:86px"></div>
     <th:block th:replace="~{fragments :: footer}"></th:block>
 </div>
 </body>
