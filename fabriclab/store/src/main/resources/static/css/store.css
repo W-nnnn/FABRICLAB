@@ -1172,7 +1172,9 @@ body.lang-en .lead, body.lang-en .tiny, body.lang-en .eyebrow { letter-spacing: 
 .svc-no { display: block; margin-top: 5px; font-family: var(--f-din); font-size: 10.5px; letter-spacing: .08em; color: var(--faint); }
 .svc-meta { display: flex; flex-wrap: wrap; gap: 6px 16px; padding: 10px 0; font-size: 11px; color: var(--faint); }
 .svc-meta b { color: var(--mute); font-weight: 400; }
-.svc-thread { display: flex; flex-direction: column; gap: 12px; flex: 1; min-height: 180px; }
+.svc-thread { display: flex; flex-direction: column; gap: 12px; flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding-right: 4px; }
+.svc-thread::-webkit-scrollbar { width: 5px; }
+.svc-thread::-webkit-scrollbar-thumb { background: var(--line2); }
 .svc-msg { max-width: 76%; padding: 11px 14px; border: 1px solid var(--line); background: var(--paper); }
 .svc-msg--me { align-self: flex-end; background: var(--cream); }
 .svc-msg--svc { align-self: flex-start; border-left: 3px solid var(--rust); }
@@ -1229,6 +1231,7 @@ body.lang-en .lead, body.lang-en .tiny, body.lang-en .eyebrow { letter-spacing: 
     .svc-list { max-height: 260px; }
     .svc-main { min-height: 420px; }
     .svc-conv { height: auto; min-height: 420px; }
+    .svc-thread { overflow-y: visible; flex: none; }
     .svc-f--pair { grid-template-columns: minmax(0, 1fr); }
     .svc-faq summary { gap: 8px; }
     .svc-faq .tlink { display: none; }
