@@ -751,67 +751,56 @@ html[lang="en"] .help{font-size:12px}
 /* ── 客服咨询：列表 / 详情对话 / 回复 ───────────────────────────────── */
 .svc-subj{font-size:13px;line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:420px}
 .svc-snip{font-size:12px;color:var(--muted);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:420px}
-/* 收件箱式咨询列表：整行可点，待回复行左侧赭色竖条优先呈现 */
-.svc-inbox{margin-top:20px;border-top:1px solid var(--rule)}
-.svc-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;align-items:center;
-  gap:18px;padding:14px 20px 14px 0;border-bottom:1px solid var(--rule);
-  transition:background .2s ease}
-.svc-row:hover{background:var(--wash)}
-.svc-row__flag{width:3px;align-self:stretch;background:transparent}
-.svc-row--open .svc-row__flag{background:var(--rust)}
-.svc-row__main{display:flex;flex-direction:column;gap:5px;min-width:0}
-.svc-row__subj{display:flex;align-items:center;gap:10px;min-width:0}
-.svc-row__subj b{font-family:var(--f-song);font-size:15.5px;letter-spacing:.02em;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.svc-row__snip{font-size:12px;color:var(--muted);
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.svc-row__side{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex:none}
-.svc-row__user{display:flex;align-items:center;gap:8px;font-size:12px}
-.svc-row__meta{display:flex;align-items:center;gap:12px;font-size:12px;color:var(--faint)}
-.svc-row__meta .num{font-family:var(--f-num);letter-spacing:.04em}
-
-.svc-detail-grid{display:grid;grid-template-columns:300px minmax(0,1fr);gap:32px;margin-top:4px}
-.svc-facts .block,.svc-convo .block{margin-top:16px;padding-top:14px}
-.svc-facts .block:first-child,.svc-convo .block:first-child{margin-top:0;padding-top:0;border-top:0}
-/* 页内区块标题：单行、细底边，去掉编号与说明文，整页只留内容 */
-.svc-h{display:flex;align-items:baseline;justify-content:space-between;gap:16px;
-  font-family:var(--f-song);font-size:19px;letter-spacing:.02em;
-  padding-bottom:10px;border-bottom:1px solid var(--rule);margin-bottom:16px}
-.svc-h--row span:first-child{flex:none}
-.svc-h__note{font-family:var(--f-num);font-size:12px;font-weight:400;color:var(--faint);letter-spacing:.06em}
-.svc-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
-.svc-meta .num{font-family:var(--f-num);letter-spacing:.04em}
-.svc-meta i{color:var(--faint);font-style:normal}
-.svc-meta .tag{align-self:center}
-.svc-facts .facts{margin-top:4px}
-.svc-rel{display:flex;flex-direction:column;gap:10px;margin-top:18px;font-size:12px}
+/* 详情页会话工位（对标 Zendesk Agent Workspace / Intercom Inbox 的三区骨架）：
+   对话主窗是绝对主角（气泡流 + 底部回复台一体），会员上下文收进右侧窄栏 */
+.svc-meta{display:flex;align-items:center;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--muted)}
+.svc-meta .num{font-size:12px}
+.svc-desk{display:grid;grid-template-columns:minmax(0,1fr) 272px;gap:26px;margin-top:6px;align-items:start}
+.svc-chat{background:var(--white);border:1px solid var(--rule)}
+.svc-chat__hd{display:flex;align-items:baseline;gap:14px;padding:14px 20px;border-bottom:1px solid var(--rule)}
+.svc-chat__hd h2{font-size:15px}
+.svc-chat__log{display:flex;flex-direction:column;gap:16px;padding:20px;min-height:300px;max-height:520px;overflow-y:auto}
+.svc-bubble{max-width:74%;padding:10px 14px}
+.svc-bubble--cust{align-self:flex-start;background:var(--wash);border:1px solid var(--rule)}
+.svc-bubble--agent{align-self:flex-end;background:var(--ink);color:var(--cream)}
+.svc-bubble--agent .svc-bubble__who b{color:var(--cream)}
+.svc-bubble--agent .svc-bubble__who span{color:rgba(242,239,233,.62)}
+.svc-bubble__who{display:flex;align-items:baseline;gap:12px;margin-bottom:6px}
+.svc-bubble__who b{font-size:12px;font-weight:500}
+.svc-bubble__who span{font-family:var(--f-num);font-size:12px;color:var(--faint)}
+.svc-bubble p{font-size:13px;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere}
+.svc-compose{border-top:1px solid var(--rule);padding:14px 20px 16px}
+.svc-compose__t{display:block;font-size:12px;color:var(--muted);margin-bottom:8px}
+.svc-compose textarea{display:block;width:100%;padding:12px 14px;border:1px solid var(--rule-strong);background:var(--white);
+  font-family:var(--f-body);font-size:13px;line-height:1.8;resize:vertical;outline:none}
+.svc-compose textarea:focus{border-color:var(--rust)}
+.svc-compose textarea.err{border-color:var(--rust);background:#FBF3EF}
+.svc-field-err{margin-top:8px;font-size:12px;color:var(--rust-ink)}
+.svc-compose__bar{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-top:10px;flex-wrap:wrap}
+.svc-compose__send{display:flex;align-items:center;gap:16px;flex:none}
+.svc-quicks{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.svc-quicks__t{font-size:12px;color:var(--faint);margin-right:4px}
+.svc-quicks button{min-height:30px;padding:0 12px;border:1px solid var(--rule-strong);background:transparent;
+  font-size:12px;color:var(--body)}
+.svc-quicks button:hover{border-color:var(--rust);color:var(--rust-ink);background:var(--wash)}
+.svc-side-act{margin-top:12px;padding-top:10px;border-top:1px solid var(--rule)}
+.svc-side-act button{min-height:30px}
+.svc-closed{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:14px 20px;
+  border-top:1px solid var(--rule);background:var(--wash)}
+.svc-closed p{font-size:12px;color:var(--muted)}
+.svc-closed b{font-weight:500;margin-right:10px}
+.svc-card{border:1px solid var(--rule);background:var(--white);padding:16px 20px 18px}
+.svc-card + .svc-card{margin-top:16px}
+.svc-card h2{font-size:14px;padding-bottom:10px;border-bottom:1px solid var(--hair);margin-bottom:10px}
+.svc-rel{display:flex;flex-direction:column;gap:10px;margin-top:14px;font-size:12px}
 .svc-rel a{color:var(--rust-ink);min-height:32px;display:inline-flex;align-items:center}
 .svc-rel a:hover{text-decoration:underline;text-underline-offset:4px}
-.svc-msgs{display:flex;flex-direction:column;gap:10px}
-.svc-msg{padding:10px 14px;border:1px solid var(--rule);background:var(--white);max-width:88%}
-.svc-msg--user{align-self:flex-start;background:var(--wash)}
-.svc-msg--admin{align-self:flex-end;border-left:3px solid var(--rust);background:var(--brand-pale)}
-.svc-msg__who{display:flex;align-items:baseline;gap:14px;margin-bottom:6px}
-.svc-msg__who b{font-size:12px;font-weight:500}
-.svc-msg__who span{font-family:var(--f-num);font-size:12px;color:var(--faint)}
-.svc-msg p{font-size:13px;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere}
-.svc-answer textarea{display:block;width:100%;padding:12px 14px;border:1px solid var(--rule-strong);background:var(--white);
-  font-family:var(--f-body);font-size:13px;line-height:1.8;resize:vertical;outline:none}
-.svc-answer textarea:focus{border-color:var(--rust)}
-.svc-answer textarea.err{border-color:var(--rust);background:#FBF3EF}
-.svc-field-err{margin-top:8px;font-size:12px;color:var(--rust-ink)}
-.svc-quicks{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:10px}
-.svc-quicks__t{font-size:12px;color:var(--faint);margin-right:4px}
-.svc-quicks button{min-height:32px;padding:6px 12px;border:1px solid var(--rule-strong);background:transparent;
-  font-size:12px;color:var(--body);text-align:left;white-space:normal;line-height:1.6}
-.svc-quicks button:hover{border-color:var(--rust);color:var(--rust-ink);background:var(--wash)}
-.svc-answer__foot{display:flex;align-items:center;gap:18px;margin-top:12px}
 @media(max-width:1199px){
-  .svc-detail-grid{grid-template-columns:260px minmax(0,1fr);gap:28px}
+  .svc-desk{grid-template-columns:minmax(0,1fr) 240px;gap:22px}
 }
 @media(max-width:900px){
-  .svc-detail-grid{grid-template-columns:minmax(0,1fr);gap:8px}
-  .svc-msg{max-width:100%}
+  .svc-desk{grid-template-columns:minmax(0,1fr);gap:18px}
+  .svc-bubble{max-width:100%}
 }
 
 /* ══════════════════════════════════════════════════════════════
