@@ -11,7 +11,7 @@
 
 SET NAMES utf8mb4 COLLATE utf8mb4_0900_ai_ci;
 SET SESSION time_zone = '+08:00';
-USE MyPetStore;
+USE FABRICLAB;
 
 START TRANSACTION;
 

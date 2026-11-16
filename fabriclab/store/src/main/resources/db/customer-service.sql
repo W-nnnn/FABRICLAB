@@ -5,7 +5,7 @@
 
 SET NAMES utf8mb4 COLLATE utf8mb4_0900_ai_ci;
 SET SESSION time_zone = '+08:00';
-USE MyPetStore;
+USE FABRICLAB;
 
 -- 1. 咨询会话：状态 OPEN 待回复 / REPLIED 已回复 / CLOSED 已关闭。
 --    关联订单号与款号只作展示快照，不参与订单状态、金额或售后流程。
