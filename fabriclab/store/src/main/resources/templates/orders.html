@@ -97,10 +97,10 @@
                     </form>
 
                     <!-- 空结果 -->
-                    <div class="emptyp" th:if="${result.total == 0}" style="margin:30px 0 0">
+                    <div class="emptyp" th:if="${result.total == 0}">
                         <div>
-                            <h2 style="font-size:26px" th:if="${query.orderNo() != null}" th:text="#{orders.empty.search}">没有匹配该订单号的订单</h2>
-                            <h2 style="font-size:26px" th:unless="${query.orderNo() != null}" th:text="#{orders.empty.title}">这里还没有订单</h2>
+                            <h2 th:if="${query.orderNo() != null}" th:text="#{orders.empty.search}">没有匹配该订单号的订单</h2>
+                            <h2 th:unless="${query.orderNo() != null}" th:text="#{orders.empty.title}">这里还没有订单</h2>
                             <p th:text="#{orders.empty.body}">先去挑选几件成衣，下单后可在这里查看进度与支付。</p>
                             <div class="acts">
                                 <a class="btn" th:href="@{/category}" th:text="#{orders.empty.cta}">去选购</a>
