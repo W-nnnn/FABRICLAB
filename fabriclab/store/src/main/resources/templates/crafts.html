@@ -5,7 +5,10 @@
     <link rel="icon" type="image/png" th:href="@{/images/mark.png}"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="|#{nav.brand} · #{crafts.title}|">FABRICLAB · 工艺说明</title>
+
+
     <link rel="stylesheet" th:href="@{/css/store.css?v=20261116l}"/>
+
 </head>
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
@@ -22,7 +25,7 @@
         <span th:text="#{crafts.title}">工艺说明</span>
     </div>
 
-    <!-- ==================================================== 开场：四道工序 -->
+    <!-- ============================================= 开场：四道工序 -->
     <section class="fa-hero">
         <div class="fa-hero__grid">
             <div class="fa-hero__text">
@@ -71,7 +74,7 @@
         </div>
     </section>
 
-    <!-- ==================================================== 章节侧轨：右缘竖排刻度，随滚动点亮当前工序 -->
+    <!-- ============================================= 章节侧轨：右缘竖排刻度，随滚动点亮当前工序 -->
     <nav class="fa-rail" th:aria-label="#{crafts.index}">
         <a class="fa-rail__stop" th:each="n, st : ${#numbers.sequence(1, 4)}"
            th:attr="href=${'#ch' + st.count}"
@@ -81,7 +84,7 @@
         </a>
     </nav>
 
-    <!-- ==================================================== 四道工序 -->
+    <!-- ============================================= 四道工序 -->
     <main class="fa-chapters">
         <section class="fa-chapter" th:each="n, st : ${#numbers.sequence(1, 4)}"
                  th:with="k=${'crafts.c' + st.count},
@@ -162,7 +165,7 @@
         </section>
     </main>
 
-    <!-- ==================================================== 页尾：两行成品 -->
+    <!-- ============================================= 页尾：两行成品 -->
     <section class="fa-samples" id="craft-pieces">
         <div class="fa-samples__head fa-reveal">
             <div>
@@ -192,7 +195,7 @@
         </div>
     </section>
 
-    <!-- ==================================================== 结语 -->
+    <!-- ============================================= 结语 -->
     <section class="fa-closing">
         <div class="fa-closing__mark" aria-hidden="true">
             <svg viewBox="0 0 240 120" preserveAspectRatio="xMidYMid meet">

@@ -31,53 +31,112 @@
         <span th:if="${result.scope().selectedLine() == null}" th:text="#{shop.all}">全部商品</span>
     </div>
 
-    <!-- 页头：亚麻块面 + 赭色计数焦点 -->
-    <div class="shero">
-        <div class="shero__top">
-            <div>
-                <div class="eyebrow" th:text="#{shop.eyebrow}">全部商品 / FW26</div>
-                <h1 class="h2 shero__title"
-                    th:if="${result.scope().selectedLine() != null}"
-                    th:text="${tr.t(result.scope().selectedLine().name)}">全部商品</h1>
-                <h1 class="h2 shero__title"
-                    th:unless="${result.scope().selectedLine() != null}"
-                    th:text="#{shop.all}">全部商品</h1>
-            </div>
-            <div class="lead shero__lead"
-                 th:text="#{shop.lead(${result.scope().selectedLine() != null ? result.page.total : onSaleTotal})}">四十二件，本季新增七件。卖完不补，不再开版。</div>
-            <div class="shero__num">
-                <span class="din"
-                      th:text="${result.scope().selectedLine() != null ? result.page.total : onSaleTotal}">42</span>
-                <span class="tiny" th:text="#{shop.count}">在售件数</span>
+    <!-- ==================================================== 开场：本季全部在售
+         专题化页头：超大衬线标题 + 织纹标尺画布（大计数 + 丝线流动 + 印章），
+         与面料档案同一叙事语言；分步入场，脚本失效全部默认可见 -->
+    <section class="chero" id="ch-top">
+        <div class="chero__text">
+            <div class="eyebrow" data-cm style="--d:0ms" th:text="#{shop.eyebrow}">全部商品 / FW26</div>
+            <h1 class="chero__title" data-cm style="--d:80ms"
+                th:if="${result.scope().selectedLine() != null}"
+                th:text="${tr.t(result.scope().selectedLine().name)}">全部商品</h1>
+            <h1 class="chero__title" data-cm style="--d:80ms"
+                th:unless="${result.scope().selectedLine() != null}"
+                th:text="#{shop.all}">全部商品</h1>
+            <div class="chero__kicker" data-cm style="--d:160ms" th:text="#{shop.hero.kicker}">五条系列线，小批量成衣，卖完不补。</div>
+            <p class="chero__lead" data-cm style="--d:240ms"
+               th:text="#{shop.lead(${result.scope().selectedLine() != null ? result.page.total : onSaleTotal})}">五十四件在售，卖完不补，不再开版。</p>
+            <div class="chero__scroll" data-cm style="--d:420ms">
+                <span th:text="#{shop.browse.down}">向下选购</span>
+                <i aria-hidden="true"></i>
             </div>
         </div>
-        <!-- 系列线导航：全部商品的下分类，随页内布局呈现，不再做成吸顶横条 -->
-        <nav class="linenav" th:aria-label="#{shop.f.category}">
-        <a class="ln" th:href="@{/category}"
-           th:classappend="${result.scope().selectedLine() == null} ? 'on'"
-           th:text="#{shop.all}">全部商品</a>
-        <a class="ln" th:href="@{/category(category=1)}"
-           th:classappend="${result.scope().selectedLine() != null and result.scope().selectedLine().id == 1} ? 'on'"
-           th:text="#{line.commute}">通勤出行</a>
-        <a class="ln" th:href="@{/category(category=2)}"
-           th:classappend="${result.scope().selectedLine() != null and result.scope().selectedLine().id == 2} ? 'on'"
-           th:text="#{line.leisure}">休闲生活</a>
-        <a class="ln" th:href="@{/category(category=3)}"
-           th:classappend="${result.scope().selectedLine() != null and result.scope().selectedLine().id == 3} ? 'on'"
-           th:text="#{line.outdoor}">户外运动</a>
-        <a class="ln" th:href="@{/category(category=4)}"
-           th:classappend="${result.scope().selectedLine() != null and result.scope().selectedLine().id == 4} ? 'on'"
-           th:text="#{line.occasion}">礼服场合</a>
-        <a class="ln" th:href="@{/category(category=5)}"
-           th:classappend="${result.scope().selectedLine() != null and result.scope().selectedLine().id == 5} ? 'on'"
-           th:text="#{line.home}">居家舒适</a>
-    </nav>
-    </div><!-- /shero -->
-    <div style="margin:0 var(--gx);height:1px;background:var(--ink)"></div>
 
-    <!-- 计数 + 搜索 + 排序：搜索放在首屏工具条，输入即时筛选 -->
-    <div class="cattools" style="padding:20px var(--gx) 0;display:flex;align-items:center;gap:18px;flex-wrap:wrap">
-        <span class="tiny" th:text="#{shop.range}">FW26 第七辑</span>
+        <!-- 织纹标尺画布：CSS 经纬 + SVG 丝线缓慢流动，中央超大在售计数 -->
+        <div class="chero__art" data-cm style="--d:180ms" aria-hidden="true">
+            <div class="c-weave">
+                <div class="c-weave__grid"></div>
+                <div class="c-weave__sheen"></div>
+                <svg class="c-weave__threads" viewBox="0 0 460 320" preserveAspectRatio="xMidYMid slice">
+                    <path class="c-thread c-thread--1" d="M-30 250 C 90 210 140 130 250 110 S 390 60 490 30"/>
+                    <path class="c-thread c-thread--2" d="M-30 300 C 110 270 190 180 300 160 S 420 110 490 80"/>
+                </svg>
+                <div class="c-weave__num">
+                    <b class="din" th:attr="data-count=${result.scope().selectedLine() != null ? result.page.total : onSaleTotal}"
+                       th:text="${result.scope().selectedLine() != null ? result.page.total : onSaleTotal}">54</b>
+                    <span th:text="#{shop.count}">在售件数</span>
+                </div>
+                <div class="c-weave__seal">
+                    <span>UNDYED</span><b th:text="#{shop.range}">FW26 第七辑</b><span th:text="#{shop.seal.tail}">NATURAL FIBRE</span>
+                </div>
+                <span class="c-weave__corner c-weave__corner--tl"></span>
+                <span class="c-weave__corner c-weave__corner--br"></span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================================================== 系列目录：大块导航
+         六块 3×2：编号 + 线名 + 一句定位 + 在售数；悬停亚麻浸染，当前墨底反白 -->
+    <nav class="lstrip" data-cm-group th:aria-label="#{shop.f.category}">
+        <a class="ls" th:href="@{/category}"
+           th:classappend="${result.scope().selectedLine() == null} ? 'on'">
+            <i class="ls__no din">00</i>
+            <span class="ls__body">
+                <b class="ls__nm" th:text="#{shop.all}">全部商品</b>
+                <span class="ls__d" th:text="#{shop.line.all.d}">当季全部在售款，一次看全。</span>
+            </span>
+            <span class="ls__go" aria-hidden="true" th:text="#{shop.browse}">浏览 →</span>
+        </a>
+        <a class="ls" th:href="@{/category(category=1)}"
+           th:classappend="${result.scope().selectedLine() != null and result.scope().selectedLine().id == 1} ? 'on'">
+            <i class="ls__no din">01</i>
+            <span class="ls__body">
+                <b class="ls__nm" th:text="#{line.commute}">通勤出行</b>
+                <span class="ls__d" th:text="#{line.commute.d}">为日常工作剪裁的天然纤维成衣。</span>
+            </span>
+            <span class="ls__go" aria-hidden="true" th:text="#{shop.browse}">浏览 →</span>
+        </a>
+        <a class="ls" th:href="@{/category(category=2)}"
+           th:classappend="${result.scope().selectedLine() != null and result.scope().selectedLine().id == 2} ? 'on'">
+            <i class="ls__no din">02</i>
+            <span class="ls__body">
+                <b class="ls__nm" th:text="#{line.leisure}">休闲生活</b>
+                <span class="ls__d" th:text="#{line.leisure.d}">周末与居家的松弛版型。</span>
+            </span>
+            <span class="ls__go" aria-hidden="true" th:text="#{shop.browse}">浏览 →</span>
+        </a>
+        <a class="ls" th:href="@{/category(category=3)}"
+           th:classappend="${result.scope().selectedLine() != null and result.scope().selectedLine().id == 3} ? 'on'">
+            <i class="ls__no din">03</i>
+            <span class="ls__body">
+                <b class="ls__nm" th:text="#{line.outdoor}">户外运动</b>
+                <span class="ls__d" th:text="#{line.outdoor.d}">挡风耐穿的户外基本款。</span>
+            </span>
+            <span class="ls__go" aria-hidden="true" th:text="#{shop.browse}">浏览 →</span>
+        </a>
+        <a class="ls" th:href="@{/category(category=4)}"
+           th:classappend="${result.scope().selectedLine() != null and result.scope().selectedLine().id == 4} ? 'on'">
+            <i class="ls__no din">04</i>
+            <span class="ls__body">
+                <b class="ls__nm" th:text="#{line.occasion}">礼服场合</b>
+                <span class="ls__d" th:text="#{line.occasion.d}">典礼与晚间的正装选择。</span>
+            </span>
+            <span class="ls__go" aria-hidden="true" th:text="#{shop.browse}">浏览 →</span>
+        </a>
+        <a class="ls" th:href="@{/category(category=5)}"
+           th:classappend="${result.scope().selectedLine() != null and result.scope().selectedLine().id == 5} ? 'on'">
+            <i class="ls__no din">05</i>
+            <span class="ls__body">
+                <b class="ls__nm" th:text="#{line.home}">居家舒适</b>
+                <span class="ls__d" th:text="#{line.home.d}">亲肤柔软的居家舒适系列。</span>
+            </span>
+            <span class="ls__go" aria-hidden="true" th:text="#{shop.browse}">浏览 →</span>
+        </a>
+    </nav>
+
+    <!-- ==================================================== 规格行：季辑 · 搜索 · 排序分段 -->
+    <div class="cattools" data-cm>
+        <span class="tiny cattools__range" th:text="#{shop.range}">FW26 第七辑</span>
 
         <form class="csearch" action="/category" method="get" role="search" data-search>
             <input type="hidden" name="category" th:if="${result.scope().entry() != null}"
@@ -101,38 +160,40 @@
             </button>
         </form>
 
-        <!-- 排序：点一下选中，再点同一项即取消；选中态、按下态与进度线都是即时反馈 -->
-        <div class="sortgroup" style="margin-left:auto">
-            <span class="tiny" style="letter-spacing:.14em;color:var(--mute)" th:text="#{shop.sort}">排序</span>
-            <a class="sortlink" data-sort="NEWEST"
-               th:classappend="${query.sort().name() == 'NEWEST'} ? 'on'"
-               th:attr="aria-pressed=${query.sort().name() == 'NEWEST'}"
-               th:href="@{/category(category=${result.scope().entry() != null ? result.scope().entry().id : null},
-                           productType=${query.productTypeParam()}, keyword=${query.keyword()}, size=${query.size()},
-                           sort=${query.sort().name() == 'NEWEST' ? '' : 'NEWEST'})}">
-                <span th:text="#{shop.sort.new}">新品优先</span><span class="sortlink__x" aria-hidden="true">×</span>
-            </a>
-            <a class="sortlink" data-sort="PRICE_ASC"
-               th:classappend="${query.sort().name() == 'PRICE_ASC'} ? 'on'"
-               th:attr="aria-pressed=${query.sort().name() == 'PRICE_ASC'}"
-               th:href="@{/category(category=${result.scope().entry() != null ? result.scope().entry().id : null},
-                           productType=${query.productTypeParam()}, keyword=${query.keyword()}, size=${query.size()},
-                           sort=${query.sort().name() == 'PRICE_ASC' ? '' : 'PRICE_ASC'})}">
-                <span th:text="#{shop.sort.asc}">价格升序</span><span class="sortlink__x" aria-hidden="true">×</span>
-            </a>
-            <a class="sortlink" data-sort="PRICE_DESC"
-               th:classappend="${query.sort().name() == 'PRICE_DESC'} ? 'on'"
-               th:attr="aria-pressed=${query.sort().name() == 'PRICE_DESC'}"
-               th:href="@{/category(category=${result.scope().entry() != null ? result.scope().entry().id : null},
-                           productType=${query.productTypeParam()}, keyword=${query.keyword()}, size=${query.size()},
-                           sort=${query.sort().name() == 'PRICE_DESC' ? '' : 'PRICE_DESC'})}">
-                <span th:text="#{shop.sort.desc}">价格降序</span><span class="sortlink__x" aria-hidden="true">×</span>
-            </a>
+        <!-- 排序分段：三段相连，当前段墨底反白；再点同一项即取消 -->
+        <div class="sortgroup">
+            <span class="tiny sortgroup__t" th:text="#{shop.sort}">排序</span>
+            <div class="sortseg">
+                <a class="sortlink" data-sort="NEWEST"
+                   th:classappend="${query.sort().name() == 'NEWEST'} ? 'on'"
+                   th:attr="aria-pressed=${query.sort().name() == 'NEWEST'}"
+                   th:href="@{/category(category=${result.scope().entry() != null ? result.scope().entry().id : null},
+                               productType=${query.productTypeParam()}, keyword=${query.keyword()}, size=${query.size()},
+                               sort=${query.sort().name() == 'NEWEST' ? '' : 'NEWEST'})}">
+                    <span th:text="#{shop.sort.new}">新品优先</span><span class="sortlink__x" aria-hidden="true">×</span>
+                </a>
+                <a class="sortlink" data-sort="PRICE_ASC"
+                   th:classappend="${query.sort().name() == 'PRICE_ASC'} ? 'on'"
+                   th:attr="aria-pressed=${query.sort().name() == 'PRICE_ASC'}"
+                   th:href="@{/category(category=${result.scope().entry() != null ? result.scope().entry().id : null},
+                               productType=${query.productTypeParam()}, keyword=${query.keyword()}, size=${query.size()},
+                               sort=${query.sort().name() == 'PRICE_ASC' ? '' : 'PRICE_ASC'})}">
+                    <span th:text="#{shop.sort.asc}">价格升序</span><span class="sortlink__x" aria-hidden="true">×</span>
+                </a>
+                <a class="sortlink" data-sort="PRICE_DESC"
+                   th:classappend="${query.sort().name() == 'PRICE_DESC'} ? 'on'"
+                   th:attr="aria-pressed=${query.sort().name() == 'PRICE_DESC'}"
+                   th:href="@{/category(category=${result.scope().entry() != null ? result.scope().entry().id : null},
+                               productType=${query.productTypeParam()}, keyword=${query.keyword()}, size=${query.size()},
+                               sort=${query.sort().name() == 'PRICE_DESC' ? '' : 'PRICE_DESC'})}">
+                    <span th:text="#{shop.sort.desc}">价格降序</span><span class="sortlink__x" aria-hidden="true">×</span>
+                </a>
+            </div>
         </div>
     </div>
 
-    <!-- 当前条件 -->
-    <div style="padding:16px var(--gx) 0;display:flex;align-items:center;gap:8px">
+    <!-- 当前条件：已选 chips + 清除 + 总数；排序应用中的进度线在这里 -->
+    <div class="catchips">
         <span class="tiny" style="letter-spacing:.18em;margin-right:8px" th:text="#{shop.filtered}">已筛选</span>
         <span class="chip on" th:if="${result.scope().selectedLine() != null}">
             <span th:text="${tr.t(result.scope().selectedLine().name)}">通勤</span>
@@ -148,22 +209,15 @@
         <a class="tlink mute plain" style="font-size:11px;color:var(--rust-ink);margin-left:6px"
            th:href="@{/category}" th:text="#{shop.clear}">清除</a>
         <span class="sortstate" style="margin-left:auto">
-            <span class="sortstate__txt" th:if="${query.sort().name() == 'DEFAULT'}"
-                  th:text="#{shop.sort.default}">默认排序 · 点击右侧切换</span>
-            <span class="sortstate__txt" th:if="${query.sort().name() == 'NEWEST'}"
-                  th:text="|#{shop.sort.applied} #{shop.sort.new} · #{shop.sort.toggle}|">已按 新品优先 · 再点一次取消</span>
-            <span class="sortstate__txt" th:if="${query.sort().name() == 'PRICE_ASC'}"
-                  th:text="|#{shop.sort.applied} #{shop.sort.asc} · #{shop.sort.toggle}|">已按 价格升序 · 再点一次取消</span>
-            <span class="sortstate__txt" th:if="${query.sort().name() == 'PRICE_DESC'}"
-                  th:text="|#{shop.sort.applied} #{shop.sort.desc} · #{shop.sort.toggle}|">已按 价格降序 · 再点一次取消</span>
             <span class="sortstate__busy" th:text="#{shop.sort.busy}">正在应用排序…</span>
         </span>
         <span class="tiny" style="margin-left:18px;letter-spacing:.16em"
-              th:text="${query.keyword() != null} ? #{shop.search.result(${result.page.total})} : |#{shop.showing} ${result.page.total}|">共 42 件</span>
+              th:text="${query.keyword() != null} ? #{shop.search.result(${result.page.total})} : |#{shop.showing} ${result.page.total}|">共 54 件</span>
     </div>
 
-    <!-- 两栏：目录面板 + 商品网格 -->
-    <div class="cols" style="display:flex;padding:20px var(--gx) 0;gap:48px;align-items:flex-start">
+    <!-- ==================================================== 选购长廊：目录面板 + 商品网格
+         网格底层衬超大系列水印字，随内容滚动 -->
+    <div class="cols" style="display:flex;padding:30px var(--gx) 0;gap:48px;align-items:flex-start">
         <div class="catpanel">
             <div>
                 <div class="cap" th:text="#{shop.f.category}">系列线</div>
@@ -215,7 +269,7 @@
                    th:text="#{shop.clear.all}">清除筛选</a>
             </div>
 
-            <!-- 品牌事实（自首页迁入）：四格数字 -->
+            <!-- 品牌事实（自首页迁入）：四格数字，滚动计数 -->
             <div style="border-top:1px solid var(--line);margin-top:20px;padding-top:20px;
                         display:grid;grid-template-columns:1fr 1fr;gap:18px 12px">
                 <div>
@@ -223,12 +277,13 @@
                     <div class="tiny" style="margin-top:5px" th:text="#{home.stat1}">天然纤维</div>
                 </div>
                 <div>
-                    <div class="din" style="font-size:18px;font-weight:500;letter-spacing:-.01em">05</div>
+                    <div class="din" style="font-size:18px;font-weight:500;letter-spacing:-.01em"
+                         th:attr="data-count=5" th:text="05">05</div>
                     <div class="tiny" style="margin-top:5px" th:text="#{home.stat2}">系列线</div>
                 </div>
                 <div>
                     <div class="din" style="font-size:18px;font-weight:500;letter-spacing:-.01em"
-                         th:text="${onSaleTotal}">42</div>
+                         th:attr="data-count=${onSaleTotal}" th:text="${onSaleTotal}">42</div>
                     <div class="tiny" style="margin-top:5px" th:text="#{home.stat3}">本季款式</div>
                 </div>
                 <div>
@@ -238,9 +293,11 @@
             </div>
         </div>
 
-        <div class="catcol" style="flex:1;min-width:0">
+        <div class="catcol" style="flex:1;min-width:0;position:relative">
+            <span class="catwm" aria-hidden="true"
+                  th:text="${result.scope().selectedLine() != null ? tr.t(result.scope().selectedLine().name) : #messages.msg('shop.all')}">全部商品</span>
             <div class="catgrid">
-            <div class="g4" th:if="${!result.page.records.isEmpty()}">
+            <div class="g4" data-cm-group th:if="${!result.page.records.isEmpty()}">
                 <th:block th:each="p, s : ${result.page.records}">
                     <a th:replace="~{fragments :: card(${p}, ${#numbers.formatInteger(s.count, 2)})}"></a>
                 </th:block>
@@ -257,19 +314,22 @@
                 </div>
             </div>
 
-            </div><!-- /catgrid：商品按页全部铺开，随整页滚动 -->
+            </div><!-- /catgrid：商品按页全部铺开，网格内滚 -->
 
-            <div class="catpager" style="margin-top:52px;display:flex;align-items:center;gap:24px;
-                        font-family:var(--f-din);font-size:11px;letter-spacing:.18em">
+            <!-- 大页码翻页：当前页 / 总页数 DIN 大字，长条前后页按钮 -->
+            <div class="catpager" th:if="${result.page.pages > 1}">
                 <a class="pglink" data-nav="prev" th:if="${query.page() > 1}"
                    th:href="@{/category(category=${result.scope().entry() != null ? result.scope().entry().id : null},
                                productType=${query.productTypeParam()},
                                sort=${query.sort().name() == 'DEFAULT' ? null : query.sort().name()},
                                keyword=${query.keyword()}, size=${query.size()}, page=${query.page() - 1})}"
-                   th:text="#{shop.prev}">上一页</a>
-                <span style="color:var(--ink)" th:text="${#numbers.formatInteger(query.page(), 2)}">01</span>
-                <span style="color:var(--faint)" th:text="${#numbers.formatInteger(result.page.pages, 2)}">01</span>
-                <a class="pglink" data-nav="next" style="margin-left:auto" th:if="${query.page() < result.page.pages}"
+                   th:text="#{shop.prev}">← 上一页</a>
+                <span class="catpager__no">
+                    <b class="din" th:text="${#numbers.formatInteger(query.page(), 2)}">01</b>
+                    <i>/</i>
+                    <span class="din" th:text="${#numbers.formatInteger(result.page.pages, 2)}">04</span>
+                </span>
+                <a class="pglink" data-nav="next" th:if="${query.page() < result.page.pages}"
                    th:href="@{/category(category=${result.scope().entry() != null ? result.scope().entry().id : null},
                                productType=${query.productTypeParam()},
                                sort=${query.sort().name() == 'DEFAULT' ? null : query.sort().name()},
@@ -279,10 +339,31 @@
         </div>
     </div>
 
+    <!-- ==================================================== 服务速览：与首页同一组服务承诺 -->
+    <section class="catsvc" data-cm-group>
+        <div class="catsvc__c">
+            <div class="t" th:text="#{svc.ship.t}">配送</div>
+            <div class="d" th:utext="#{svc.ship.d}">满 ¥1,500 包邮<br>2–3 个工作日送达</div>
+        </div>
+        <div class="catsvc__c">
+            <div class="t" th:text="#{svc.return.t}">退换</div>
+            <div class="d" th:utext="#{svc.return.d}">7 天无理由<br>上门取件</div>
+        </div>
+        <div class="catsvc__c">
+            <div class="t" th:text="#{svc.repair.t}">修补</div>
+            <div class="d" th:utext="#{svc.repair.d}">终身免费<br>全国门店可收</div>
+        </div>
+        <div class="catsvc__c">
+            <div class="t" th:text="#{svc.fit.t}">试穿</div>
+            <div class="d" th:utext="#{svc.fit.d}">预约 45 分钟<br>静安工坊</div>
+        </div>
+    </section>
+
     </div><!-- /#catalog -->
 
     <div style="height:86px"></div>
     <th:block th:replace="~{fragments :: footer}"></th:block>
 </div>
+<script th:src="@{/js/catalog-motion.js?v=20261116k}"></script>
 </body>
 </html>
