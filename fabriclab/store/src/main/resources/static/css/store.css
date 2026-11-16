@@ -1557,3 +1557,69 @@ body.lang-en .lead, body.lang-en .tiny, body.lang-en .eyebrow { letter-spacing: 
     .fa-all, .fa-all i, .fa-swatch, .fa-swatch::after, .fa-inline-link { transition: none !important; }
     .fa-material__frame img { transition: none !important; transform: none !important; }
 }
+
+/* ============================================================
+   首页动效（home-motion.js 配套）
+   根类 .hm-anim 只在脚本可用且未开启「减少动态效果」时挂上，
+   所有入场样式都包在它下面——JS 失效或系统降噪时页面原样可读。 */
+/* 滚动揭示：默认下移 26px + 全透明，入视口后升回 */
+.hm-anim [data-hm] {
+    opacity: 0;
+    transform: translateY(26px);
+    transition: opacity .7s cubic-bezier(.22, .61, .36, 1),
+                transform .7s cubic-bezier(.22, .61, .36, 1);
+}
+.hm-anim [data-hm].in { opacity: 1; transform: none; }
+
+/* 首屏分块入场：眉题→大字→文案→竖排字依次升起 */
+.hm-anim .hero-left > * { opacity: 0; animation: hmRise .9s cubic-bezier(.22, .61, .36, 1) forwards; }
+.hm-anim .hero-left > *:nth-child(1) { animation-delay: .08s; }
+.hm-anim .hero-left > *:nth-child(2) { animation-delay: .2s; }
+.hm-anim .hero-left > *:nth-child(3) { animation-delay: .34s; }
+.hm-anim .hero-left > *:nth-child(4) { animation-delay: .5s; }
+/* 首屏主图：缓推镜（1.07 → 1）+ 淡入，像镜头落定 */
+.hm-anim .hero-media img { opacity: 0; animation: hmHeroImg 1.5s cubic-bezier(.22, .61, .36, 1) .18s forwards; }
+@keyframes hmRise {
+    from { opacity: 0; transform: translateY(26px); }
+    to   { opacity: 1; transform: none; }
+}
+@keyframes hmHeroImg {
+    from { opacity: 0; transform: scale(1.07); }
+    to   { opacity: 1; transform: none; }
+}
+
+/* 横贯大片视差基线：JS 写 translate3d+scale(1.1)，scale 避免位移露边 */
+[data-hm-parallax] { will-change: transform; transform: scale(1.1); }
+
+/* 品牌语跑马灯：墨色细带，悬停暂停 */
+.march { overflow: hidden; background: var(--ink); }
+.march__track { display: flex; width: max-content; animation: hmMarch 30s linear infinite; }
+.march:hover .march__track { animation-play-state: paused; }
+.march__seq { display: flex; align-items: center; flex: none; }
+.march__seq span {
+    flex: none; padding: 14px 0;
+    font-family: var(--f-din); font-size: 10px; letter-spacing: .3em;
+    color: rgba(242, 239, 233, .82); white-space: nowrap;
+}
+.march__seq i {
+    flex: none; margin: 0 30px; width: 5px; height: 5px; border-radius: 50%;
+    background: var(--rust); font-style: normal;
+}
+@keyframes hmMarch { to { transform: translateX(-50%); } }
+
+/* 五条系列线：图片悬停缓放，箭头跟进 */
+.hm-lines a img { transition: transform .55s cubic-bezier(.22, .61, .36, 1); }
+.hm-lines a:hover img { transform: scale(1.06); }
+.hm-lines a svg { transition: transform .3s cubic-bezier(.22, .61, .36, 1); }
+.hm-lines a:hover svg { transform: translateX(4px); }
+.hm-lines a:hover b { color: var(--rust-ink); }
+
+/* 工坊数字：计数期间给一点投影强调 */
+.hm-anim .dark [data-count].in { text-shadow: 0 1px 0 rgba(242, 239, 233, .14); }
+
+@media (prefers-reduced-motion: reduce) {
+    .hm-anim [data-hm] { opacity: 1 !important; transform: none !important; transition: none !important; }
+    .hm-anim .hero-left > *, .hm-anim .hero-media img { opacity: 1 !important; animation: none !important; }
+    .march__track { animation: none !important; }
+    [data-hm-parallax] { transform: scale(1.1) !important; }
+}
