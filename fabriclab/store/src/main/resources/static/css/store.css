@@ -949,6 +949,15 @@ body.lang-en .lead, body.lang-en .tiny, body.lang-en .eyebrow { letter-spacing: 
 .catsub:hover a { color: var(--ink); }
 .catsub.on { border-left-color: var(--rust-ink); }
 .catsub.on a { color: var(--rust-ink); font-weight: 500; }
+.catsub.catwide { padding-left: 12px; }
+.catsub.catwide a { font-size: 12px; letter-spacing: .04em; }
+/* 细分类组名：仅作小标，不参与导航，与顶部系列大块区分 */
+.catgroup {
+    margin: 14px 0 4px; padding-bottom: 5px;
+    font-family: var(--f-din); font-size: 9.5px; letter-spacing: .22em;
+    color: var(--faint); border-bottom: 1px dashed var(--line);
+}
+.catgroup:first-of-type { margin-top: 2px; }
 
 /* 侧栏类型分段选择 */
 .seg { display: flex; border: 1px solid var(--line2); margin-top: 2px; }
