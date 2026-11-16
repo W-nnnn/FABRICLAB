@@ -894,10 +894,21 @@ body.lang-en .lead, body.lang-en .tiny, body.lang-en .eyebrow { letter-spacing: 
     animation: catProgress .8s cubic-bezier(.4, 0, .2, 1) infinite;
 }
 
-/* 商品网格回归整页单层滚动：不做页中页。
-   内滚区（滚轮先滚商品、到边界再转交页面）被用户多次反馈为「滚动怪异」，
-   双层滚动条一跳一跳、动线两段式，体验无法救回——彻底砍掉，整页只有一条滚动。 */
-.catgrid { min-height: 0; }
+/* ------------------------------------------------------------ 商品网格内滚 */
+/* 网格是有意设计的内滚区：高度由 app.js 按实测卡片行高锁定整 3 行，
+   鼠标落在商品上滚轮滚商品；到边界后滚轮整格接力给整页（app.js 接管），
+   不留「半格被吞」的两段式顿挫。上下渐隐标示「还有货 / 已滚过」；
+   无结果或窄屏时 JS 清空内联高度，容器随整页滚动，不留空框。 */
+.catgrid {
+    min-height: 0;
+    overflow-y: auto;
+    overflow-anchor: none;
+    scrollbar-width: none;
+}
+.catgrid::-webkit-scrollbar { display: none; }
+.catgrid.fade-t { -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 26px); mask-image: linear-gradient(180deg, transparent 0, #000 26px); }
+.catgrid.fade-b { -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - 40px), transparent 100%); mask-image: linear-gradient(180deg, #000 calc(100% - 40px), transparent 100%); }
+.catgrid.fade-t.fade-b { -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 26px, #000 calc(100% - 40px), transparent 100%); mask-image: linear-gradient(180deg, transparent 0, #000 26px, #000 calc(100% - 40px), transparent 100%); }
 
 /* 侧栏目录面板（分类页） */
 .catpanel {
@@ -956,6 +967,8 @@ body.lang-en .lead, body.lang-en .tiny, body.lang-en .eyebrow { letter-spacing: 
         width: 100% !important; max-width: none !important; margin-left: 0 !important;
     }
     .catpanel { position: static !important; width: 100% !important; }
+    /* 窄屏恢复整页单层滚动，小视口不做两层滚动 */
+    .catgrid { height: auto !important; overflow: visible; }
     .csearch { width: 100%; max-width: none; }
     .g4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .g3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
