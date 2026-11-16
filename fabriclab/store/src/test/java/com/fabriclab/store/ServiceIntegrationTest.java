@@ -98,7 +98,11 @@ class ServiceIntegrationTest {
 
     @Test
     void faqIsPublicButThreadsRequireSignon() throws Exception {
-        assertEquals(200, mockMvc.perform(get("/service")).andReturn().getResponse().getStatus());
+        MvcResult center = mockMvc.perform(get("/service")).andReturn();
+        assertEquals(200, center.getResponse().getStatus());
+        String page = html(center);
+        assertFalse(page.contains("<<<<<<<"));
+        assertTrue(page.contains("svc-faq"));
         MvcResult blocked = mockMvc.perform(get("/service/threads")).andReturn();
         assertEquals(302, blocked.getResponse().getStatus());
         assertTrue(blocked.getResponse().getRedirectedUrl().startsWith("/signon?returnTo="));
@@ -112,7 +116,7 @@ class ServiceIntegrationTest {
         MvcResult created = create(alice, PREFIX + "尺码咨询", "肩宽 44，选 M 还是 L？", null, "FL-CM-01");
         assertEquals(302, created.getResponse().getStatus());
         long id = threadIdOf(PREFIX + "尺码咨询");
-        assertTrue(created.getResponse().getRedirectedUrl().endsWith("/service/threads/" + id));
+        assertEquals("/service?thread=" + id, created.getResponse().getRedirectedUrl());
 
         assertEquals(1, jdbc.queryForObject(
                 "SELECT COUNT(*) FROM service_thread WHERE id=? AND status='OPEN' AND related_sku='FL-CM-01'",
@@ -123,9 +127,11 @@ class ServiceIntegrationTest {
 
         assertEquals("咨询已提交，客服回复后会显示在对话里", created.getFlashMap().get("notice"));
 
-        MvcResult detail = mockMvc.perform(get("/service/threads/" + id).session(alice.session())).andReturn();
+        MvcResult detail = mockMvc.perform(get("/service?thread=" + id).session(alice.session())).andReturn();
         assertEquals(200, detail.getResponse().getStatus());
         String page = html(detail);
+        assertTrue(page.contains("svc-grid"));
+        assertTrue(page.contains("svc-thread"));
         assertTrue(page.contains("肩宽 44，选 M 还是 L？"));
         assertTrue(page.contains("FL-CM-01"));
     }
@@ -135,7 +141,8 @@ class ServiceIntegrationTest {
         SignIn alice = signIn("alice");
         MvcResult bad = create(alice, "   ", "正文内容", null, null);
         assertEquals(200, bad.getResponse().getStatus());
-        assertEquals("service-form", bad.getModelAndView().getViewName());
+        assertEquals("service", bad.getModelAndView().getViewName());
+        assertEquals(true, bad.getModelAndView().getModel().get("asking"));
         assertEquals("subject", bad.getModelAndView().getModel().get("errorField"));
         assertEquals(0, jdbc.queryForObject(
                 "SELECT COUNT(*) FROM service_thread WHERE subject LIKE 'T18-%'", Integer.class));
@@ -170,18 +177,18 @@ class ServiceIntegrationTest {
         mockMvc.perform(post("/service/threads/" + closing + "/close").session(alice.session())
                 .param("_csrf", alice.csrf())).andReturn();
 
-        MvcResult all = mockMvc.perform(get("/service/threads").session(alice.session())).andReturn();
+        MvcResult all = mockMvc.perform(get("/service").session(alice.session())).andReturn();
         assertTrue(html(all).contains(PREFIX + "待回复咨询"));
         assertTrue(html(all).contains(PREFIX + "准备关闭"));
-        MvcResult open = mockMvc.perform(get("/service/threads?status=OPEN").session(alice.session())).andReturn();
+        MvcResult open = mockMvc.perform(get("/service?status=OPEN").session(alice.session())).andReturn();
         assertTrue(html(open).contains(PREFIX + "待回复咨询"));
         assertFalse(html(open).contains(PREFIX + "准备关闭"));
 
-        MvcResult bobsList = mockMvc.perform(get("/service/threads").session(bob.session())).andReturn();
+        MvcResult bobsList = mockMvc.perform(get("/service").session(bob.session())).andReturn();
         assertFalse(html(bobsList).contains(PREFIX + "待回复咨询"));
-        MvcResult stolen = mockMvc.perform(get("/service/threads/" + second).session(bob.session())).andReturn();
+        MvcResult stolen = mockMvc.perform(get("/service?thread=" + second).session(bob.session())).andReturn();
         assertEquals(404, stolen.getResponse().getStatus());
-        MvcResult illegalStatus = mockMvc.perform(get("/service/threads?status=REFUND")
+        MvcResult illegalStatus = mockMvc.perform(get("/service?status=REFUND")
                 .session(alice.session())).andReturn();
         assertEquals(400, illegalStatus.getResponse().getStatus());
     }

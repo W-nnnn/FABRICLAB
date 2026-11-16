@@ -22,12 +22,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
- * 客服中心（用户端）：/service 为无需登录的常见问题与服务信息；
- * /service/threads/** 需要登录，由 AuthInterceptor 统一检查身份、角色与启用状态，
- * 数据归属在 SupportService 内复核。全部写操作走 PRG + 一次性提示 + CSRF。
+ * 客服中心（用户端）：只有 /service 一个页面，FAQ、我的咨询、发起与对话都在这里完成。
+ * 旧 /service/threads/** 路由只做兼容跳转，不再有独立页面。登录检查由 AuthInterceptor 统一处理，
+ * 数据归属在 SupportService 内复核；写操作仍走 PRG + 一次性提示 + CSRF。
  */
 @Controller
 @RequestMapping("/service")
@@ -54,48 +56,59 @@ public class SupportController {
         this.brandService = brandService;
     }
 
-    /** 客服中心首页：常见问题按站点真实能力作答，不承诺退款、退换或物流追踪。 */
+    /**
+     * 客服中心单页：游客只读 FAQ；会员在同一页切换咨询列表、发起表单与对话。
+     * ?ask=1 打开发起表单，?thread=id 指定会话，不传时默认选最近一条。
+     */
     @GetMapping({"", "/"})
-    public String center(HttpSession session, Model model) {
-        CurrentUser current = currentUserService.from(session);
+    public String center(@RequestParam(required = false) String status,
+                         @RequestParam(required = false) String page,
+                         @RequestParam(required = false) String size,
+                         @RequestParam(required = false) String thread,
+                         @RequestParam(required = false) String ask,
+                         @RequestParam(required = false) String sku,
+                         @RequestParam(required = false) String orderNo,
+                         @RequestParam(required = false) String category,
+                         HttpSession session, Model model) {
         fillCommon(model);
         model.addAttribute("faqs", FAQS);
-        model.addAttribute("openCount", current == null ? null : supportService.openCount(current.id()));
+        CurrentUser current = currentUserService.from(session);
+        if (current == null) {
+            model.addAttribute("openCount", null);
+            return "service";
+        }
+        ServiceQuery query = ServiceQuery.parse(status, page, size);
+        Page<ServiceThread> result = supportService.list(current.id(), query);
+        boolean asking = "1".equals(ask) || "true".equalsIgnoreCase(ask);
+        String initialCategory = category == null || category.isBlank()
+                ? ServiceCategory.SIZING.name() : category;
+        fillWorkspace(current, model, query, result, asking, thread,
+                ServiceForm.of(initialCategory, null, null, orderNo, sku));
         return "service";
     }
 
-    /** 我的咨询：状态筛选、分页与真实消息摘要，只返回本人会话。 */
+    /** 兼容旧「我的咨询」链接，统一回单页。 */
     @GetMapping("/threads")
     public String threads(@RequestParam(required = false) String status,
                           @RequestParam(required = false) String page,
                           @RequestParam(required = false) String size,
-                          HttpSession session, Model model) {
-        CurrentUser current = require(session);
-        ServiceQuery query = ServiceQuery.parse(status, page, size);
-        Page<ServiceThread> result = supportService.list(current.id(), query);
-        fillCommon(model);
-        model.addAttribute("query", query);
-        model.addAttribute("result", result);
-        model.addAttribute("rows", supportService.rows(result.getRecords()));
-        model.addAttribute("statuses", List.of(ServiceStatus.values()));
-        model.addAttribute("openCount", supportService.openCount(current.id()));
-        return "service-threads";
+                          HttpSession session) {
+        require(session);
+        return "redirect:/service" + querySuffix("status", status, "page", page, "size", size);
     }
 
-    /** 发起咨询表单：从商品详情或订单页跳来时预填款号 / 订单号。 */
+    /** 兼容商品详情等旧「发起咨询」链接，带入预填参数。 */
     @GetMapping("/threads/new")
     public String newThread(@RequestParam(required = false) String sku,
                             @RequestParam(required = false) String orderNo,
                             @RequestParam(required = false) String category,
-                            HttpSession session, Model model) {
+                            HttpSession session) {
         require(session);
-        fillCommon(model);
-        model.addAttribute("form", ServiceForm.of(category, null, null, orderNo, sku));
-        model.addAttribute("categories", List.of(ServiceCategory.values()));
-        return "service-form";
+        return "redirect:/service" + querySuffix("ask", "1", "category", category,
+                "orderNo", orderNo, "sku", sku);
     }
 
-    /** 提交咨询：字段级错误回表单并保留输入；成功进会话详情。 */
+    /** 提交咨询：字段级错误回单页表单并保留输入；成功定位到该会话。 */
     @PostMapping("/threads")
     public String create(@RequestParam(required = false) String category,
                          @RequestParam(required = false) String subject,
@@ -108,25 +121,25 @@ public class SupportController {
         try {
             ServiceThread thread = supportService.create(current, form);
             redirect.addFlashAttribute("notice", "咨询已提交，客服回复后会显示在对话里");
-            return "redirect:/service/threads/" + thread.getId();
+            return "redirect:/service?thread=" + thread.getId();
         } catch (BusinessException e) {
             fillCommon(model);
-            model.addAttribute("form", form);
-            model.addAttribute("categories", List.of(ServiceCategory.values()));
+            fillWorkspace(current, model, ServiceQuery.parse(null, null, null),
+                    supportService.list(current.id(), ServiceQuery.parse(null, null, null)),
+                    true, null, form);
             model.addAttribute("error", e.getMessage());
             model.addAttribute("errorField", e.field());
-            return "service-form";
+            return "service";
         }
     }
 
-    /** 会话详情：完整对话、追问、关闭与重开。 */
+    /** 兼容旧详情链接；先复核本人归属，避免跳转暴露他人咨询是否存在。 */
     @GetMapping("/threads/{id}")
-    public String thread(@PathVariable String id, HttpSession session, Model model) {
+    public String thread(@PathVariable String id, HttpSession session) {
         CurrentUser current = require(session);
         long threadId = parseId(id);
-        fillCommon(model);
-        model.addAttribute("view", supportService.view(current, threadId));
-        return "service-thread";
+        supportService.view(current, threadId);
+        return "redirect:/service?thread=" + threadId;
     }
 
     @PostMapping("/threads/{id}/reply")
@@ -142,7 +155,7 @@ public class SupportController {
             redirect.addFlashAttribute("notice", e.getMessage());
             redirect.addFlashAttribute("noticeKind", "err");
         }
-        return "redirect:/service/threads/" + threadId;
+        return "redirect:/service?thread=" + threadId;
     }
 
     @PostMapping("/threads/{id}/close")
@@ -151,7 +164,7 @@ public class SupportController {
         long threadId = parseId(id);
         boolean changed = supportService.close(current, threadId);
         redirect.addFlashAttribute("notice", changed ? "咨询已关闭" : "这条咨询已经是关闭状态");
-        return "redirect:/service/threads/" + threadId;
+        return "redirect:/service?thread=" + threadId;
     }
 
     @PostMapping("/threads/{id}/reopen")
@@ -160,7 +173,32 @@ public class SupportController {
         long threadId = parseId(id);
         boolean changed = supportService.reopen(current, threadId);
         redirect.addFlashAttribute("notice", changed ? "咨询已重新打开，可以继续追问" : "只有已关闭的咨询可以重新打开");
-        return "redirect:/service/threads/" + threadId;
+        return "redirect:/service?thread=" + threadId;
+    }
+
+    /** 会员工作区：列表、发起表单与对话共用一个模型。 */
+    private void fillWorkspace(CurrentUser current, Model model, ServiceQuery query,
+                               Page<ServiceThread> result, boolean asking, String threadRaw,
+                               ServiceForm form) {
+        model.addAttribute("query", query);
+        model.addAttribute("result", result);
+        model.addAttribute("rows", supportService.rows(result.getRecords()));
+        model.addAttribute("statuses", List.of(ServiceStatus.values()));
+        model.addAttribute("openCount", supportService.openCount(current.id()));
+        model.addAttribute("asking", asking);
+        model.addAttribute("form", form);
+        model.addAttribute("categories", List.of(ServiceCategory.values()));
+
+        Long selected = null;
+        if (threadRaw != null && !threadRaw.isBlank()) {
+            selected = parseId(threadRaw);
+        } else if (!result.getRecords().isEmpty()) {
+            selected = result.getRecords().get(0).getId();
+        }
+        model.addAttribute("currentThreadId", selected);
+        if (!asking && selected != null) {
+            model.addAttribute("view", supportService.view(current, selected));
+        }
     }
 
     private CurrentUser require(HttpSession session) {
@@ -177,6 +215,17 @@ public class SupportController {
         } catch (RuntimeException e) {
             throw new NotFoundException("内容不存在", "咨询不存在或已被移除");
         }
+    }
+
+    private String querySuffix(String... pairs) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < pairs.length; i += 2) {
+            String value = pairs[i + 1];
+            if (value == null || value.isBlank()) continue;
+            sb.append(sb.length() == 0 ? "?" : "&").append(pairs[i]).append('=')
+                    .append(URLEncoder.encode(value, StandardCharsets.UTF_8));
+        }
+        return sb.toString();
     }
 
     private void fillCommon(Model model) {

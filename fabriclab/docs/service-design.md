@@ -29,22 +29,20 @@
 | 全站咨询列表 / 详情 / 回复 / 关闭 / 重开 | — | — | ✓ |
 | 他人咨询 | — | 404，不泄露存在性 | ✓ |
 
-用户端 `/service/threads` 与 `/service/threads/**` 由 `AuthInterceptor` 每次请求复核角色与启用状态；管理端 `/admin/**` 由 `AdminAuthInterceptor` 统一检查。全部写操作 POST + CSRF + PRG，一次性提示。
+用户端登录态工作区由 `AuthInterceptor` 在 `/service/threads/**` 兼容入口复核角色与启用状态，实际单页渲染在 `SupportService.view` 内再次核对本人归属；管理端 `/admin/**` 由 `AdminAuthInterceptor` 统一检查。全部写操作 POST + CSRF + PRG，一次性提示。
 
 ## 4. 页面与路由
 
-**用户端**
+**用户端（单页）**
 
 | 路由 | 内容 |
 |---|---|
-| `GET /service` | 客服中心：5 组常见问题（按站点实际能力作答）、服务范围、门店与联系方式、发起与查看入口、本人待回复真实数 |
-| `GET /service/threads` | 我的咨询：状态筛选（ALL/OPEN/REPLIED/CLOSED）、分页、消息数与最后一条摘要 |
-| `GET /service/threads/new` | 发起咨询：类别、主题、正文、选填订单号与款号；字段级错误回填 |
-| `POST /service/threads` | 新建会话与第一条消息 |
-| `GET /service/threads/{id}` | 完整对话、关联信息、追问 / 关闭 / 重开 |
-| `POST …/reply` `…/close` `…/reopen` | 状态迁移 |
+| `GET /service` | 唯一页面：游客看 FAQ 与服务信息；会员同页看咨询列表、发起表单与对话。`?ask=1` 打开发起，`?thread=id` 指定会话，`?status=` 筛选 |
+| `POST /service/threads` | 新建会话与第一条消息；校验失败回同一页表单 |
+| `POST …/reply` `…/close` `…/reopen` | 状态迁移，完成后回到 `/service?thread=id` |
+| `GET /service/threads` `…/new` `…/{id}` | 旧链接兼容跳转，不再有独立页面 |
 
-入口：页脚服务区、账户中心导航、商品详情「就这件咨询尺码或面料」（自动带入款号）。
+入口：顶部导航客服胶囊、页脚服务区、商品详情「就这件咨询尺码或面料」（直接带入款号与预选类别）。
 
 **管理端**
 
@@ -94,7 +92,7 @@ OPEN / REPLIED ──关闭──► CLOSED ──重开──► OPEN
 
 ## 8. 验收要点
 
-1. 游客可读 FAQ，直接访问 `/service/threads` 跳登录；缺 CSRF 的 POST 403。
+1. 游客在 `/service` 单页读 FAQ，直接访问 `/service/threads` 跳登录；会员的列表、发起与对话都在同一页完成；缺 CSRF 的 POST 403。
 2. 新建写主表 + 首条消息；非法表单保留输入并定位字段；他人订单号、不存在款号、不存在咨询均被拒。
 3. 会员只能看自己的会话，越权 404；状态筛选与分页正确；非法状态 400。
 4. 回复 → 已回复且首次回复时间不变；追问 → 待回复；关闭幂等；重开清空关闭时间。
