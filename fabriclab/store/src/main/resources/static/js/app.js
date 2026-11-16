@@ -378,51 +378,7 @@
   var region = document.getElementById('catalog');
   if (!region) return;
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var busy = false, seq = 0, fitTimer = null, pending = null;
-  var gridResizeTimer = null, gridObserver = null, observedGrid = null;
-
-  /* 双层滚动的商品区：高度按实测卡片行高写成整 3 行，边界不切半张卡片。
-     图片尺寸变化会改行高，用 ResizeObserver 重算；无结果时不写高度，避免留下空框。 */
-  function fitGrid() {
-    var box = region.querySelector('.catgrid');
-    if (!box) return;
-    if (window.matchMedia && window.matchMedia('(max-width: 1024px)').matches) {
-      box.style.height = ''; /* 窄屏由 CSS 恢复单层滚动 */
-      return;
-    }
-    var grid = box.querySelector('.g4');
-    var card = grid && grid.querySelector('.card');
-    if (!card) { box.style.height = ''; return; }
-    var h = card.getBoundingClientRect().height;
-    var gap = parseFloat(getComputedStyle(grid).rowGap) || 0;
-    if (!h) return;
-    var rows = 3;
-    box.style.height = Math.round(rows * h + (rows - 1) * gap) + 2 + 'px';
-    if (window.ResizeObserver && grid !== observedGrid) {
-      if (gridObserver) gridObserver.disconnect();
-      gridObserver = new ResizeObserver(function () { fitGrid(); });
-      gridObserver.observe(grid);
-      observedGrid = grid;
-    }
-  }
-  function refitGrid() {
-    clearTimeout(gridResizeTimer);
-    gridResizeTimer = setTimeout(fitGrid, 120);
-  }
-  fitGrid();
-  window.addEventListener('load', fitGrid);
-  window.addEventListener('resize', refitGrid);
-
-  /* 滚轮归属：落在商品网格内才滚商品，滚到顶/底也不把这一下转交给整页；
-     落在网格外的滚轮由整页接管，商品区内部位置保持不动（CSS overflow-anchor:none）。 */
-  region.addEventListener('wheel', function (e) {
-    var box = region.querySelector('.catgrid');
-    if (!box || !box.contains(e.target)) return;
-    if (getComputedStyle(box).overflowY !== 'auto') return;
-    var atTop = box.scrollTop <= 0;
-    var atBottom = box.scrollTop + box.clientHeight >= box.scrollHeight - 1;
-    if ((atTop && e.deltaY < 0) || (atBottom && e.deltaY > 0)) e.preventDefault();
-  }, { passive: false });
+  var busy = false, seq = 0, pending = null;
 
   /* 首次访问（还没有会话 Cookie）时 Thymeleaf 会把会话号写进路径：
      /category;STORESESSION=xxx。它不是真实路径，不剥掉就会被当成「换页」，
@@ -476,7 +432,7 @@
           var keepFocus = document.activeElement
             && document.activeElement.closest
             && document.activeElement.closest('form[data-search]');
-          if (next) { region.innerHTML = next.innerHTML; fitGrid(); }
+          if (next) { region.innerHTML = next.innerHTML; }
           /* 即时搜索会重建输入框，把焦点与光标接回去，用户能连续输入 */
           if (keepFocus) {
             var ni = region.querySelector('form[data-search] input[name=keyword]');
@@ -547,7 +503,8 @@
       region.classList.add('busy');
     }
     load(a.href, 'push', false, false, isSort ? 260 : 0);
-    if (a.classList.contains('pglink')) {
+    if (a.classList.contains('pglink') || a.classList.contains('ln')) {
+      /* 换页与换系列线：内容整块更换，视口回到这块的顶部，避免标题被顶出视野 */
       window.scrollTo({ top: topOf(), behavior: reduce ? 'auto' : 'smooth' });
     }
   }
@@ -601,7 +558,7 @@
     if (!a || a.closest('#catalog') || !takeable(a) || a.href === location.href) return;
     e.preventDefault();
     load(a.href, 'push');
-    if (a.classList.contains('nitem') || a.classList.contains('hn')) {
+    if (a.classList.contains('nitem') || a.classList.contains('hn') || a.classList.contains('ln')) {
       window.scrollTo({ top: topOf(), behavior: reduce ? 'auto' : 'smooth' });
     }
   }, true);
@@ -620,4 +577,45 @@
   window.addEventListener('popstate', function () {
     if (samePath(location.href)) load(location.href, 'none', true);
   });
+})();
+
+/* ============================================================ 面料档案章节侧轨 */
+(function () {
+  'use strict';
+  var rail = document.querySelector('.fa-rail');
+  if (!rail) return;
+  var stops = Array.prototype.slice.call(rail.querySelectorAll('.fa-rail__stop'));
+  var chapters = stops.map(function (s) { return document.querySelector(s.getAttribute('href')); })
+                      .filter(Boolean);
+  if (!chapters.length) return;
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* 点击平滑跳章：目标停在双层吸顶头部之下 */
+  stops.forEach(function (s) {
+    s.addEventListener('click', function (e) {
+      var t = document.querySelector(s.getAttribute('href'));
+      if (!t) return;
+      e.preventDefault();
+      var hdr = document.querySelector('.hdw');
+      var off = hdr ? hdr.getBoundingClientRect().height : 0;
+      window.scrollTo({ top: t.getBoundingClientRect().top + window.pageYOffset - off - 16,
+                        behavior: reduce ? 'auto' : 'smooth' });
+    });
+  });
+
+  /* 滚动点亮：视口 35% 高度线压过哪一章的顶端，就点亮哪一刻度 */
+  function paint() {
+    var line = window.innerHeight * 0.35, cur = 0;
+    chapters.forEach(function (c, i) {
+      if (c.getBoundingClientRect().top <= line) cur = i;
+    });
+    stops.forEach(function (s, i) { s.classList.toggle('on', i === cur); });
+  }
+  var ticking = false;
+  window.addEventListener('scroll', function () {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function () { paint(); ticking = false; });
+  }, { passive: true });
+  paint();
 })();

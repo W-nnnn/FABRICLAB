@@ -5,7 +5,7 @@
     <link rel="icon" type="image/png" th:href="@{/images/mark.png}"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="|#{nav.brand} · #{home.title}|">FABRICLAB · 未染</title>
-    <link rel="stylesheet" th:href="@{/css/store.css?v=20261116b}"/>
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261116i}"/>
 </head>
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
@@ -49,7 +49,8 @@
     </div>
 
     <!-- ======================================================= 五条系列线 -->
-    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:1px;
+    <div class="hm-lines" data-hm-group
+         style="display:grid;grid-template-columns:repeat(5,1fr);gap:1px;
                 background:var(--line);border-bottom:1px solid var(--line)"
          th:with="pics=${ {'/images/look/lb-02.jpg','/images/look/lb-04.jpg','/images/look/lb-10.jpg',
                            '/images/look/lb-07.jpg','/images/look/lb-09.jpg'} }">
@@ -75,14 +76,14 @@
 
     <!-- ======================================================= 三条规矩 -->
     <div style="padding:74px var(--gx) 0">
-        <div class="ptitle">
+        <div class="ptitle" data-hm>
             <div>
                 <div class="eyebrow" th:text="#{home.rules.eb}">做法 / 三条规则</div>
                 <h2 class="h2" style="margin-top:14px" th:text="#{home.rules.title}">三条不让的规矩</h2>
             </div>
             <div class="r"><a class="tlink mute" th:href="@{/category}" th:text="#{home.rules.more}">阅读工坊手记</a></div>
         </div>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);
+        <div data-hm-group style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);
                     border-top:1px solid var(--line)">
             <div style="background:var(--wall);padding:30px 30px 34px 0">
                 <div class="din" style="font-size:11px;letter-spacing:.2em;color:var(--rust-ink)">01</div>
@@ -122,11 +123,11 @@
 
     <!-- ======================================================= 横贯大片 -->
     <div style="position:relative;height:600px;overflow:hidden;margin-top:78px;background:var(--linen)">
-        <img th:src="@{/images/look/wide-02.jpg}" alt="" loading="lazy"
+        <img th:src="@{/images/look/wide-02.jpg}" alt="" loading="lazy" data-hm-parallax="36"
              style="width:100%;height:100%;object-fit:cover;object-position:50% 30%"/>
         <div style="position:absolute;inset:0;background:linear-gradient(to right,
                     rgba(26,26,26,.62) 0%,rgba(26,26,26,.22) 46%,rgba(26,26,26,0) 74%)"></div>
-        <div style="position:absolute;left:var(--gx);bottom:54px;color:var(--wall);max-width:430px">
+        <div data-hm style="position:absolute;left:var(--gx);bottom:54px;color:var(--wall);max-width:430px">
             <div class="din" style="font-size:11px;letter-spacing:.28em;opacity:.72"
                  th:text="#{home.edit.eb}">特辑 / FW26</div>
             <div class="disp" style="margin-top:16px;font-size:40px" th:utext="#{home.edit.title}">
@@ -147,7 +148,7 @@
             <img th:src="@{/images/look/wide-01.jpg}" alt="" loading="lazy"
                  style="width:100%;height:100%;object-fit:cover;object-position:50% 18%;opacity:.95"/>
         </div>
-        <div style="flex:1;padding:72px var(--gx) 68px 66px;display:flex;flex-direction:column">
+        <div data-hm style="flex:1;padding:72px var(--gx) 68px 66px;display:flex;flex-direction:column">
             <div class="eyebrow" th:text="#{home.atelier.eb}">工坊 / 上海静安</div>
             <div class="song" style="margin-top:26px;font-size:40px;line-height:1.42;letter-spacing:.06em"
                  th:utext="#{home.atelier.title}">一间只做七件的<br>工坊</div>
@@ -156,17 +157,18 @@
             </div>
             <div style="margin-top:38px;display:flex;gap:52px">
                 <div>
-                    <div class="din" style="font-size:24px;font-weight:500">18</div>
+                    <div class="din" style="font-size:24px;font-weight:500" data-count="18">18</div>
                     <div style="margin-top:8px;font-family:var(--f-body);font-size:11px;letter-spacing:.18em;
                                 color:rgba(242,239,233,.48)" th:text="#{home.atelier.n1}">版师</div>
                 </div>
                 <div>
-                    <div class="din" style="font-size:24px;font-weight:500">09</div>
+                    <div class="din" style="font-size:24px;font-weight:500" data-count="9">09</div>
                     <div style="margin-top:8px;font-family:var(--f-body);font-size:11px;letter-spacing:.18em;
                                 color:rgba(242,239,233,.48)" th:text="#{home.atelier.n2}">版次</div>
                 </div>
                 <div>
                     <div class="din" style="font-size:24px;font-weight:500"
+                         th:attr="data-count=${onSaleTotal}"
                          th:text="${#numbers.formatInteger(onSaleTotal, 2)}">07</div>
                     <div style="margin-top:8px;font-family:var(--f-body);font-size:11px;letter-spacing:.18em;
                                 color:rgba(242,239,233,.48)" th:text="#{home.atelier.n3}">一季件数</div>
@@ -181,7 +183,7 @@
 
     <!-- ======================================================= 服务四栏 -->
     <div style="padding:64px var(--gx) 86px">
-        <div class="svc">
+        <div class="svc" data-hm-group>
             <div class="c">
                 <div class="no">SHIPPING</div>
                 <div class="t" th:text="#{svc.ship.t}">配送</div>
@@ -205,16 +207,34 @@
         </div>
     </div>
 
+    <!-- ======================================================= 品牌语跑马灯（悬停暂停） -->
+    <div class="march" aria-hidden="true">
+        <div class="march__track">
+            <div class="march__seq">
+                <span th:text="#{nav.brand}">FABRICLAB · 未染</span><i></i>
+                <span th:text="#{home.slogan}">布本无色，衣有十年。</span><i></i>
+                <span th:text="#{home.new.note}">卖完不补，不再开版</span><i></i>
+                <span th:text="#{home.vert}">UNDYED ATELIER · EST. 2019</span><i></i>
+            </div>
+            <div class="march__seq">
+                <span th:text="#{nav.brand}">FABRICLAB · 未染</span><i></i>
+                <span th:text="#{home.slogan}">布本无色，衣有十年。</span><i></i>
+                <span th:text="#{home.new.note}">卖完不补，不再开版</span><i></i>
+                <span th:text="#{home.vert}">UNDYED ATELIER · EST. 2019</span><i></i>
+            </div>
+        </div>
+    </div>
+
     <!-- ======================================================= 新品上架 -->
     <div style="padding:78px var(--gx) 0" th:if="${home.newArrivals() != null and !home.newArrivals().isEmpty()}">
-        <div class="ptitle">
+        <div class="ptitle" data-hm>
             <div>
                 <div class="eyebrow" th:text="#{home.new.eb}">新到 / 第七辑</div>
                 <h2 class="h2" style="margin-top:14px" th:text="#{home.new.title}">新品上架</h2>
             </div>
             <div class="r"><a class="tlink mute" th:href="@{/category}" th:text="#{home.new.all(${onSaleTotal})}">查看全部 42 件</a></div>
         </div>
-        <div style="display:flex;align-items:center;gap:18px;border-top:1px solid var(--line);
+        <div data-hm style="display:flex;align-items:center;gap:18px;border-top:1px solid var(--line);
                     padding:13px 0 22px">
             <span class="tiny" style="letter-spacing:.18em" th:text="#{home.new.meta}">FW26 第七辑 · 11.15 到店</span>
             <span class="din" style="font-size:11px;letter-spacing:.18em;color:var(--rust-ink)"
@@ -223,7 +243,7 @@
                 卖完不补，不再开版
             </span>
         </div>
-        <div class="g3">
+        <div class="g3" data-hm-group>
             <th:block th:each="p, s : ${home.newArrivals()}">
                 <a th:replace="~{fragments :: homeCard(${p}, ${#numbers.formatInteger(s.count, 2)}, ${s.first})}"></a>
             </th:block>
@@ -233,7 +253,7 @@
     <!-- ======================================================= 精选推荐 -->
     <div style="margin-top:76px;background:var(--linen);padding:60px var(--gx) 66px"
          th:if="${home.featured() != null and !home.featured().isEmpty()}">
-        <div class="ptitle">
+        <div class="ptitle" data-hm>
             <div>
                 <div class="eyebrow" th:text="#{home.feat.eb}">为你而选 / 编辑精选</div>
                 <h2 class="h2" style="margin-top:14px" th:text="#{home.feat.title}">精选推荐</h2>
@@ -244,12 +264,12 @@
                                  line-height:1.95" th:text="#{home.feat.lead(${onSaleTotal})}">
             从本季四十二件里挑出四件：本季三色、四种穿法，每一件都按穿十年的版型裁。
         </div>
-        <div class="g4">
+        <div class="g4" data-hm-group>
             <th:block th:each="p, s : ${home.featured()}">
                 <a th:replace="~{fragments :: card(${p}, ${#numbers.formatInteger(s.count, 2)})}"></a>
             </th:block>
         </div>
-        <div style="margin-top:30px;border-top:1px solid rgba(26,26,26,.16);padding-top:18px;
+        <div data-hm style="margin-top:30px;border-top:1px solid rgba(26,26,26,.16);padding-top:18px;
                     display:flex;align-items:center;gap:22px">
             <span class="tiny" style="letter-spacing:.18em" th:text="#{home.feat.colours}">本季三色</span>
             <span style="display:flex;align-items:center;gap:7px">
@@ -279,5 +299,6 @@
 
     <th:block th:replace="~{fragments :: footer}"></th:block>
 </div>
+<script th:src="@{/js/home-motion.js?v=20261116a}"></script>
 </body>
 </html>

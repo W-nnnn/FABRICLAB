@@ -5,7 +5,7 @@
     <link rel="icon" type="image/png" th:href="@{/images/mark.png}"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="|#{nav.brand} · #{shop.title}|">FABRICLAB · 全部商品</title>
-    <link rel="stylesheet" th:href="@{/css/store.css?v=20261116b}"/>
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261116i}"/>
 </head>
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
@@ -31,29 +31,52 @@
         <span th:if="${result.scope().selectedLine() == null}" th:text="#{shop.all}">全部商品</span>
     </div>
 
-    <!-- 页头 -->
-    <div style="padding:18px var(--gx) 20px;display:flex;align-items:flex-end">
-        <div>
-            <div class="eyebrow" th:text="#{shop.eyebrow}">全部商品 / FW26</div>
-            <h1 class="h2" style="margin-top:10px;font-size:34px"
-                th:if="${result.scope().selectedLine() != null}"
-                th:text="${tr.t(result.scope().selectedLine().name)}">全部商品</h1>
-            <h1 class="h2" style="margin-top:10px;font-size:34px"
-                th:unless="${result.scope().selectedLine() != null}"
-                th:text="#{shop.all}">全部商品</h1>
+    <!-- 页头：亚麻块面 + 赭色计数焦点 -->
+    <div class="shero">
+        <div class="shero__top">
+            <div>
+                <div class="eyebrow" th:text="#{shop.eyebrow}">全部商品 / FW26</div>
+                <h1 class="h2 shero__title"
+                    th:if="${result.scope().selectedLine() != null}"
+                    th:text="${tr.t(result.scope().selectedLine().name)}">全部商品</h1>
+                <h1 class="h2 shero__title"
+                    th:unless="${result.scope().selectedLine() != null}"
+                    th:text="#{shop.all}">全部商品</h1>
+            </div>
+            <div class="lead shero__lead"
+                 th:text="#{shop.lead(${result.scope().selectedLine() != null ? result.page.total : onSaleTotal})}">四十二件，本季新增七件。卖完不补，不再开版。</div>
+            <div class="shero__num">
+                <span class="din"
+                      th:text="${result.scope().selectedLine() != null ? result.page.total : onSaleTotal}">42</span>
+                <span class="tiny" th:text="#{shop.count}">在售件数</span>
+            </div>
         </div>
-        <div class="lead" style="margin:0 0 4px 40px;width:420px;font-size:12px"
-             th:text="#{shop.lead(${onSaleTotal})}">四十二件，本季新增七件。卖完不补，不再开版。</div>
-        <div style="margin-left:auto;display:flex;align-items:baseline;gap:10px">
-            <span class="din" style="font-size:40px;font-weight:700;letter-spacing:-.03em"
-                  th:text="${onSaleTotal}">42</span>
-            <span class="tiny" style="padding-bottom:7px" th:text="#{shop.count}">在售件数</span>
-        </div>
-    </div>
+        <!-- 系列线导航：全部商品的下分类，随页内布局呈现，不再做成吸顶横条 -->
+        <nav class="linenav" th:aria-label="#{shop.f.category}">
+        <a class="ln" th:href="@{/category}"
+           th:classappend="${result.scope().selectedLine() == null} ? 'on'"
+           th:text="#{shop.all}">全部商品</a>
+        <a class="ln" th:href="@{/category(category=1)}"
+           th:classappend="${result.scope().selectedLine() != null and result.scope().selectedLine().id == 1} ? 'on'"
+           th:text="#{line.commute}">通勤出行</a>
+        <a class="ln" th:href="@{/category(category=2)}"
+           th:classappend="${result.scope().selectedLine() != null and result.scope().selectedLine().id == 2} ? 'on'"
+           th:text="#{line.leisure}">休闲生活</a>
+        <a class="ln" th:href="@{/category(category=3)}"
+           th:classappend="${result.scope().selectedLine() != null and result.scope().selectedLine().id == 3} ? 'on'"
+           th:text="#{line.outdoor}">户外运动</a>
+        <a class="ln" th:href="@{/category(category=4)}"
+           th:classappend="${result.scope().selectedLine() != null and result.scope().selectedLine().id == 4} ? 'on'"
+           th:text="#{line.occasion}">礼服场合</a>
+        <a class="ln" th:href="@{/category(category=5)}"
+           th:classappend="${result.scope().selectedLine() != null and result.scope().selectedLine().id == 5} ? 'on'"
+           th:text="#{line.home}">居家舒适</a>
+    </nav>
+    </div><!-- /shero -->
     <div style="margin:0 var(--gx);height:1px;background:var(--ink)"></div>
 
     <!-- 计数 + 搜索 + 排序：搜索放在首屏工具条，输入即时筛选 -->
-    <div class="cattools" style="padding:12px var(--gx) 0;display:flex;align-items:center;gap:18px;flex-wrap:wrap">
+    <div class="cattools" style="padding:20px var(--gx) 0;display:flex;align-items:center;gap:18px;flex-wrap:wrap">
         <span class="tiny" th:text="#{shop.range}">FW26 第七辑</span>
 
         <form class="csearch" action="/category" method="get" role="search" data-search>
@@ -109,7 +132,7 @@
     </div>
 
     <!-- 当前条件 -->
-    <div style="padding:10px var(--gx) 0;display:flex;align-items:center;gap:8px">
+    <div style="padding:16px var(--gx) 0;display:flex;align-items:center;gap:8px">
         <span class="tiny" style="letter-spacing:.18em;margin-right:8px" th:text="#{shop.filtered}">已筛选</span>
         <span class="chip on" th:if="${result.scope().selectedLine() != null}">
             <span th:text="${tr.t(result.scope().selectedLine().name)}">通勤</span>
@@ -236,7 +259,7 @@
 
             </div><!-- /catgrid：商品按页全部铺开，随整页滚动 -->
 
-            <div class="catpager" style="margin-top:28px;display:flex;align-items:center;gap:24px;
+            <div class="catpager" style="margin-top:52px;display:flex;align-items:center;gap:24px;
                         font-family:var(--f-din);font-size:11px;letter-spacing:.18em">
                 <a class="pglink" data-nav="prev" th:if="${query.page() > 1}"
                    th:href="@{/category(category=${result.scope().entry() != null ? result.scope().entry().id : null},
@@ -258,6 +281,7 @@
 
     </div><!-- /#catalog -->
 
+    <div style="height:86px"></div>
     <th:block th:replace="~{fragments :: footer}"></th:block>
 </div>
 </body>

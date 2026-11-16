@@ -175,29 +175,53 @@ html, body { overflow-x: clip; }
 .hdr form.inline.open input[type="text"],
 .hdr form.inline input[type="text"]:focus { width: 150px; opacity: 1; outline: none; }
 
-/* 第二层：系列目录——墨色横条，与纸色品牌层形成双层对比 */
-.navbar {
-    display: flex; align-items: stretch; justify-content: center; gap: clamp(20px, 3.4vw, 58px);
-    height: 46px; padding: 0 var(--gx);
-    background: var(--ink);
+/* 系列线导航：页面内的轻量行，属「全部商品」的下分类，不再做成吸顶墨条 */
+.linenav {
+    display: flex; align-items: center; justify-content: center; flex-wrap: wrap;
+    gap: 14px;
+    padding: 14px var(--gx) 20px;
 }
-.nitem {
-    position: relative;
-    display: flex; align-items: center;
-    font-family: var(--f-body); font-size: 12.5px; font-weight: 400;
-    letter-spacing: .14em; color: rgba(242, 239, 233, .62);
-    transition: color .25s ease;
+/* 胶囊块：默认卡色描边与墙色区分；悬停上浮描墨；选中墨底反白，一眼锁定当前系列 */
+.linenav .ln {
+    display: inline-flex; align-items: center;
+    font-family: var(--f-body); font-size: 12.5px; letter-spacing: .12em;
+    color: var(--body);
+    padding: 7px 20px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    transition: color .22s ease, border-color .22s ease, background .22s ease,
+                transform .22s ease, box-shadow .22s ease;
 }
-.nitem::after {
-    content: ""; position: absolute; left: 0; right: 0; bottom: 0;
-    height: 2px; background: var(--rust);
-    transform: scaleX(0); transform-origin: center;
-    transition: transform .3s cubic-bezier(.22, .61, .36, 1);
+.linenav .ln:hover {
+    color: var(--ink); border-color: var(--ink); background: var(--linen);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 0 rgba(26, 26, 26, .09);
 }
-.nitem:hover { color: var(--wall); }
-.nitem:hover::after { transform: scaleX(1); }
-.nitem.on { color: var(--wall); font-weight: 500; }
-.nitem.on::after { transform: scaleX(1); }
+.linenav .ln:active { transform: translateY(0); box-shadow: none; }
+.linenav .ln.on {
+    color: var(--wall); background: var(--ink); border-color: var(--ink); font-weight: 500;
+}
+.linenav .ln:focus-visible { outline: 2px solid var(--rust-ink); outline-offset: 2px; }
+
+/* 选购页头：亚麻色块面承载标题、导语、计数与系列导航——
+   纸色页面上一块看得见的「页头体」，右侧计数用赭色细线隔离出焦点，不再一片平 */
+.shero {
+    background: var(--linen);
+    padding: 30px var(--gx) 22px;
+}
+.shero__top { display: flex; align-items: flex-end; }
+.shero__title { margin-top: 10px; font-size: 34px; }
+.shero__lead { margin: 0 0 4px 40px; width: 420px; font-size: 12px; }
+.shero__num {
+    margin-left: auto; display: flex; align-items: baseline; gap: 12px;
+    padding-left: 24px; border-left: 1px solid var(--line2);
+}
+.shero__num .din { color: var(--rust-ink); font-size: 42px; font-weight: 700; letter-spacing: -.03em; }
+.shero__num .tiny { padding-bottom: 7px; }
+.shero .linenav { padding: 26px 0 6px; }
+/* 胶囊落在亚麻底上：悬停改提亮为卡色，避免与底色同色看不清 */
+.shero .linenav .ln:hover { background: var(--card); }
 
 /* ------------------------------------------------------------ 排版 */
 .eyebrow {
@@ -870,18 +894,10 @@ body.lang-en .lead, body.lang-en .tiny, body.lang-en .eyebrow { letter-spacing: 
     animation: catProgress .8s cubic-bezier(.4, 0, .2, 1) infinite;
 }
 
-/* 双层滚动：商品网格自身是独立的滚动区，高度由 app.js 按实测行高写成整 3 行，
-   边界不切半张卡片；鼠标落在网格内只滚商品、落在网格外滚整页，互不带转。
-   无图片/无结果时 JS 会清空内联高度，容器恢复 auto，不会留一块空框。 */
-.catgrid {
-    height: auto;
-    min-height: 0;
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    overflow-anchor: none;
-    scrollbar-width: none;
-}
-.catgrid::-webkit-scrollbar { display: none; }
+/* 商品网格回归整页单层滚动：不做页中页。
+   内滚区（滚轮先滚商品、到边界再转交页面）被用户多次反馈为「滚动怪异」，
+   双层滚动条一跳一跳、动线两段式，体验无法救回——彻底砍掉，整页只有一条滚动。 */
+.catgrid { min-height: 0; }
 
 /* 侧栏目录面板（分类页） */
 .catpanel {
@@ -933,15 +949,13 @@ body.lang-en .lead, body.lang-en .tiny, body.lang-en .eyebrow { letter-spacing: 
     .hdr-tag { display: none; }
     .hnav { gap: 18px; margin-left: 0; padding-left: 0; border-left: 0; }
     .acts { margin-left: auto; }
-    .navbar { gap: 18px; overflow-x: auto; justify-content: flex-start; }
+    .linenav { gap: 16px; flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; }
     /* 多栏改单栏：商品详情、选购、购物袋、结算、订单详情共用 .cols */
     .cols { flex-direction: column !important; gap: 34px !important; }
     .cols-main, .cols-side {
         width: 100% !important; max-width: none !important; margin-left: 0 !important;
     }
     .catpanel { position: static !important; width: 100% !important; }
-    /* 窄屏恢复整页单层滚动，避免小视口出现两层滚动 */
-    .catgrid { height: auto !important; overflow: visible; }
     .csearch { width: 100%; max-width: none; }
     .g4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .g3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -1281,35 +1295,34 @@ body.lang-en .lead, body.lang-en .tiny, body.lang-en .eyebrow { letter-spacing: 
 .fa-hero__rule i { flex: 1; height: 1px; background: var(--line); }
 .fa-hero__rule b { font-weight: 400; color: var(--ink); }
 
-/* ------------------------------------------------------------ 吸顶纤维索引 */
-.fa-index {
-    position: sticky; top: 108px; z-index: 50;
-    display: flex; align-items: center; gap: clamp(18px, 2.6vw, 40px);
-    height: 58px; padding: 0 var(--gx);
-    background: rgba(242, 239, 233, .95);
-    -webkit-backdrop-filter: blur(9px); backdrop-filter: blur(9px);
-    border-bottom: 1px solid var(--line);
+/* ------------------------------------------------------------ 章节侧轨（替代传统吸顶索引条）
+   右缘竖排四道刻度：编号常驻，章名仅在悬停/当前章滑出；
+   滚动经 app.js 点亮当前章（赭色 + 刻度伸长），点击平滑跳章。
+   只在右侧留白足够的宽屏出现（≥1366px），窄屏跟随线性阅读不导航。 */
+.fa-rail {
+    position: fixed; right: 20px; top: 50%; transform: translateY(-50%);
+    z-index: 60; display: flex; flex-direction: column; align-items: flex-end; gap: 24px;
 }
-.fa-index__label { flex: none; font-size: 10.5px; letter-spacing: .22em; color: var(--mute); }
-.fa-index__items { display: flex; align-items: center; gap: clamp(16px, 2.4vw, 38px); flex: 1; }
-.fa-index__item {
-    position: relative; display: flex; align-items: baseline; gap: 8px;
-    padding: 6px 0; font-size: 12px; letter-spacing: .08em;
-    color: var(--mute); white-space: nowrap;
-    transition: color .28s ease;
+.fa-rail__stop {
+    display: flex; align-items: center; gap: 10px;
+    color: var(--faint); transition: color .3s ease;
 }
-.fa-index__item i { font-size: 10px; font-style: normal; color: var(--faint); transition: color .28s ease; }
-.fa-index__item::after {
-    content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px;
-    background: var(--rust); transform: scaleX(0); transform-origin: left;
-    transition: transform .4s cubic-bezier(.22, .61, .36, 1);
+.fa-rail__stop i { font-size: 11px; font-style: normal; letter-spacing: .1em; font-variant-numeric: tabular-nums; }
+.fa-rail__stop::after {
+    content: ""; width: 14px; height: 1px; background: currentColor;
+    transition: width .35s cubic-bezier(.22, .61, .36, 1), background .3s ease;
 }
-.fa-index__item:hover { color: var(--ink); }
-.fa-index__item.on { color: var(--rust-ink); }
-.fa-index__item.on i { color: var(--rust-ink); }
-.fa-index__item.on::after { transform: scaleX(1); }
-.fa-index__hint { flex: none; font-size: 10px; letter-spacing: .18em; color: var(--faint); }
-.fa-index__bar { position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: transparent; }
+.fa-rail__name {
+    font-size: 11px; letter-spacing: .16em; color: var(--mute);
+    opacity: 0; transform: translateX(6px);
+    transition: opacity .3s ease, transform .3s ease;
+}
+.fa-rail__stop:hover { color: var(--ink); }
+.fa-rail__stop:hover .fa-rail__name { opacity: 1; transform: none; }
+.fa-rail__stop.on { color: var(--rust-ink); }
+.fa-rail__stop.on::after { width: 30px; }
+.fa-rail__stop.on .fa-rail__name { opacity: 1; transform: none; color: var(--rust-ink); }
+@media (max-width: 1365px) { .fa-rail { display: none; } }
 
 /* ------------------------------------------------------------ 四章 */
 .fa-chapter {
@@ -1528,9 +1541,6 @@ body.lang-en .lead, body.lang-en .tiny, body.lang-en .eyebrow { letter-spacing: 
     .fa-fact, .fa-fact + .fa-fact { padding: 18px 0; border-right: 0; border-bottom: 1px solid var(--line); }
     .fa-trait { grid-template-columns: 82px minmax(0, 1fr); gap: 16px; }
     .fa-trait .fa-bar { display: none; }
-    .fa-index { gap: 16px; overflow-x: auto; }
-    .fa-index__items { gap: 18px; }
-    .fa-index__hint { display: none; }
     .fa-samples__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .fa-samples__head { flex-direction: column; align-items: flex-start; }
 }
@@ -1548,4 +1558,70 @@ body.lang-en .lead, body.lang-en .tiny, body.lang-en .eyebrow { letter-spacing: 
     .fa-bar i { width: var(--w) !important; transition: none !important; }
     .fa-all, .fa-all i, .fa-swatch, .fa-swatch::after, .fa-inline-link { transition: none !important; }
     .fa-material__frame img { transition: none !important; transform: none !important; }
+}
+
+/* ============================================================
+   首页动效（home-motion.js 配套）
+   根类 .hm-anim 只在脚本可用且未开启「减少动态效果」时挂上，
+   所有入场样式都包在它下面——JS 失效或系统降噪时页面原样可读。 */
+/* 滚动揭示：默认下移 26px + 全透明，入视口后升回 */
+.hm-anim [data-hm] {
+    opacity: 0;
+    transform: translateY(26px);
+    transition: opacity .7s cubic-bezier(.22, .61, .36, 1),
+                transform .7s cubic-bezier(.22, .61, .36, 1);
+}
+.hm-anim [data-hm].in { opacity: 1; transform: none; }
+
+/* 首屏分块入场：眉题→大字→文案→竖排字依次升起 */
+.hm-anim .hero-left > * { opacity: 0; animation: hmRise .9s cubic-bezier(.22, .61, .36, 1) forwards; }
+.hm-anim .hero-left > *:nth-child(1) { animation-delay: .08s; }
+.hm-anim .hero-left > *:nth-child(2) { animation-delay: .2s; }
+.hm-anim .hero-left > *:nth-child(3) { animation-delay: .34s; }
+.hm-anim .hero-left > *:nth-child(4) { animation-delay: .5s; }
+/* 首屏主图：缓推镜（1.07 → 1）+ 淡入，像镜头落定 */
+.hm-anim .hero-media img { opacity: 0; animation: hmHeroImg 1.5s cubic-bezier(.22, .61, .36, 1) .18s forwards; }
+@keyframes hmRise {
+    from { opacity: 0; transform: translateY(26px); }
+    to   { opacity: 1; transform: none; }
+}
+@keyframes hmHeroImg {
+    from { opacity: 0; transform: scale(1.07); }
+    to   { opacity: 1; transform: none; }
+}
+
+/* 横贯大片视差基线：JS 写 translate3d+scale(1.1)，scale 避免位移露边 */
+[data-hm-parallax] { will-change: transform; transform: scale(1.1); }
+
+/* 品牌语跑马灯：墨色细带，悬停暂停 */
+.march { overflow: hidden; background: var(--ink); }
+.march__track { display: flex; width: max-content; animation: hmMarch 30s linear infinite; }
+.march:hover .march__track { animation-play-state: paused; }
+.march__seq { display: flex; align-items: center; flex: none; }
+.march__seq span {
+    flex: none; padding: 14px 0;
+    font-family: var(--f-din); font-size: 10px; letter-spacing: .3em;
+    color: rgba(242, 239, 233, .82); white-space: nowrap;
+}
+.march__seq i {
+    flex: none; margin: 0 30px; width: 5px; height: 5px; border-radius: 50%;
+    background: var(--rust); font-style: normal;
+}
+@keyframes hmMarch { to { transform: translateX(-50%); } }
+
+/* 五条系列线：图片悬停缓放，箭头跟进 */
+.hm-lines a img { transition: transform .55s cubic-bezier(.22, .61, .36, 1); }
+.hm-lines a:hover img { transform: scale(1.06); }
+.hm-lines a svg { transition: transform .3s cubic-bezier(.22, .61, .36, 1); }
+.hm-lines a:hover svg { transform: translateX(4px); }
+.hm-lines a:hover b { color: var(--rust-ink); }
+
+/* 工坊数字：计数期间给一点投影强调 */
+.hm-anim .dark [data-count].in { text-shadow: 0 1px 0 rgba(242, 239, 233, .14); }
+
+@media (prefers-reduced-motion: reduce) {
+    .hm-anim [data-hm] { opacity: 1 !important; transform: none !important; transition: none !important; }
+    .hm-anim .hero-left > *, .hm-anim .hero-media img { opacity: 1 !important; animation: none !important; }
+    .march__track { animation: none !important; }
+    [data-hm-parallax] { transform: scale(1.1) !important; }
 }
