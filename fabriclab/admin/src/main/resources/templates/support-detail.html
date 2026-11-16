@@ -12,9 +12,8 @@
             <div class="page">
                 <div th:replace="~{fragments :: notice}"></div>
 
-                <div class="ph">
+                <div class="ph ph--slim">
                     <div>
-                        <div class="ph__eyebrow"><em>04</em><span th:text="#{admin.svc.title}">客服咨询</span></div>
                         <h1 th:text="${view.thread.subject}">咨询主题</h1>
                         <p class="svc-meta">
                             <span class="num" th:text="${view.thread.threadNo}">FL-S…</span>
