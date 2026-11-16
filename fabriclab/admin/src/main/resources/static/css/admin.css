@@ -263,7 +263,7 @@ h1,h2,h3{font-weight:500}
 .facts dd{text-align:right;color:var(--body);word-break:break-all}
 
 /* ── 工具条 ───────────────────────────────────────── */
-.toolbar{background:var(--surface);margin:0 -20px;padding:14px 20px;
+.toolbar{background:var(--paper);padding:14px 0;
   border-top:1px solid var(--rule);display:flex;align-items:center;gap:26px;flex-wrap:wrap}
 .search{display:flex;align-items:center;gap:9px;width:264px;height:38px;padding:0 12px;
   border:1px solid var(--rule-strong);background:var(--white)}
@@ -291,7 +291,7 @@ h1,h2,h3{font-weight:500}
 .tbl caption{text-align:left;padding:16px 0 10px;font-size:12px;color:var(--faint)}
 .tbl thead th{height:40px;padding:0 14px;text-align:left;font-size:12px;font-weight:500;
   letter-spacing:.1em;color:var(--body);border-bottom:1px solid var(--rule-strong);
-  white-space:nowrap;background:var(--surface);position:sticky;top:0;z-index:2}
+  white-space:nowrap;background:var(--paper);position:sticky;top:0;z-index:2}
 /* 首列留白：复选框与首列文字都不贴边，行悬浮只用底色反馈，不再画会压住内容的竖线 */
 .tbl thead th:first-child{padding-left:10px;padding-right:0}
 .tbl thead th:last-child{padding-right:16px;text-align:right}
