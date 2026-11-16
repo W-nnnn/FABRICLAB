@@ -1396,32 +1396,9 @@ body.lang-en .lead, body.lang-en .tiny, body.lang-en .eyebrow { letter-spacing: 
 .fa-hero__rule i { flex: 1; height: 1px; background: var(--line); }
 .fa-hero__rule b { font-weight: 400; color: var(--ink); }
 
-/* ------------------------------------------------------------ 工艺页工序索引：页内跳转行，不做吸顶横条 */
-.fa-index {
-    display: flex; align-items: center; gap: clamp(16px, 2vw, 32px);
-    padding: 16px var(--gx); border-bottom: 1px solid var(--line);
-}
-.fa-index__label { flex: none; font-size: 10.5px; letter-spacing: .2em; color: var(--mute); }
-.fa-index__items { display: flex; align-items: center; gap: clamp(16px, 2vw, 34px); flex: 1; }
-.fa-index__item {
-    display: inline-flex; align-items: baseline; gap: 7px;
-    padding: 4px 0; font-size: 12px; letter-spacing: .08em;
-    color: var(--mute); border-bottom: 1px solid transparent;
-    transition: color .2s ease, border-color .2s ease;
-}
-.fa-index__item i { font-size: 10px; font-style: normal; color: var(--faint); }
-.fa-index__item:hover { color: var(--ink); }
-.fa-index__item.on { color: var(--rust-ink); border-bottom-color: var(--rust); }
-.fa-index__item.on i { color: var(--rust-ink); }
-.fa-index__hint { flex: none; font-size: 10px; letter-spacing: .18em; color: var(--faint); }
-@media (max-width: 640px) {
-    .fa-index { flex-wrap: wrap; gap: 10px 16px; }
-    .fa-index__hint { margin-left: auto; }
-}
-
 /* ------------------------------------------------------------ 章节侧轨（替代传统吸顶索引条）
    右缘竖排四道刻度：编号常驻，章名仅在悬停/当前章滑出；
-   滚动经 app.js 点亮当前章（赭色 + 刻度伸长），点击平滑跳章。
+   滚动经 fabric-story.js 点亮当前章（赭色 + 刻度伸长），点击平滑跳章。
    只在右侧留白足够的宽屏出现（≥1366px），窄屏跟随线性阅读不导航。 */
 .fa-rail {
     position: fixed; right: 20px; top: 50%; transform: translateY(-50%);
