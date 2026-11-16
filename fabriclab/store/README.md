@@ -1,6 +1,6 @@
 # fabriclab-store
 
-FABRICLAB 用户端工程，端口 8080。当前阶段：T17 服装类扩展（可选交付已实施）。
+FABRICLAB 用户端工程，端口 8080。任务 T1~T17 已全部交付，含售前客服单页 `/service`（模块设计见 `docs/service-design.md`）。
 
 ## 结构
 
@@ -12,6 +12,8 @@ src/main/java/com/fabriclab/store/
 ├── controller/MainController.java   首页（新品上架 ≤3、精选推荐 ≤4）与健康检查
 ├── controller/BrowseController.java 商品列表 /category：GET 整页刷新
 ├── controller/ProductController.java 商品详情 /product?id=：仅上架可看
+├── controller/SeriesController.java  系列专题 /series/{id}：一级系列按二级品类归组
+├── controller/SupportController.java 客服中心 /service：FAQ、咨询列表、发起与对话（query 参数路由）
 ├── controller/RegisterController.java 会员注册 /register：GET 表单、POST 提交
 ├── controller/SignonController.java 登录 /signon 与退出 /signout（POST + CSRF）
 ├── controller/CartController.java 购物车 /cart 与加入、改量、移除
@@ -28,6 +30,8 @@ src/main/java/com/fabriclab/store/
 ├── service/ProductService.java      单 SKU 商品：款号唯一、必归二级分类、version 递增
 ├── service/BrowseService.java       浏览：分类作用域、名称包含匹配、排序白名单、分页
 ├── service/DetailService.java       详情：ID 定位、相册升序、封面回退、分类路径
+├── service/SeriesService.java       系列专题：一级系列聚合与在售款归组
+├── service/SupportService.java      客服咨询：会话状态机 OPEN→REPLIED→CLOSED 可重开、按编号判重
 ├── service/CaptchaService.java      服务端验证码：一次性消费、5 分钟有效、可注入时钟
 ├── service/RegistrationService.java 注册：仅 CUSTOMER/ENABLED、用户名唯一、BCrypt 存储
 ├── service/AuthService.java         登录：四态统一失败、会话标识更换、站内返回页白名单
@@ -52,12 +56,12 @@ src/main/java/com/fabriclab/store/
 ├── exception/BusinessException.java 业务校验异常 → HTTP 400
 ├── exception/NotFoundException.java 资源不存在 → HTTP 404（标题可定制，如商品不存在或已下架）
 ├── exception/CsrfViolationException.java 无效表单防护请求 → HTTP 403
-├── entity/                          七张业务表实体
+├── entity/                          七张业务表实体 + 客服扩展 ServiceThread / ServiceMessage
 │   StoreUser / Category / Product / ProductImage
-│   CartItem / SalesOrder / SalesOrderItem
+│   CartItem / SalesOrder / SalesOrderItem / ServiceThread / ServiceMessage
 └── mapper/                          对应 Mapper，继承 BaseMapper
 src/main/resources/application.yml   端口、数据源、MyBatis-Plus
-src/main/resources/templates/        index 首页 / category 列表 / product 详情 / cart 购物车 / checkout 结算确认 / orders 订单列表 / order 订单详情 / payment 模拟支付 / signon 登录 / register 注册 / error 错误 / fragments 片段
+src/main/resources/templates/        index 首页 / category 列表 / product 详情 / cart 购物车 / checkout 结算确认 / orders 订单列表 / order 订单详情 / payment 模拟支付 / signon 登录 / register 注册 / series 系列专题 / service 客服中心 / fabrics 面料档案 / crafts 工艺说明 / error 错误 / fragments 片段
 src/test/java/com/fabriclab/store/
 ├── controller/MainControllerTest.java   首页渲染（Mock 服务层）
 ├── controller/BrowseControllerTest.java 列表 400 / 404 / 条件回显
@@ -103,7 +107,7 @@ src/test/java/com/fabriclab/store/
 ## 数据层约定
 
 - DDL 唯一来源是仓库根目录 `01-schema.sql`，只在空库执行一次；应用启动不建表、不清库。
-- 连接参数走环境变量：`MYSQL_HOST`、`MYSQL_PORT`、`MYSQL_DATABASE`、`MYSQL_USER`、`MYSQL_PASSWORD`，口令不入仓库。
+- 默认数据源为真实库 `FABRICLAB@3306`、账号 `fabriclab/fabriclab`（写入 `application.yml` 默认值，启动零环境变量）；覆盖时用 `MYSQL_HOST`、`MYSQL_PORT`、`MYSQL_DATABASE`、`MYSQL_USER`、`MYSQL_PASSWORD` 环境变量，口令不入仓库。
 - `category.parent_key` 是数据库生成列，实体不写入。
 - 单 SKU 口径：款号 `sku` 创建后不可变；不设尺码、配色字段，差异经 `SingleSkuText` 写入商品名称与描述；面料 / 克重 / 版型 / 工艺为多行纯文本。
 - 分类编码后缀即类型：`*_GAR` 成衣、`*_ACC` 配饰、其余 `ALL`；映射在 `CategoryType`，不新增表字段。
@@ -112,7 +116,6 @@ src/test/java/com/fabriclab/store/
 ## 构建与验证
 
 ```bash
-mvn test
 mvn spring-boot:run --server.port=8080
 ```
 
@@ -121,7 +124,8 @@ mvn spring-boot:run --server.port=8080
 数据库连通性验证需先准备数据：
 
 ```bash
-export MYSQL_PASSWORD='<本机口令>'
+export MYSQL_USER=fabriclab
+export MYSQL_PASSWORD=fabriclab
 mvn test -Dtest=SchemaIntegrationTest
 ```
 
@@ -135,6 +139,7 @@ mvn test -Dtest=SchemaIntegrationTest
 | `http://localhost:8080/fabrics` | 面料档案：按纤维四类归组在售款，洗护判定与详情页同一套 |
 | `http://localhost:8080/crafts` | 工艺说明：染织裁缝四段 + 当季在售条 |
 | `http://localhost:8080/series/{id}` | 系列专题：一级系列按二级品类归组；非数字 400、不存在或二级 ID 404 |
+| `http://localhost:8080/service` | 客服中心单页：游客看常见问题，会员发起与查看咨询（`?ask=1` 发起、`?thread=id` 对话）；入口在顶部导航独立胶囊 |
 | `http://localhost:8080/health` | `{"status":"UP","app":"fabriclab-store","stage":"T5"}` |
 
 浏览口径：仅上架商品出现在动态区域，零库存仍展示为「暂时缺货」；搜索只匹配名称（去首尾空白、≤120，`%` `_` 按普通字符），不搜款号；非法参数 400，分类不存在 404「分类不可用」，技术异常 500 通用失败页。

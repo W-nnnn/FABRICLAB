@@ -1,6 +1,6 @@
 # fabriclab-admin
 
-FABRICLAB 后台管理端，端口 8081，与用户端（`fabriclab/store`，8080）独立部署、共享同一 `MyPetStore` 库。当前阶段：T16 分类、款号、库存补货、服装相册、顾客账号与订单管理。
+FABRICLAB 后台管理端，端口 8081，与用户端（`fabriclab/store`，8080）独立部署、共享同一 `FABRICLAB` 库（MySQL 8.4@3306）。当前阶段：商品、相册、顾客账号、订单与客服工作台已全部交付。
 
 设计依据：`docs/admin-design.md`（角色、用例、模块、字段与状态、权限矩阵）；视觉规范见 `docs/admin-ui-design.md` 与 `docs/admin-ui-prototype.html`。
 
@@ -9,8 +9,8 @@ FABRICLAB 后台管理端，端口 8081，与用户端（`fabriclab/store`，808
 ```
 src/main/java/com/fabriclab/admin/
 ├── config/       分页、语言（中 / 英）、商品内容词典、拦截器装配
-├── controller/   登录、控制台、分类、款号、相册、顾客账号、错误页
-├── service/      登录会话、分类树、商品维护、增量补货、相册、账号维护、控制台计数、描述编解码
+├── controller/   登录、控制台、分类、款号、相册、顾客账号、订单、客服、搜索、错误页
+├── service/      登录会话、分类树、商品维护、增量补货、相册、账号维护、控制台计数、订单、客服工单、描述编解码
 ├── model/        表单白名单与列表 / 相册 / 账号视图
 ├── entity/       与用户端同库同表的实体
 ├── mapper/       对应 Mapper
@@ -18,7 +18,7 @@ src/main/java/com/fabriclab/admin/
 └── exception/    业务 400 / 未找到 404 / CSRF 403
 src/main/resources/
 ├── application.yml             8081、会话 Cookie ADMINSESSION、数据源
-├── templates/                  signon / console / categories / category-form / products / product-form / album / users / user-detail / error / fragments
+├── templates/                  signon / console / categories / category-form / products / product-form / album / albums / users / user-detail / orders / order-detail / support / support-detail / error / fragments
 ├── messages.properties         界面文案（messages_en.properties 为英文版）
 ├── content-en.properties       商品数据英译词典
 ├── static/css/admin.css        V3 视觉
@@ -27,8 +27,8 @@ src/main/resources/
 
 ## 数据层约定
 
-- 与用户端共享同一 `MyPetStore` 库与同一份 DDL（仓库根目录 `01-schema.sql`），后台不建表、不清库、不加字段。
-- 连接参数走环境变量：`MYSQL_HOST`、`MYSQL_PORT`、`MYSQL_DATABASE`、`MYSQL_USER`、`MYSQL_PASSWORD`，口令不入仓库。
+- 与用户端共享同一 `FABRICLAB` 库与同一份 DDL（仓库根目录 `01-schema.sql`，导入时库名替换为 `FABRICLAB`），后台不建表、不清库、不加字段；客服扩展表 `service_thread` / `service_message` 同库共享。
+- 默认数据源为真实库 `FABRICLAB@3306`、账号 `fabriclab/fabriclab`（写入 `application.yml` 默认值，启动零环境变量）；覆盖时用 `MYSQL_HOST`、`MYSQL_PORT`、`MYSQL_DATABASE`、`MYSQL_USER`、`MYSQL_PASSWORD` 环境变量，口令不入仓库。
 - 相册的图类型与来源许可不新增字段，编进 `product_image.alt_text`（格式 `F|来源|替代文本`，`F` 平铺 / `W` 上身 / `D` 细节）。
 - 后台账号管理只作用于 `role='CUSTOMER'` 的账号；管理员账号本身不被后台功能修改。
 
@@ -44,7 +44,8 @@ mvn spring-boot:run --server.port=8081
 真库验收需先准备数据（空库执行 `01-schema.sql`，再执行用户端 `store/src/main/resources/db/seed-data.sql`）：
 
 ```bash
-export MYSQL_PASSWORD='<本机口令>'
+export MYSQL_USER=fabriclab
+export MYSQL_PASSWORD=fabriclab
 mvn test
 ```
 
@@ -63,6 +64,8 @@ mvn test
 | `http://localhost:8081/admin/users/{id}` | 账号资料：只读身份、联系方式、最近订单；重置口令与启停各自独立提交 |
 | `http://localhost:8081/admin/orders` | 订单列表：订单号完整精确搜索、五状态分段、分页缺省 10、待发货行发货 |
 | `http://localhost:8081/admin/orders/{orderNo}` | 订单详情：明细快照、流转记录、收货与支付信息；改收货、发货、受限删除 |
+| `http://localhost:8081/admin/service` | 客服工作台：咨询列表（状态、关键字筛选），进入详情 |
+| `http://localhost:8081/admin/service/{id}` | 咨询详情：完整对话，回复（OPEN/REPLIED）、关闭（OPEN/REPLIED）、重开（CLOSED→OPEN） |
 | `POST http://localhost:8081/admin/products/{id}/restock` | 增量补货：正整数，按最新库存加算并递增 `version` |
 | `http://localhost:8081/health` | `{"status":"UP","app":"fabriclab-admin","stage":"T16"}` |
 
@@ -104,3 +107,9 @@ mvn test
 - 修改收货信息限待支付、待发货；收货人 / 电话 / 地址必填且限长，更新带状态条件，防并发改单。
 - 发货仅 `PAID → SHIPPED` 条件更新并写首次 `shipped_at`；重复发货不改首次时间，非法状态发货被拒并提示当前状态（AC-29）。
 - 删除仅限已取消且无支付凭证的教学演示订单，同一事务先明细后主表；有效交易订单删除一律被拒。
+
+## 客服工作台口径
+
+- 售前选购咨询处理，不含退款 / 退换 / 售后工单 / 物流轨迹（需求规约 3.3 排除项）；不显示任何未经真实统计的回复量指标。
+- 状态机 OPEN→REPLIED→CLOSED，CLOSED 可重开回 OPEN；回复与关闭对非 CLOSED 状态开放，非法迁移被条件更新拒绝并提示当前状态。
+- 与用户端 `/service` 同库同表（`service_thread` / `service_message`）；模块设计见 `docs/service-design.md`。

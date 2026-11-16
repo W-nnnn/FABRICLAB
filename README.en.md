@@ -21,14 +21,14 @@ Product image sources and licenses are listed in the [database notes](fabriclab/
 - Accounts: registration, sign-on, server-side captcha, BCrypt, session checks, and an allowlist for return paths.
 - Cart and orders: the cart is stored in the database; checkout verifies a server-side snapshot; orders are managed by state; cancellation restores stock through conditional updates.
 - Mock payment: the amount comes only from `sales_order.total_amount`. Failures write nothing, and repeated success keeps the first receipt.
-- Customer service: `/service` is a single page. Guests see FAQs; members start and view inquiries.
+- Customer service: a standalone entry in the top navigation, `/service` as a single page. Guests see FAQs; members start and view inquiries. Service is kept separate from the account center.
 
 **Admin · 8081**
 
 - Products: categories, style numbers, listing controls, albums, covers, and stock.
 - Customers: profile maintenance, password resets, and status changes. A role or status change invalidates active sessions.
 - Orders: lookup by order number, state filters, delivery edits, conditional shipping, and restricted deletion.
-- Customer service: inquiry list, detail, reply, close, and reopen.
+- Customer service: the `/admin/service` workbench with inquiry list, detail, reply, close, and reopen.
 - Language: interface copy and product content support Chinese and English.
 
 Customer service handles pre-purchase questions only. The admin console does not display business metrics that are not measured.
@@ -36,7 +36,7 @@ Customer service handles pre-purchase questions only. The admin console does not
 ## Technical conventions
 
 - JDK 25, Maven 3.9.16, Spring Boot 3.5.16, MyBatis-Plus 3.5.18.
-- MySQL 8.4, with 7 course business tables and 2 customer-service extension tables. Course-required database, table, and column names and requirement IDs are retained; visible pages, copy, sample data, and comments use apparel semantics.
+- MySQL 8.4 (local instance on 3306), demo database `FABRICLAB`, test database `FABRICLAB_TEST`, with 7 course business tables and 2 customer-service extension tables. Course-required table and column names and requirement IDs are retained; visible pages, copy, sample data, and comments use apparel semantics.
 - Thymeleaf server-side rendering, with no front-end build step.
 - `STORESESSION` and `ADMINSESSION` are cookie-only. Every POST is checked for CSRF; protected routes recheck role and status on each request.
 - Money uses `BigDecimal`; order items keep transaction snapshots. Payment and cancellation are mutually exclusive through conditional updates; restocking uses `stock + version` to avoid overwrites.
@@ -44,22 +44,11 @@ Customer service handles pre-purchase questions only. The admin console does not
 
 ## Run
 
-Requirements: JDK 25, Maven 3.9.16, and MySQL 8.4. Import the following into an empty database:
+Requirements: JDK 25, Maven 3.9.16, and MySQL 8.4.
 
-```bash
-mysql -u root -p < 01-schema.sql
-mysql -u root -p < fabriclab/store/src/main/resources/db/seed-data.sql
-mysql -u root -p < fabriclab/store/src/main/resources/db/customer-service.sql
-```
+One-time database preparation (creating `FABRICLAB` / `FABRICLAB_TEST`, the connection account, and importing the schema and the two seed scripts) is documented in the [database notes](fabriclab/store/src/main/resources/db/README.md). The customer-service extension script is idempotent by thread ID and message body. Without it, only the service page is unavailable.
 
-The third script creates the customer-service extension tables. It is idempotent by thread ID and message body. Without it, only the service page is unavailable.
-
-```bash
-export MYSQL_USER=root
-export MYSQL_PASSWORD='<local MySQL password>'
-```
-
-Start the two applications in separate terminals:
+Connection settings are baked into both `application.yml` defaults (database `FABRICLAB`, account `fabriclab/fabriclab`), so starting needs no environment variables:
 
 ```bash
 cd fabriclab/store && mvn spring-boot:run
@@ -76,18 +65,20 @@ The demo password is `Passw0rd!2026`, for local teaching only. `alice` and `bob`
 Run the tests:
 
 ```bash
+export MYSQL_USER=fabriclab
+export MYSQL_PASSWORD=fabriclab
 cd fabriclab/store && mvn test
 cd fabriclab/admin && mvn test
 ```
 
-Both projects pin their test database to `mypetstoretest`. Never point tests at the demo database `MyPetStore`: integration tests clear and rebuild orders, carts, and other fixtures.
+Both projects pin their test database to `FABRICLAB_TEST` (pom default). Integration tests need the connection password; without it the affected cases are skipped. Never point tests at the demo database `FABRICLAB`: integration tests clear and rebuild orders, carts, and other fixtures.
 
 ## Verification
 
 | Item | Result |
 |---|---|
-| Storefront automated tests | 284 passing |
-| Admin automated tests | 138 passing |
+| Storefront automated tests | 284 passing, 0 skipped |
+| Admin automated tests | 138 passing, 0 skipped |
 | End-to-end browser walkthrough | 50 / 50 passing, no JS errors and no 4xx / 5xx responses |
 | Live database acceptance | AC-01 to AC-32 mapped to V01 to V18 with records |
 | Concurrency | AC-28 verified with two running applications |
@@ -101,7 +92,7 @@ The walkthrough covers a full purchase, payment, cancellation, service handoff, 
 | `fabriclab/store/` | Storefront application, templates, styles, images, tests |
 | `fabriclab/admin/` | Admin application, bilingual copy, admin tests |
 | `fabriclab/docs/` | Admin design, admin visual specification, service design |
-| `01-schema.sql` | Course schema script |
+| `01-schema.sql` | Course schema script (database name `MyPetStore`, replaced with `FABRICLAB` on import) |
 | `02-schema-with-demo.sql` | Course comparison script, not executed |
 | `MyPetStore-PRD.pdf` | Course requirement specification |
 | Course UI reference directory | Original course mockups |
