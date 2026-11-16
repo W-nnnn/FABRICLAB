@@ -263,10 +263,6 @@
     <div id="progress"></div>
 </div>
 
-<footer class="colophon" th:fragment="footer">
-    <span th:text="#{admin.footer.left}">FABRICLAB 未染 · 管理台</span>
-</footer>
-
 <div class="alert" th:fragment="notice" th:if="${notice != null}"
      th:classappend="${noticeKind == 'err'} ? 'alert--err' : 'alert--ok'"
      th:attr="role=${noticeKind == 'err'} ? 'alert' : 'status'">
