@@ -5,7 +5,7 @@
     <link rel="icon" type="image/png" th:href="@{/images/mark.png}"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="|#{nav.brand} · #{svc.title}|">FABRICLAB · 客服中心</title>
-    <link rel="stylesheet" th:href="@{/css/store.css?v=20261116m}"/>
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261116o}"/>
 </head>
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
@@ -25,19 +25,176 @@
                 <h1 th:text="#{svc.title}">客服中心</h1>
                 <p th:text="#{svc.lead}">尺码、面料、下单与到店试穿；有疑问直接留一条咨询。</p>
             </div>
-            <div class="svc-head__act">
+            <div class="svc-head__act" th:if="${currentUser != null}">
                 <span class="svc-count" th:if="${openCount != null}" th:text="#{svc.openCount(${openCount})}">待回复 2 条</span>
-                <a class="btn" th:if="${currentUser != null}" th:href="@{/service/threads/new}" th:text="#{svc.ask}">发起咨询</a>
-                <a class="btn" th:if="${currentUser == null}" th:href="@{/signon(returnTo='/service/threads/new')}"
-                   th:text="#{svc.askSignon}">登录后咨询</a>
-                <a class="tlink" th:if="${currentUser != null}" th:href="@{/service/threads}"
-                   th:text="#{svc.myThreads}">我的咨询 →</a>
+                <a class="btn sm" th:href="@{/service(ask=1)}" th:text="#{svc.ask}">发起咨询</a>
+            </div>
+            <div class="svc-head__act" th:if="${currentUser == null}">
+                <a class="btn sm" th:href="@{/signon(returnTo='/service')}" th:text="#{svc.askSignon}">登录后咨询</a>
             </div>
         </div>
 
-        <div class="svc-strip">
-            <span><b th:text="#{svc.scopeTitle}">服务范围</b>　<span th:text="#{svc.scope}">售前选购咨询</span></span>
-            <span><b th:text="#{svc.channelTitle}">其他联系方式</b>　<span th:utext="#{svc.channel}">门店与邮箱</span></span>
+        <div class="svc-notice" role="status" th:if="${notice != null}"
+             th:classappend="${noticeKind == 'err'} ? 'svc-notice--err'" th:text="${notice}">已提交</div>
+
+        <!-- 会员工作区：咨询列表 + 发起 / 对话，同页切换 -->
+        <div class="svc-grid" th:unless="${currentUser == null}">
+            <aside class="svc-aside">
+                <div class="svc-aside__head">
+                    <b th:text="#{svc.myThreads}">我的咨询</b>
+                    <span th:text="#{svc.listLead(${result.total}, ${openCount})}">共 2 条 · 待回复 1 条</span>
+                </div>
+                <div class="svc-tabs">
+                    <a th:classappend="${query.status() == null} ? 'on'"
+                       th:href="@{/service(thread=${currentThreadId})}" th:text="#{svc.all}">全部</a>
+                    <a th:each="s : ${statuses}" th:classappend="${query.status() == s} ? 'on'"
+                       th:href="@{/service(status=${s.name()},thread=${currentThreadId})}"
+                       th:text="#{__${s.labelKey()}__}">待回复</a>
+                </div>
+
+                <div class="svc-empty svc-empty--side" th:if="${result.total == 0}">
+                    <p th:text="#{svc.emptyText}">留一条咨询，客服会在这里回复。</p>
+                    <a class="btn ghost sm" th:href="@{/service(ask=1)}" th:text="#{svc.ask}">发起咨询</a>
+                </div>
+                <div class="svc-list" th:unless="${result.total == 0}">
+                    <a class="svc-card" th:each="r : ${rows}"
+                       th:classappend="${currentThreadId != null and currentThreadId == r.thread.id} ? 'on'"
+                       th:href="@{/service(thread=${r.thread.id},status=${query.statusParam()})}">
+                        <span class="svc-st" th:classappend="|svc-st--${#strings.toLowerCase(r.thread.status)}|"
+                              th:text="#{__${r.statusKey}__}">待回复</span>
+                        <h3 th:text="${r.thread.subject}">咨询主题</h3>
+                        <p th:text="${r.lastSnippet}">最后一条消息摘要</p>
+                        <span class="svc-card__foot">
+                            <span th:text="#{__${r.categoryKey}__}">尺码版型</span>
+                            <span th:text="#{svc.msgCount(${r.messageCount})}">3 条消息</span>
+                            <span th:text="${r.activityText}">2026.11.15 20:10</span>
+                        </span>
+                    </a>
+                </div>
+
+                <div class="pager svc-pager" th:if="${result.pages > 1}">
+                    <a class="pg" th:classappend="${result.current > 1} ? '' : 'off'"
+                       th:href="@{/service(status=${query.statusParam()},page=${result.current - 1},size=${query.size()},thread=${currentThreadId})}"
+                       th:text="#{svc.prev}">上一页</a>
+                    <span class="pg on" th:text="|${result.current} / ${result.pages}|">1 / 2</span>
+                    <a class="pg next" th:if="${result.current < result.pages}"
+                       th:href="@{/service(status=${query.statusParam()},page=${result.current + 1},size=${query.size()},thread=${currentThreadId})}"
+                       th:text="#{svc.next}">下一页</a>
+                </div>
+            </aside>
+
+            <section class="svc-main">
+                <!-- 发起咨询：只在 ?ask=1 时出现 -->
+                <div th:if="${asking}">
+                    <div class="svc-main__head">
+                        <h2 th:text="#{svc.ask}">发起咨询</h2>
+                        <a class="tlink" th:href="@{/service(thread=${currentThreadId})}" th:text="#{svc.back}">← 返回我的咨询</a>
+                    </div>
+                    <div class="svc-notice svc-notice--err" role="alert" th:if="${error != null}" th:text="${error}">请填写咨询主题</div>
+                    <form class="svc-form" th:action="@{/service/threads}" method="post" novalidate>
+                        <input type="hidden" name="_csrf" th:value="${csrfToken}"/>
+                        <div class="svc-f" th:classappend="${errorField == 'category'} ? 'err'">
+                            <label class="svc-f__lb" th:text="#{svc.f.category}">咨询类别</label>
+                            <div class="svc-opts">
+                                <label class="svc-opt" th:each="c : ${categories}">
+                                    <input type="radio" name="category" th:value="${c.name()}"
+                                           th:checked="${form.category() == c.name()}"/>
+                                    <span th:text="#{__${c.labelKey()}__}">尺码版型</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="svc-f" th:classappend="${errorField == 'subject'} ? 'err'">
+                            <label class="svc-f__lb" for="subject" th:text="#{svc.f.subject}">主题</label>
+                            <input id="subject" type="text" name="subject" maxlength="60" th:value="${form.subject()}"
+                                   th:placeholder="#{svc.f.subjectPh}" th:aria-invalid="${errorField == 'subject'} ? 'true' : 'false'"/>
+                        </div>
+                        <div class="svc-f" th:classappend="${errorField == 'body'} ? 'err'">
+                            <label class="svc-f__lb" for="body" th:text="#{svc.f.body}">详细内容</label>
+                            <textarea id="body" name="body" rows="4" maxlength="1000" th:text="${form.body()}"
+                                      th:placeholder="#{svc.f.bodyPh}"
+                                      th:aria-invalid="${errorField == 'body'} ? 'true' : 'false'"></textarea>
+                        </div>
+                        <div class="svc-f svc-f--pair">
+                            <div th:classappend="${errorField == 'orderNo'} ? 'err'">
+                                <label class="svc-f__lb" for="orderNo" th:text="#{svc.f.orderNo}">相关订单号（选填）</label>
+                                <input id="orderNo" type="text" name="orderNo" maxlength="40" th:value="${form.orderNo()}"
+                                       th:placeholder="#{svc.f.orderNoPh}"/>
+                            </div>
+                            <div th:classappend="${errorField == 'sku'} ? 'err'">
+                                <label class="svc-f__lb" for="sku" th:text="#{svc.f.sku}">相关款号（选填）</label>
+                                <input id="sku" type="text" name="sku" maxlength="40" th:value="${form.sku()}"
+                                       th:placeholder="FL-CM-01"/>
+                            </div>
+                        </div>
+                        <div class="svc-form__foot">
+                            <button class="btn sm" type="submit" th:text="#{svc.f.submit}">提交咨询</button>
+                            <a class="tlink mute" th:href="@{/service(thread=${currentThreadId})}" th:text="#{svc.f.cancel}">取消</a>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- 对话：默认展示最近一条，或用 ?thread=id 指定 -->
+                <div th:unless="${asking}">
+                    <div th:if="${view != null}">
+                        <div class="svc-main__head">
+                            <div>
+                                <h2 th:text="${view.thread.subject}">咨询主题</h2>
+                                <span class="svc-no" th:text="${view.thread.threadNo}">FL-S202611150001</span>
+                            </div>
+                            <span class="svc-st" th:classappend="|svc-st--${#strings.toLowerCase(view.thread.status)}|"
+                                  th:text="#{__${view.statusKey}__}">待回复</span>
+                        </div>
+                        <div class="svc-meta">
+                            <span th:text="#{__${view.categoryKey}__}">尺码版型</span>
+                            <span th:text="#{svc.meta.created}">发起时间</span>
+                            <b th:text="${view.createdText}">2026.11.15 20:10</b>
+                            <span th:if="${view.thread.relatedOrderNo != null}"
+                                  th:text="#{svc.relOrder(${view.thread.relatedOrderNo})}">相关订单：…</span>
+                            <span th:if="${view.thread.relatedSku != null}"
+                                  th:text="#{svc.relSku(${view.thread.relatedSku})}">相关款号：…</span>
+                        </div>
+
+                        <div class="svc-thread">
+                            <article class="svc-msg" th:each="m : ${view.messages}"
+                                     th:classappend="${m.fromCustomer()} ? 'svc-msg--me' : 'svc-msg--svc'">
+                                <div class="svc-msg__who">
+                                    <b th:if="${m.fromCustomer()}" th:text="${m.authorLabel()}">林晓</b>
+                                    <b th:unless="${m.fromCustomer()}" th:text="#{svc.staff}">FABRICLAB 客服</b>
+                                    <span th:text="${m.time()}">2026.11.15 20:10</span>
+                                </div>
+                                <p th:text="${m.body()}">消息正文</p>
+                            </article>
+                        </div>
+
+                        <div class="svc-reply" th:unless="${view.thread.status == 'CLOSED'}">
+                            <form th:action="@{/service/threads/{id}/reply(id=${view.thread.id})}" method="post">
+                                <input type="hidden" name="_csrf" th:value="${csrfToken}"/>
+                                <label class="svc-f__lb" for="reply" th:text="#{svc.replyTitle}">继续追问</label>
+                                <textarea id="reply" name="body" rows="2" maxlength="1000" required
+                                          th:placeholder="#{svc.replyPh}"></textarea>
+                                <div class="svc-reply__foot">
+                                    <button class="btn sm" type="submit" th:text="#{svc.replySend}">发送追问</button>
+                                    <button class="tlink mute" type="submit" formmethod="post"
+                                            th:formaction="@{/service/threads/{id}/close(id=${view.thread.id})}"
+                                            th:text="#{svc.close}">关闭这条咨询</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="svc-closed" th:if="${view.thread.status == 'CLOSED'}">
+                            <p th:text="#{svc.closedText}">这条咨询已关闭。还有问题可以重新打开，或发起一条新的咨询。</p>
+                            <form class="svc-inline" th:action="@{/service/threads/{id}/reopen(id=${view.thread.id})}" method="post">
+                                <input type="hidden" name="_csrf" th:value="${csrfToken}"/>
+                                <button class="btn ghost sm" type="submit" th:text="#{svc.reopen}">重新打开咨询</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="svc-pick" th:if="${view == null}">
+                        <b th:text="#{svc.emptyTitle}">还没有咨询记录</b>
+                        <p th:text="#{svc.emptyText}">留一条咨询，客服会在这里回复。</p>
+                        <a class="btn sm" th:href="@{/service(ask=1)}" th:text="#{svc.ask}">发起咨询</a>
+                    </div>
+                </div>
+            </section>
         </div>
 
         <section class="svc-faqs">
@@ -45,17 +202,21 @@
                 <h2 th:text="#{svc.faqTitle}">常见问题</h2>
                 <span class="tiny" th:text="#{svc.faqNote}">按本站实际功能作答</span>
             </div>
-            <article class="svc-faq" th:each="f, s : ${faqs}">
-                <span class="svc-faq__no" th:text="${#numbers.formatInteger(s.count, 2)}">01</span>
-                <div>
-                    <h3 th:text="#{__${f.qKey}__}">问题</h3>
-                    <p th:text="#{__${f.aKey}__}">回答</p>
-                </div>
-                <a class="tlink" th:href="@{/service/threads/new(category=${f.category})}"
-                   th:text="#{svc.faqAsk}">按此咨询 →</a>
-            </article>
+            <details class="svc-faq" th:each="f, s : ${faqs}">
+                <summary>
+                    <span class="svc-faq__no" th:text="${#numbers.formatInteger(s.count, 2)}">01</span>
+                    <span th:text="#{__${f.qKey}__}">问题</span>
+                    <a th:if="${currentUser != null}" class="tlink"
+                       th:href="@{/service(ask=1,category=${f.category})}" th:text="#{svc.faqAsk}">就这个问题咨询 →</a>
+                </summary>
+                <p th:text="#{__${f.aKey}__}">回答</p>
+            </details>
         </section>
 
+        <div class="svc-strip">
+            <span><b th:text="#{svc.scopeTitle}">服务范围</b>　<span th:text="#{svc.scope}">售前选购咨询</span></span>
+            <span><b th:text="#{svc.channelTitle}">其他联系方式</b>　<span th:utext="#{svc.channel}">门店与邮箱</span></span>
+        </div>
         <div class="svc-endnote" th:text="#{svc.note}">咨询与回复保存在本站演示库中。</div>
     </section>
 
