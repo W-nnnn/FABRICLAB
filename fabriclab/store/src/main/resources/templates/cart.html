@@ -5,15 +5,15 @@
     <link rel="icon" type="image/png" th:href="@{/images/mark.png}"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="|#{nav.brand} · #{cart.title}|">FABRICLAB · 购物袋</title>
-    <link rel="stylesheet" th:href="@{/css/store.css?v=20261116s}"/>
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261116t}"/>
 </head>
-<body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
+<body class="pg-cart" th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
 
     <th:block th:replace="~{fragments :: header(null)}"></th:block>
 
     <span id="main" tabindex="-1"></span>
-    <p class="flash warn" style="margin-top:24px" th:if="${cartError != null}" th:text="${tr.t(cartError)}">提示</p>
+    <p class="flash warn" th:if="${cartError != null}" th:text="${tr.t(cartError)}">提示</p>
 
     <!-- 空袋 -->
     <div class="empty" th:if="${view.empty}">
@@ -25,54 +25,47 @@
     </div>
 
     <th:block th:unless="${view.empty}">
-        <div style="padding:34px var(--gx) 30px;display:flex;align-items:flex-end">
+        <div class="cart-head">
             <div>
                 <div class="eyebrow" th:text="#{cart.eyebrow}">购物袋</div>
-                <h1 class="h2" style="margin-top:12px;font-size:34px"
-                    th:text="|#{cart.bag} （${view.lines.size()}）|">购物袋</h1>
+                <h1 class="h2 cart-head__title"
+                    th:text="|#{cart.bag} (${view.lines.size()})|">购物袋 (1)</h1>
             </div>
-            <div style="margin-left:auto;display:flex;align-items:baseline;gap:14px">
-                <span class="tiny" th:text="#{cart.total}">合计</span>
-                <span class="din" style="font-size:24px;font-weight:500"
-                      th:text="|¥ ${#numbers.formatDecimal(view.payableTotal, 1, 2)}|">¥ 0.00</span>
+            <div class="cart-steps">
+                <th:block th:replace="~{fragments :: steps(1)}"></th:block>
             </div>
-        </div>
-
-        <div style="padding:0 var(--gx) 30px">
-            <th:block th:replace="~{fragments :: steps(1)}"></th:block>
         </div>
 
         <p class="flash warn" th:if="${view.hasInvalid}" th:text="#{cart.invalid}">
             购物车包含失效条目，暂时不能整车结算；失效条目仍会保留，可移除后再结算。
         </p>
 
-        <div class="cols" style="display:flex;padding:0 var(--gx)">
-            <!-- 左：清单 -->
-            <div class="cols-main" style="width:860px;flex:none">
-                <div style="display:flex;padding:0 0 12px;border-bottom:1px solid var(--ink);
-                            font-family:var(--f-body);font-size:11px;letter-spacing:.18em;color:var(--mute)">
-                    <span th:text="#{cart.col.item}">商品</span>
-                    <span style="margin-left:auto" th:text="#{cart.col.qty}">数量 / 金额</span>
+        <div class="cart-layout">
+            <section class="cart-list">
+                <div class="cart-lhead">
+                    <span class="cart-lhead__item" th:text="#{cart.col.item}">商品</span>
+                    <span th:text="#{cart.unit}">单价</span>
+                    <span th:text="#{cart.qty.aria}">购买数量</span>
+                    <span class="cart-lhead__amt" th:text="#{cart.total}">金额</span>
                 </div>
 
-                <div class="row" th:each="line : ${view.lines}"
+                <div class="cart-row" th:each="line : ${view.lines}"
                      th:classappend="${line.unavailable} ? 'invalid'">
-                    <a class="thumb" th:href="@{/product(id=${line.productId})}">
+                    <a class="cart-thumb" th:href="@{/product(id=${line.productId})}">
                         <img th:src="${#strings.isEmpty(line.coverImage) ? '/images/mark.png' : '/' + line.coverImage}"
                              th:alt="${tr.t(line.name)}" loading="lazy"/>
                     </a>
-                    <div class="info">
-                        <a class="nm" style="display:block" th:href="@{/product(id=${line.productId})}"
+                    <div class="cart-info">
+                        <a class="cart-name" th:href="@{/product(id=${line.productId})}"
                            th:text="${tr.t(line.name)}">商品名称</a>
-                        <div class="sk" th:text="${line.sku}">FL-CM-01</div>
-                        <div class="attr">
-                            <span th:text="|#{cart.unit} ¥ ${#numbers.formatDecimal(line.unitPrice, 1, 2)}|">单价</span>
-                            <span th:if="${line.unavailable}" style="color:var(--rust-ink)" th:text="${tr.t(line.reason)}">商品已下架</span>
-                        </div>
+                        <div class="cart-sku" th:text="${line.sku}">FL-CM-01</div>
+                        <div class="cart-reason" th:if="${line.unavailable}" th:text="${tr.t(line.reason)}">商品已下架</div>
                     </div>
-                    <div class="qty">
-                        <form th:action="@{/cart/update}" method="post" th:if="${!line.unavailable}"
-                              style="display:flex;align-items:center;gap:10px">
+                    <div class="cart-unit" th:text="|#{cart.unit} ¥ ${#numbers.formatDecimal(line.unitPrice, 1, 2)}|">
+                        单价 ¥ 0.00
+                    </div>
+                    <div class="cart-actions">
+                        <form th:action="@{/cart/update}" method="post" th:if="${!line.unavailable}">
                             <input type="hidden" name="_csrf" th:value="${csrfToken}"/>
                             <input type="hidden" name="itemId" th:value="${line.itemId}"/>
                             <input type="hidden" name="version" th:value="${line.version}"/>
@@ -81,120 +74,79 @@
                                        th:value="${line.quantity}" min="1" max="99" step="1"
                                        th:aria-label="#{cart.qty.aria}"/>
                             </span>
-                            <button type="submit" class="tlink" style="font-size:11.5px;color:var(--ink)"
-                                    th:text="#{cart.update}">更新</button>
+                            <button type="submit" class="cart-act" th:text="#{cart.update}">更新</button>
                         </form>
-                        <span th:if="${line.unavailable}" class="din" style="font-size:11px"
-                              th:text="${line.quantity}">1</span>
+                        <span class="cart-qty-static" th:if="${line.unavailable}" th:text="${line.quantity}">1</span>
                         <form th:action="@{/cart/remove}" method="post">
                             <input type="hidden" name="_csrf" th:value="${csrfToken}"/>
                             <input type="hidden" name="itemId" th:value="${line.itemId}"/>
                             <input type="hidden" name="version" th:value="${line.version}"/>
-                            <button type="submit" class="tlink" style="font-size:11.5px;color:var(--ink)"
-                                    th:text="#{cart.remove}">移除</button>
+                            <button type="submit" class="cart-act cart-act--mute" th:text="#{cart.remove}">移除</button>
                         </form>
                     </div>
-                    <div class="amt">
+                    <div class="cart-amt">
                         <span th:text="|¥ ${#numbers.formatDecimal(line.subtotal(), 1, 2)}|">¥ 0.00</span>
-                        <s th:text="#{cart.each}">每件</s>
                     </div>
                 </div>
 
-                <div style="margin-top:24px;padding:16px 20px;background:var(--linen);display:flex;
-                            align-items:center;gap:12px">
-                    <span style="color:var(--rust-ink);display:flex">
+                <div class="cart-note">
+                    <span class="cart-note__mk">
                         <svg width="11" height="9" viewBox="0 0 12 9" fill="none" stroke="currentColor"
-                             stroke-width="1.5"><path d="M1 4.6L4.3 7.8 11 1.2"/></svg></span>
-                    <span style="font-size:11.5px;letter-spacing:.03em;line-height:1.7;color:var(--mute)"
-                          th:text="#{cart.note}">
-                        一次结算购物袋里的全部商品；购物袋随账号保存。
+                             stroke-width="1.5"><path d="M1 4.6L4.3 7.8 11 1.2"/></svg>
                     </span>
+                    <span th:text="#{cart.note}">一次结算购物袋里的全部商品；购物袋随账号保存。</span>
                 </div>
 
-                <div style="margin-top:34px;display:flex;align-items:center;gap:30px">
+                <div class="cart-foot">
                     <a class="tlink" data-nav="back" th:href="@{/category}" th:text="#{cart.continue}">← 继续选购</a>
-                    <span class="tiny" style="margin-left:auto" th:text="#{cart.tax}">价格含税</span>
+                    <span class="tiny" th:text="#{cart.tax}">价格含税</span>
                 </div>
-            </div>
+            </section>
 
-            <!-- 右：汇总 -->
-            <div class="cols-side" style="width:340px;flex:none;margin-left:72px">
-                <div class="sum">
-                    <div class="l"><span th:text="#{cart.subtotal}">商品件数</span>
-                        <b th:text="|${view.totalQuantity}|">0</b></div>
-                    <div class="l"><span th:text="#{cart.payable}">可结算合计</span>
-                        <b th:text="|¥ ${#numbers.formatDecimal(view.payableTotal, 1, 2)}|">¥ 0.00</b></div>
-                    <div class="l tot"><span th:text="#{cart.total}">合计</span>
-                        <b th:text="|¥ ${#numbers.formatDecimal(view.payableTotal, 1, 2)}|">¥ 0.00</b></div>
-                </div>
-
-                <a class="btn wide" style="margin-top:22px" th:if="${!view.hasInvalid}"
-                   th:href="@{/checkout}" th:text="#{cart.checkout}">去结算 →</a>
-                <span class="btn wide disabled" style="margin-top:22px" th:if="${view.hasInvalid}"
-                      th:text="#{cart.checkout}">去结算 →</span>
-
-                <div style="margin-top:18px;display:flex;align-items:center;gap:8px;
-                            font-family:var(--f-body);font-size:11px;letter-spacing:.1em;color:var(--faint)">
-                    <span th:text="#{cart.accept}">支持</span>
-                    <span style="border:1px solid var(--line);padding:3px 7px">WECHAT</span>
-                    <span style="border:1px solid var(--line);padding:3px 7px">ALIPAY</span>
-                    <span style="border:1px solid var(--line);padding:3px 7px">UNIONPAY</span>
-                </div>
-
-                <!-- 品牌承诺（自首页迁入） -->
-                <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--line);
-                            display:flex;flex-direction:column;gap:9px">
-                    <span style="display:flex;align-items:center;gap:7px;
-                                font-family:var(--f-body);font-size:11px;letter-spacing:.1em;color:var(--mute)">
-                        <span style="display:flex;color:var(--rust-ink)">
-                            <svg width="11" height="9" viewBox="0 0 12 9" fill="none" stroke="currentColor"
-                                 stroke-width="1.5"><path d="M1 4.6L4.3 7.8 11 1.2"/></svg></span>
-                        <span th:text="#{home.p1}">终身免费修补</span>
-                    </span>
-                    <span style="display:flex;align-items:center;gap:7px;
-                                font-family:var(--f-body);font-size:11px;letter-spacing:.1em;color:var(--mute)">
-                        <span style="display:flex;color:var(--rust-ink)">
-                            <svg width="11" height="9" viewBox="0 0 12 9" fill="none" stroke="currentColor"
-                                 stroke-width="1.5"><path d="M1 4.6L4.3 7.8 11 1.2"/></svg></span>
-                        <span th:text="#{home.p2}">四家工坊出品</span>
-                    </span>
-                    <span style="display:flex;align-items:center;gap:7px;
-                                font-family:var(--f-body);font-size:11px;letter-spacing:.1em;color:var(--mute)">
-                        <span style="display:flex;color:var(--rust-ink)">
-                            <svg width="11" height="9" viewBox="0 0 12 9" fill="none" stroke="currentColor"
-                                 stroke-width="1.5"><path d="M1 4.6L4.3 7.8 11 1.2"/></svg></span>
-                        <span th:text="#{home.p3}">纤维可追溯</span>
-                    </span>
-                </div>
-
-                <div style="margin-top:22px;padding-top:18px;border-top:1px solid var(--line)">
-                    <div style="display:flex;align-items:baseline;padding:7px 0">
-                        <span class="tiny" style="width:76px" th:text="#{cart.k.ship}">配送</span>
-                        <span style="font-size:11px;color:var(--mute);letter-spacing:.02em"
-                              th:text="#{cart.v.ship}">顺丰包邮 2–3 天</span>
+            <aside class="cart-summary">
+                <div class="cart-sum-card">
+                    <div class="cart-sum-title" th:text="#{checkout.summary}">订单摘要</div>
+                    <div class="sum">
+                        <div class="l"><span th:text="#{cart.subtotal}">商品件数</span>
+                            <b th:text="|${view.totalQuantity}|">0</b></div>
+                        <div class="l"><span th:text="#{cart.payable}">可结算合计</span>
+                            <b th:text="|¥ ${#numbers.formatDecimal(view.payableTotal, 1, 2)}|">¥ 0.00</b></div>
+                        <div class="l tot"><span th:text="#{cart.total}">合计</span>
+                            <b th:text="|¥ ${#numbers.formatDecimal(view.payableTotal, 1, 2)}|">¥ 0.00</b></div>
                     </div>
-                    <div style="display:flex;align-items:baseline;padding:7px 0">
-                        <span class="tiny" style="width:76px" th:text="#{cart.k.return}">退换</span>
-                        <span style="font-size:11px;color:var(--mute);letter-spacing:.02em"
-                              th:text="#{cart.v.return}">7 天，上门取件</span>
-                    </div>
-                    <div style="display:flex;align-items:baseline;padding:7px 0">
-                        <span class="tiny" style="width:76px" th:text="#{cart.k.repair}">修补</span>
-                        <span style="font-size:11px;color:var(--mute);letter-spacing:.02em"
-                              th:text="#{cart.v.repair}">终身免费</span>
+
+                    <a class="btn wide cart-checkout" th:if="${!view.hasInvalid}"
+                       th:href="@{/checkout}" th:text="#{cart.checkout}">去结算 →</a>
+                    <span class="btn wide disabled cart-checkout" th:if="${view.hasInvalid}"
+                          th:text="#{cart.checkout}">去结算 →</span>
+
+                    <div class="cart-terms">
+                        <div>
+                            <span th:text="#{cart.k.ship}">配送</span>
+                            <span th:text="#{cart.v.ship}">顺丰包邮 2–3 天</span>
+                        </div>
+                        <div>
+                            <span th:text="#{cart.k.return}">退换</span>
+                            <span th:text="#{cart.v.return}">7 天，上门取件</span>
+                        </div>
+                        <div>
+                            <span th:text="#{cart.k.repair}">修补</span>
+                            <span th:text="#{cart.v.repair}">终身免费</span>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </aside>
         </div>
 
-        <div style="padding:70px var(--gx) 0">
+        <div class="cart-recs">
             <div class="ptitle">
                 <div>
                     <div class="eyebrow" th:text="#{cart.rec.eb}">为你而选</div>
                     <h2 class="h2" style="margin-top:14px" th:text="#{cart.rec.title}">和袋里的配一配</h2>
                 </div>
                 <div class="r">
-                    <a class="tlink mute" th:href="@{/category}" th:text="#{cart.rec.more(${onSaleTotal})}">查看全部 42 件</a>
+                    <a class="tlink mute" th:href="@{/category}"
+                       th:text="#{cart.rec.more(${onSaleTotal})}">查看全部 42 件</a>
                 </div>
             </div>
             <div class="g4">
