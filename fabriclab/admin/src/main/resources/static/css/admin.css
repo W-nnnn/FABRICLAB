@@ -749,8 +749,24 @@ html[lang="en"] .help{font-size:12px}
 .ckcell{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;margin-left:-8px;cursor:pointer}
 
 /* ── 客服咨询：列表 / 详情对话 / 回复 ───────────────────────────────── */
-.svc-subj{font-size:13px;line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:420px}
-.svc-snip{font-size:12px;color:var(--muted);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:420px}
+/* 收件箱式列表：左侧待回复标记 + 主题/摘要主区 + 右侧会员元信息 */
+.svc-inbox{margin-top:20px;border-top:1px solid var(--rule)}
+.svc-row{display:grid;grid-template-columns:3px minmax(0,1fr) auto;align-items:center;
+  gap:18px;padding:16px 4px 16px 0;border-bottom:1px solid var(--rule);
+  transition:background .2s ease}
+.svc-row:hover{background:var(--wash)}
+.svc-row__flag{width:3px;align-self:stretch;background:transparent}
+.svc-row--open .svc-row__flag{background:var(--rust)}
+.svc-row__main{display:flex;flex-direction:column;gap:6px;min-width:0}
+.svc-row__subj{display:flex;align-items:center;gap:10px;min-width:0}
+.svc-row__subj b{font-family:var(--f-song);font-size:15px;font-weight:500;letter-spacing:.02em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.svc-row__snip{font-size:12px;color:var(--muted);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.svc-row__side{display:flex;flex-direction:column;align-items:flex-end;gap:7px;flex:none}
+.svc-row__user{display:flex;align-items:center;gap:8px;font-size:12px}
+.svc-row__meta{display:flex;align-items:center;gap:12px;font-size:12px;color:var(--faint)}
+.svc-row__meta .num{font-family:var(--f-num);letter-spacing:.04em}
 /* 详情页会话工位（对标 Zendesk Agent Workspace / Intercom Inbox 的三区骨架）：
    对话主窗是绝对主角（气泡流 + 底部回复台一体），会员上下文收进右侧窄栏 */
 .svc-meta{display:flex;align-items:center;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--muted)}
@@ -799,6 +815,9 @@ html[lang="en"] .help{font-size:12px}
 @media(max-width:900px){
   .svc-desk{grid-template-columns:minmax(0,1fr);gap:18px}
   .svc-bubble{max-width:100%}
+  .svc-row{grid-template-columns:3px minmax(0,1fr);gap:10px 12px}
+  .svc-row__side{grid-column:2;align-items:flex-start}
+  .svc-row__meta{flex-wrap:wrap;gap:6px 12px}
 }
 
 /* ══════════════════════════════════════════════════════════════
