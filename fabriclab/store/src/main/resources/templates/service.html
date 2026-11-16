@@ -5,7 +5,7 @@
     <link rel="icon" type="image/png" th:href="@{/images/mark.png}"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="|#{nav.brand} · #{svc.title}|">FABRICLAB · 客服中心</title>
-    <link rel="stylesheet" th:href="@{/css/store.css?v=20261116o}"/>
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261116p}"/>
 </head>
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
@@ -20,11 +20,7 @@
 
     <section class="svc-page">
         <div class="svc-head">
-            <div>
-                <div class="eyebrow" th:text="#{svc.eyebrow}">CLIENT CARE / 客服中心</div>
-                <h1 th:text="#{svc.title}">客服中心</h1>
-                <p th:text="#{svc.lead}">尺码、面料、下单与到店试穿；有疑问直接留一条咨询。</p>
-            </div>
+            <h1 th:text="#{svc.title}">客服中心</h1>
             <div class="svc-head__act" th:if="${currentUser != null}">
                 <span class="svc-count" th:if="${openCount != null}" th:text="#{svc.openCount(${openCount})}">待回复 2 条</span>
                 <a class="btn sm" th:href="@{/service(ask=1)}" th:text="#{svc.ask}">发起咨询</a>
@@ -135,7 +131,7 @@
 
                 <!-- 对话：默认展示最近一条，或用 ?thread=id 指定 -->
                 <div th:unless="${asking}">
-                    <div th:if="${view != null}">
+                    <div class="svc-conv" th:if="${view != null}">
                         <div class="svc-main__head">
                             <div>
                                 <h2 th:text="${view.thread.subject}">咨询主题</h2>
@@ -169,8 +165,7 @@
                         <div class="svc-reply" th:unless="${view.thread.status == 'CLOSED'}">
                             <form th:action="@{/service/threads/{id}/reply(id=${view.thread.id})}" method="post">
                                 <input type="hidden" name="_csrf" th:value="${csrfToken}"/>
-                                <label class="svc-f__lb" for="reply" th:text="#{svc.replyTitle}">继续追问</label>
-                                <textarea id="reply" name="body" rows="2" maxlength="1000" required
+                                <textarea id="reply" name="body" rows="3" maxlength="1000" required
                                           th:placeholder="#{svc.replyPh}"></textarea>
                                 <div class="svc-reply__foot">
                                     <button class="btn sm" type="submit" th:text="#{svc.replySend}">发送追问</button>
