@@ -1,6 +1,6 @@
 # 数据库与种子数据
 
-用户端（store，端口 8080）使用 MySQL 库 `MyPetStore`，七张业务表与管理端共享。
+用户端（store，端口 8080）使用 MySQL 库 `FABRICLAB`，七张业务表与管理端共享。
 
 ## 导入顺序
 
@@ -20,15 +20,17 @@ mysql -u root -p < fabriclab/store/src/main/resources/db/customer-service.sql
 
 ## 测试库隔离（必须）
 
-集成测试会清空并重建订单、购物车等 fixture，**禁止对 `MyPetStore` 演示库执行 `mvn test`**。两个工程的 `maven-surefire-plugin` 已把测试的 `MYSQL_DATABASE` 固定为 `mypetstoretest`，需要改库名用 `-Dfl.test.database=<库名>`。首次执行前在 3307 临时实例建库（root 无口令）：
+集成测试会清空并重建订单、购物车等 fixture，**禁止对 `FABRICLAB` 演示库执行 `mvn test`**。两个工程的 `maven-surefire-plugin` 已把测试的 `MYSQL_DATABASE` 固定为 `fabriclab_test`，需要改库名用 `-Dfl.test.database=<库名>`。真实实例（3306，root 管理）首次建库：
 
 ```bash
-M="mysql -h127.0.0.1 -P3307 -uroot"
-MYSQL_PWD= $M -e "DROP DATABASE IF EXISTS mypetstoretest; CREATE DATABASE mypetstoretest CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;"
-for f in 01-schema.sql fabriclab/store/src/main/resources/db/seed-data.sql fabriclab/store/src/main/resources/db/customer-service.sql; do
-  sed 's/CREATE DATABASE IF NOT EXISTS MyPetStore$/CREATE DATABASE IF NOT EXISTS mypetstoretest/; s/USE MyPetStore;/USE mypetstoretest;/' "$f" | MYSQL_PWD= $M
+M="mysql -h127.0.0.1 -P3306 -uroot -p"
+MYSQL_PWD=<root口令> $M -e "CREATE DATABASE IF NOT EXISTS FABRICLAB CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci; CREATE DATABASE IF NOT EXISTS FABRICLAB_TEST CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci; CREATE USER IF NOT EXISTS 'fabriclab'@'localhost' IDENTIFIED BY 'fabriclab'; GRANT ALL PRIVILEGES ON FABRICLAB.* TO 'fabriclab'@'localhost'; GRANT ALL PRIVILEGES ON FABRICLAB_TEST.* TO 'fabriclab'@'localhost'; FLUSH PRIVILEGES;"
+for db in FABRICLAB FABRICLAB_TEST; do
+  for f in 01-schema.sql fabriclab/store/src/main/resources/db/seed-data.sql fabriclab/store/src/main/resources/db/customer-service.sql; do
+    sed "s/MyPetStore/$db/g" "$f" | MYSQL_PWD=fabriclab mysql -h127.0.0.1 -P3306 -ufabriclab -pfabriclab
+  done
 done
-MYSQL_PWD= $M mypetstoretest -e "DELETE FROM service_message; DELETE FROM service_thread;"
+MYSQL_PWD=fabriclab mysql -h127.0.0.1 -P3306 -ufabriclab -pfabriclab -e "TRUNCATE FABRICLAB_TEST.service_message; TRUNCATE FABRICLAB_TEST.service_thread;"
 ```
 
 测试库不带客服演示会话，客服列表/搜索断言才不受演示数据干扰；演示库始终保持上表的完整数据。
