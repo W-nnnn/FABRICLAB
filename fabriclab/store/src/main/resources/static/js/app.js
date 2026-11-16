@@ -378,7 +378,73 @@
   var region = document.getElementById('catalog');
   if (!region) return;
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var busy = false, seq = 0, pending = null;
+  var busy = false, seq = 0, pending = null, fitTimer = null;
+
+  /* ---- 商品网格内滚（有意设计的功能）：网格锁定整 3 行，鼠标在商品上滚轮滚商品；
+     网格到边界后滚轮整格接力给整页，不留「半格被网格吞掉、页面停一拍」的顿挫；
+     上下渐隐标示「还有货 / 已滚过」。图片加载会改行高，ResizeObserver 自动重算。 */
+  var gridBox = null, gridTimer = null, gridObs = null, gridObserved = null;
+
+  function currentGrid() {
+    if (!gridBox || !gridBox.isConnected) gridBox = region.querySelector('.catgrid');
+    return gridBox;
+  }
+  function updateFades() {
+    var box = currentGrid();
+    if (!box) return;
+    if (getComputedStyle(box).overflowY !== 'auto') { box.classList.remove('fade-t', 'fade-b'); return; }
+    var max = box.scrollHeight - box.clientHeight;
+    box.classList.toggle('fade-t', box.scrollTop > 4);
+    box.classList.toggle('fade-b', max > 4 && box.scrollTop < max - 4);
+  }
+  function fitGrid() {
+    var box = currentGrid();
+    if (!box) return;
+    if (window.matchMedia && window.matchMedia('(max-width: 1024px)').matches) {
+      box.style.height = ''; /* 窄屏恢复单层滚动 */
+      updateFades();
+      return;
+    }
+    var grid = box.querySelector('.g4');
+    var card = grid && grid.querySelector('.card');
+    if (!card) { box.style.height = ''; updateFades(); return; }
+    var h = card.getBoundingClientRect().height;
+    var gap = parseFloat(getComputedStyle(grid).rowGap) || 0;
+    if (!h) return;
+    var rows = 3;
+    box.style.height = Math.round(rows * h + (rows - 1) * gap) + 2 + 'px';
+    updateFades();
+    if (window.ResizeObserver && grid !== gridObserved) {
+      if (gridObs) gridObs.disconnect();
+      gridObs = new ResizeObserver(function () { fitGrid(); });
+      gridObs.observe(grid);
+      gridObserved = grid;
+    }
+  }
+  function refitGrid() { clearTimeout(gridTimer); gridTimer = setTimeout(fitGrid, 120); }
+  fitGrid();
+  window.addEventListener('load', fitGrid);
+  window.addEventListener('resize', refitGrid);
+  /* 网格内滚动位置变化（含图片加载后的高度重算）都刷新渐隐 */
+  region.addEventListener('scroll', function () { updateFades(); }, true);
+
+  /* 边界无缝接力：网格已到边界再朝同方向滚时，把整格滚轮交给页面
+     （preventDefault 后手动滚页）。交给浏览器默认链会出现「网格吞半格、
+     页面慢一拍」的两段式顿挫，这里显式接管，一次滚轮事件动线不断。 */
+  region.addEventListener('wheel', function (e) {
+    if (e.deltaMode !== 0 || !e.deltaY) return;
+    var box = e.target && e.target.closest ? e.target.closest('.catgrid') : null;
+    if (!box) return;
+    if (getComputedStyle(box).overflowY !== 'auto') return;
+    var max = box.scrollHeight - box.clientHeight;
+    if (max <= 4) return; /* 内容不满三行：无需内滚，页面自然接管 */
+    var down = e.deltaY > 0;
+    var atEdge = down ? box.scrollTop >= max - 1 : box.scrollTop <= 1;
+    if (atEdge) {
+      e.preventDefault();
+      window.scrollBy(0, e.deltaY);
+    }
+  }, { passive: false });
 
   /* 首次访问（还没有会话 Cookie）时 Thymeleaf 会把会话号写进路径：
      /category;STORESESSION=xxx。它不是真实路径，不剥掉就会被当成「换页」，
@@ -432,7 +498,13 @@
           var keepFocus = document.activeElement
             && document.activeElement.closest
             && document.activeElement.closest('form[data-search]');
-          if (next) { region.innerHTML = next.innerHTML; }
+          if (next) {
+            region.innerHTML = next.innerHTML;
+            /* 换页/换筛选后网格是新节点：滚回顶部，再按新内容重算高度与渐隐 */
+            var gb = region.querySelector('.catgrid');
+            if (gb) gb.scrollTop = 0;
+            fitGrid();
+          }
           /* 即时搜索会重建输入框，把焦点与光标接回去，用户能连续输入 */
           if (keepFocus) {
             var ni = region.querySelector('form[data-search] input[name=keyword]');
