@@ -2,7 +2,7 @@
 <html lang="zh-CN" th:lang="${lang == 'en' ? 'en' : 'zh-CN'}" xmlns:th="http://www.thymeleaf.org">
 <body>
 
-<!-- ============================================================ 头部（双层：品牌层 + 系列目录层，吸顶） -->
+<!-- ============================================================ 头部（吸顶） -->
 <th:block th:fragment="header(active)">
     <!-- 键盘用户可跳过重复导航，聚焦到主内容锚点 -->
     <a class="skip" th:href="'#main'" th:text="#{a11y.skip}">跳到主要内容</a>
@@ -61,19 +61,6 @@
                 </a>
             </div>
         </div>
-        <!-- 系列目录：仅商品类页面显示。首页传 'home'、账户中心传 'account'，均不渲染 -->
-        <nav class="navbar" th:if="${active != 'home' and active != 'account'}" th:aria-label="#{shop.f.category}">
-            <a class="nitem" th:href="@{/category(category=1)}"
-               th:classappend="${navActive == 'commute'} ? 'on'"><span class="nm" th:text="#{line.commute}">通勤出行</span></a>
-            <a class="nitem" th:href="@{/category(category=2)}"
-               th:classappend="${navActive == 'leisure'} ? 'on'"><span class="nm" th:text="#{line.leisure}">休闲生活</span></a>
-            <a class="nitem" th:href="@{/category(category=3)}"
-               th:classappend="${navActive == 'outdoor'} ? 'on'"><span class="nm" th:text="#{line.outdoor}">户外运动</span></a>
-            <a class="nitem" th:href="@{/category(category=4)}"
-               th:classappend="${navActive == 'occasion'} ? 'on'"><span class="nm" th:text="#{line.occasion}">礼服场合</span></a>
-            <a class="nitem" th:href="@{/category(category=5)}"
-               th:classappend="${navActive == 'home'} ? 'on'"><span class="nm" th:text="#{line.home}">居家舒适</span></a>
-        </nav>
     </div>
 </th:block>
 
