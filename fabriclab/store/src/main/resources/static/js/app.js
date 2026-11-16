@@ -388,16 +388,18 @@
     if (!box) return;
     if (window.matchMedia && window.matchMedia('(max-width: 1024px)').matches) {
       box.style.height = ''; /* 窄屏由 CSS 恢复单层滚动 */
+      updateFades(box);
       return;
     }
     var grid = box.querySelector('.g4');
     var card = grid && grid.querySelector('.card');
-    if (!card) { box.style.height = ''; return; }
+    if (!card) { box.style.height = ''; updateFades(box); return; }
     var h = card.getBoundingClientRect().height;
     var gap = parseFloat(getComputedStyle(grid).rowGap) || 0;
     if (!h) return;
     var rows = 3;
     box.style.height = Math.round(rows * h + (rows - 1) * gap) + 2 + 'px';
+    updateFades(box);
     if (window.ResizeObserver && grid !== observedGrid) {
       if (gridObserver) gridObserver.disconnect();
       gridObserver = new ResizeObserver(function () { fitGrid(); });
@@ -413,16 +415,19 @@
   window.addEventListener('load', fitGrid);
   window.addEventListener('resize', refitGrid);
 
-  /* 滚轮归属：落在商品网格内才滚商品，滚到顶/底也不把这一下转交给整页；
-     落在网格外的滚轮由整页接管，商品区内部位置保持不动（CSS overflow-anchor:none）。 */
-  region.addEventListener('wheel', function (e) {
-    var box = region.querySelector('.catgrid');
-    if (!box || !box.contains(e.target)) return;
-    if (getComputedStyle(box).overflowY !== 'auto') return;
-    var atTop = box.scrollTop <= 0;
-    var atBottom = box.scrollTop + box.clientHeight >= box.scrollHeight - 1;
-    if ((atTop && e.deltaY < 0) || (atBottom && e.deltaY > 0)) e.preventDefault();
-  }, { passive: false });
+  /* 渐隐提示：商品网格是内滚区（滚动条隐藏），用上下渐隐标示「还有货 / 已滚过」。
+     滚到边界后不拦截——滚动链自动转交整页，页面接着往下走，动线不断。 */
+  function updateFades(box) {
+    if (!box) return;
+    if (getComputedStyle(box).overflowY !== 'auto') { box.classList.remove('fade-t', 'fade-b'); return; }
+    var max = box.scrollHeight - box.clientHeight;
+    box.classList.toggle('fade-t', box.scrollTop > 4);
+    box.classList.toggle('fade-b', max > 4 && box.scrollTop < max - 4);
+  }
+  region.addEventListener('scroll', function (e) {
+    var t = e.target;
+    if (t && t.classList && t.classList.contains('catgrid')) updateFades(t);
+  }, true);
 
   /* 首次访问（还没有会话 Cookie）时 Thymeleaf 会把会话号写进路径：
      /category;STORESESSION=xxx。它不是真实路径，不剥掉就会被当成「换页」，

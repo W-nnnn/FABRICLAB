@@ -863,16 +863,19 @@ body.lang-en .lead, body.lang-en .tiny, body.lang-en .eyebrow { letter-spacing: 
 }
 
 /* 双层滚动：商品网格自身是独立的滚动区，高度由 app.js 按实测行高写成整 3 行，
-   边界不切半张卡片；鼠标落在网格内只滚商品、落在网格外滚整页，互不带转。
-   无图片/无结果时 JS 会清空内联高度，容器恢复 auto，不会留一块空框。 */
+   边界不切半张卡片；鼠标落在网格内只滚商品，滚到边界后滚动链转交整页接着走。
+   无图片/无结果时 JS 会清空内联高度，容器恢复 auto，不会留一块空框。
+   上下渐隐由 app.js 按内滚位置切换（fade-t/fade-b），标示「还有货 / 已滚过」。 */
 .catgrid {
     height: auto;
     min-height: 0;
     overflow-y: auto;
-    overscroll-behavior: contain;
     overflow-anchor: none;
     scrollbar-width: none;
 }
+.catgrid.fade-t { -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 26px); mask-image: linear-gradient(180deg, transparent 0, #000 26px); }
+.catgrid.fade-b { -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - 40px), transparent 100%); mask-image: linear-gradient(180deg, #000 calc(100% - 40px), transparent 100%); }
+.catgrid.fade-t.fade-b { -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 26px, #000 calc(100% - 40px), transparent 100%); mask-image: linear-gradient(180deg, transparent 0, #000 26px, #000 calc(100% - 40px), transparent 100%); }
 .catgrid::-webkit-scrollbar { display: none; }
 
 /* 侧栏目录面板（分类页） */

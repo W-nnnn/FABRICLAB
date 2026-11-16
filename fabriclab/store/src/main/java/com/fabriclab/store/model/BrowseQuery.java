@@ -12,7 +12,7 @@ import com.fabriclab.store.exception.BusinessException;
 public class BrowseQuery {
 
     public static final int DEFAULT_PAGE = 1;
-    public static final int DEFAULT_SIZE = 24;
+    public static final int DEFAULT_SIZE = 16;
     public static final int MIN_SIZE = 1;
     public static final int MAX_SIZE = 50;
     public static final int MAX_KEYWORD_LENGTH = 120;
