@@ -754,15 +754,25 @@ html[lang="en"] .help{font-size:12px}
 .svc-detail-grid{display:grid;grid-template-columns:300px minmax(0,1fr);gap:32px;margin-top:4px}
 .svc-facts .block,.svc-convo .block{margin-top:16px;padding-top:14px}
 .svc-facts .block:first-child,.svc-convo .block:first-child{margin-top:0;padding-top:0;border-top:0}
+/* 页内区块标题：单行、细底边，去掉编号与说明文，整页只留内容 */
+.svc-h{display:flex;align-items:baseline;justify-content:space-between;gap:16px;
+  font-family:var(--f-song);font-size:19px;letter-spacing:.02em;
+  padding-bottom:10px;border-bottom:1px solid var(--rule);margin-bottom:16px}
+.svc-h--row span:first-child{flex:none}
+.svc-h__note{font-family:var(--f-num);font-size:12px;font-weight:400;color:var(--faint);letter-spacing:.06em}
+.svc-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.svc-meta .num{font-family:var(--f-num);letter-spacing:.04em}
+.svc-meta i{color:var(--faint);font-style:normal}
+.svc-meta .tag{align-self:center}
 .svc-facts .facts{margin-top:4px}
 .svc-rel{display:flex;flex-direction:column;gap:10px;margin-top:18px;font-size:12px}
 .svc-rel a{color:var(--rust-ink);min-height:32px;display:inline-flex;align-items:center}
 .svc-rel a:hover{text-decoration:underline;text-underline-offset:4px}
-.svc-msgs{display:flex;flex-direction:column;gap:8px}
+.svc-msgs{display:flex;flex-direction:column;gap:10px}
 .svc-msg{padding:10px 14px;border:1px solid var(--rule);background:var(--white);max-width:88%}
 .svc-msg--user{align-self:flex-start;background:var(--wash)}
 .svc-msg--admin{align-self:flex-end;border-left:3px solid var(--rust);background:var(--brand-pale)}
-.svc-msg__who{display:flex;align-items:baseline;gap:14px;margin-bottom:8px}
+.svc-msg__who{display:flex;align-items:baseline;gap:14px;margin-bottom:6px}
 .svc-msg__who b{font-size:12px;font-weight:500}
 .svc-msg__who span{font-family:var(--f-num);font-size:12px;color:var(--faint)}
 .svc-msg p{font-size:13px;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere}
@@ -773,12 +783,10 @@ html[lang="en"] .help{font-size:12px}
 .svc-field-err{margin-top:8px;font-size:12px;color:var(--rust-ink)}
 .svc-quicks{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:10px}
 .svc-quicks__t{font-size:12px;color:var(--faint);margin-right:4px}
-.svc-quicks button{min-height:32px;padding:0 12px;border:1px solid var(--rule-strong);background:transparent;
-  font-size:12px;color:var(--body);text-align:left;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.svc-quicks button{min-height:32px;padding:6px 12px;border:1px solid var(--rule-strong);background:transparent;
+  font-size:12px;color:var(--body);text-align:left;white-space:normal;line-height:1.6}
 .svc-quicks button:hover{border-color:var(--rust);color:var(--rust-ink);background:var(--wash)}
 .svc-answer__foot{display:flex;align-items:center;gap:18px;margin-top:12px}
-.svc-side-act{margin-top:12px;padding-top:10px;border-top:1px solid var(--rule)}
-.svc-side-act button{min-height:32px}
 @media(max-width:1199px){
   .svc-detail-grid{grid-template-columns:260px minmax(0,1fr);gap:28px}
 }
