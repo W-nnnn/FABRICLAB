@@ -37,7 +37,6 @@
                     <section class="svc-chat">
                         <header class="svc-chat__hd">
                             <h2 th:text="#{admin.svc.convoTitle}">对话记录</h2>
-                            <span class="txt txt--muted" th:text="#{admin.svc.convoNote(${view.messages.size()})}">共 N 条消息，按时间升序</span>
                         </header>
 
                         <div class="svc-chat__log">
@@ -55,20 +54,18 @@
                             <form th:action="@{/admin/service/{id}/reply(id=${view.thread.id})}" method="post">
                                 <input type="hidden" name="_csrf" th:value="${csrfToken}"/>
                                 <input type="hidden" name="returnTo" th:value="${returnTo}"/>
-                                <label class="svc-compose__t" for="reply" th:text="#{admin.svc.replyTitle}">回复这条咨询</label>
-                                <textarea id="reply" name="body" rows="3" maxlength="1000"
+                                <textarea id="reply" name="body" rows="4" maxlength="1000"
                                           th:classappend="${replyError != null} ? 'err'"
                                           th:aria-invalid="${replyError != null} ? 'true' : 'false'"
+                                          th:aria-label="#{admin.svc.replyPh}"
                                           th:placeholder="#{admin.svc.replyPh}" th:text="${replyDraft}"></textarea>
                                 <p class="svc-field-err" th:if="${replyError != null}" th:text="${replyError}">请填写回复内容</p>
                                 <div class="svc-compose__bar">
                                     <div class="svc-quicks">
-                                        <span class="svc-quicks__t" th:text="#{admin.svc.quickTitle}">常用回复</span>
                                         <button type="button" data-quick th:each="q : ${quicks}"
                                                 th:attr="data-text=#{__${q}__}" th:text="#{__${q}__}">常用语</button>
                                     </div>
                                     <div class="svc-compose__send">
-                                        <span class="txt txt--muted" th:text="#{admin.svc.replyLimit}">最长 1000 字</span>
                                         <button class="btn btn--sm" type="submit" th:text="#{admin.svc.replySend}">发送回复</button>
                                     </div>
                                 </div>
