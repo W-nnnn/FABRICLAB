@@ -577,7 +577,7 @@ body.lang-en .lead, body.lang-en .tiny, body.lang-en .eyebrow { letter-spacing: 
 
 /* 提示条 */
 .flash {
-    margin: 0 var(--gx) 24px;
+    margin: 16px var(--gx) 24px;
     padding: 14px 18px;
     background: var(--linen);
     display: flex; align-items: flex-start; gap: 11px;
