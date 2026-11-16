@@ -12,9 +12,8 @@
             <div class="page">
                 <div th:replace="~{fragments :: notice}"></div>
 
-                <div class="ph">
+                <div class="ph ph--slim">
                     <div>
-                        <div class="ph__eyebrow"><em>04</em><span th:text="#{admin.svc.title}">客服咨询</span></div>
                         <h1 th:text="${view.thread.subject}">咨询主题</h1>
                         <p class="svc-meta">
                             <span class="num" th:text="${view.thread.threadNo}">FL-S…</span>
@@ -61,19 +60,8 @@
                                           th:placeholder="#{admin.svc.replyPh}" th:text="${replyDraft}"></textarea>
                                 <p class="svc-field-err" th:if="${replyError != null}" th:text="${replyError}">请填写回复内容</p>
                                 <div class="svc-compose__bar">
-                                    <div class="svc-quicks">
-                                        <button type="button" data-quick th:each="q : ${quicks}"
-                                                th:attr="data-text=#{__${q}__}" th:text="#{__${q}__}">常用语</button>
-                                    </div>
-                                    <div class="svc-compose__send">
-                                        <button class="btn btn--sm" type="submit" th:text="#{admin.svc.replySend}">发送回复</button>
-                                    </div>
+                                    <button class="btn btn--sm" type="submit" th:text="#{admin.svc.replySend}">发送回复</button>
                                 </div>
-                            </form>
-                            <form class="svc-side-act" th:action="@{/admin/service/{id}/close(id=${view.thread.id})}" method="post">
-                                <input type="hidden" name="_csrf" th:value="${csrfToken}"/>
-                                <input type="hidden" name="returnTo" th:value="${returnTo}"/>
-                                <button class="txt" type="submit" th:text="#{admin.svc.close}">关闭这条咨询</button>
                             </form>
                         </div>
 
@@ -114,10 +102,16 @@
                                    th:text="#{admin.svc.relSku(${view.thread.relatedSku})}">相关款号 →</a>
                             </div>
                         </section>
+                        <div class="svc-card svc-side-act" th:unless="${view.thread.status == 'CLOSED'}">
+                            <form th:action="@{/admin/service/{id}/close(id=${view.thread.id})}" method="post">
+                                <input type="hidden" name="_csrf" th:value="${csrfToken}"/>
+                                <input type="hidden" name="returnTo" th:value="${returnTo}"/>
+                                <button class="txt" type="submit" th:text="#{admin.svc.close}">关闭这条咨询</button>
+                            </form>
+                        </div>
                     </aside>
                 </div>
 
-                <footer th:replace="~{fragments :: footer}"></footer>
             </div>
         </main>
     </div>
@@ -127,17 +121,6 @@
 <script th:replace="~{fragments :: shellJs}"></script>
 <script>
 (function () {
-    var box = document.getElementById('reply');
-    if (box) {
-        document.querySelectorAll('[data-quick]').forEach(function (btn) {
-            btn.addEventListener('click', function () {
-                var text = btn.getAttribute('data-text') || '';
-                box.value = box.value ? box.value.replace(/\s+$/, '') + '\n' + text : text;
-                box.focus();
-                box.setSelectionRange(box.value.length, box.value.length);
-            });
-        });
-    }
     /* 气泡流进屏后停在最底一条，回到最新消息 */
     var log = document.querySelector('.svc-chat__log');
     if (log) log.scrollTop = log.scrollHeight;
