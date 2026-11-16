@@ -204,6 +204,25 @@ html, body { overflow-x: clip; }
 }
 .linenav .ln:focus-visible { outline: 2px solid var(--rust-ink); outline-offset: 2px; }
 
+/* 选购页头：亚麻色块面承载标题、导语、计数与系列导航——
+   纸色页面上一块看得见的「页头体」，右侧计数用赭色细线隔离出焦点，不再一片平 */
+.shero {
+    background: var(--linen);
+    padding: 30px var(--gx) 22px;
+}
+.shero__top { display: flex; align-items: flex-end; }
+.shero__title { margin-top: 10px; font-size: 34px; }
+.shero__lead { margin: 0 0 4px 40px; width: 420px; font-size: 12px; }
+.shero__num {
+    margin-left: auto; display: flex; align-items: baseline; gap: 12px;
+    padding-left: 24px; border-left: 1px solid var(--line2);
+}
+.shero__num .din { color: var(--rust-ink); font-size: 42px; font-weight: 700; letter-spacing: -.03em; }
+.shero__num .tiny { padding-bottom: 7px; }
+.shero .linenav { padding: 26px 0 6px; }
+/* 胶囊落在亚麻底上：悬停改提亮为卡色，避免与底色同色看不清 */
+.shero .linenav .ln:hover { background: var(--card); }
+
 /* ------------------------------------------------------------ 排版 */
 .eyebrow {
     font-family: var(--f-body); font-size: 11px; letter-spacing: .24em;
@@ -875,21 +894,10 @@ body.lang-en .lead, body.lang-en .tiny, body.lang-en .eyebrow { letter-spacing: 
     animation: catProgress .8s cubic-bezier(.4, 0, .2, 1) infinite;
 }
 
-/* 双层滚动：商品网格自身是独立的滚动区，高度由 app.js 按实测行高写成整 3 行，
-   边界不切半张卡片；鼠标落在网格内只滚商品，滚到边界后滚动链转交整页接着走。
-   无图片/无结果时 JS 会清空内联高度，容器恢复 auto，不会留一块空框。
-   上下渐隐由 app.js 按内滚位置切换（fade-t/fade-b），标示「还有货 / 已滚过」。 */
-.catgrid {
-    height: auto;
-    min-height: 0;
-    overflow-y: auto;
-    overflow-anchor: none;
-    scrollbar-width: none;
-}
-.catgrid.fade-t { -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 26px); mask-image: linear-gradient(180deg, transparent 0, #000 26px); }
-.catgrid.fade-b { -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - 40px), transparent 100%); mask-image: linear-gradient(180deg, #000 calc(100% - 40px), transparent 100%); }
-.catgrid.fade-t.fade-b { -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 26px, #000 calc(100% - 40px), transparent 100%); mask-image: linear-gradient(180deg, transparent 0, #000 26px, #000 calc(100% - 40px), transparent 100%); }
-.catgrid::-webkit-scrollbar { display: none; }
+/* 商品网格回归整页单层滚动：不做页中页。
+   内滚区（滚轮先滚商品、到边界再转交页面）被用户多次反馈为「滚动怪异」，
+   双层滚动条一跳一跳、动线两段式，体验无法救回——彻底砍掉，整页只有一条滚动。 */
+.catgrid { min-height: 0; }
 
 /* 侧栏目录面板（分类页） */
 .catpanel {
@@ -948,8 +956,6 @@ body.lang-en .lead, body.lang-en .tiny, body.lang-en .eyebrow { letter-spacing: 
         width: 100% !important; max-width: none !important; margin-left: 0 !important;
     }
     .catpanel { position: static !important; width: 100% !important; }
-    /* 窄屏恢复整页单层滚动，避免小视口出现两层滚动 */
-    .catgrid { height: auto !important; overflow: visible; }
     .csearch { width: 100%; max-width: none; }
     .g4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .g3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
