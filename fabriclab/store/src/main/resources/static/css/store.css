@@ -717,6 +717,14 @@ body.lang-en .lead, body.lang-en .tiny, body.lang-en .eyebrow { letter-spacing: 
     padding: 66px 58px 60px;
     display: flex; align-items: flex-end;
 }
+.emptyp h2 {
+    margin: 0; font-family: var(--f-song); font-size: 26px; font-weight: 400;
+    letter-spacing: .06em; line-height: 1.4;
+}
+.emptyp p {
+    margin: 20px 0 0; font-size: 13px; line-height: 1.9; color: var(--mute);
+}
+.emptyp .acts { margin: 34px 0 0; margin-left: 0; }
 .emptyp .mark {
     margin-left: auto; align-self: flex-end;
     font-family: var(--f-din); font-size: 52px; font-weight: 400;
