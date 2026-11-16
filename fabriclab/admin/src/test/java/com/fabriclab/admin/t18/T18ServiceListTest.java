@@ -89,12 +89,22 @@ class T18ServiceListTest {
 
     @Test
     void keywordMatchesNumberSubjectCustomerAndStyle() {
-        assertEquals(1, support.page(ServiceQuery.of("T18-B-03", "all", 1, 10)).total());
-        assertEquals(1, support.page(ServiceQuery.of("洗护询问", "all", 1, 10)).total());
-        assertEquals(2, support.page(ServiceQuery.of("bob", "all", 1, 10)).total());
-        assertEquals(1, support.page(ServiceQuery.of("FL-CM-01", "all", 1, 10)).total());
-        assertEquals(1, support.page(ServiceQuery.of("DEMO-202611-BO-02", "all", 1, 10)).total());
-        assertEquals(0, support.page(ServiceQuery.of("不存在的关键词", "all", 1, 10)).total());
+        /* 库里可能存在演示会话或其它用例留下的数据，按「命中包含本次 fixture」判定，不把绝对条数写死 */
+        assertEquals(List.of("T18-B-03"), numbers(hits("T18-B-03")), "按会话编号命中");
+        assertTrue(numbers(hits("洗护询问")).contains("T18-B-02"), "按标题命中");
+
+        List<String> bobHits = numbers(hits("bob"));
+        assertTrue(bobHits.containsAll(List.of("T18-B-03", "T18-B-04")), "按顾客名命中 bob 名下两条");
+        assertTrue(bobHits.stream().noneMatch(n -> n.equals("T18-B-01") || n.equals("T18-B-02")),
+                "alice 的会话不得混进 bob 的命中结果");
+
+        assertTrue(numbers(hits("FL-CM-01")).contains("T18-B-01"), "按关联款号命中");
+        assertTrue(numbers(hits("DEMO-202611-BO-02")).contains("T18-B-03"), "按关联订单号命中");
+        assertEquals(0, hits("不存在的关键词").total(), "无命中时返回空");
+    }
+
+    private ServicePage hits(String keyword) {
+        return support.page(ServiceQuery.of(keyword, "all", 1, 50));
     }
 
     @Test
