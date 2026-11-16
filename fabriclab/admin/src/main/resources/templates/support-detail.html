@@ -63,11 +63,6 @@
                                     <button class="btn btn--sm" type="submit" th:text="#{admin.svc.replySend}">发送回复</button>
                                 </div>
                             </form>
-                            <form class="svc-side-act" th:action="@{/admin/service/{id}/close(id=${view.thread.id})}" method="post">
-                                <input type="hidden" name="_csrf" th:value="${csrfToken}"/>
-                                <input type="hidden" name="returnTo" th:value="${returnTo}"/>
-                                <button class="txt" type="submit" th:text="#{admin.svc.close}">关闭这条咨询</button>
-                            </form>
                         </div>
 
                         <div class="svc-closed" th:if="${view.thread.status == 'CLOSED'}">
@@ -107,6 +102,13 @@
                                    th:text="#{admin.svc.relSku(${view.thread.relatedSku})}">相关款号 →</a>
                             </div>
                         </section>
+                        <div class="svc-card svc-side-act" th:unless="${view.thread.status == 'CLOSED'}">
+                            <form th:action="@{/admin/service/{id}/close(id=${view.thread.id})}" method="post">
+                                <input type="hidden" name="_csrf" th:value="${csrfToken}"/>
+                                <input type="hidden" name="returnTo" th:value="${returnTo}"/>
+                                <button class="txt" type="submit" th:text="#{admin.svc.close}">关闭这条咨询</button>
+                            </form>
+                        </div>
                     </aside>
                 </div>
 

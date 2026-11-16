@@ -791,7 +791,6 @@ html[lang="en"] .help{font-size:12px}
 .svc-compose textarea.err{border-color:var(--rust);background:#FBF3EF}
 .svc-field-err{margin-top:8px;font-size:12px;color:var(--rust-ink)}
 .svc-compose__bar{margin-top:12px}
-.svc-side-act{margin-top:12px;padding-top:10px;border-top:1px solid var(--rule)}
 .svc-side-act button{min-height:30px}
 .svc-closed{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:14px 20px;
   border-top:1px solid var(--rule);background:var(--wash)}
