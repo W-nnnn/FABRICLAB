@@ -103,7 +103,7 @@
                     <a style="color:inherit" th:href="@{/service}" th:text="#{svc.title}">客服中心</a><br>
                     <a style="color:inherit" th:href="@{/fabrics}" th:text="#{fabrics.title}">面料档案</a><br>
                     <a style="color:inherit" th:href="@{/crafts}" th:text="#{crafts.title}">工艺说明</a><br>
-                    <span style="color:var(--mute)">尺码指南<br>修改与修补</span>
+                    <span style="color:var(--mute)" th:utext="#{foot.service.mini}">尺码指南<br>修改与修补</span>
                 </p>
             </div>
             <div class="c">
@@ -113,7 +113,7 @@
         </div>
         <div class="sub">
             <span>© 2026 FABRICLAB ATELIER</span>
-            <span style="margin-left:26px">沪 ICP 备 2026018842 号</span>
+            <span style="margin-left:26px" th:text="#{foot.icp}">沪 ICP 备 2026018842 号</span>
             <div class="r">
                 <span th:text="#{foot.wechat}">微信</span>
                 <span th:text="#{foot.red}">小红书</span>
