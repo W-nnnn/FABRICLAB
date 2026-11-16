@@ -5,7 +5,7 @@
     <link rel="icon" type="image/png" th:href="@{/images/mark.png}"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="|#{nav.brand} · #{account.center}|">FABRICLAB · 我的账户</title>
-    <link rel="stylesheet" th:href="@{/css/store.css?v=20261114a}"/>
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261116b}"/>
 </head>
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
@@ -46,6 +46,9 @@
             </a>
             <a class="an" data-pane="settings" th:href="@{/orders}">
                 <span class="no">03</span><span class="nm" th:text="#{account.nav.settings}">账户设置</span>
+            </a>
+            <a class="an" th:href="@{/service/threads}">
+                <span class="no">04</span><span class="nm" th:text="#{svc.myThreads}">我的咨询</span>
             </a>
         </nav>
 
@@ -315,6 +318,6 @@
     <div style="height:70px"></div>
     <th:block th:replace="~{fragments :: footer}"></th:block>
 </div>
-<script th:src="@{/js/app.js?v=20261114a}"></script>
+<script th:src="@{/js/app.js?v=20261116a}"></script>
 </body>
 </html>

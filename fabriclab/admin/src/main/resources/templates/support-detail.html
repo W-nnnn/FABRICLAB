@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.toLanguageTag()}">
+<head th:replace="~{fragments :: head('admin.svc.detailTitle')}"></head>
+<body>
+<a class="skip" href="#main" th:text="#{admin.skip}">跳到主要内容</a>
+<div class="shell">
+    <div th:replace="~{fragments :: side('service')}"></div>
+    <div class="scrim" id="scrim"></div>
+    <div class="wrap">
+        <div th:replace="~{fragments :: topbar(#{admin.nav.clients}, #{admin.svc.detailTitle}, @{/admin/service})}"></div>
+        <main class="main" id="main">
+            <div class="page">
+                <div th:replace="~{fragments :: notice}"></div>
+
+                <div class="ph">
+                    <div>
+                        <div class="ph__eyebrow"><em>04</em><span th:text="#{admin.svc.title}">客服咨询</span></div>
+                        <h1 th:text="${view.thread.subject}">咨询主题</h1>
+                        <p th:text="#{admin.svc.detailNote(${view.thread.threadNo},${view.createdText})}">编号 · 发起时间</p>
+                    </div>
+                    <div class="ph__act">
+                        <a class="btn btn--line btn--sm" th:href="${returnTo}" th:text="#{admin.svc.backList}">返回咨询列表</a>
+                    </div>
+                </div>
+
+                <div class="svc-detail-grid">
+                    <!-- 左：会员与咨询事实，全部取自真实数据 -->
+                    <div class="svc-facts">
+                        <section class="block">
+                            <div class="block__head"><span class="block__no">01</span><div>
+                                <h2 th:text="#{admin.svc.factsUser}">会员</h2>
+                                <p th:text="#{admin.svc.factsUserNote}">咨询归属与联系资料</p>
+                            </div></div>
+                            <dl class="facts">
+                                <dt th:text="#{admin.svc.factUsername}">用户名</dt><dd th:text="${view.username}">alice</dd>
+                                <dt th:text="#{admin.svc.factName}">显示名</dt><dd th:text="${tr.t(view.displayName)}">林晓</dd>
+                                <dt th:text="#{admin.svc.factEmail}">邮箱</dt><dd th:text="${view.email}">—</dd>
+                                <dt th:text="#{admin.svc.factPhone}">电话</dt><dd th:text="${view.phone}">—</dd>
+                            </dl>
+                        </section>
+                        <section class="block">
+                            <div class="block__head"><span class="block__no">02</span><div>
+                                <h2 th:text="#{admin.svc.factsThread}">咨询信息</h2>
+                                <p th:text="#{admin.svc.factsThreadNote}">状态与时间由服务端记录</p>
+                            </div></div>
+                            <dl class="facts">
+                                <dt th:text="#{admin.svc.factNo}">咨询编号</dt><dd class="num" th:text="${view.thread.threadNo}">FL-S…</dd>
+                                <dt th:text="#{admin.svc.colCategory}">类别</dt><dd th:text="#{__${view.categoryKey}__}">尺码版型</dd>
+                                <dt th:text="#{admin.svc.colStatus}">状态</dt>
+                                <dd><span class="tag" th:classappend="${view.thread.status == 'OPEN'} ? 'tag--act' : (${view.thread.status == 'REPLIED'} ? 'tag--done' : 'tag--end')"
+                                          th:text="#{__${view.statusKey}__}">待回复</span></dd>
+                                <dt th:text="#{admin.svc.factFirstReply}">首次回复</dt><dd th:text="${view.repliedText}">—</dd>
+                                <dt th:text="#{admin.svc.colActivity}">最后活动</dt><dd th:text="${view.activityText}">—</dd>
+                            </dl>
+                            <div class="svc-rel" th:if="${view.thread.relatedOrderNo != null or view.thread.relatedSku != null}">
+                                <a th:if="${view.thread.relatedOrderNo != null}"
+                                   th:href="@{/admin/orders(kw=${view.thread.relatedOrderNo})}"
+                                   th:text="#{admin.svc.relOrder(${view.thread.relatedOrderNo})}">相关订单 →</a>
+                                <a th:if="${view.thread.relatedSku != null}"
+                                   th:href="@{/admin/products(kw=${view.thread.relatedSku})}"
+                                   th:text="#{admin.svc.relSku(${view.thread.relatedSku})}">相关款号 →</a>
+                            </div>
+                        </section>
+                    </div>
+
+                    <!-- 右：完整对话 + 回复区 -->
+                    <div class="svc-convo">
+                        <section class="block">
+                            <div class="block__head"><span class="block__no">03</span><div>
+                                <h2 th:text="#{admin.svc.convoTitle}">对话记录</h2>
+                                <p th:text="#{admin.svc.convoNote(${view.messages.size()})}">共 N 条消息，按时间升序</p>
+                            </div></div>
+                            <div class="svc-msgs">
+                                <article class="svc-msg" th:each="m : ${view.messages}"
+                                         th:classappend="${m.fromCustomer()} ? 'svc-msg--user' : 'svc-msg--admin'">
+                                    <div class="svc-msg__who">
+                                        <b th:text="${tr.t(m.authorLabel())}">林晓</b>
+                                        <span th:text="${m.time()}">2026.11.15 20:10</span>
+                                    </div>
+                                    <p th:text="${m.body()}">消息正文</p>
+                                </article>
+                            </div>
+                        </section>
+
+                        <section class="block svc-answer" th:unless="${view.thread.status == 'CLOSED'}">
+                            <div class="block__head"><span class="block__no">04</span><div>
+                                <h2 th:text="#{admin.svc.replyTitle}">回复这条咨询</h2>
+                                <p th:text="#{admin.svc.replyNote}">提交后状态变为已回复，会员在用户端可继续追问。</p>
+                            </div></div>
+                            <form th:action="@{/admin/service/{id}/reply(id=${view.thread.id})}" method="post">
+                                <input type="hidden" name="_csrf" th:value="${csrfToken}"/>
+                                <input type="hidden" name="returnTo" th:value="${returnTo}"/>
+                                <textarea id="reply" name="body" rows="3" maxlength="1000"
+                                          th:classappend="${replyError != null} ? 'err'"
+                                          th:aria-invalid="${replyError != null} ? 'true' : 'false'"
+                                          th:placeholder="#{admin.svc.replyPh}" th:text="${replyDraft}"></textarea>
+                                <p class="svc-field-err" th:if="${replyError != null}" th:text="${replyError}">请填写回复内容</p>
+                                <div class="svc-quicks">
+                                    <span class="svc-quicks__t" th:text="#{admin.svc.quickTitle}">常用回复</span>
+                                    <button type="button" data-quick th:each="q : ${quicks}"
+                                            th:attr="data-text=#{__${q}__}" th:text="#{__${q}__}">常用语</button>
+                                </div>
+                                <div class="svc-answer__foot">
+                                    <button class="btn" type="submit" th:text="#{admin.svc.replySend}">发送回复</button>
+                                    <span class="txt txt--muted" th:text="#{admin.svc.replyLimit}">最长 1000 字</span>
+                                </div>
+                            </form>
+                            <form class="svc-side-act" th:action="@{/admin/service/{id}/close(id=${view.thread.id})}" method="post">
+                                <input type="hidden" name="_csrf" th:value="${csrfToken}"/>
+                                <input type="hidden" name="returnTo" th:value="${returnTo}"/>
+                                <button class="txt" type="submit" th:text="#{admin.svc.close}">关闭这条咨询</button>
+                            </form>
+                        </section>
+
+                        <section class="block" th:if="${view.thread.status == 'CLOSED'}">
+                            <div class="block__head"><span class="block__no">04</span><div>
+                                <h2 th:text="#{admin.svc.closedTitle}">咨询已关闭</h2>
+                                <p th:text="#{admin.svc.closedNote}">重新打开后可继续回复或追问。</p>
+                            </div></div>
+                            <form th:action="@{/admin/service/{id}/reopen(id=${view.thread.id})}" method="post">
+                                <input type="hidden" name="_csrf" th:value="${csrfToken}"/>
+                                <input type="hidden" name="returnTo" th:value="${returnTo}"/>
+                                <button class="btn btn--line" type="submit" th:text="#{admin.svc.reopen}">重新打开咨询</button>
+                            </form>
+                        </section>
+                    </div>
+                </div>
+
+                <footer th:replace="~{fragments :: footer}"></footer>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div th:replace="~{fragments :: icons}"></div>
+<script th:replace="~{fragments :: shellJs}"></script>
+<script>
+(function () {
+    var box = document.getElementById('reply');
+    if (!box) return;
+    document.querySelectorAll('[data-quick]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var text = btn.getAttribute('data-text') || '';
+            box.value = box.value ? box.value.replace(/\s+$/, '') + '\n' + text : text;
+            box.focus();
+            box.setSelectionRange(box.value.length, box.value.length);
+        });
+    });
+})();
+</script>
+</body>
+</html>

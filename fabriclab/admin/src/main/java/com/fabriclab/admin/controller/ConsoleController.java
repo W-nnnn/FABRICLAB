@@ -35,6 +35,7 @@ public class ConsoleController {
         model.addAttribute("statDraft", d.draft());
         model.addAttribute("statLow", d.low());
         model.addAttribute("statShip", d.ship());
+        model.addAttribute("statSupport", d.support());
         model.addAttribute("needs", d.needs());
         model.addAttribute("recent", d.recent());
         model.addAttribute("today", d.today());

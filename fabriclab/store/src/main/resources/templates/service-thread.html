@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN" th:lang="${lang == 'en' ? 'en' : 'zh-CN'}" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <link rel="icon" type="image/png" th:href="@{/images/mark.png}"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="|#{nav.brand} · ${view.thread.subject}|">FABRICLAB · 咨询详情</title>
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261116b}"/>
+</head>
+<body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
+<div class="page">
+
+    <th:block th:replace="~{fragments :: header('account')}"></th:block>
+    <span id="main" tabindex="-1"></span>
+
+    <div class="crumb">
+        <a th:href="@{/service}" th:text="#{svc.title}">客服中心</a><span> / </span>
+        <a th:href="@{/service/threads}" th:text="#{svc.myThreads}">我的咨询</a><span> / </span>
+        <span th:text="${view.thread.threadNo}">FL-S202611150001</span>
+    </div>
+
+    <section class="svc-detail">
+        <div class="svc-notice" role="status" th:if="${notice != null}"
+             th:classappend="${noticeKind == 'err'} ? 'svc-notice--err'" th:text="${notice}">已提交</div>
+
+        <div class="svc-detail__head">
+            <div>
+                <div class="eyebrow" th:text="#{svc.detailEyebrow}">CONVERSATION / 咨询对话</div>
+                <h1 class="h2" th:text="${view.thread.subject}">咨询主题</h1>
+            </div>
+            <a class="tlink mute" th:href="@{/service/threads}" th:text="#{svc.back}">← 返回我的咨询</a>
+        </div>
+
+        <div class="svc-detail__meta">
+            <div><b th:text="${view.thread.threadNo}">FL-S…</b><small th:text="#{svc.meta.no}">咨询编号</small></div>
+            <div><b th:text="#{__${view.statusKey}__}">待回复</b><small th:text="#{svc.meta.status}">当前状态</small></div>
+            <div><b th:text="#{__${view.categoryKey}__}">尺码版型</b><small th:text="#{svc.meta.category}">类别</small></div>
+            <div><b th:text="${view.createdText}">2026.11.15 20:10</b><small th:text="#{svc.meta.created}">发起时间</small></div>
+        </div>
+        <div class="svc-detail__rel" th:if="${view.thread.relatedOrderNo != null or view.thread.relatedSku != null}">
+            <span th:if="${view.thread.relatedOrderNo != null}"
+                  th:text="#{svc.relOrder(${view.thread.relatedOrderNo})}">相关订单：…</span>
+            <span th:if="${view.thread.relatedSku != null}"
+                  th:text="#{svc.relSku(${view.thread.relatedSku})}">相关款号：…</span>
+        </div>
+
+        <!-- 完整对话：按 id 升序，正文纯文本转义，不解释任何 HTML -->
+        <div class="svc-thread">
+            <article class="svc-msg" th:each="m : ${view.messages}"
+                     th:classappend="${m.fromCustomer()} ? 'svc-msg--me' : 'svc-msg--svc'">
+                <div class="svc-msg__who">
+                    <b th:if="${m.fromCustomer()}" th:text="${m.authorLabel()}">林晓</b>
+                    <b th:unless="${m.fromCustomer()}" th:text="#{svc.staff}">FABRICLAB 客服</b>
+                    <span th:text="${m.time()}">2026.11.15 20:10</span>
+                </div>
+                <p th:text="${m.body()}">消息正文</p>
+            </article>
+        </div>
+
+        <!-- 追问 / 关闭 / 重开：状态由后端复核，按钮只提供合法入口 -->
+        <div class="svc-reply" th:unless="${view.thread.status == 'CLOSED'}">
+            <form th:action="@{/service/threads/{id}/reply(id=${view.thread.id})}" method="post">
+                <input type="hidden" name="_csrf" th:value="${csrfToken}"/>
+                <label class="svc-f__lb" for="reply" th:text="#{svc.replyTitle}">继续追问</label>
+                <textarea id="reply" name="body" rows="3" maxlength="1000" required
+                          th:placeholder="#{svc.replyPh}"></textarea>
+                <div class="svc-reply__foot">
+                    <button class="btn sm" type="submit" th:text="#{svc.replySend}">发送追问</button>
+                    <span class="tiny" th:text="#{svc.replyNote}">发送后状态回到待回复</span>
+                </div>
+            </form>
+            <form class="svc-inline" th:action="@{/service/threads/{id}/close(id=${view.thread.id})}" method="post">
+                <input type="hidden" name="_csrf" th:value="${csrfToken}"/>
+                <button class="tlink mute" type="submit" th:text="#{svc.close}">关闭这条咨询</button>
+            </form>
+        </div>
+
+        <div class="svc-closed" th:if="${view.thread.status == 'CLOSED'}">
+            <p th:text="#{svc.closedText}">这条咨询已关闭。还有问题可以重新打开，或发起一条新的咨询。</p>
+            <form class="svc-inline" th:action="@{/service/threads/{id}/reopen(id=${view.thread.id})}" method="post">
+                <input type="hidden" name="_csrf" th:value="${csrfToken}"/>
+                <button class="btn ghost sm" type="submit" th:text="#{svc.reopen}">重新打开咨询</button>
+            </form>
+            <a class="tlink" th:href="@{/service/threads/new}" th:text="#{svc.ask}">发起新咨询 →</a>
+        </div>
+    </section>
+
+    <div style="height:86px"></div>
+    <th:block th:replace="~{fragments :: footer}"></th:block>
+</div>
+</body>
+</html>

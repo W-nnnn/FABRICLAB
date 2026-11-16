@@ -11,15 +11,15 @@
     <div class="wrap">
         <div th:replace="~{fragments :: topbar(#{admin.nav.overview}, #{admin.console.title}, @{/admin/console})}"></div>
 
-        <main class="main" id="main">
-            <div class="page">
+        <main class="main main--console" id="main">
+            <div class="page console">
                 <div th:replace="~{fragments :: notice}"></div>
 
                 <div class="ph">
                     <div>
                         <div class="ph__eyebrow"><em>01</em><span th:text="#{admin.nav.overview}">概览</span></div>
                         <h1 th:text="#{admin.console.title}">控制台</h1>
-                        <p th:text="${statShip + statLow > 0} ? #{admin.console.todo(${statShip},${statLow})} : #{admin.console.todoNone}">今日待办：1 笔待发货、3 款低库存</p>
+                        <p th:text="${statShip + statLow + statSupport > 0} ? #{admin.console.todo(${statShip},${statLow},${statSupport})} : #{admin.console.todoNone}">今日待办：1 笔待发货、3 款低库存</p>
                     </div>
                     <div class="ph__act"><span class="ph__count" th:text="${today}">2026.11.14</span></div>
                 </div>

@@ -19,6 +19,10 @@
                    th:text="#{nav.home}">首页</a>
                 <a class="hn" th:href="@{/category}" th:classappend="${active == 'shop'} ? 'on'"
                    th:text="#{nav.all}">全部商品</a>
+                <a class="hn" th:href="@{/fabrics}" th:classappend="${active == 'fabrics'} ? 'on'"
+                   th:text="#{fabrics.title}">面料档案</a>
+                <a class="hn" th:href="@{/crafts}" th:classappend="${active == 'crafts'} ? 'on'"
+                   th:text="#{crafts.title}">工艺说明</a>
             </nav>
             <div class="acts">
                 <a class="lang" th:href="${langHref + (lang == 'en' ? 'lang=zh' : 'lang=en')}"
@@ -101,9 +105,10 @@
             <div class="c">
                 <b class="t" th:text="#{foot.service}">服务</b>
                 <p>
+                    <a style="color:inherit" th:href="@{/service}" th:text="#{svc.title}">客服中心</a><br>
                     <a style="color:inherit" th:href="@{/fabrics}" th:text="#{fabrics.title}">面料档案</a><br>
                     <a style="color:inherit" th:href="@{/crafts}" th:text="#{crafts.title}">工艺说明</a><br>
-                    <span style="color:var(--mute)">尺码指南<br>修改与修补<br>配送与退换</span>
+                    <span style="color:var(--mute)">尺码指南<br>修改与修补</span>
                 </p>
             </div>
             <div class="c">
@@ -121,7 +126,7 @@
             </div>
         </div>
     </div>
-    <script th:src="@{/js/app.js}"></script>
+    <script th:src="@{/js/app.js?v=20261116a}"></script>
 </th:block>
 
 <!-- ============================================================ 商品卡 -->

@@ -4,24 +4,24 @@
 <body>
 <a class="skip" href="#main" th:text="#{admin.skip}">跳到主要内容</a>
 <div class="shell">
-    <div th:replace="~{fragments :: side('products')}"></div>
+    <div th:replace="~{fragments :: side(${albumScope})}"></div>
     <div class="scrim" id="scrim"></div>
     <div class="wrap">
-        <div th:replace="~{fragments :: topbar(#{admin.nav.products}, #{admin.album.title}, @{/admin/products})}"></div>
+        <div th:replace="~{fragments :: topbar(${crumbSection}, ${crumbCurrent}, ${crumbHref})}"></div>
         <main class="main" id="main">
             <div class="page">
                 <div th:replace="~{fragments :: notice}"></div>
 
                 <div class="ph">
                     <div>
-                        <div class="ph__eyebrow"><em>02</em><span th:text="#{admin.nav.products}">商品</span></div>
+                        <div class="ph__eyebrow"><em>02</em><span th:text="#{admin.nav.products}">商品</span> /
+                            <span th:text="#{admin.nav.albums}">服装相册</span></div>
                         <h1 th:text="#{admin.album.title}">服装相册</h1>
                         <p th:text="#{admin.album.note}">按平铺、上身、细节三组整理图片。</p>
                     </div>
                     <div class="ph__act">
                         <span class="ph__count" th:text="#{admin.album.total(${total})}">共 4 张</span>
-                        <a class="btn btn--line" th:href="@{/admin/products/{id}/edit(id=${product.id})}"
-                           th:text="#{admin.album.back}">返回款号</a>
+                        <a class="btn btn--line" th:href="${backHref}" th:text="${backLabel}">返回相册列表</a>
                     </div>
                 </div>
 
@@ -73,7 +73,7 @@
                                               th:text="${#strings.isEmpty(img.alt) ? #messages.msg('admin.album.noAlt') : tr.t(img.alt)}">正面平铺</span>
                                         <span class="shot__credit" th:if="${!#strings.isEmpty(img.credit)}" th:text="${img.credit}">© FABRICLAB</span>
                                     </div>
-                                    <form class="shot__group" th:action="@{/admin/products/{id}/album/{imageId}(id=${product.id},imageId=${img.id})}" method="post">
+                                    <form class="shot__group" th:action="@{|${albumBase}/${img.id}|}" method="post">
                                         <input type="hidden" name="_csrf" th:value="${csrfToken}" />
                                         <input type="hidden" name="moved" value="1" />
                                         <input type="hidden" name="path" th:value="${img.path}" />
@@ -90,7 +90,7 @@
                                         <button type="button" class="txt" th:text="#{admin.album.edit}"
                                                 th:attr="data-id=${img.id},data-kind=${img.kind},data-path=${img.path},data-credit=${img.credit},data-alt=${img.alt},data-sort=${img.sortOrder}"
                                                 onclick="openShotEdit(this)">编辑</button>
-                                        <form th:action="@{/admin/products/{id}/album/{imageId}/cover(id=${product.id},imageId=${img.id})}" method="post">
+                                        <form th:action="@{|${albumBase}/${img.id}/cover|}" method="post">
                                             <input type="hidden" name="_csrf" th:value="${csrfToken}" />
                                             <button type="submit" class="txt" th:disabled="${img.cover}"
                                                     th:text="${img.cover ? #messages.msg('admin.album.isCover') : #messages.msg('admin.album.setCover')}">设为封面</button>
@@ -112,7 +112,7 @@
                     <aside class="aside-col aside-col--album">
                         <div class="aside-sec">
                             <h3 th:text="#{admin.album.newTitle}">新增一张</h3>
-                            <form th:action="@{/admin/products/{id}/album/upload(id=${product.id})}" method="post"
+                            <form th:action="@{|${albumBase}/upload|}" method="post"
                                   enctype="multipart/form-data">
                                 <input type="hidden" name="_csrf" th:value="${csrfToken}" />
                                 <div class="field">
@@ -152,7 +152,7 @@
 
                             <details class="adv">
                                 <summary th:text="#{admin.album.f.path}">图片路径（高级）</summary>
-                                <form th:action="@{/admin/products/{id}/album(id=${product.id})}" method="post">
+                                <form id="pathForm" th:action="@{|${albumBase}|}" method="post">
                                     <input type="hidden" name="_csrf" th:value="${csrfToken}" />
                                     <div class="field">
                                         <label for="path"><span th:text="#{admin.album.f.path}">图片路径</span><em>*</em></label>
@@ -241,10 +241,10 @@
 <script th:replace="~{fragments :: shellJs}"></script>
 <script th:inline="javascript">
 (function () {
-    var PID = /*[[${product.id}]]*/ 0;
+    var BASE = /*[[${albumBase}]]*/ '';
     window.openShotEdit = function (btn) {
         var dlg = document.getElementById('shotDlg');
-        document.getElementById('shotForm').action = '/admin/products/' + PID + '/album/' + btn.getAttribute('data-id');
+        document.getElementById('shotForm').action = BASE + '/' + btn.getAttribute('data-id');
         document.getElementById('dlgPath').value = btn.getAttribute('data-path') || '';
         document.getElementById('dlgCredit').value = btn.getAttribute('data-credit') || '';
         document.getElementById('dlgAlt').value = btn.getAttribute('data-alt') || '';
@@ -255,14 +255,14 @@
     };
     window.openShotDelete = function (btn) {
         document.getElementById('shotDelForm').action =
-            '/admin/products/' + PID + '/album/' + btn.getAttribute('data-id') + '/delete';
+            BASE + '/' + btn.getAttribute('data-id') + '/delete';
         document.getElementById('shotDel').showModal();
     };
     window.pickKind = function (btn) {
         var kind = btn.getAttribute('data-kind');
         var radio = document.querySelector('.aside-col--album input[name="kind"][value="' + kind + '"]');
         if (radio) radio.checked = true;
-        document.querySelector('form[action$="/album"]').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        document.getElementById('pathForm').scrollIntoView({ behavior: 'smooth', block: 'center' });
         window.setTimeout(function () { document.getElementById('path').focus(); }, 380);
     };
 })();

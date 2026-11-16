@@ -6,6 +6,8 @@ server:
       cookie:
         name: STORESESSION
         http-only: true
+      # 只走 Cookie，禁止把会话号写进链接（否则首次访问会出现 /product;STORESESSION=xxx?id=1）
+      tracking-modes: cookie
       timeout: 30m
 
 spring:

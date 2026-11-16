@@ -31,7 +31,7 @@ public class ConsoleService {
                            String coverImage) {}
     public record Recent(long id, String sku, String name, String status, String time, boolean live) {}
     public record Need(String label, String title, String detail, String href, boolean accent) {}
-    public record Dashboard(Featured featured, long live, long draft, long low, long ship,
+    public record Dashboard(Featured featured, long live, long draft, long low, long ship, long support,
                             List<Need> needs, List<Recent> recent, String today) {}
 
     private static final DateTimeFormatter ZH_DATE = DateTimeFormatter.ofPattern("yyyy.MM.dd");
@@ -64,17 +64,21 @@ public class ConsoleService {
                 new AdminModule(m("admin.console.module.accounts"), "/admin/users",
                         m("admin.console.module.accounts.scope"), "FR-A-07", true),
                 new AdminModule(m("admin.console.module.orders"), "/admin/orders",
-                        m("admin.console.module.orders.scope"), "FR-A-05、FR-A-06", true));
+                        m("admin.console.module.orders.scope"), "FR-A-05、FR-A-06", true),
+                new AdminModule(m("admin.console.module.service"), "/admin/service",
+                        m("admin.console.module.service.scope"), "扩展 · 售前咨询", true));
     }
 
     public Dashboard dashboard() {
         if (jdbc() == null) {
-            return new Dashboard(null, 0, 0, 0, 0, List.of(), List.of(), today());
+            return new Dashboard(null, 0, 0, 0, 0, 0, List.of(), List.of(), today());
         }
         long live = count("SELECT COUNT(*) FROM product WHERE status='ON_SALE'");
         long draft = count("SELECT COUNT(*) FROM product WHERE status='DRAFT'");
         long low = count("SELECT COUNT(*) FROM product WHERE status='ON_SALE' AND stock BETWEEN 1 AND 3");
         long ship = count("SELECT COUNT(*) FROM sales_order WHERE status='PAID'");
+        // 扩展表尚未初始化时待回复为 0，不让整个控制台因缺表而不可用
+        long support = supportCount();
 
         Featured featured = jdbc().query(
                 "SELECT sku, name, summary, price, stock, status, cover_image FROM product " +
@@ -97,6 +101,11 @@ public class ConsoleService {
                 });
 
         List<Need> needs = new ArrayList<>();
+        if (support > 0) {
+            needs.add(new Need(m("admin.console.label.support"),
+                    fmt("admin.console.need.support.title", support),
+                    m("admin.console.need.support.detail"), "/admin/service?status=open", true));
+        }
         if (ship > 0) {
             needs.add(new Need(m("admin.console.label.ship"),
                     fmt("admin.console.need.ship.title", ship),
@@ -113,7 +122,7 @@ public class ConsoleService {
                     m("admin.console.need.draft.detail"), "/admin/products?filter=DRAFT", false));
         }
 
-        return new Dashboard(featured, live, draft, low, ship, needs, recent, today());
+        return new Dashboard(featured, live, draft, low, ship, support, needs, recent, today());
     }
 
     private String shape(String name) {
@@ -131,6 +140,15 @@ public class ConsoleService {
     private long count(String sql) {
         Long value = jdbc().queryForObject(sql, Long.class);
         return value == null ? 0L : value;
+    }
+
+    /** 咨询扩展表是可选初始化项：未建表时按 0 处理，不阻塞控制台其余真实统计。 */
+    private long supportCount() {
+        try {
+            return count("SELECT COUNT(*) FROM service_thread WHERE status='OPEN'");
+        } catch (org.springframework.dao.DataAccessException e) {
+            return 0L;
+        }
     }
 
     private String m(String key) {

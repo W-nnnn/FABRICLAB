@@ -20,6 +20,8 @@
         <java.version>25</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <mybatis-plus.version>3.5.18</mybatis-plus.version>
+        <!-- 测试只连隔离库，不清空 MyPetStore 演示数据；可用 -Dfl.test.database 覆盖 -->
+        <fl.test.database>mypetstoretest</fl.test.database>
     </properties>
 
     <dependencies>
@@ -66,6 +68,15 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <systemPropertyVariables>
+                        <MYSQL_DATABASE>${fl.test.database}</MYSQL_DATABASE>
+                    </systemPropertyVariables>
+                </configuration>
             </plugin>
         </plugins>
     </build>

@@ -379,10 +379,61 @@
   if (!region) return;
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var busy = false, seq = 0, fitTimer = null, pending = null;
+  var gridResizeTimer = null, gridObserver = null, observedGrid = null;
+
+  /* 双层滚动的商品区：高度按实测卡片行高写成整 3 行，边界不切半张卡片。
+     图片尺寸变化会改行高，用 ResizeObserver 重算；无结果时不写高度，避免留下空框。 */
+  function fitGrid() {
+    var box = region.querySelector('.catgrid');
+    if (!box) return;
+    if (window.matchMedia && window.matchMedia('(max-width: 1024px)').matches) {
+      box.style.height = ''; /* 窄屏由 CSS 恢复单层滚动 */
+      return;
+    }
+    var grid = box.querySelector('.g4');
+    var card = grid && grid.querySelector('.card');
+    if (!card) { box.style.height = ''; return; }
+    var h = card.getBoundingClientRect().height;
+    var gap = parseFloat(getComputedStyle(grid).rowGap) || 0;
+    if (!h) return;
+    var rows = 3;
+    box.style.height = Math.round(rows * h + (rows - 1) * gap) + 2 + 'px';
+    if (window.ResizeObserver && grid !== observedGrid) {
+      if (gridObserver) gridObserver.disconnect();
+      gridObserver = new ResizeObserver(function () { fitGrid(); });
+      gridObserver.observe(grid);
+      observedGrid = grid;
+    }
+  }
+  function refitGrid() {
+    clearTimeout(gridResizeTimer);
+    gridResizeTimer = setTimeout(fitGrid, 120);
+  }
+  fitGrid();
+  window.addEventListener('load', fitGrid);
+  window.addEventListener('resize', refitGrid);
+
+  /* 滚轮归属：落在商品网格内才滚商品，滚到顶/底也不把这一下转交给整页；
+     落在网格外的滚轮由整页接管，商品区内部位置保持不动（CSS overflow-anchor:none）。 */
+  region.addEventListener('wheel', function (e) {
+    var box = region.querySelector('.catgrid');
+    if (!box || !box.contains(e.target)) return;
+    if (getComputedStyle(box).overflowY !== 'auto') return;
+    var atTop = box.scrollTop <= 0;
+    var atBottom = box.scrollTop + box.clientHeight >= box.scrollHeight - 1;
+    if ((atTop && e.deltaY < 0) || (atBottom && e.deltaY > 0)) e.preventDefault();
+  }, { passive: false });
+
+  /* 首次访问（还没有会话 Cookie）时 Thymeleaf 会把会话号写进路径：
+     /category;STORESESSION=xxx。它不是真实路径，不剥掉就会被当成「换页」，
+     排序与筛选全部退回整页跳转，即时反馈也就永远不会出现。 */
+  function cleanPath(path) {
+    return String(path).replace(/;[A-Za-z]+SESSION=[^/?]*/i, '');
+  }
 
   /* 同一路径才算「换筛选」；/product 等属于换页，交给页面过渡 */
   function samePath(url) {
-    try { return new URL(url, location.href).pathname === location.pathname; }
+    try { return cleanPath(new URL(url, location.href).pathname) === cleanPath(location.pathname); }
     catch (e) { return false; }
   }
 
@@ -393,7 +444,7 @@
       Array.from(u.searchParams.keys()).forEach(function (k) {
         if (!u.searchParams.get(k)) u.searchParams.delete(k);
       });
-      return u.pathname + u.search;
+      return cleanPath(u.pathname) + u.search;
     } catch (e) { return url; }
   }
 
@@ -403,29 +454,41 @@
     return Math.max(0, region.getBoundingClientRect().top + window.pageYOffset - off - 10);
   }
 
-  function load(url, mode, force) {
+  function load(url, mode, force, quiet, hold) {
     url = tidy(url);
     if (!force && url === location.pathname + location.search) return; /* 条件没变，不重取 */
-    if (busy) { pending = { url: url, mode: mode }; return; } /* 连点：记住最后一击，结束后再来 */
+    if (busy) { pending = { url: url, mode: mode, quiet: quiet, hold: hold }; return; } /* 连点：记住最后一击，结束后再来 */
     busy = true;
     var mine = ++seq;
     var t0 = Date.now();
     region.classList.remove('swapped');
-    if (!reduce) region.classList.add('busy'); /* 降级时不暗化，连瞬时明暗都不要 */
+    /* 即时搜索不暗整块（连续输入会闪），只在输入框与顶部进度线上给反馈 */
+    if (!reduce) region.classList.add(quiet ? 'searching' : 'busy');
     fetch(url, { credentials: 'same-origin' })
       .then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); })
       .then(function (html) {
         if (mine !== seq) return;
         var next = new DOMParser().parseFromString(html, 'text/html').getElementById('catalog');
-        /* 最快路径下也留住一小段暗场，否则暗一下又亮回，本身就成了闪 */
-        var wait = Math.max(0, 130 - (Date.now() - t0));
+        /* 最快路径下也留住一小段暗场；排序留得更久，让「正在应用」看得见 */
+        var wait = Math.max(0, (hold || 130) - (Date.now() - t0));
         setTimeout(function () {
           /* 局部取的内容可能与当前节点数不同：内容在暗场期间换掉，看不出跳变 */
-          if (next) region.innerHTML = next.innerHTML;
+          var keepFocus = document.activeElement
+            && document.activeElement.closest
+            && document.activeElement.closest('form[data-search]');
+          if (next) { region.innerHTML = next.innerHTML; fitGrid(); }
+          /* 即时搜索会重建输入框，把焦点与光标接回去，用户能连续输入 */
+          if (keepFocus) {
+            var ni = region.querySelector('form[data-search] input[name=keyword]');
+            if (ni) {
+              ni.focus({ preventScroll: true });
+              try { ni.setSelectionRange(ni.value.length, ni.value.length); } catch (err) {}
+            }
+          }
           if (mode === 'push' && history.pushState) history.pushState(null, '', url);
           else if (mode === 'replace' && history.replaceState) history.replaceState(null, '', url);
-          region.classList.remove('busy');
-          if (!reduce) {
+          region.classList.remove('busy', 'searching');
+          if (!reduce && !quiet) {
             void region.offsetWidth;
             region.classList.add('swapped');
             clearTimeout(fitTimer);
@@ -434,13 +497,13 @@
           busy = false;
           var nx = pending; /* 等待期间的点击只在最后生效，不丢操作 */
           pending = null;
-          if (nx) load(nx.url, nx.mode, true);
+          if (nx) load(nx.url, nx.mode, true, nx.quiet, nx.hold);
         }, wait);
       })
       .catch(function () {
         busy = false;
         pending = null;
-        region.classList.remove('busy');
+        region.classList.remove('busy', 'searching');
         window.location.href = url; /* 取不到就退回整页跳转 */
       });
   }
@@ -451,7 +514,9 @@
     new FormData(f).forEach(function (v, k) {
       if (String(v).trim() !== '') qs.append(k, v);
     });
-    var action = f.getAttribute('action') || location.pathname;
+    /* 首次访问时 Thymeleaf 会在 action 上挂 ;SESSION= 路径参数，地址栏不该出现它 */
+    var action = (f.getAttribute('action') || location.pathname)
+      .replace(/;[A-Za-z]+SESSION=[^?/]*/i, '');
     return action + (qs.toString() ? '?' + qs.toString() : '');
   }
 
@@ -474,7 +539,14 @@
     /* 置位 defaultPrevented 后，document 上的页面退出动画会自动跳过 */
     e.preventDefault();
     if (a.href === location.href) return;
-    load(a.href, 'push');
+    var isSort = a.classList.contains('sortlink');
+    if (isSort) {
+      if (tidy(a.href) === location.pathname + location.search) return; /* 条件没变，不给假反馈 */
+      /* 按下的这一刻就反馈：按钮进入待应用态，状态行显示「正在应用排序…」 */
+      a.classList.add('sortlink--pending');
+      region.classList.add('busy');
+    }
+    load(a.href, 'push', false, false, isSort ? 260 : 0);
     if (a.classList.contains('pglink')) {
       window.scrollTo({ top: topOf(), behavior: reduce ? 'auto' : 'smooth' });
     }
@@ -482,11 +554,42 @@
 
   region.addEventListener('click', onClick);
 
+  var searchTimer = null;
+  function submitSearch(f) {
+    if (f.requestSubmit) f.requestSubmit();
+    else f.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+  }
+
   region.addEventListener('submit', function (e) {
     var f = e.target;
     if (!f || f.tagName !== 'FORM') return;
     e.preventDefault();
-    load(formUrl(f), 'push');
+    clearTimeout(searchTimer);
+    /* 即时搜索用 replace，避免每个字都往浏览器历史里塞一条 */
+    var quiet = f.hasAttribute('data-search');
+    load(formUrl(f), quiet ? 'replace' : 'push', false, quiet);
+  });
+
+  /* 顶部搜索：停止输入 420ms 即筛选，局部换内容、不整页跳 */
+  region.addEventListener('input', function (e) {
+    var t = e.target;
+    if (!t || t.name !== 'keyword' || !t.form || !t.form.hasAttribute('data-search')) return;
+    if (e.isComposing) return; /* 中文输入法组词期间不打断 */
+    clearTimeout(searchTimer);
+    var f = t.form;
+    searchTimer = setTimeout(function () { submitSearch(f); }, 420);
+  });
+
+  /* 清除按钮只清关键字，保留系列线、类型与排序 */
+  region.addEventListener('click', function (e) {
+    var c = e.target.closest && e.target.closest('.csearch__clear');
+    if (!c) return;
+    var f = c.closest('form[data-search]');
+    var inp = f && f.querySelector('input[name=keyword]');
+    if (!inp) return;
+    inp.value = '';
+    inp.focus({ preventScroll: true });
+    submitSearch(f);
   });
 
   /* 顶部系列条与头部搜索不在 #catalog 内：在选购页换系列同样只换这一块，

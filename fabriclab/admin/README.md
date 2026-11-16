@@ -56,7 +56,9 @@ mvn test
 | `http://localhost:8081/admin/categories` | 两级分类：新增、编辑、删除（有子分类或商品引用时拒绝） |
 | `http://localhost:8081/admin/products` | 款号列表：筛选、搜索、分页、批量上下架、行菜单（相册 / 补货 / 上下架 / 删除） |
 | `http://localhost:8081/admin/products/new`、`/{id}/edit` | 新增与编辑；编辑页库存只读，补货走弹窗 |
-| `http://localhost:8081/admin/products/{id}/album` | 服装相册：平铺 / 上身 / 细节三组、来源与许可、设为封面、空组入口 |
+| `http://localhost:8081/admin/albums` | 服装相册列表：按款号列出真实相册张数，逐款进入相册维护 |
+| `http://localhost:8081/admin/albums/{id}` | 服装相册维护：平铺 / 上身 / 细节三组、来源与许可、设为封面、空组入口 |
+| `http://localhost:8081/admin/products/{id}/album` | 款号维护保留的相册跳转页，同一详情页、归属款号模块 |
 | `http://localhost:8081/admin/users` | 顾客账号列表：用户名包含匹配、状态分段、ID 升序分页、订单数与累计 |
 | `http://localhost:8081/admin/users/{id}` | 账号资料：只读身份、联系方式、最近订单；重置口令与启停各自独立提交 |
 | `http://localhost:8081/admin/orders` | 订单列表：订单号完整精确搜索、五状态分段、分页缺省 10、待发货行发货 |

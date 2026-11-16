@@ -787,7 +787,8 @@ DROP TEMPORARY TABLE _fl_demo_guard, _fl_demo_orders,
     _fl_demo_items, _fl_demo_cart, _fl_demo_stock;
 COMMIT;
 
--- 计数核对：预期4、15、60、100、10、10、20（54个上架，6个下架，3个上架售罄）。
+-- 此处计数：4、15、60、100、11、10、20（54个上架，6个下架，3个上架售罄）。
+-- 后续「一致性修正」会删去 21 张图片，最终 product_image=79。
 SELECT 'store_user' AS table_name, COUNT(*) AS row_count FROM store_user
 UNION ALL SELECT 'category', COUNT(*) FROM category
 UNION ALL SELECT 'product', COUNT(*) FROM product

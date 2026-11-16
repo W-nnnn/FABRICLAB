@@ -32,6 +32,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new CsrfInterceptor(csrfService));
         registry.addInterceptor(new AuthInterceptor(storeUserMapper, currentUserService))
-                .addPathPatterns("/cart/**", "/checkout/**", "/orders/**", "/payment/**", "/account/**");
+                // 客服中心 /service 匿名可看常见问题；我的咨询与全部写操作必须登录
+                .addPathPatterns("/cart/**", "/checkout/**", "/orders/**", "/payment/**", "/account/**",
+                        "/service/threads", "/service/threads/**");
     }
 }
