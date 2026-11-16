@@ -5,7 +5,10 @@
     <link rel="icon" type="image/png" th:href="@{/images/mark.png}"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="|#{nav.brand} · #{crafts.title}|">FABRICLAB · 工艺说明</title>
-    <link rel="stylesheet" th:href="@{/css/store.css?v=20261116j}"/>
+
+
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261116l}"/>
+
 </head>
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
@@ -22,7 +25,7 @@
         <span th:text="#{crafts.title}">工艺说明</span>
     </div>
 
-    <!-- ==================================================== 开场：四道工序 -->
+    <!-- ============================================= 开场：四道工序 -->
     <section class="fa-hero">
         <div class="fa-hero__grid">
             <div class="fa-hero__text">
@@ -40,19 +43,29 @@
                 </div>
             </div>
             <div class="fa-hero__art fa-reveal" style="--d:180ms" aria-hidden="true">
-                <div class="fa-weave">
-                    <div class="fa-weave__grid"></div>
-                    <div class="fa-weave__sheen"></div>
-                    <svg class="fa-weave__threads" viewBox="0 0 520 600" preserveAspectRatio="xMidYMid slice">
-                        <path class="fa-thread fa-thread--1" d="M-40 470 C 120 400 170 250 290 220 S 450 120 570 60"/>
-                        <path class="fa-thread fa-thread--2" d="M-40 520 C 130 470 210 330 320 300 S 470 190 570 140"/>
-                        <path class="fa-thread fa-thread--3" d="M-40 575 C 140 545 230 420 350 385 S 480 285 570 235"/>
-                    </svg>
-                    <div class="fa-weave__seal">
-                        <span>IN HOUSE</span><b>01—04</b><span>CRAFT NOTES</span>
+                <!-- 工单画布：墨底工序牌 + 左缘裁缝软尺 + 纵向缝线，与面料档案的织纹画布刻意区分 -->
+                <div class="fa-ticket">
+                    <div class="fa-ticket__tape">
+                        <span class="fa-ticket__mark din">14</span>
+                        <span class="fa-ticket__mark din">12</span>
+                        <span class="fa-ticket__mark din">10</span>
+                        <span class="fa-ticket__mark din">08</span>
+                        <span class="fa-ticket__mark din">06</span>
+                        <span class="fa-ticket__mark din">04</span>
+                        <span class="fa-ticket__mark din">02</span>
                     </div>
-                    <span class="fa-weave__corner fa-weave__corner--tl"></span>
-                    <span class="fa-weave__corner fa-weave__corner--br"></span>
+                    <svg class="fa-ticket__seam" viewBox="0 0 60 560" preserveAspectRatio="none">
+                        <path d="M30 -10 C 18 120 44 210 30 300 S 14 460 32 570" />
+                    </svg>
+                    <ol class="fa-ticket__rows">
+                        <li class="fa-ticket__row"><b class="din">01</b><span class="fa-ticket__cn">染</span><span class="fa-ticket__en">DYE</span></li>
+                        <li class="fa-ticket__row"><b class="din">02</b><span class="fa-ticket__cn">织</span><span class="fa-ticket__en">WEAVE</span></li>
+                        <li class="fa-ticket__row"><b class="din">03</b><span class="fa-ticket__cn">裁</span><span class="fa-ticket__en">CUT</span></li>
+                        <li class="fa-ticket__row"><b class="din">04</b><span class="fa-ticket__cn">缝</span><span class="fa-ticket__en">SEW</span></li>
+                    </ol>
+                    <div class="fa-ticket__foot">
+                        <span>WORK TICKET</span><i></i><b class="din">04 STAGES</b>
+                    </div>
                 </div>
             </div>
         </div>
@@ -61,21 +74,17 @@
         </div>
     </section>
 
-    <!-- ==================================================== 工序索引 -->
-    <nav class="fa-index" th:aria-label="#{crafts.index}">
-        <span class="fa-index__label" th:text="#{crafts.index}">工序索引</span>
-        <div class="fa-index__items">
-            <a class="fa-index__item" th:each="n, st : ${#numbers.sequence(1, 4)}"
-               th:attr="href=${'#ch' + st.count}, data-ch=${st.count}"
-               th:classappend="${st.count == 1} ? 'on'">
-                <i class="din" th:text="${#numbers.formatInteger(st.count, 2)}">01</i>
-                <span th:text="#{home.craft__${n}__.t}">染</span>
-            </a>
-        </div>
-        <span class="fa-index__hint din">STEP / 04</span>
+    <!-- ============================================= 章节侧轨：右缘竖排刻度，随滚动点亮当前工序 -->
+    <nav class="fa-rail" th:aria-label="#{crafts.index}">
+        <a class="fa-rail__stop" th:each="n, st : ${#numbers.sequence(1, 4)}"
+           th:attr="href=${'#ch' + st.count}"
+           th:classappend="${st.count == 1} ? 'on'">
+            <span class="fa-rail__name" th:text="#{home.craft__${n}__.t}">染</span>
+            <i class="din" th:text="${#numbers.formatInteger(st.count, 2)}">01</i>
+        </a>
     </nav>
 
-    <!-- ==================================================== 四道工序 -->
+    <!-- ============================================= 四道工序 -->
     <main class="fa-chapters">
         <section class="fa-chapter" th:each="n, st : ${#numbers.sequence(1, 4)}"
                  th:with="k=${'crafts.c' + st.count},
@@ -156,7 +165,7 @@
         </section>
     </main>
 
-    <!-- ==================================================== 页尾：两行成品 -->
+    <!-- ============================================= 页尾：两行成品 -->
     <section class="fa-samples" id="craft-pieces">
         <div class="fa-samples__head fa-reveal">
             <div>
@@ -186,7 +195,7 @@
         </div>
     </section>
 
-    <!-- ==================================================== 结语 -->
+    <!-- ============================================= 结语 -->
     <section class="fa-closing">
         <div class="fa-closing__mark" aria-hidden="true">
             <svg viewBox="0 0 240 120" preserveAspectRatio="xMidYMid meet">
@@ -204,6 +213,6 @@
 
     <th:block th:replace="~{fragments :: footer}"></th:block>
 </div>
-<script th:src="@{/js/fabric-story.js?v=20261116c}"></script>
+<script th:src="@{/js/fabric-story.js?v=20261116d}"></script>
 </body>
 </html>

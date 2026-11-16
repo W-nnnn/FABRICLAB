@@ -5,7 +5,7 @@
     <link rel="icon" type="image/png" th:href="@{/images/mark.png}"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="|#{nav.brand} · #{account.center}|">FABRICLAB · 我的账户</title>
-    <link rel="stylesheet" th:href="@{/css/store.css?v=20261116j}"/>
+    <link rel="stylesheet" th:href="@{/css/store.css?v=20261116k}"/>
 </head>
 <body th:classappend="${lang == 'en' ? 'lang-en' : 'lang-cn'}">
 <div class="page">
@@ -46,9 +46,6 @@
             </a>
             <a class="an" data-pane="settings" th:href="@{/orders}">
                 <span class="no">03</span><span class="nm" th:text="#{account.nav.settings}">账户设置</span>
-            </a>
-            <a class="an" th:href="@{/service/threads}">
-                <span class="no">04</span><span class="nm" th:text="#{svc.myThreads}">我的咨询</span>
             </a>
         </nav>
 
@@ -100,10 +97,10 @@
                     </form>
 
                     <!-- 空结果 -->
-                    <div class="emptyp" th:if="${result.total == 0}" style="margin:30px 0 0">
+                    <div class="emptyp" th:if="${result.total == 0}">
                         <div>
-                            <h2 style="font-size:26px" th:if="${query.orderNo() != null}" th:text="#{orders.empty.search}">没有匹配该订单号的订单</h2>
-                            <h2 style="font-size:26px" th:unless="${query.orderNo() != null}" th:text="#{orders.empty.title}">这里还没有订单</h2>
+                            <h2 th:if="${query.orderNo() != null}" th:text="#{orders.empty.search}">没有匹配该订单号的订单</h2>
+                            <h2 th:unless="${query.orderNo() != null}" th:text="#{orders.empty.title}">这里还没有订单</h2>
                             <p th:text="#{orders.empty.body}">先去挑选几件成衣，下单后可在这里查看进度与支付。</p>
                             <div class="acts">
                                 <a class="btn" th:href="@{/category}" th:text="#{orders.empty.cta}">去选购</a>
@@ -318,6 +315,6 @@
     <div style="height:70px"></div>
     <th:block th:replace="~{fragments :: footer}"></th:block>
 </div>
-<script th:src="@{/js/app.js?v=20261116f}"></script>
+<script th:src="@{/js/app.js?v=20261116k}"></script>
 </body>
 </html>

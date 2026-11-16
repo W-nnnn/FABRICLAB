@@ -189,6 +189,11 @@ h1,h2,h3{font-weight:500}
 .ph__act{display:flex;align-items:center;gap:20px;flex:none;padding-bottom:4px}
 .ph__count{font-size:12px;color:var(--muted);white-space:nowrap}
 .ph__count b{color:var(--ink);font-size:13px}
+/* 客服详情：页头只作标识，尽量把纵向空间让给对话区 */
+.ph--slim{padding:12px 0 10px;align-items:center}
+.ph--slim h1{font-size:20px;line-height:1.3;margin-top:0}
+.ph--slim .svc-meta{margin-top:6px;font-size:11px;gap:8px}
+.ph--slim .ph__act{padding-bottom:0}
 
 /* ── 区块 ─────────────────────────────────────────── */
 .block{border-top:1px solid var(--rule);padding-top:32px;margin-top:32px}
@@ -258,17 +263,17 @@ h1,h2,h3{font-weight:500}
 .facts dd{text-align:right;color:var(--body);word-break:break-all}
 
 /* ── 工具条 ───────────────────────────────────────── */
-.toolbar{background:var(--surface);margin:0 -20px;padding:16px 20px 0;
+.toolbar{background:var(--paper);padding:14px 0;
   border-top:1px solid var(--rule);display:flex;align-items:center;gap:26px;flex-wrap:wrap}
 .search{display:flex;align-items:center;gap:9px;width:264px;height:38px;padding:0 12px;
-  border:1px solid var(--rule-strong);background:var(--white);margin-bottom:16px}
+  border:1px solid var(--rule-strong);background:var(--white)}
 .search:focus-within{border-color:var(--ink);box-shadow:0 0 0 3px rgba(26,26,26,.06)}
 .search svg{flex:none;color:var(--faint);width:14px;height:14px}
 .search input{border:0;outline:0;background:transparent;width:100%;height:100%;align-self:stretch;font-size:13px}
 .search input::placeholder{color:var(--faint)}
-.seg{display:flex;gap:26px;align-self:flex-end}
-.seg button,.seg a{display:inline-flex;align-items:center;height:48px;padding:0;border:0;background:none;font-size:12.5px;color:var(--muted);
-  border-bottom:1px solid transparent;margin-bottom:-1px;letter-spacing:.02em}
+.seg{display:flex;gap:26px}
+.seg button,.seg a{display:inline-flex;align-items:center;height:38px;padding:0;border:0;background:none;font-size:12.5px;color:var(--muted);
+  border-bottom:1px solid transparent;letter-spacing:.02em}
 .seg button:hover,.seg a:hover{color:var(--ink)}
 .seg button.on,.seg a.on{color:var(--ink);border-bottom-color:var(--ink)}
 .seg button em,.seg a em{font-style:normal;font-family:var(--f-num);font-size:12px;color:var(--faint);margin-left:6px}
@@ -286,7 +291,7 @@ h1,h2,h3{font-weight:500}
 .tbl caption{text-align:left;padding:16px 0 10px;font-size:12px;color:var(--faint)}
 .tbl thead th{height:40px;padding:0 14px;text-align:left;font-size:12px;font-weight:500;
   letter-spacing:.1em;color:var(--body);border-bottom:1px solid var(--rule-strong);
-  white-space:nowrap;background:var(--surface);position:sticky;top:0;z-index:2}
+  white-space:nowrap;background:var(--paper);position:sticky;top:0;z-index:2}
 /* 首列留白：复选框与首列文字都不贴边，行悬浮只用底色反馈，不再画会压住内容的竖线 */
 .tbl thead th:first-child{padding-left:10px;padding-right:0}
 .tbl thead th:last-child{padding-right:16px;text-align:right}
@@ -440,11 +445,6 @@ dialog::backdrop{background:rgba(26,26,26,.46);backdrop-filter:blur(1.5px)}
 .psize{border:0;border-bottom:1px solid var(--rule-strong);background:transparent;
   font-size:12px;height:32px;padding:0 4px;border-radius:0}
 
-/* ── 页脚 ─────────────────────────────────────────── */
-.colophon{border-top:1px solid var(--rule);margin-top:auto;padding:18px 0 0;
-  display:flex;justify-content:space-between;gap:20px;
-  font-size:12px;letter-spacing:.08em;color:var(--faint)}
-
 /* ── 错误页 ───────────────────────────────────────── */
 .error-page{min-height:100vh;display:grid;place-items:center;background:var(--paper)}
 .error-main{text-align:center;padding:40px;max-width:520px}
@@ -522,7 +522,6 @@ html[lang="en"] .help{font-size:12px}
   .ph__act{flex-direction:column;align-items:flex-start;gap:12px}
   .actions-bar{flex-direction:column;align-items:stretch;padding:12px var(--pad)}
   .actions-bar__act{justify-content:flex-end}
-  .colophon{flex-direction:column;gap:6px}
   .hero__txt{padding:24px}
   .hero h2{font-size:24px}
   .hero__meta{gap:18px}
@@ -749,8 +748,24 @@ html[lang="en"] .help{font-size:12px}
 .ckcell{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;margin-left:-8px;cursor:pointer}
 
 /* ── 客服咨询：列表 / 详情对话 / 回复 ───────────────────────────────── */
-.svc-subj{font-size:13px;line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:420px}
-.svc-snip{font-size:12px;color:var(--muted);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:420px}
+/* 收件箱式列表：左侧待回复标记 + 主题/摘要主区 + 右侧会员元信息 */
+.svc-inbox{margin-top:20px;border-top:1px solid var(--rule)}
+.svc-row{display:grid;grid-template-columns:3px minmax(0,1fr) auto;align-items:center;
+  gap:18px;padding:16px 4px 16px 0;border-bottom:1px solid var(--rule);
+  transition:background .2s ease}
+.svc-row:hover{background:var(--wash)}
+.svc-row__flag{width:3px;align-self:stretch;background:transparent}
+.svc-row--open .svc-row__flag{background:var(--rust)}
+.svc-row__main{display:flex;flex-direction:column;gap:6px;min-width:0}
+.svc-row__subj{display:flex;align-items:center;gap:10px;min-width:0}
+.svc-row__subj b{font-family:var(--f-song);font-size:15px;font-weight:500;letter-spacing:.02em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.svc-row__snip{font-size:12px;color:var(--muted);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.svc-row__side{display:flex;flex-direction:column;align-items:flex-end;gap:7px;flex:none}
+.svc-row__user{display:flex;align-items:center;gap:8px;font-size:12px}
+.svc-row__meta{display:flex;align-items:center;gap:12px;font-size:12px;color:var(--faint)}
+.svc-row__meta .num{font-family:var(--f-num);letter-spacing:.04em}
 /* 详情页会话工位（对标 Zendesk Agent Workspace / Intercom Inbox 的三区骨架）：
    对话主窗是绝对主角（气泡流 + 底部回复台一体），会员上下文收进右侧窄栏 */
 .svc-meta{display:flex;align-items:center;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--muted)}
@@ -775,13 +790,7 @@ html[lang="en"] .help{font-size:12px}
 .svc-compose textarea:focus{border-color:var(--rust)}
 .svc-compose textarea.err{border-color:var(--rust);background:#FBF3EF}
 .svc-field-err{margin-top:8px;font-size:12px;color:var(--rust-ink)}
-.svc-compose__bar{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-top:10px;flex-wrap:wrap}
-.svc-compose__send{display:flex;align-items:center;gap:16px;flex:none}
-.svc-quicks{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
-.svc-quicks button{min-height:30px;padding:0 12px;border:1px solid var(--rule-strong);background:transparent;
-  font-size:12px;color:var(--body)}
-.svc-quicks button:hover{border-color:var(--rust);color:var(--rust-ink);background:var(--wash)}
-.svc-side-act{margin-top:12px;padding-top:10px;border-top:1px solid var(--rule)}
+.svc-compose__bar{margin-top:12px}
 .svc-side-act button{min-height:30px}
 .svc-closed{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:14px 20px;
   border-top:1px solid var(--rule);background:var(--wash)}
@@ -799,6 +808,9 @@ html[lang="en"] .help{font-size:12px}
 @media(max-width:900px){
   .svc-desk{grid-template-columns:minmax(0,1fr);gap:18px}
   .svc-bubble{max-width:100%}
+  .svc-row{grid-template-columns:3px minmax(0,1fr);gap:10px 12px}
+  .svc-row__side{grid-column:2;align-items:flex-start}
+  .svc-row__meta{flex-wrap:wrap;gap:6px 12px}
 }
 
 /* ══════════════════════════════════════════════════════════════

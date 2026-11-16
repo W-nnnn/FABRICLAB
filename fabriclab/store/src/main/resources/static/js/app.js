@@ -575,8 +575,8 @@
       region.classList.add('busy');
     }
     load(a.href, 'push', false, false, isSort ? 260 : 0);
-    if (a.classList.contains('pglink') || a.classList.contains('ln')) {
-      /* 换页与换系列线：内容整块更换，视口回到这块的顶部，避免标题被顶出视野 */
+    if (a.classList.contains('pglink') || a.classList.contains('ln') || a.classList.contains('ls')) {
+      /* 换页与换系列线（含系列大块目录）：内容整块更换，视口回到这块的顶部 */
       window.scrollTo({ top: topOf(), behavior: reduce ? 'auto' : 'smooth' });
     }
   }
