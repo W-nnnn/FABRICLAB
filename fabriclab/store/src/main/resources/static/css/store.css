@@ -968,6 +968,9 @@ body.lang-en .lead, body.lang-en .tiny, body.lang-en .eyebrow { letter-spacing: 
     .svc { flex-wrap: wrap; gap: 26px; }
     .svc .c { flex: 1 1 40%; }
     .foot .top { grid-template-columns: 1fr; }
+    /* 窄屏头部空间紧：客服胶囊只留气泡图标 */
+    .svcnav { padding: 0 10px; }
+    .svcnav span { display: none; }
 }
 
 /* ============================================================ 切换动效系统
@@ -1010,6 +1013,29 @@ body.lang-en .lead, body.lang-en .tiny, body.lang-en .eyebrow { letter-spacing: 
 .ico { transition: color .2s ease, transform .2s ease; }
 .ico:hover { color: var(--rust-ink); }
 .ico:active { transform: translateY(1px); }
+
+/* 客服入口：acts 右区的独立胶囊（对话气泡 + 文字），区别于纯图标的账户/购物袋；
+   悬停墨色自下浸染反白（与幽灵按钮同一语言），在客服中心页时墨底反白常亮 */
+.svcnav {
+    position: relative; overflow: hidden; isolation: isolate;
+    display: inline-flex; align-items: center; gap: 7px;
+    height: 34px; padding: 0 14px;
+    border: 1px solid var(--ink); background: transparent;
+    font-family: var(--f-body); font-size: 11.5px; letter-spacing: .08em;
+    color: var(--ink);
+    transition: color .25s ease, transform .18s ease;
+}
+.svcnav::before {
+    content: ""; position: absolute; inset: 0; z-index: -1;
+    background: var(--ink);
+    transform: translateY(101%);
+    transition: transform .3s cubic-bezier(.22, .61, .36, 1);
+}
+.svcnav:hover { color: var(--wall); }
+.svcnav:hover::before { transform: translateY(0); }
+.svcnav:active { transform: translateY(1px); }
+.svcnav.on { background: var(--ink); color: var(--wall); }
+.svcnav.on::before { display: none; }
 .tlink { transition: color .2s ease, border-color .2s ease; }
 .tlink:hover { color: var(--rust-ink); border-color: var(--rust); }
 
