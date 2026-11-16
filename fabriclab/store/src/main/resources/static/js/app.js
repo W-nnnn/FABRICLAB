@@ -578,3 +578,44 @@
     if (samePath(location.href)) load(location.href, 'none', true);
   });
 })();
+
+/* ============================================================ 面料档案章节侧轨 */
+(function () {
+  'use strict';
+  var rail = document.querySelector('.fa-rail');
+  if (!rail) return;
+  var stops = Array.prototype.slice.call(rail.querySelectorAll('.fa-rail__stop'));
+  var chapters = stops.map(function (s) { return document.querySelector(s.getAttribute('href')); })
+                      .filter(Boolean);
+  if (!chapters.length) return;
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* 点击平滑跳章：目标停在双层吸顶头部之下 */
+  stops.forEach(function (s) {
+    s.addEventListener('click', function (e) {
+      var t = document.querySelector(s.getAttribute('href'));
+      if (!t) return;
+      e.preventDefault();
+      var hdr = document.querySelector('.hdw');
+      var off = hdr ? hdr.getBoundingClientRect().height : 0;
+      window.scrollTo({ top: t.getBoundingClientRect().top + window.pageYOffset - off - 16,
+                        behavior: reduce ? 'auto' : 'smooth' });
+    });
+  });
+
+  /* 滚动点亮：视口 35% 高度线压过哪一章的顶端，就点亮哪一刻度 */
+  function paint() {
+    var line = window.innerHeight * 0.35, cur = 0;
+    chapters.forEach(function (c, i) {
+      if (c.getBoundingClientRect().top <= line) cur = i;
+    });
+    stops.forEach(function (s, i) { s.classList.toggle('on', i === cur); });
+  }
+  var ticking = false;
+  window.addEventListener('scroll', function () {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function () { paint(); ticking = false; });
+  }, { passive: true });
+  paint();
+})();

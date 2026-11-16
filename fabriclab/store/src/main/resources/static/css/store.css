@@ -1295,35 +1295,34 @@ body.lang-en .lead, body.lang-en .tiny, body.lang-en .eyebrow { letter-spacing: 
 .fa-hero__rule i { flex: 1; height: 1px; background: var(--line); }
 .fa-hero__rule b { font-weight: 400; color: var(--ink); }
 
-/* ------------------------------------------------------------ 吸顶纤维索引 */
-.fa-index {
-    position: sticky; top: 108px; z-index: 50;
-    display: flex; align-items: center; gap: clamp(18px, 2.6vw, 40px);
-    height: 58px; padding: 0 var(--gx);
-    background: rgba(242, 239, 233, .95);
-    -webkit-backdrop-filter: blur(9px); backdrop-filter: blur(9px);
-    border-bottom: 1px solid var(--line);
+/* ------------------------------------------------------------ 章节侧轨（替代传统吸顶索引条）
+   右缘竖排四道刻度：编号常驻，章名仅在悬停/当前章滑出；
+   滚动经 app.js 点亮当前章（赭色 + 刻度伸长），点击平滑跳章。
+   只在右侧留白足够的宽屏出现（≥1366px），窄屏跟随线性阅读不导航。 */
+.fa-rail {
+    position: fixed; right: 20px; top: 50%; transform: translateY(-50%);
+    z-index: 60; display: flex; flex-direction: column; align-items: flex-end; gap: 24px;
 }
-.fa-index__label { flex: none; font-size: 10.5px; letter-spacing: .22em; color: var(--mute); }
-.fa-index__items { display: flex; align-items: center; gap: clamp(16px, 2.4vw, 38px); flex: 1; }
-.fa-index__item {
-    position: relative; display: flex; align-items: baseline; gap: 8px;
-    padding: 6px 0; font-size: 12px; letter-spacing: .08em;
-    color: var(--mute); white-space: nowrap;
-    transition: color .28s ease;
+.fa-rail__stop {
+    display: flex; align-items: center; gap: 10px;
+    color: var(--faint); transition: color .3s ease;
 }
-.fa-index__item i { font-size: 10px; font-style: normal; color: var(--faint); transition: color .28s ease; }
-.fa-index__item::after {
-    content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px;
-    background: var(--rust); transform: scaleX(0); transform-origin: left;
-    transition: transform .4s cubic-bezier(.22, .61, .36, 1);
+.fa-rail__stop i { font-size: 11px; font-style: normal; letter-spacing: .1em; font-variant-numeric: tabular-nums; }
+.fa-rail__stop::after {
+    content: ""; width: 14px; height: 1px; background: currentColor;
+    transition: width .35s cubic-bezier(.22, .61, .36, 1), background .3s ease;
 }
-.fa-index__item:hover { color: var(--ink); }
-.fa-index__item.on { color: var(--rust-ink); }
-.fa-index__item.on i { color: var(--rust-ink); }
-.fa-index__item.on::after { transform: scaleX(1); }
-.fa-index__hint { flex: none; font-size: 10px; letter-spacing: .18em; color: var(--faint); }
-.fa-index__bar { position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: transparent; }
+.fa-rail__name {
+    font-size: 11px; letter-spacing: .16em; color: var(--mute);
+    opacity: 0; transform: translateX(6px);
+    transition: opacity .3s ease, transform .3s ease;
+}
+.fa-rail__stop:hover { color: var(--ink); }
+.fa-rail__stop:hover .fa-rail__name { opacity: 1; transform: none; }
+.fa-rail__stop.on { color: var(--rust-ink); }
+.fa-rail__stop.on::after { width: 30px; }
+.fa-rail__stop.on .fa-rail__name { opacity: 1; transform: none; color: var(--rust-ink); }
+@media (max-width: 1365px) { .fa-rail { display: none; } }
 
 /* ------------------------------------------------------------ 四章 */
 .fa-chapter {
@@ -1542,9 +1541,6 @@ body.lang-en .lead, body.lang-en .tiny, body.lang-en .eyebrow { letter-spacing: 
     .fa-fact, .fa-fact + .fa-fact { padding: 18px 0; border-right: 0; border-bottom: 1px solid var(--line); }
     .fa-trait { grid-template-columns: 82px minmax(0, 1fr); gap: 16px; }
     .fa-trait .fa-bar { display: none; }
-    .fa-index { gap: 16px; overflow-x: auto; }
-    .fa-index__items { gap: 18px; }
-    .fa-index__hint { display: none; }
     .fa-samples__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .fa-samples__head { flex-direction: column; align-items: flex-start; }
 }
